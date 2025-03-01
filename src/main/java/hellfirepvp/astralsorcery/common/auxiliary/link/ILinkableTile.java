@@ -8,8 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.auxiliary.link;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;

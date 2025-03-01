@@ -1,17 +1,16 @@
 package hellfirepvp.astralsorcery.client.util;
 
+import cpw.mods.fml.relauncher.Side;
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.sky.RenderAstralSkybox;
 import hellfirepvp.astralsorcery.common.base.CelestialGatewaySystem;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -50,9 +49,9 @@ public class UIGateway {
     public static UIGateway initialize(World world, Vector3 source, double sphereRadius) {
         UIGateway ui = new UIGateway(source, sphereRadius);
         CelestialGatewaySystem system = CelestialGatewaySystem.instance;
-        int dimid = world.provider.getDimension();
+        int dimid = world.provider.dimensionId;
         List<BlockPos> sameDimensionPositions = system.getGatewaysForWorld(world, Side.CLIENT);
-        gatherStars(ui, world.provider.getDimension(), sameDimensionPositions, true, sphereRadius);
+        gatherStars(ui, world.provider.dimensionId, sameDimensionPositions, true, sphereRadius);
 
         for (Map.Entry<Integer, List<BlockPos>> entries : system.getGatewayCache(Side.CLIENT).entrySet()) {
             if(entries.getKey() == dimid) continue;
@@ -128,12 +127,12 @@ public class UIGateway {
     }
 
     public void renderIntoWorld(float pticks) {
-        if(Minecraft.getMinecraft().player == null) return;
+        if(Minecraft.getMinecraft().thePlayer == null) return;
 
-        double dst = new Vector3(origin).distance(new Vector3(Minecraft.getMinecraft().player));
+        double dst = new Vector3(origin).distance(new Vector3(Minecraft.getMinecraft().thePlayer));
         if(dst > 3) return;
         float alpha = 1F - ((float) (dst / 2D));
-        alpha = MathHelper.clamp(alpha, 0F, 1F);
+        alpha = MathHelper.clamp_float(alpha, 0F, 1F);
         Color c = new Color(0xF0BD00);
         float red = c.getRed() / 255F;
         float green = c.getGreen() / 255F;
@@ -153,15 +152,16 @@ public class UIGateway {
         GL11.glColor4f(1F, 1F, 1F, 1F);
         RenderAstralSkybox.TEX_STAR_1.bind();
 
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        tess.startDrawingQuads();
         for (int i = 0; i < 300; i++) {
             Vector3 dir = Vector3.random(rand).normalize().multiply(radius);
             float a = RenderConstellation.conCFlicker(ClientScheduler.getClientTick(), pticks, rand.nextInt(7) + 6);
             a *= alpha;
 
-            RenderingUtils.renderFacingFullQuadVB(vb,
+            RenderingUtils.renderFacingFullQuadVB(tess,
                     origin.getX() + dir.getX(),
                     origin.getY() + dir.getY(),
                     origin.getZ() + dir.getZ(),
@@ -171,14 +171,14 @@ public class UIGateway {
             float a = RenderConstellation.conCFlicker(ClientScheduler.getClientTick(), pticks, rand.nextInt(7) + 6);
             a = 0.4F + (0.6F * a);
             a = (a * alpha);
-            RenderingUtils.renderFacingFullQuadVB(vb,
+            RenderingUtils.renderFacingFullQuadVB(tess,
                     origin.getX() + entry.relativePos.getX(),
                     origin.getY() + entry.relativePos.getY(),
                     origin.getZ() + entry.relativePos.getZ(),
                     pticks, 0.16F, 0, red, green, blue, a);
         }
-        RenderingUtils.sortVertexData(vb);
-        tes.draw();
+        RenderingUtils.getVertexData(tess);
+        tess.draw();
         TextureHelper.refreshTextureBindState();
         GL11.glPopMatrix();
         GL11.glPopAttrib();

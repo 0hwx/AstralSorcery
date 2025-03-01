@@ -16,10 +16,6 @@ import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
 
@@ -179,8 +175,8 @@ public class TexturePlane implements IComplexEffect, IComplexEffect.PreventRemov
 
         if(maxAge >= 0 && counter >= maxAge) {
             if(refreshFunc != null) {
-                Entity rView = Minecraft.getMinecraft().getRenderViewEntity();
-                if(rView == null) rView = Minecraft.getMinecraft().player;
+                Entity rView = Minecraft.getMinecraft().renderViewEntity;
+                if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
                 if(rView.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) <= Config.maxEffectRenderDistanceSq) {
                     if(refreshFunc.shouldRefresh()) {
                         counter = 0;
@@ -199,8 +195,8 @@ public class TexturePlane implements IComplexEffect, IComplexEffect.PreventRemov
 
     @Override
     public void render(float partialTicks) {
-        Entity rView = Minecraft.getMinecraft().getRenderViewEntity();
-        if(rView == null) rView = Minecraft.getMinecraft().player;
+        Entity rView = Minecraft.getMinecraft().renderViewEntity;
+        if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
         double dst = rView.getDistanceSq(pos.getX(), pos.getY(), pos.getZ());
         if(dst > Config.maxEffectRenderDistanceSq) return;
 
@@ -227,13 +223,14 @@ public class TexturePlane implements IComplexEffect, IComplexEffect.PreventRemov
             deg = fixDegree;
         }
 
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
+//        GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glDisable(GL11.GL_CULL_FACE);
-
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.0001F);
         currRenderAroundAxis(partialTicks, Math.toRadians(deg), axis);
 
         GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+//        GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glColor4f(1F, 1F, 1F, 1F);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();

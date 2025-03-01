@@ -32,13 +32,13 @@ public class PerkTravelLavaProtection extends ConstellationPerk {
     @Override
     public float onEntityHurt(EntityPlayer hurt, DamageSource source, float dmgIn) {
         int cd = getActiveCooldownForPlayer(hurt);
-        if(cd <= 0 && hurt.isInLava()) {
+        if(cd <= 0 && hurt.handleLavaMovement()) {
             int amt = ticksProtection + ticksUntilProtectionWorksAgain;
             setCooldownActiveForPlayer(hurt, amt);
             cd = amt;
         }
         if(cd > ticksUntilProtectionWorksAgain) {
-            if(source.isFireDamage() || hurt.isInLava()) {
+            if(source.isFireDamage() || hurt.handleLavaMovement()) {
                 addAlignmentCharge(hurt, 0.7);
                 dmgIn = 0;
             }

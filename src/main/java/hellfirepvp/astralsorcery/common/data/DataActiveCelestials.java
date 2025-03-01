@@ -78,7 +78,7 @@ public class DataActiveCelestials extends AbstractData {
 
     @Override
     public void readRawFromPacket(NBTTagCompound compound) {
-        for (String dimIdStr : compound.getKeySet()) {
+        for (String dimIdStr : compound.func_150296_c()) {
             int dimId;
             try {
                 dimId = Integer.parseInt(dimIdStr);

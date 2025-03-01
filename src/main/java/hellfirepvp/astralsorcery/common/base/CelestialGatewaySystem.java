@@ -1,21 +1,21 @@
 package hellfirepvp.astralsorcery.common.base;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
 import hellfirepvp.astralsorcery.common.data.world.data.GatewayCache;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktUpdateGateways;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,7 +56,7 @@ public class CelestialGatewaySystem {
     public void onWorldInit(WorldEvent.Load event) {
         if(startup) return; //We're already loading up there.
 
-        World world = event.getWorld();
+        World world = event.world;
         if(world.isRemote) return;
 
         loadWorldCache(world);
@@ -74,7 +74,7 @@ public class CelestialGatewaySystem {
     }
 
     public List<BlockPos> getGatewaysForWorld(World world, Side side) {
-        return (side == Side.SERVER ? serverCache : clientCache).get(world.provider.getDimension());
+        return (side == Side.SERVER ? serverCache : clientCache).get(world.provider.dimensionId);
     }
 
     public Map<Integer, List<BlockPos>> getGatewayCache(Side side) {
@@ -84,7 +84,7 @@ public class CelestialGatewaySystem {
     public void addPosition(World world, BlockPos pos) {
         if(world.isRemote) return;
 
-        int dim = world.provider.getDimension();
+        int dim = world.provider.dimensionId;
         if(!serverCache.containsKey(dim)) {
             forceLoad(dim);
         }
@@ -103,7 +103,7 @@ public class CelestialGatewaySystem {
     public void removePosition(World world, BlockPos pos) {
         if(world.isRemote) return;
 
-        int dim = world.provider.getDimension();
+        int dim = world.provider.dimensionId;
         if(!serverCache.containsKey(dim)) {
             return;
         }
@@ -125,7 +125,7 @@ public class CelestialGatewaySystem {
 
     private void loadWorldCache(World world) {
         GatewayCache cache = WorldCacheManager.getOrLoadData(world, WorldCacheManager.SaveKey.GATEWAY_DATA);
-        serverCache.put(world.provider.getDimension(), cache.getGatewayPositions());
+        serverCache.put(world.provider.dimensionId, cache.getGatewayPositions());
     }
 
 }

@@ -8,6 +8,9 @@
 
 package hellfirepvp.astralsorcery.client;
 
+import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.light.ClientLightbeamHandler;
@@ -24,7 +27,6 @@ import hellfirepvp.astralsorcery.client.render.tile.*;
 import hellfirepvp.astralsorcery.client.util.ItemColorizationHelper;
 import hellfirepvp.astralsorcery.client.util.MeshRegisterHelper;
 import hellfirepvp.astralsorcery.client.util.camera.ClientCameraManager;
-import hellfirepvp.astralsorcery.client.util.item.AstralTEISR;
 import hellfirepvp.astralsorcery.client.util.item.DummyModelLoader;
 import hellfirepvp.astralsorcery.client.util.item.ItemRenderRegistry;
 import hellfirepvp.astralsorcery.client.util.item.ItemRendererFilteredTESR;
@@ -35,6 +37,7 @@ import hellfirepvp.astralsorcery.common.CommonProxy;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.TickManager;
 import hellfirepvp.astralsorcery.common.block.BlockDynamicColor;
 import hellfirepvp.astralsorcery.common.block.BlockMachine;
+import hellfirepvp.astralsorcery.common.block.network.BlockAltar;
 import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
 import hellfirepvp.astralsorcery.common.entities.EntityFlare;
 import hellfirepvp.astralsorcery.common.entities.EntityIlluminationSpark;
@@ -53,12 +56,6 @@ import hellfirepvp.astralsorcery.common.tile.network.TileCrystalPrismLens;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -67,13 +64,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -98,8 +93,8 @@ public class ClientProxy extends CommonProxy {
             AstralSorcery.log.warn("AstralSorcery: Could not add AssetLibrary to resource manager! Texture reloading will have no effect on AstralSorcery textures.");
             AssetLibrary.resReloadInstance.onResourceManagerReload(null);
         }
-        ModelLoaderRegistry.registerLoader(new DummyModelLoader()); //IItemRenderer Hook ModelLoader
-        OBJLoader.INSTANCE.addDomain(AstralSorcery.MODID);
+//        AdvancedModelLoader.registerModelHandler(new DummyModelLoader()); //IItemRenderer Hook ModelLoader
+//        OBJLoader.INSTANCE.addDomain(AstralSorcery.MODID);
 
         super.preInit();
 
@@ -109,35 +104,35 @@ public class ClientProxy extends CommonProxy {
         CraftingAccessManager.ignoreJEI = false;
     }
 
-    private void registerPendingIBlockColorBlocks() {
-        BlockColors colors = Minecraft.getMinecraft().getBlockColors();
-        for (BlockDynamicColor b : RegistryBlocks.pendingIBlockColorBlocks) {
-            colors.registerBlockColorHandler(b::getColorMultiplier, (Block) b);
-        }
-    }
-
-    private void registerPendingIItemColorItems() {
-        ItemColors colors = Minecraft.getMinecraft().getItemColors();
-        for (ItemDynamicColor i : RegistryItems.pendingDynamicColorItems) {
-            colors.registerItemColorHandler(i::getColorForItemStack, (Item) i);
-        }
-    }
+//    private void registerPendingIBlockColorBlocks() {
+//        BlockColors colors = Minecraft.getMinecraft().getBlockColors();
+//        for (BlockDynamicColor b : RegistryBlocks.pendingIBlockColorBlocks) {
+//            colors.registerBlockColorHandler(b::getColorMultiplier, (Block) b);
+//        }
+//    }
+//
+//    private void registerPendingIItemColorItems() {
+//        ItemColors colors = Minecraft.getMinecraft().getItemColors();
+//        for (ItemDynamicColor i : RegistryItems.pendingDynamicColorItems) {
+//            colors.registerItemColorHandler(i::getColorForItemStack, (Item) i);
+//        }
+//    }
 
     private void registerFluidRenderers() {
         registerFluidRender(BlocksAS.fluidLiquidStarlight);
     }
 
     private void registerFluidRender(Fluid f) {
-        RegistryBlocks.FluidCustomModelMapper mapper = new RegistryBlocks.FluidCustomModelMapper(f);
+//        RegistryBlocks.FluidCustomModelMapper mapper = new RegistryBlocks.FluidCustomModelMapper(f);
         Block block = f.getBlock();
         if(block != null) {
             Item item = Item.getItemFromBlock(block);
-            if (item != null) {
-                ModelLoader.registerItemVariants(item);
-                ModelLoader.setCustomMeshDefinition(item, mapper);
-            } else {
-                ModelLoader.setCustomStateMapper(block, mapper);
-            }
+//            if (item != null) {
+//                ModelLoader.registerItemVariants(item);
+//                ModelLoader.setCustomMeshDefinition(item, mapper);
+//            } else {
+//                ModelLoader.setCustomStateMapper(block, mapper);
+//            }
         }
     }
 
@@ -161,7 +156,7 @@ public class ClientProxy extends CommonProxy {
     public void postInit() {
         super.postInit();
 
-        TileEntityItemStackRenderer.instance = new AstralTEISR(TileEntityItemStackRenderer.instance); //Wrapping TEISR
+//        TileEntityItemStackRenderer.instance = new AstralTEISR(TileEntityItemStackRenderer.instance); //Wrapping TEISR
 
         //TexturePreloader.doPreloadRoutine();
 
@@ -185,13 +180,24 @@ public class ClientProxy extends CommonProxy {
         ItemRendererFilteredTESR blockMachineRender = new ItemRendererFilteredTESR();
         blockMachineRender.addRender(BlockMachine.MachineType.TELESCOPE.getMeta(), new TESRTelescope(), new TileTelescope());
         blockMachineRender.addRender(BlockMachine.MachineType.GRINDSTONE.getMeta(), new TESRGrindstone(), new TileGrindstone());
-        ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.blockMachine), blockMachineRender);
+//        ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.blockMachine), blockMachineRender);
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlocksAS.blockMachine), blockMachineRender);
+
+        ItemRendererFilteredTESR AttunementAlter = new ItemRendererFilteredTESR();
+        AttunementAlter.addRender(0, new TESRAttunementAltar(), new TileAttunementAltar());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlocksAS.attunementAltar), AttunementAlter);
+
+//        ItemRendererFilteredTESR Alter = new ItemRendererFilteredTESR();
+//        Alter.addRender(2, new TESRAltar(),new TileAltar());
 
         //ItemRenderRegistry.registerCameraTransforms(Item.getItemFromBlock(BlocksAS.blockMachine), RenderTransformsHelper.BLOCK_TRANSFORMS);
 
-        ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.collectorCrystal), new TESRCollectorCrystal());
-        ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.celestialCollectorCrystal), new TESRCollectorCrystal());
-        ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.celestialCrystals), new TESRCelestialCrystals());
+//        ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.collectorCrystal), new TESRCollectorCrystal());
+//        ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.celestialCollectorCrystal), new TESRCollectorCrystal());
+//        ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.celestialCrystals), new TESRCelestialCrystals());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlocksAS.collectorCrystal), new TESRCollectorCrystal());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlocksAS.celestialCollectorCrystal), new TESRCollectorCrystal());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlocksAS.celestialCrystals), new TESRCelestialCrystals());
 
         //ItemRenderRegistry.register(ItemsAS.something, new ? implements IItemRenderer());
     }
@@ -227,48 +233,48 @@ public class ClientProxy extends CommonProxy {
         registerTESR(TileMapDrawingTable.class, new TESRMapDrawingTable());
     }
 
-    private <T extends TileEntity> void registerTESR(Class<T> tile, TileEntitySpecialRenderer<T> renderer) {
+    private <T extends TileEntity> void registerTESR(Class<T> tile, TileEntitySpecialRenderer renderer) {
         ClientRegistry.bindTileEntitySpecialRenderer(tile, renderer);
     }
 
     public void registerEntityRenderers() {
         //RenderingRegistry.registerEntityRenderingHandler(EntityTelescope.class, new RenderEntityTelescope.Factory());
         //RenderingRegistry.registerEntityRenderingHandler(EntityGrindstone.class, new RenderEntityGrindstone.Factory());
-        RenderingRegistry.registerEntityRenderingHandler(EntityItemHighlighted.class, new RenderEntityItemHighlight.Factory());
-        RenderingRegistry.registerEntityRenderingHandler(EntityFlare.class, new RenderEntityFlare.Factory());
-        RenderingRegistry.registerEntityRenderingHandler(EntityStarburst.class, new RenderEntityStarburst.Factory());
-        RenderingRegistry.registerEntityRenderingHandler(EntityIlluminationSpark.class, new RenderEntityIlluminationSpark.Factory());
+        RenderingRegistry.registerEntityRenderingHandler(EntityItemHighlighted.class, new RenderEntityItemHighlight());
+        RenderingRegistry.registerEntityRenderingHandler(EntityFlare.class, new RenderEntityFlare());
+        RenderingRegistry.registerEntityRenderingHandler(EntityStarburst.class, new RenderEntityStarburst());
+        RenderingRegistry.registerEntityRenderingHandler(EntityIlluminationSpark.class, new RenderEntityIlluminationSpark());
     }
 
     public void registerDisplayInformationInit() {
-        ItemModelMesher imm = MeshRegisterHelper.getIMM();
-        for (RenderInfoItem modelEntry : itemRegister) {
-            if (modelEntry.variant) {
-                registerVariantName(modelEntry.item, modelEntry.name);
-            }
-            if(modelEntry.item instanceof IOBJItem) {
-                if(!((IOBJItem) modelEntry.item).hasOBJAsSubmodelDefinition()) {
-                    String[] models = ((IOBJItem) modelEntry.item).getOBJModelNames();
-                    if(models != null) {
-                        for (String modelDef : models) {
-                            ModelResourceLocation mrl = new ModelResourceLocation(AstralSorcery.MODID + ":obj/" + modelDef + ".obj", "inventory");
-                            ModelBakery.registerItemVariants(modelEntry.item, mrl);
-                            imm.register(modelEntry.item, modelEntry.metadata, mrl);
-                        }
-                    }
-                } else { //We expect a wrapper in the blockstates..
-                    ModelResourceLocation mrl = new ModelResourceLocation(AstralSorcery.MODID + ":obj/" + modelEntry.name, "inventory");
-                    ModelBakery.registerItemVariants(modelEntry.item, mrl);
-                    imm.register(modelEntry.item, modelEntry.metadata, mrl);
-                }
-            } else {
-                imm.register(modelEntry.item, modelEntry.metadata,
-                        new ModelResourceLocation(AstralSorcery.MODID + ":" + modelEntry.name, "inventory"));
-            }
-        }
-
-        registerPendingIBlockColorBlocks();
-        registerPendingIItemColorItems();
+//        ItemModelMesher imm = MeshRegisterHelper.getIMM();
+//        for (RenderInfoItem modelEntry : itemRegister) {
+//            if (modelEntry.variant) {
+//                registerVariantName(modelEntry.item, modelEntry.name);
+//            }
+//            if(modelEntry.item instanceof IOBJItem) {
+//                if(!((IOBJItem) modelEntry.item).hasOBJAsSubmodelDefinition()) {
+//                    String[] models = ((IOBJItem) modelEntry.item).getOBJModelNames();
+//                    if(models != null) {
+//                        for (String modelDef : models) {
+//                            ModelResourceLocation mrl = new ModelResourceLocation(AstralSorcery.MODID + ":obj/" + modelDef + ".obj", "inventory");
+//                            ModelBakery.registerItemVariants(modelEntry.item, mrl);
+//                            imm.register(modelEntry.item, modelEntry.metadata, mrl);
+//                        }
+//                    }
+//                } else { //We expect a wrapper in the blockstates..
+//                    ModelResourceLocation mrl = new ModelResourceLocation(AstralSorcery.MODID + ":obj/" + modelEntry.name, "inventory");
+//                    ModelBakery.registerItemVariants(modelEntry.item, mrl);
+//                    imm.register(modelEntry.item, modelEntry.metadata, mrl);
+//                }
+//            } else {
+//                imm.register(modelEntry.item, modelEntry.metadata,
+//                        new ModelResourceLocation(AstralSorcery.MODID + ":" + modelEntry.name, "inventory"));
+//            }
+//        }
+//
+//        registerPendingIBlockColorBlocks();
+//        registerPendingIItemColorItems();
 
         for (RenderInfoBlock modelEntry : blockRegister) {
             MeshRegisterHelper.registerBlock(modelEntry.block, modelEntry.metadata, AstralSorcery.MODID + ":" + modelEntry.name);
@@ -306,7 +312,8 @@ public class ClientProxy extends CommonProxy {
     }
 
     public void registerVariantName(Item item, String name) {
-        ModelBakery.registerItemVariants(item, new ResourceLocation(AstralSorcery.MODID, name));
+//        GameRegistry.registerItem(item, name, AstralSorcery.MODID);
+//        ModelBakery.registerItemVariants(item, new ResourceLocation(AstralSorcery.MODID, name));
     }
 
     public void registerBlockRender(Block block, int metadata, String name) {

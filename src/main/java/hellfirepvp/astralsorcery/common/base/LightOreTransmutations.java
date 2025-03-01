@@ -13,7 +13,6 @@ import hellfirepvp.astralsorcery.common.block.BlockCustomOre;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -38,16 +37,16 @@ public class LightOreTransmutations {
     private static List<Transmutation> localFallback = new LinkedList<>();
 
     public static void init() {
-        registerTransmutation(new Transmutation(Blocks.MAGMA.getDefaultState(),              Blocks.OBSIDIAN.getDefaultState(),     400.0D));
-        registerTransmutation(new Transmutation(Blocks.SAND.getDefaultState(),               Blocks.CLAY.getDefaultState(),         400.0D));
-        registerTransmutation(new Transmutation(Blocks.DIAMOND_ORE.getDefaultState(),        Blocks.EMERALD_ORE.getDefaultState(), 1000.0D));
-        registerTransmutation(new Transmutation(Blocks.NETHER_WART_BLOCK.getDefaultState(),  Blocks.SOUL_SAND.getDefaultState(),    200.0D));
-        registerTransmutation(new Transmutation(Blocks.SEA_LANTERN.getDefaultState(),        Blocks.LAPIS_BLOCK.getDefaultState(),  200.0D));
-        registerTransmutation(new Transmutation(Blocks.SANDSTONE.getDefaultState(),          Blocks.END_STONE.getDefaultState(),    200.0D));
-        registerTransmutation(new Transmutation(Blocks.NETHERRACK.getDefaultState(),         Blocks.NETHER_BRICK.getDefaultState(), 200.0D));
+//        registerTransmutation(new Transmutation(Blocks.MAGMA,Blocks.obsidian,400.0D));
+        registerTransmutation(new Transmutation(Blocks.sand,Blocks.clay,400.0D));
+        registerTransmutation(new Transmutation(Blocks.diamond_ore,  Blocks.emerald_ore, 1000.0D));
+        registerTransmutation(new Transmutation(Blocks.nether_wart,  Blocks.soul_sand, 200.0D));
+//        registerTransmutation(new Transmutation(Blocks.SEA_LANTERN.getDefaultState(),        Blocks.LAPIS_BLOCK.getDefaultState(),  200.0D));
+        registerTransmutation(new Transmutation(Blocks.sandstone,Blocks.end_stone, 200.0D));
+        registerTransmutation(new Transmutation(Blocks.netherrack,Blocks.nether_brick, 200.0D));
 
-        registerTransmutation(new Transmutation(Blocks.IRON_ORE.getDefaultState(), BlocksAS.customOre.getDefaultState().withProperty(BlockCustomOre.ORE_TYPE, BlockCustomOre.OreType.STARMETAL), 100));
-        registerTransmutation(new Transmutation(Blocks.PUMPKIN.getDefaultState(), Blocks.CAKE.getDefaultState(), new ItemStack(Blocks.PUMPKIN), new ItemStack(Items.CAKE), 600.0D));
+        registerTransmutation(new Transmutation(Blocks.iron_ore, BlocksAS.customOre, 100));
+        registerTransmutation(new Transmutation(Blocks.pumpkin, Blocks.cake, new ItemStack(Blocks.pumpkin), new ItemStack(Items.cake), 600.0D));
 
         cacheLocalFallback();
     }
@@ -67,8 +66,9 @@ public class LightOreTransmutations {
         Block b = Block.getBlockFromItem(outRemove.getItem());
         if(b != null) {
             for (Transmutation tr : registeredTransmutations) {
-                if(tr.output.getBlock().equals(b)) {
-                    if(!matchMeta || tr.output.getBlock().getMetaFromState(tr.output) == outRemove.getMetadata()) {
+                if(tr.output.equals(b)) {
+
+                    if(!matchMeta) { // || tr.output.getMeta(tr.output) == outRemove.getItemDamage()) {
                         registeredTransmutations.remove(tr);
                         return tr;
                     }
@@ -97,7 +97,7 @@ public class LightOreTransmutations {
             AstralSorcery.log.warn("Tried to register Transmutation with null input - Skipping!");
             return null;
         }
-        if(tr.input.getBlock().equals(Blocks.CRAFTING_TABLE)) {
+        if(tr.input.equals(Blocks.crafting_table)) {
             AstralSorcery.log.warn("Cannot register Transmutation of iron workbench -> something. By default occupied by general crafting which is handled differently.");
             return null;
         }
@@ -114,7 +114,7 @@ public class LightOreTransmutations {
     }
 
     @Nullable
-    public static Transmutation searchForTransmutation(IBlockState tryStateIn) {
+    public static Transmutation searchForTransmutation(Block tryStateIn) {
         for (Transmutation tr : registeredTransmutations) {
             if(tr.input.equals(tryStateIn)) return tr;
         }
@@ -126,8 +126,8 @@ public class LightOreTransmutations {
 
     public static class Transmutation {
 
-        public final IBlockState input;
-        public final IBlockState output;
+        public final Block input;
+        public final Block output;
         public final double cost;
 
         @Nullable
@@ -135,11 +135,11 @@ public class LightOreTransmutations {
         @Nullable
         public final ItemStack inStack;
 
-        public Transmutation(IBlockState input, IBlockState output, double cost) {
+        public Transmutation(Block input, Block output, double cost) {
             this(input, output, null, null, cost);
         }
 
-        public Transmutation(IBlockState input, IBlockState output, @Nullable ItemStack inputDisplay, @Nullable ItemStack outputDisplay, double cost) {
+        public Transmutation(Block input, Block output, @Nullable ItemStack inputDisplay, @Nullable ItemStack outputDisplay, double cost) {
             this.input = input;
             this.output = output;
             this.cost = cost;

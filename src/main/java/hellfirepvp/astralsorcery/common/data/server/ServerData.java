@@ -8,16 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.data.server;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.FMLLog;
 import hellfirepvp.astralsorcery.common.data.DataWorldSkyHandlers;
 import hellfirepvp.astralsorcery.common.data.SyncDataHolder;
 import hellfirepvp.astralsorcery.common.data.config.Config;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.storage.ISaveHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLLog;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -138,7 +139,7 @@ public class ServerData {
             NBTTagCompound cmp = CompressedStreamTools.read(dataFile);
             NBTTagList dimIds = cmp.getTagList("dimWhitelist", 3);
             for (int i = 0; i < dimIds.tagCount(); i++) {
-                fileRequestedDimWhitelists.add(dimIds.getIntAt(i));
+                fileRequestedDimWhitelists.add(NBTHelper.getIntAt(dimIds,i));
             }
             for (Integer configDim : Config.constellationSkyDimWhitelist) {
                 if(!fileRequestedDimWhitelists.contains(configDim)) {

@@ -8,12 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.util.data;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 /**
@@ -33,7 +33,7 @@ public class WorldBlockPos extends BlockPos {
     }
 
     public WorldBlockPos(TileEntity te) {
-        this(te.getWorld(), te.getPos());
+        this(te.getWorldObj(), new BlockPos(te.xCoord, te.yCoord, te.zCoord));
     }
 
     public static WorldBlockPos wrap(World world, BlockPos pos) {
@@ -44,8 +44,8 @@ public class WorldBlockPos extends BlockPos {
         return world;
     }
 
-    public IBlockState getStateAt() {
-        return world.getBlockState(this);
+    public Block getStateAt() {
+        return world.getBlock(this.getX(), this.getY(), this.getZ());
     }
 
     @Override
@@ -53,22 +53,22 @@ public class WorldBlockPos extends BlockPos {
         return wrap(world, super.add(x, y, z));
     }
 
-    @Override
-    public WorldBlockPos add(double x, double y, double z) {
-        return wrap(world, super.add(x, y, z));
-    }
-
-    @Override
-    public WorldBlockPos add(Vec3i vec) {
-        return wrap(world, super.add(vec));
-    }
+//    @Override
+//    public WorldBlockPos add(double x, double y, double z) {
+//        return wrap(world, super.add(x, y, z));
+//    }
+//
+//    @Override
+//    public WorldBlockPos add(Vec3 vec) {
+//        return wrap(world, super.add(vec));
+//    }
 
     public <T extends TileEntity> T getTileAt(Class<T> tileClass, boolean forceChunkLoad) {
         return MiscUtils.getTileAt(world, this, tileClass, forceChunkLoad);
     }
 
     public boolean isChunkLoaded() {
-        return MiscUtils.isChunkLoaded(world, new ChunkPos(this));
+        return MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(this.chunkX(), this.chunkZ()));
     }
 
     @Override

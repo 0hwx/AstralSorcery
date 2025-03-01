@@ -11,9 +11,11 @@ package hellfirepvp.astralsorcery.client.render.tile;
 import hellfirepvp.astralsorcery.common.tile.TileAttunementRelay;
 import hellfirepvp.astralsorcery.common.tile.base.TileInventoryBase;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -22,18 +24,19 @@ import net.minecraft.item.ItemStack;
  * Created by HellFirePvP
  * Date: 27.03.2017 / 18:07
  */
-public class TESRAttunementRelay extends TileEntitySpecialRenderer<TileAttunementRelay> {
+public class TESRAttunementRelay extends TileEntitySpecialRenderer {
 
     @Override
-    public void renderTileEntityAt(TileAttunementRelay te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileAttunementRelay te = (TileAttunementRelay) tile;
         TileInventoryBase.ItemHandlerTile iht = te.getInventoryHandler();
         if (iht == null) return;
         ItemStack in = iht.getStackInSlot(0);
         if (in == null) return;
-        EntityItem ei = new EntityItem(Minecraft.getMinecraft().world, 0, 0, 0, in);
+        EntityItem ei = new EntityItem(Minecraft.getMinecraft().theWorld, 0, 0, 0, in);
         ei.age = te.getTicksExisted();
         ei.hoverStart = 0;
-        Minecraft.getMinecraft().getRenderManager().doRenderEntity(ei, x + 0.5, y, z + 0.5, 0, partialTicks, true);
+        RenderItem.getInstance().doRender(ei, x + 0.5, y, z + 0.5, 0, partialTicks);
     }
 
 }

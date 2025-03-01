@@ -9,10 +9,10 @@
 package hellfirepvp.astralsorcery.client.util.obj;
 
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+//import net.minecraft.client.renderer.VertexBuffer;
+//import net.minecraft.client.renderer.vertex.VertexFormat;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 
@@ -41,20 +41,24 @@ public class GroupObject {
     }
 
     @SideOnly(Side.CLIENT)
-    public void render(VertexFormat vf) {
+    public void render() {
         if (faces.size() > 0) {
-            VertexBuffer vb = Tessellator.getInstance().getBuffer();
-            vb.begin(glDrawingMode, vf);
-            render(vb);
-            Tessellator.getInstance().draw();
+            Tessellator tessellator = Tessellator.instance;
+            tessellator.startDrawing(glDrawingMode);
+            render(tessellator);
+            tessellator.draw();
+//            VertexBuffer vb = Tessellator.getInstance().getBuffer();
+//            vb.begin(glDrawingMode, vf);
+//            render(vb);
+//            Tessellator.getInstance().draw();
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public void render(VertexBuffer vb) {
+    public void render(Tessellator tess) {
         if (faces.size() > 0) {
             for (Face face : faces) {
-                face.addFaceForRender(vb);
+                face.addFaceForRender(tess);
             }
         }
     }

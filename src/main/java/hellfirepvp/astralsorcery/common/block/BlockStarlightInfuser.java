@@ -11,21 +11,16 @@ package hellfirepvp.astralsorcery.common.block;
 import hellfirepvp.astralsorcery.common.block.network.BlockStarlightNetwork;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -39,52 +34,56 @@ import javax.annotation.Nullable;
  */
 public class BlockStarlightInfuser extends BlockStarlightNetwork{
 
-    private static final AxisAlignedBB box = new AxisAlignedBB(0D, 0D, 0D, 1D, 12D / 16D, 1D);
+    private static final AxisAlignedBB box = AxisAlignedBB.getBoundingBox(0D, 0D, 0D, 1D, 12D / 16D, 1D);
 
     public BlockStarlightInfuser() {
-        super(Material.ROCK, MapColor.QUARTZ);
+        super("BlockStarlightInfuser", Material.rock);
         setHardness(1.0F);
         setResistance(10.0F);
         setHarvestLevel("pickaxe", 1);
-        setSoundType(SoundType.STONE);
+//        setSoundType(SoundType.STONE);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
+        setBlockTextureName("astralsorcery:starlightinfuser");
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
         return box;
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if(!worldIn.isRemote && hand.equals(EnumHand.MAIN_HAND)) {
+    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
+        if(!worldIn.isRemote) {
+            ItemStack heldItem = player.getHeldItem();
+            BlockPos pos = new BlockPos(x, y, z);
             TileStarlightInfuser infuser = MiscUtils.getTileAt(worldIn, pos, TileStarlightInfuser.class, true);
             if(infuser != null) {
-                infuser.onInteract(playerIn, hand, heldItem);
+                infuser.onInteract(player, heldItem);
             }
         }
         return true;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube() {
         return false;
     }
 
     @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+    public void breakBlock(World worldIn, int x, int y, int z, Block blockBroken, int meta) {
         if(!worldIn.isRemote) {
+            BlockPos pos = new BlockPos(x, y, z);
             TileStarlightInfuser infuser = MiscUtils.getTileAt(worldIn, pos, TileStarlightInfuser.class, true);
             if(infuser != null && infuser.getInputStack() != null) {
                 ItemUtils.dropItemNaturally(worldIn,
-                        infuser.getPos().getX() + 0.5,
-                        infuser.getPos().getY() + 1,
-                        infuser.getPos().getZ() + 0.5,
+                        infuser.xCoord + 0.5,
+                        infuser.yCoord + 1,
+                        infuser.zCoord + 0.5,
                         infuser.getInputStack());
             }
         }
 
-        super.breakBlock(worldIn, pos, state);
+        super.breakBlock(worldIn, x, y, z, blockBroken, meta);
     }
 
     @Override
@@ -93,17 +92,17 @@ public class BlockStarlightInfuser extends BlockStarlightNetwork{
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state) {
+    public boolean hasTileEntity() {
         return true;
     }
 
-    @Override
-    public EnumBlockRenderType getRenderType(IBlockState state) {
-        return EnumBlockRenderType.MODEL;
-    }
+//    @Override
+//    public int getRenderType() {
+//        return -1;
+//    }
 
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state) {
+    public TileEntity createTileEntity(World world, int meta) {
         return new TileStarlightInfuser();
     }
 }

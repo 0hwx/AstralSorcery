@@ -11,7 +11,7 @@ package hellfirepvp.astralsorcery.client.util.camera;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -164,7 +164,7 @@ public class ClientCameraFlightHelper {
 
         @Override
         public void onStopTransforming() {
-            if(stopDelegate != null && Minecraft.getMinecraft().world != null) {
+            if(stopDelegate != null && Minecraft.getMinecraft().theWorld != null) {
                 stopDelegate.onCameraFlightStop();
             }
         }
@@ -186,7 +186,7 @@ public class ClientCameraFlightHelper {
                 if(accumulator >= ticks) {
                     int interp = current.ticksToGetThere - (accumulator - ticks);
                     int dstJump = current.ticksToGetThere;
-                    return current.dstPoint.clone().subtract(prev).divide(dstJump).multiply(MathHelper.clamp(interp, 1, dstJump)).add(prev);
+                    return current.dstPoint.clone().subtract(prev).divide(dstJump).multiply(MathHelper.clamp_int(interp, 1, dstJump)).add(prev);
                 } else {
                     acc = accumulator;
                 }

@@ -14,15 +14,14 @@ import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.tile.network.TileCollectorCrystal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.LootTableUtil;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.struct.StructureBlockArray;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -30,7 +29,7 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.Random;
 
-import static hellfirepvp.astralsorcery.common.block.BlockMarble.MARBLE_TYPE;
+
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -48,46 +47,59 @@ public class StructureDesertShrine extends StructureBlockArray {
     }
 
     @Override
-    public Map<BlockPos, IBlockState> placeInWorld(World world, BlockPos center) {
+    public Map<BlockPos, Block> placeInWorld(World world, BlockPos center) {
         center = center.down();
-        Map<BlockPos, IBlockState> result = super.placeInWorld(world, center);
+        Map<BlockPos, Block> result = super.placeInWorld(world, center);
         placeSand(world, center);
         return result;
     }
 
     @Override
-    public Map<BlockPos, IBlockState> placeInWorld(World world, BlockPos center, PastPlaceProcessor processor) {
+    public Map<BlockPos, Block> placeInWorld(World world, BlockPos center, PastPlaceProcessor processor) {
         center = center.down();
-        Map<BlockPos, IBlockState> result = super.placeInWorld(world, center, processor);
+        Map<BlockPos, Block> result = super.placeInWorld(world, center, processor);
         placeSand(world, center);
         return result;
     }
 
     private void placeSand(World world, BlockPos center) {
         Block marble = BlocksAS.blockMarble;
-        IBlockState mch = marble.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
-        IBlockState mpl = marble.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
+        Block mch = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
+        Block mpl = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
 
         placeBlockCube(world, center, -4, 1, -4, 4, 1, 4);
 
-        world.setBlockState(center.add(0, 1, 0), mpl);
-        world.setBlockState(center.add(0, 2, 0), mch);
+        BlockPos at = center.add(0, 1, 0);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mpl);
+        at = center.add(0, 2, 0);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mch);
+        at = center.add(3, 1, 3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mpl);
+        at = center.add(3, 2, 3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mpl);
+        at = center.add(3, 3, 3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mch);
 
-        world.setBlockState(center.add(3, 1, 3), mpl);
-        world.setBlockState(center.add(3, 2, 3), mpl);
-        world.setBlockState(center.add(3, 3, 3), mch);
+        at = center.add(-3, 1, 3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mpl);
+        at = center.add(-3, 2, 3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mpl);
+        at = center.add(-3, 3, 3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mch);
 
-        world.setBlockState(center.add(-3, 1,  3), mpl);
-        world.setBlockState(center.add(-3, 2,  3), mpl);
-        world.setBlockState(center.add(-3, 3,  3), mch);
+        at = center.add(-3, 1, -3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mpl);
+        at = center.add(-3, 2, -3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mpl);
+        at = center.add(-3, 3, -3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mch);
 
-        world.setBlockState(center.add(-3, 1, -3), mpl);
-        world.setBlockState(center.add(-3, 2, -3), mpl);
-        world.setBlockState(center.add(-3, 3, -3), mch);
-
-        world.setBlockState(center.add(3, 1, -3), mpl);
-        world.setBlockState(center.add(3, 2, -3), mpl);
-        world.setBlockState(center.add(3, 3, -3), mch);
+        at = center.add(3, 1, -3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mpl);
+        at = center.add(3, 2, -3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mpl);
+        at = center.add(3, 3, -3);
+        world.setBlock(at.getX(), at.getY(), at.getZ(), mch);
 
         topBlockWithOffset(3, 4, 3, world, center, 1F);
         topBlockWithOffset(-3, 4,  3, world, center, 1F);
@@ -169,9 +181,9 @@ public class StructureDesertShrine extends StructureBlockArray {
 
     private void topBlockWithOffset(int x, int y, int z, World world, BlockPos center, double chance) {
         if(rand.nextFloat() <= chance) {
-            BlockPos at = center.add(x, y, z);
-            IBlockState top = world.getBiome(at).topBlock;
-            world.setBlockState(at, top);
+//            BlockPos at = center.add(x, y, z);
+//            Block top = world.getBiomeGenForCoords(at.getX(), at.getZ()).topBlock;
+//            world.setBlock(at.getX(), at.getY(), at.getZ(), top);
         }
     }
 
@@ -201,26 +213,26 @@ public class StructureDesertShrine extends StructureBlockArray {
             hz = oz;
         }
 
-        for (int xx = lx; xx <= hx; xx++) {
-            for (int zz = lz; zz <= hz; zz++) {
-                for (int yy = ly; yy <= hy; yy++) {
-                    BlockPos at = offset.add(xx, yy, zz);
-                    world.setBlockState(at, world.getBiome(at).topBlock);
-                }
-            }
-        }
+//        for (int xx = lx; xx <= hx; xx++) {
+//            for (int zz = lz; zz <= hz; zz++) {
+//                for (int yy = ly; yy <= hy; yy++) {
+//                    BlockPos at = offset.add(xx, yy, zz);
+//                    world.setBlock(at.getX(), at.getY(), at.getZ(), world.getBiomeGenForCoords(at.getX(), at.getZ()).topBlock);
+//                }
+//            }
+//        }
     }
 
     private void load() {
         Block marble = BlocksAS.blockMarble;
 
-        IBlockState mch = marble.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
-        IBlockState mbr = marble.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.BRICKS);
-        IBlockState mrw = marble.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW);
-        IBlockState mar = marble.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
-        IBlockState mpl = marble.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
-        IBlockState air = Blocks.AIR.getDefaultState();
-        IBlockState sand = Blocks.SAND.getDefaultState();
+        Block mch = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
+        Block mbr = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.BRICKS);
+        Block mrw = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW);
+        Block mar = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
+        Block mpl = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
+        Block air = Blocks.air;
+        Block sand = Blocks.sand;
 
         addBlockCube(mrw, -4, 0, -3, 4, -7, 3);
         addBlockCube(mrw, -3, 0, -4, 3, -7, 4);
@@ -252,10 +264,10 @@ public class StructureDesertShrine extends StructureBlockArray {
         addBlock(2, -6, -2, mrw);
         addBlock( 2, -6,  2, mrw);
 
-        addBlock(-3, -3,  0, Blocks.WATER.getDefaultState());
-        addBlock( 3, -3,  0, Blocks.WATER.getDefaultState());
-        addBlock( 0, -3, -3, Blocks.WATER.getDefaultState());
-        addBlock( 0, -3,  3, Blocks.WATER.getDefaultState());
+        addBlock(-3, -3,  0, Blocks.water);
+        addBlock( 3, -3,  0, Blocks.water);
+        addBlock( 0, -3, -3, Blocks.water);
+        addBlock( 0, -3,  3, Blocks.water);
 
         TileEntityCallback lootCallback = new TileEntityCallback() {
             @Override
@@ -266,15 +278,15 @@ public class StructureDesertShrine extends StructureBlockArray {
             @Override
             public void onPlace(IBlockAccess access, BlockPos at, TileEntity te) {
                 if(te instanceof TileEntityChest) {
-                    ((TileEntityChest) te).setLootTable(LootTableUtil.LOOT_TABLE_SHRINE, STATIC_RAND.nextLong());
+//                    ((TileEntityChest) te).setLootTable(LootTableUtil.LOOT_TABLE_SHRINE, STATIC_RAND.nextLong());
                 }
             }
         };
 
-        addBlock(2, -5, -2, Blocks.CHEST.getDefaultState());
+        addBlock(2, -5, -2, Blocks.chest);
         addTileCallback(new BlockPos(2, -5, -2), lootCallback);
 
-        addBlock(0, -3, 0, BlocksAS.collectorCrystal.getDefaultState());
+        addBlock(0, -3, 0, BlocksAS.collectorCrystal);
         addTileCallback(new BlockPos(0, -3, 0), new TileEntityCallback() {
             @Override
             public boolean isApplicable(TileEntity te) {

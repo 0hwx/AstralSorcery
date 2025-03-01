@@ -2,7 +2,6 @@ package hellfirepvp.astralsorcery.common.enchantment;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
-import net.minecraft.inventory.EntityEquipmentSlot;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -13,8 +12,8 @@ import net.minecraft.inventory.EntityEquipmentSlot;
  */
 public class EnchantmentBase extends Enchantment {
 
-    protected EnchantmentBase(String unlocName, Rarity rarityIn, EnumEnchantmentType typeIn, EntityEquipmentSlot... slots) {
-        super(rarityIn, typeIn, slots);
+    protected EnchantmentBase(String unlocName, int Id, int rarityIn, EnumEnchantmentType typeIn) {
+        super(Id, rarityIn, typeIn);
         setName(unlocName);
     }
 

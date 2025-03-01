@@ -11,9 +11,8 @@ package hellfirepvp.astralsorcery.common.starlight.network;
 import hellfirepvp.astralsorcery.common.block.network.IBlockStarlightRecipient;
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.starlight.network.handlers.BlockTransmutationHandler;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -34,11 +33,11 @@ public class StarlightNetworkRegistry {
     private static List<IStarlightBlockHandler> dynamicBlockHandlers = new LinkedList<>();
 
     @Nullable
-    public static IStarlightBlockHandler getStarlightHandler(World world, BlockPos pos, IBlockState state) {
-        Block b = state.getBlock();
+    public static IStarlightBlockHandler getStarlightHandler(World world, BlockPos pos, int meta) {
+        Block b = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
         if(b instanceof IBlockStarlightRecipient) return null;
         for (IStarlightBlockHandler handler : dynamicBlockHandlers) {
-            if(handler.isApplicable(world, pos, state)) return handler;
+            if(handler.isApplicable(world, pos, b)) return handler;
         }
         return null;
     }
@@ -55,7 +54,7 @@ public class StarlightNetworkRegistry {
     //This is NOT suggested as "first choice" - please implement IBlockStarlightRecipient instead if possible.
     public static interface IStarlightBlockHandler {
 
-        public boolean isApplicable(World world, BlockPos pos, IBlockState state);
+        public boolean isApplicable(World world, BlockPos pos, Block block);
 
         public void receiveStarlight(World world, Random rand, BlockPos pos, @Nullable IWeakConstellation starlightType, double amount);
 

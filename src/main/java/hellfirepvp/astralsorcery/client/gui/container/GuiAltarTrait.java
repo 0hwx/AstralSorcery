@@ -70,8 +70,8 @@ public class GuiAltarTrait extends GuiAltarBase {
             GL11.glTranslated(190, 35, 0);
             GL11.glScaled(2.5, 2.5, 2.5);
 
-            itemRender.renderItemAndEffectIntoGUI(mc.player, out, 0, 0);
-            itemRender.renderItemOverlayIntoGUI(fontRendererObj, out, 0, 0, null);
+            itemRender.renderItemAndEffectIntoGUI(fontRendererObj, mc.renderEngine, out, 0, 0);
+            itemRender.renderItemOverlayIntoGUI(fontRendererObj, mc.renderEngine, out, 0, 0, null);
 
             GL11.glPopMatrix();
             GL11.glPopAttrib();
@@ -82,7 +82,7 @@ public class GuiAltarTrait extends GuiAltarBase {
             TextureHelper.refreshTextureBindState();
         }
 
-        float pTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+        float pTicks = Minecraft.getMinecraft().timer.renderPartialTicks;
 
 
         RenderAstralSkybox.TEX_STAR_1.bind();
@@ -98,7 +98,7 @@ public class GuiAltarTrait extends GuiAltarBase {
             int y = rand.nextInt(54);
 
             GL11.glPushMatrix();
-            float brightness = 0.3F + (RenderConstellation.stdFlicker(Minecraft.getMinecraft().world.getWorldTime(), pTicks, 10 + rand.nextInt(20))) * 0.6F;
+            float brightness = 0.3F + (RenderConstellation.stdFlicker(Minecraft.getMinecraft().theWorld.getWorldTime(), pTicks, 10 + rand.nextInt(20))) * 0.6F;
             GL11.glColor4f(brightness, brightness, brightness, brightness);
             drawRect(15 + x, 39 + y, 5, 5);
             GL11.glColor4f(1, 1, 1, 1);
@@ -109,7 +109,7 @@ public class GuiAltarTrait extends GuiAltarBase {
         TextureHelper.refreshTextureBindState();
 
         IConstellation c = containerAltarBase.tileAltar.getFocusedConstellation();
-        if(c != null && containerAltarBase.tileAltar.getMultiblockState() && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
+        if(c != null && containerAltarBase.tileAltar.getMultBlock() && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
             rand.setSeed(0x61FF25A5B7C24109L);
 
             GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -125,7 +125,7 @@ public class GuiAltarTrait extends GuiAltarBase {
             RenderConstellation.renderConstellationIntoGUI(c, 16, 41, zLevel, 58, 58, 2, new RenderConstellation.BrightnessFunction() {
                 @Override
                 public float getBrightness() {
-                    return RenderConstellation.conCFlicker(Minecraft.getMinecraft().world.getTotalWorldTime(), pTicks, 5 + rand.nextInt(5));
+                    return RenderConstellation.conCFlicker(Minecraft.getMinecraft().theWorld.getTotalWorldTime(), pTicks, 5 + rand.nextInt(5));
                 }
             }, true, false);
 
@@ -151,7 +151,7 @@ public class GuiAltarTrait extends GuiAltarBase {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         float percFilled;
-        if(containerAltarBase.tileAltar.getMultiblockState()) {
+        if(containerAltarBase.tileAltar.getMultBlock()) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             percFilled = containerAltarBase.tileAltar.getAmbientStarlightPercent();
         } else {

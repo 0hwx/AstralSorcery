@@ -46,28 +46,28 @@ public class RenderSkybox extends IRenderHandler {
 
         //if(true) return;
 
-        if (Config.weakSkyRendersWhitelist.contains(world.provider.getDimension())) {
+        if (Config.weakSkyRendersWhitelist.contains(world.provider.dimensionId)) {
             if(otherSkyRenderer != null) {
                 otherSkyRenderer.render(partialTicks, world, mc);
             } else {
                 RenderGlobal rg = Minecraft.getMinecraft().renderGlobal;
                 //Make vanilla guess
-                if(world.provider.getDimensionType().getId() == 1) {
-                    rg.renderSkyEnd();
-                } else if(Minecraft.getMinecraft().world.provider.isSurfaceWorld()) {
+                if(world.provider.dimensionId == 1) {
+//                    rg.renderSky(partialTicks);
+                } else if(Minecraft.getMinecraft().theWorld.provider.isSurfaceWorld()) {
                     IRenderHandler render = world.provider.getSkyRenderer();
                     world.provider.setSkyRenderer(null);
 
                     if(Minecraft.getMinecraft().gameSettings.anaglyph) {
                         EntityRenderer.anaglyphField = 0;
                         GL11.glColorMask(false, true, true, false);
-                        rg.renderSky(partialTicks,0);
+                        rg.renderSky(partialTicks);
                         EntityRenderer.anaglyphField = 1;
                         GL11.glColorMask(true, false, false, false);
-                        rg.renderSky(partialTicks,1);
+                        rg.renderSky(partialTicks);
                         GL11.glColorMask(true, true, true, false);
                     } else {
-                        rg.renderSky(partialTicks, 2);
+                        rg.renderSky(partialTicks);
                     }
 
                     world.provider.setSkyRenderer(render);

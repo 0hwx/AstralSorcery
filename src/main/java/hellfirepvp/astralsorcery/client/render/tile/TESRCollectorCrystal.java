@@ -12,7 +12,6 @@ import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.models.obj.OBJModelLibrary;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
-import hellfirepvp.astralsorcery.client.util.item.IItemRenderer;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
@@ -24,7 +23,9 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
+import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -37,7 +38,7 @@ import java.util.Random;
  * Created by HellFirePvP
  * Date: 01.08.2016 / 13:42
  */
-public class TESRCollectorCrystal extends TileEntitySpecialRenderer<TileCollectorCrystal> implements IItemRenderer {
+public class TESRCollectorCrystal extends TileEntitySpecialRenderer implements IItemRenderer {
 
     private static final Random rand = new Random();
 
@@ -47,13 +48,14 @@ public class TESRCollectorCrystal extends TileEntitySpecialRenderer<TileCollecto
     private static int dlCrystal = -1;
 
     @Override
-    public void renderTileEntityAt(TileCollectorCrystal te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileCollectorCrystal te = (TileCollectorCrystal) tile;
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         BlockCollectorCrystalBase.CollectorCrystalType type = te.getType();
         long sBase = 1553015L;
-        sBase ^= (long) te.getPos().getX();
-        sBase ^= (long) te.getPos().getY();
-        sBase ^= (long) te.getPos().getZ();
+        sBase ^= (long) te.xCoord;
+        sBase ^= (long) te.yCoord;
+        sBase ^= (long) te.zCoord;
         Color c = type == null ? BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL.displayColor : type.displayColor;
         if(te.isEnhanced()) {
             RenderingUtils.renderLightRayEffects(x + 0.5, y + 0.5, z + 0.5, c, sBase, ClientScheduler.getClientTick(), 20, 1.4F, 50, 25);
@@ -72,7 +74,7 @@ public class TESRCollectorCrystal extends TileEntitySpecialRenderer<TileCollecto
     public static void renderCrystal(boolean isCelestial, boolean bounce) {
         GL11.glPushMatrix();
         if(bounce) {
-            int t = (int) (Minecraft.getMinecraft().world.getTotalWorldTime() & 255);
+            int t = (int) (Minecraft.getMinecraft().theWorld.getTotalWorldTime() & 255);
             float perc = (256 - t) / 256F;
             perc = MathHelper.cos((float) (perc * 2 * Math.PI));
             GL11.glTranslated(0, 0.03 * perc, 0);
@@ -95,7 +97,7 @@ public class TESRCollectorCrystal extends TileEntitySpecialRenderer<TileCollecto
         if(dlCrystal == -1) {
             dlCrystal = GLAllocation.generateDisplayLists(1);
             GL11.glNewList(dlCrystal, GL11.GL_COMPILE);
-            OBJModelLibrary.bigCrystal.renderAll(true);
+            OBJModelLibrary.bigCrystal.renderAll();
             GL11.glEndList();
         }
         GL11.glCallList(dlCrystal);
@@ -103,13 +105,41 @@ public class TESRCollectorCrystal extends TileEntitySpecialRenderer<TileCollecto
         GL11.glPopMatrix();
     }
 
+//    @Override
+//    public void render(ItemStack stack) {
+//        GL11.glPushMatrix();
+//        GL11.glTranslated(0.5, 0, 0.5);
+//        RenderHelper.disableStandardItemLighting();
+//        BlockCollectorCrystalBase.CollectorCrystalType type = ItemCollectorCrystal.getType(stack);
+//        switch (type) {
+//            case ROCK_CRYSTAL:
+//                renderTile(texWhite);
+//                break;
+//            case CELESTIAL_CRYSTAL:
+//                renderTile(texBlue);
+//                break;
+//        }
+//        GL11.glPopMatrix();
+//        RenderHelper.enableStandardItemLighting();
+//    }
+
     @Override
-    public void render(ItemStack stack) {
+    public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+        return true;
+    }
+
+    @Override
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         GL11.glPushMatrix();
         GL11.glTranslated(0.5, 0, 0.5);
         RenderHelper.disableStandardItemLighting();
-        BlockCollectorCrystalBase.CollectorCrystalType type = ItemCollectorCrystal.getType(stack);
-        switch (type) {
+        BlockCollectorCrystalBase.CollectorCrystalType myType = ItemCollectorCrystal.getType(item);
+        switch (myType) {
             case ROCK_CRYSTAL:
                 renderTile(texWhite);
                 break;
@@ -120,5 +150,4 @@ public class TESRCollectorCrystal extends TileEntitySpecialRenderer<TileCollecto
         GL11.glPopMatrix();
         RenderHelper.enableStandardItemLighting();
     }
-
 }

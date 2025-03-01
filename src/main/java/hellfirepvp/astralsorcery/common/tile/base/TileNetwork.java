@@ -25,12 +25,12 @@ public abstract class TileNetwork extends TileEntityTick {
 
     @Override
     protected void onFirstTick() {
-        if(world.isRemote) return;
+        if(worldObj.isRemote) return;
         TransmissionNetworkHelper.informNetworkTilePlacement(this);
     }
 
     public void onBreak() {
-        if(world.isRemote) return;
+        if(worldObj.isRemote) return;
         TransmissionNetworkHelper.informNetworkTileRemoval(this);
     }
 

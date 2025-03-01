@@ -3,7 +3,7 @@ package hellfirepvp.astralsorcery.client.effect.controller;
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 
 import java.util.Random;
 

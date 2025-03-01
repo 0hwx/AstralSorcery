@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.config.Configuration;
 
 /**
@@ -54,7 +54,7 @@ public class PerkDamageReflect extends ConstellationPerk {
         reflectPerc = cfg.getFloat(getKey() + "ReflectPercentage", getConfigurationSection(), reflectPerc, 0.001F, 1F, "Defines the percentage of damage that the attacker will also take upon attacking the player.");
 
         reflectChance = Math.max(1, reflectChance);
-        reflectPerc = MathHelper.clamp(reflectPerc, 0.001F, 1F);
+        reflectPerc = MathHelper.clamp_float(reflectPerc, 0.001F, 1F);
     }
 
 }

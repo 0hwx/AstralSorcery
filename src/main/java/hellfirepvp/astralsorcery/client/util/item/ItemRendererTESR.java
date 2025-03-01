@@ -21,17 +21,17 @@ import net.minecraft.tileentity.TileEntity;
  */
 public class ItemRendererTESR<T extends TileEntity> implements IItemRenderer {
 
-    private final TileEntitySpecialRenderer<T> tesr;
+    private final TileEntitySpecialRenderer tesr;
     private final T tile;
 
-    public ItemRendererTESR(TileEntitySpecialRenderer<T> tesr, T tile) {
+    public ItemRendererTESR(TileEntitySpecialRenderer tesr, T tile) {
         this.tesr = tesr;
         this.tile = tile;
     }
 
     @Override
     public void render(ItemStack stack) {
-        tesr.renderTileEntityAt(tile, 0, 0, 0, 0, 0);
+        tesr.renderTileEntityAt(tile, 0, 0, 0, 0);
     }
 
 }

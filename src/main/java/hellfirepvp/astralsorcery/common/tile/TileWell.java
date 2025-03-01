@@ -26,6 +26,7 @@ import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionRece
 import hellfirepvp.astralsorcery.common.starlight.transmission.base.SimpleTransmissionReceiver;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.TransmissionClassRegistry;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.block.PrecisionSingleFluidCapabilityTank;
 import hellfirepvp.astralsorcery.common.util.block.SimpleSingleFluidCapabilityTank;
@@ -33,17 +34,15 @@ import hellfirepvp.astralsorcery.common.util.SoundHelper;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,6 +60,7 @@ public class TileWell extends TileReceiverBaseInventory {
 
     private static final Random rand = new Random();
     private static final int MAX_CAPACITY = 2000;
+    private static final Log log = LogFactory.getLog(TileWell.class);
 
     private WellLiquefaction.LiquefactionEntry running = null;
 
@@ -68,8 +68,8 @@ public class TileWell extends TileReceiverBaseInventory {
     private double starlightBuffer = 0;
 
     public TileWell() {
-        super(1, EnumFacing.UP);
-        this.tank = new PrecisionSingleFluidCapabilityTank(MAX_CAPACITY, EnumFacing.DOWN);
+        super(1, ForgeDirection.UP);
+        this.tank = new PrecisionSingleFluidCapabilityTank(MAX_CAPACITY, ForgeDirection.DOWN);
         this.tank.setAllowInput(false);
     }
 
@@ -79,13 +79,14 @@ public class TileWell extends TileReceiverBaseInventory {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
-        if(!world.isRemote) {
-            if(world.canSeeSky(getPos())) {
-                double sbDayDistribution = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(world);
-                int yLevel = getPos().getY();
+        if(!worldObj.isRemote) {
+            BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
+            if(worldObj.canBlockSeeTheSky(pos.getX(), pos.getY(), pos.getZ())) {
+                double sbDayDistribution = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(worldObj);
+                int yLevel = pos.getY();
                 float dstr;
                 if(yLevel > 120) {
                     dstr = 1F;
@@ -98,7 +99,7 @@ public class TileWell extends TileReceiverBaseInventory {
 
             ItemStack stack = getInventoryHandler().getStackInSlot(0);
             if(stack != null) {
-                if(!world.isAirBlock(getPos().up())) {
+                if(!worldObj.isAirBlock(pos.up().getX(), pos.up().getY(), pos.up().getZ())) {
                     breakCatalyst();
                 } else {
                     running = WellLiquefaction.getLiquefactionEntry(stack);
@@ -111,13 +112,13 @@ public class TileWell extends TileReceiverBaseInventory {
                             }
                             fillAndDiscardRest(running, gain);
                             if(rand.nextInt(2000) == 0) {
-                                EntityFlare.spawnAmbient(world, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
+                                EntityFlare.spawnAmbient(worldObj, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
                             }
                         }
                         starlightBuffer = 0;
                         if(rand.nextInt(1 + (int) (1000 * running.shatterMultiplier)) == 0) {
                             breakCatalyst();
-                            EntityFlare.spawnAmbient(world, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
+                            EntityFlare.spawnAmbient(worldObj, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
                         }
                     }
                 }
@@ -145,16 +146,17 @@ public class TileWell extends TileReceiverBaseInventory {
     }
 
     public void breakCatalyst() {
-        getInventoryHandler().setStackInSlot(0, null);
-        PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.WELL_CATALYST_BREAK, getPos().getX(), getPos().getY(), getPos().getZ());
-        PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(world, getPos(), 32));
-        SoundHelper.playSoundAround(SoundEvents.BLOCK_GLASS_BREAK, getWorld(), getPos(), 1F, 1F);
+        getInventoryHandler().setInventorySlotContents(0, null);
+        BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
+        PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.WELL_CATALYST_BREAK, pos.getX(), pos.getY(), pos.getZ());
+        PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(worldObj, pos, 32));
+//        SoundHelper.playSoundAround(SoundEvents.BLOCK_GLASS_BREAK, getWorldObj(), pos, 1F, 1F);
     }
 
     @SideOnly(Side.CLIENT)
     private void doStarlightEffect() {
         if(rand.nextInt(3) == 0) {
-            EntityFXFacingParticle p = EffectHelper.genericFlareParticle(getPos().getX() + 0.5, getPos().getY() + 0.4, getPos().getZ() + 0.5);
+            EntityFXFacingParticle p = EffectHelper.genericFlareParticle(xCoord + 0.5, yCoord + 0.4, zCoord + 0.5);
             p.offset(0, getPercFilled() * 0.5, 0);
             p.offset(rand.nextFloat() * 0.35 * (rand.nextBoolean() ? 1 : -1), 0, rand.nextFloat() * 0.35 * (rand.nextBoolean() ? 1 : -1));
             p.scale(0.16F).gravity(0.006).setColor(BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL.displayColor);
@@ -164,10 +166,10 @@ public class TileWell extends TileReceiverBaseInventory {
     @SideOnly(Side.CLIENT)
     private void doCatalystEffect(Color color) {
         if(rand.nextInt(6) == 0) {
-            Entity rView = Minecraft.getMinecraft().getRenderViewEntity();
-            if(rView == null) rView = Minecraft.getMinecraft().player;
-            if(rView.getDistanceSq(getPos()) > Config.maxEffectRenderDistanceSq) return;
-            EntityFXFacingParticle p = EffectHelper.genericFlareParticle(getPos().getX() + 0.5, getPos().getY() + 1.3, getPos().getZ() + 0.5);
+            Entity rView = Minecraft.getMinecraft().renderViewEntity;
+            if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
+            if(rView.getDistanceSq(xCoord, yCoord, zCoord) > Config.maxEffectRenderDistanceSq) return;
+            EntityFXFacingParticle p = EffectHelper.genericFlareParticle(xCoord + 0.5, yCoord + 1.3, zCoord + 0.5);
             p.offset(rand.nextFloat() * 0.1 * (rand.nextBoolean() ? 1 : -1), rand.nextFloat() * 0.1, rand.nextFloat() * 0.1 * (rand.nextBoolean() ? 1 : -1));
             p.scale(0.2F).gravity(-0.004).setAlphaMultiplier(1F).setColor(color);
         }
@@ -227,21 +229,21 @@ public class TileWell extends TileReceiverBaseInventory {
     public void readCustomNBT(NBTTagCompound compound) {
         super.readCustomNBT(compound);
         this.tank = PrecisionSingleFluidCapabilityTank.deserialize(compound.getCompoundTag("tank"));
-        if(!tank.hasCapability(EnumFacing.DOWN)) {
-            tank.accessibleSides.add(EnumFacing.DOWN);
+        if(!tank.hasCapability(ForgeDirection.DOWN)) {
+            tank.accessibleSides.add(ForgeDirection.DOWN);
         }
     }
 
-    @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && tank.hasCapability(facing);
-    }
-
-    @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-        if (capability != CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || !hasCapability(capability, facing)) return null;
-        return (T) tank.getCapability(facing);
-    }
+//    @Override
+//    public boolean hasCapability(Capability<?> capability, ForgeDirection facing) {
+//        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && tank.hasCapability(facing);
+//    }
+//
+//    @Override
+//    public <T> T getCapability(Capability<T> capability, ForgeDirection facing) {
+//        if (capability != CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || !hasCapability(capability, facing)) return null;
+//        return (T) tank.getCapability(facing);
+//    }
 
     public static class CatalystItemHandler extends ItemHandlerTileFiltered {
 
@@ -250,7 +252,7 @@ public class TileWell extends TileReceiverBaseInventory {
         }
 
         @Override
-        public int getStackLimit(int slot, ItemStack stack) {
+        public int getInventoryStackLimit() {
             return 1;
         }
 

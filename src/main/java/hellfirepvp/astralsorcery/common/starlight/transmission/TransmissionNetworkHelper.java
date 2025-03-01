@@ -16,7 +16,7 @@ import hellfirepvp.astralsorcery.common.starlight.network.StarlightTransmissionH
 import hellfirepvp.astralsorcery.common.starlight.network.StarlightUpdateHandler;
 import hellfirepvp.astralsorcery.common.starlight.network.TransmissionWorldHandler;
 import hellfirepvp.astralsorcery.common.tile.base.TileNetwork;
-import net.minecraft.util.math.BlockPos;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -31,6 +31,7 @@ import java.util.List;
 public class TransmissionNetworkHelper {
 
     private static final double MAX_TRANSMISSION_DIST = 16; //Rip.
+
 
     public static boolean hasTransmissionLink(IStarlightTransmission tr, BlockPos end) {
         IPrismTransmissionNode node = tr.getNode();
@@ -118,29 +119,30 @@ public class TransmissionNetworkHelper {
     }
 
     public static void informNetworkTilePlacement(TileNetwork tileNetwork) {
-        WorldNetworkHandler handler = WorldNetworkHandler.getNetworkHandler(tileNetwork.getWorld());
+        WorldNetworkHandler handler = WorldNetworkHandler.getNetworkHandler(tileNetwork.getWorldObj());
+        BlockPos pos = new BlockPos(tileNetwork.xCoord, tileNetwork.yCoord, tileNetwork.zCoord);
         if(tileNetwork instanceof IStarlightSource) {
             handler.addNewSourceTile((IStarlightSource) tileNetwork);
         } else if(tileNetwork instanceof IStarlightTransmission) {
             handler.addTransmissionTile((IStarlightTransmission) tileNetwork);
         } else {
-            AstralSorcery.log.warn("Placed a network tile that's not transmission/receiver or source! At: dim=" + tileNetwork.getWorld().provider.getDimension() + ", pos=" + tileNetwork.getPos());
+            AstralSorcery.log.warn("Placed a network tile that's not transmission/receiver or source! At: dim=" + tileNetwork.getWorldObj().provider.dimensionId + ", pos=" + pos);
         }
 
-        IPrismTransmissionNode node = handler.getTransmissionNode(tileNetwork.getPos());
+        IPrismTransmissionNode node = handler.getTransmissionNode(pos);
         if(node == null) {
-            AstralSorcery.log.warn("Placed a network tile that didn't produce a network node! At: dim=" + tileNetwork.getWorld().provider.getDimension() + ", pos=" + tileNetwork.getPos());
+            AstralSorcery.log.warn("Placed a network tile that didn't produce a network node! At: dim=" + tileNetwork.getWorldObj().provider.dimensionId + ", pos=" + pos);
         } else if(node.needsUpdate()) {
-            StarlightUpdateHandler.getInstance().addNode(tileNetwork.getWorld(), node);
+            StarlightUpdateHandler.getInstance().addNode(tileNetwork.getWorldObj(), node);
         }
     }
 
     public static void informNetworkTileRemoval(TileNetwork tileNetwork) {
-        WorldNetworkHandler handler = WorldNetworkHandler.getNetworkHandler(tileNetwork.getWorld());
-
-        IPrismTransmissionNode node = handler.getTransmissionNode(tileNetwork.getPos());
+        WorldNetworkHandler handler = WorldNetworkHandler.getNetworkHandler(tileNetwork.getWorldObj());
+        BlockPos pos = new BlockPos(tileNetwork.xCoord, tileNetwork.yCoord, tileNetwork.zCoord);
+        IPrismTransmissionNode node = handler.getTransmissionNode(pos);
         if(node == null) {
-            AstralSorcery.log.warn("Tried to get a network node at a TileEntity, but didn't find one! At: dim=" + tileNetwork.getWorld().provider.getDimension() + ", pos=" + tileNetwork.getPos());
+            AstralSorcery.log.warn("Tried to get a network node at a TileEntity, but didn't find one! At: dim=" + tileNetwork.getWorldObj().provider.dimensionId + ", pos=" + pos);
         } else {
             StarlightUpdateHandler.getInstance().removeNode(((IStarlightTransmission) tileNetwork).getTrWorld(), node);
         }
@@ -150,7 +152,7 @@ public class TransmissionNetworkHelper {
         } else if(tileNetwork instanceof IStarlightTransmission) {
             handler.removeTransmission((IStarlightTransmission) tileNetwork);
         } else {
-            AstralSorcery.log.warn("Removed a network tile that's not transmission/receiver or source! At: dim=" + tileNetwork.getWorld().provider.getDimension() + ", pos=" + tileNetwork.getPos());
+            AstralSorcery.log.warn("Removed a network tile that's not transmission/receiver or source! At: dim=" + tileNetwork.getWorldObj().provider.dimensionId + ", pos=" + pos);
         }
     }
 

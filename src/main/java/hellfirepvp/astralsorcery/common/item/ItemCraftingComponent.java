@@ -8,17 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.entities.EntityItemStardust;
 import hellfirepvp.astralsorcery.common.item.base.IGrindable;
 import hellfirepvp.astralsorcery.common.item.base.IItemVariants;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -34,10 +38,16 @@ import java.util.Random;
  */
 public class ItemCraftingComponent extends Item implements IGrindable, IItemVariants {
 
+    private IIcon[] icons = new IIcon[MetaType.values().length];
+
     public ItemCraftingComponent() {
         setMaxStackSize(64);
         setHasSubtypes(true);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
+        setUnlocalizedName("ItemCraftingComponent");
+//        for (MetaType type : MetaType.values()) {
+//            setUnlocalizedName("ItemCraftingComponent" + "." + type.getUnlocalizedName());
+//        }
     }
 
     @Override
@@ -63,7 +73,7 @@ public class ItemCraftingComponent extends Item implements IGrindable, IItemVari
         switch (type) {
             case STARDUST:
                 EntityItemStardust stardust = new EntityItemStardust(world, location.posX, location.posY, location.posZ, itemstack);
-                stardust.setDefaultPickupDelay();
+                stardust.delayBeforeCanPickup = 10;
                 stardust.motionX = location.motionX;
                 stardust.motionY = location.motionY;
                 stardust.motionZ = location.motionZ;
@@ -124,6 +134,23 @@ public class ItemCraftingComponent extends Item implements IGrindable, IItemVari
         return sub;
     }
 
+    @SideOnly(Side.CLIENT)
+    @Override
+    public IIcon getIconFromDamage(int meta)
+    {
+        return icons[meta];
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerIcons(IIconRegister register)
+    {
+        for (MetaType type : MetaType.values()) {
+            icons[type.getMeta()] = register.registerIcon("astralsorcery:" + type.getUnlocalizedName());
+        }
+    }
+
+
     public static enum MetaType {
 
         AQUAMARINE,
@@ -146,7 +173,7 @@ public class ItemCraftingComponent extends Item implements IGrindable, IItemVari
         }
 
         public static MetaType fromMeta(int meta) {
-            int ord = MathHelper.clamp(meta, 0, values().length -1);
+            int ord = MathHelper.clamp_int(meta, 0, values().length -1);
             return values()[ord];
         }
 

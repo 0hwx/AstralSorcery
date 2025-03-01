@@ -13,8 +13,8 @@ import hellfirepvp.astralsorcery.common.starlight.IStarlightReceiver;
 import hellfirepvp.astralsorcery.common.starlight.WorldNetworkHandler;
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionReceiver;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -44,13 +44,13 @@ public abstract class TileReceiverBase extends TileNetwork implements IStarlight
     @Override
     @Nonnull
     public BlockPos getTrPos() {
-        return getPos();
+        return new BlockPos(xCoord, yCoord, zCoord);
     }
 
     @Override
     @Nonnull
     public World getTrWorld() {
-        return getWorld();
+        return getWorldObj();
     }
 
     @Override
@@ -73,7 +73,8 @@ public abstract class TileReceiverBase extends TileNetwork implements IStarlight
 
     @Nullable
     public <T extends ITransmissionReceiver> T tryGetNode() {
-        IPrismTransmissionNode node = WorldNetworkHandler.getNetworkHandler(world).getTransmissionNode(getPos());
+        BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
+        IPrismTransmissionNode node = WorldNetworkHandler.getNetworkHandler(worldObj).getTransmissionNode(pos);
         if(node == null || !(node instanceof ITransmissionReceiver)) return null;
         return (T) node;
     }

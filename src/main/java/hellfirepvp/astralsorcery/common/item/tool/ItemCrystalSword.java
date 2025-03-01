@@ -10,6 +10,8 @@ package hellfirepvp.astralsorcery.common.item.tool;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.entities.EntityCrystalTool;
 import hellfirepvp.astralsorcery.common.item.base.IGrindable;
 import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
@@ -17,12 +19,12 @@ import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -48,6 +50,7 @@ public class ItemCrystalSword extends ItemSword implements IGrindable {
     public ItemCrystalSword() {
         super(RegistryItems.crystalToolMaterial);
         setMaxDamage(0);
+        setUnlocalizedName("ItemCrystalSword");
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
     }
 
@@ -89,11 +92,11 @@ public class ItemCrystalSword extends ItemSword implements IGrindable {
     @Nullable
     @Override
     public Entity createEntity(World world, Entity ei, ItemStack itemstack) {
-        EntityCrystalTool newItem = new EntityCrystalTool(ei.world, ei.posX, ei.posY, ei.posZ, itemstack);
+        EntityCrystalTool newItem = new EntityCrystalTool(ei.worldObj, ei.posX, ei.posY, ei.posZ, itemstack);
         newItem.motionX = ei.motionX;
         newItem.motionY = ei.motionY;
         newItem.motionZ = ei.motionZ;
-        newItem.setPickupDelay(40);
+        newItem.delayBeforeCanPickup = 40;
         return newItem;
     }
 
@@ -147,17 +150,15 @@ public class ItemCrystalSword extends ItemSword implements IGrindable {
     }
 
     @Override
-    public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {
+    public Multimap<String, net.minecraft.entity.ai.attributes.AttributeModifier> getAttributeModifiers(ItemStack stack) {
         Multimap<String, AttributeModifier> modifiers = HashMultimap.create();
-        if(slot == EntityEquipmentSlot.MAINHAND) {
             ToolCrystalProperties prop = getToolProperties(stack);
             if(prop != null) {
-                modifiers.put(SharedMonsterAttributes.ATTACK_DAMAGE.getAttributeUnlocalizedName(),
-                        new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 1F + (12F * prop.getEfficiencyMultiplier()), 0));
-                modifiers.put(SharedMonsterAttributes.ATTACK_SPEED.getAttributeUnlocalizedName(),
-                        new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -1D, 0));
+                modifiers.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(),
+                        new AttributeModifier(field_111210_e, "Weapon modifier", 1F + (12F * prop.getEfficiencyMultiplier()), 0));
+//                modifiers.put(SharedMonsterAttributes.ATTACK_SPEED.getAttributeUnlocalizedName(),
+//                        new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -1D, 0));
             }
-        }
         return modifiers;
     }
 
@@ -179,6 +180,13 @@ public class ItemCrystalSword extends ItemSword implements IGrindable {
             return GrindResult.failBreakItem();
         }
         return GrindResult.success();
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerIcons(IIconRegister register)
+    {
+        this.itemIcon = register.registerIcon("astralsorcery:crystal_sword");
     }
 
 }

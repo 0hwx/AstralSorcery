@@ -1,18 +1,16 @@
 package hellfirepvp.astralsorcery.common.crafting;
 
+import hellfirepvp.astralsorcery.common.util.EnumDyeColor;
 import hellfirepvp.astralsorcery.common.item.wand.ItemIlluminationWand;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.OreDictAlias;
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -83,8 +81,8 @@ public class RecipeChangeWandColor implements IRecipe {
         return new ItemStack(ItemsAS.illuminationWand);
     }
 
-    @Override
-    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-        return ForgeHooks.defaultRecipeGetRemainingItems(inv);
-    }
+//    @Override
+//    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+//        return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+//    }
 }

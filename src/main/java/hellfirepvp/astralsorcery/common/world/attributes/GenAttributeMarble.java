@@ -11,8 +11,8 @@ package hellfirepvp.astralsorcery.common.world.attributes;
 import hellfirepvp.astralsorcery.common.block.BlockMarble;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.world.WorldGenAttribute;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 
@@ -32,9 +32,8 @@ public class GenAttributeMarble extends WorldGenAttribute {
     public GenAttributeMarble() {
         super(0);
         marbleMineable = new WorldGenMinable(
-                BlocksAS.blockMarble.getDefaultState().
-                        withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW),
-                Config.marbleVeinSize);
+                BlocksAS.blockMarble //getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW)
+            , Config.marbleVeinSize);
     }
 
     @Override
@@ -44,7 +43,7 @@ public class GenAttributeMarble extends WorldGenAttribute {
             int rY = 50 + random.nextInt(10);
             int rZ = (chunkZ  * 16) + random.nextInt(16);
             BlockPos pos = new BlockPos(rX, rY, rZ);
-            marbleMineable.generate(world, random, pos);
+            marbleMineable.generate(world, random, pos.getX(), pos.getY(), pos.getZ());
         }
     }
 }

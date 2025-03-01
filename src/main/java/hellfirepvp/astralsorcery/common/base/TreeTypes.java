@@ -1,16 +1,15 @@
 package hellfirepvp.astralsorcery.common.base;
 
 import com.google.common.collect.Lists;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.registry.GameRegistry;
 import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.BlockStateCheck;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -40,9 +39,9 @@ public enum TreeTypes {
 
     private boolean exists = false;
 
-    private Collection<IBlockState> logStates = Lists.newArrayList();
-    private Collection<IBlockState> leaveStates = Lists.newArrayList();
-    private IBlockState saplingState = null;
+    private Collection<Block> logStates = Lists.newArrayList();
+    private Collection<Block> leaveStates = Lists.newArrayList();
+    private Block saplingState = null;
 
     private BlockStateCheck logCheck;
     private BlockStateCheck leavesCheck;
@@ -75,68 +74,72 @@ public enum TreeTypes {
             return;
         }
 
-        Block log = ForgeRegistries.BLOCKS.getValue(this.resBlockName);
-        Block leaf = ForgeRegistries.BLOCKS.getValue(this.resLeavesName);
-        Block sapling = ForgeRegistries.BLOCKS.getValue(this.resSaplingName);
+        // Use GameRegistry.findBlock() to find blocks by ResourceLocation in Minecraft 1.7.10
+        Block log = GameRegistry.findBlock(this.parentModId, resBlockName.getResourcePath());
+        Block leaf = GameRegistry.findBlock(this.parentModId, resLeavesName.getResourcePath());
+        Block sapling = GameRegistry.findBlock(this.parentModId, resSaplingName.getResourcePath());
 
         if (isEmpty(log) || isEmpty(leaf) || isEmpty(sapling)) {
             AstralSorcery.log.info("Not loading tree type " + name() + " as its blocks don't exist in the currently loaded mods.");
             return;
         }
 
-        logCheck = logMeta == null ? new BlockStateCheck.Block(log) : new BlockStateCheck.AnyMeta(log, logMeta);
-        leavesCheck = leaveMeta == null ? new BlockStateCheck.Block(leaf) : new BlockStateCheck.AnyMeta(leaf, leaveMeta);
-        saplingCheck = saplingMeta == null ? new BlockStateCheck.Block(sapling) : new BlockStateCheck.Meta(sapling, saplingMeta);
+        logCheck = logMeta == null ? new BlockStateCheck.Blockes(log) : new BlockStateCheck.AnyMeta(log, logMeta);
+        leavesCheck = leaveMeta == null ? new BlockStateCheck.Blockes(leaf) : new BlockStateCheck.AnyMeta(leaf, leaveMeta);
+        saplingCheck = saplingMeta == null ? new BlockStateCheck.Blockes(sapling) : new BlockStateCheck.Meta(sapling, saplingMeta);
 
         if (logMeta == null) {
-            this.logStates.add(log.getDefaultState());
+            this.logStates.add(log);
         } else {
             for (int m : logMeta) {
-                IBlockState state = log.getStateFromMeta(m);
-                if (!this.logStates.contains(state)) {
-                    this.logStates.add(state);
+                Block block = log;
+                int meta = block.damageDropped(m);
+                if (!this.logStates.contains(meta)) {
+                    this.logStates.add(block);
                 }
             }
         }
 
         if (leaveMeta == null) {
-            this.leaveStates.add(leaf.getDefaultState());
+            this.leaveStates.add(leaf);
         } else {
             for (int m : leaveMeta) {
-                IBlockState state = leaf.getStateFromMeta(m);
-                if (!this.leaveStates.contains(state)) {
-                    this.leaveStates.add(state);
+                Block block = leaf;
+                int meta = block.damageDropped(m);
+                if (!this.leaveStates.contains(meta)) {
+                    this.leaveStates.add(block);
                 }
             }
         }
 
         if (saplingMeta == null) {
-            this.saplingState = sapling.getDefaultState();
-        } else {
-            this.saplingState = sapling.getStateFromMeta(saplingMeta);
+            this.saplingState = sapling;
         }
+//        else {
+//            this.saplingState = sapling.getStateFromMeta(saplingMeta);
+//        }
 
         exists = true;
         AstralSorcery.log.info("Loaded " + name() + " of " + this.parentModId + " into tree registry.");
     }
 
     private boolean isEmpty(@Nullable Block block) {
-        return block == null || block.equals(Blocks.AIR);
+        return block == null || block.equals(Blocks.air);
     }
 
     public boolean exists() {
         return exists;
     }
 
-    public Collection<IBlockState> getLeaveStates() {
+    public Collection<Block> getLeaveStates() {
         return leaveStates;
     }
 
-    public Collection<IBlockState> getLogStates() {
+    public Collection<Block> getLogStates() {
         return logStates;
     }
 
-    public IBlockState getSaplingState() {
+    public Block getSaplingState() {
         return saplingState;
     }
 
@@ -154,11 +157,11 @@ public enum TreeTypes {
 
     @Nullable
     public static TreeTypes getTree(World world, BlockPos pos) {
-        return getTree(world, pos, world.getBlockState(pos));
+        return getTree(world, pos, world.getBlock(pos.getX(), pos.getY(), pos.getZ()));
     }
 
     @Nullable
-    public static TreeTypes getTree(World world, BlockPos pos, IBlockState blockToTest) {
+    public static TreeTypes getTree(World world, BlockPos pos, Block blockToTest) {
         for (TreeTypes type : values()) {
             if (type.exists() && (type.logCheck.isStateValid(world, pos, blockToTest) || type.leavesCheck.isStateValid(world, pos, blockToTest))) {
                 return type;

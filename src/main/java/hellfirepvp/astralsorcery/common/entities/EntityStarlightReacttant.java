@@ -9,10 +9,11 @@
 package hellfirepvp.astralsorcery.common.entities;
 
 import hellfirepvp.astralsorcery.common.block.fluid.FluidBlockLiquidStarlight;
-import net.minecraft.block.state.IBlockState;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.ForgeDirection;
+
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -24,16 +25,17 @@ import net.minecraft.util.math.BlockPos;
 public interface EntityStarlightReacttant {
 
     default public boolean isInLiquidStarlight(Entity e) {
-        BlockPos at = e.getPosition();
-        IBlockState state = e.getEntityWorld().getBlockState(at);
-        if(!(state.getBlock() instanceof FluidBlockLiquidStarlight)) {
+        BlockPos at = new BlockPos(e).getPosition();//e.getPosition();
+        Block state = e.worldObj.getBlock(at.getX(), at.getY(), at.getZ());
+        if(!(state instanceof FluidBlockLiquidStarlight)) {
             return false;
         }
-        if(!((FluidBlockLiquidStarlight) state.getBlock()).isSourceBlock(e.getEntityWorld(), at)) {
+        if(!((FluidBlockLiquidStarlight) state).isSourceBlock(e.worldObj, at.getX(), at.getY(), at.getZ())) {
             return false;
         }
-        state = e.getEntityWorld().getBlockState(at.down());
-        return state.isSideSolid(e.getEntityWorld(), at.down(), EnumFacing.UP);
+        BlockPos down = at.down();
+        state = e.worldObj.getBlock(down.getX(), down.getY(), down.getZ());
+        return state.isSideSolid(e.worldObj, down.getX(), down.getY(), down.getZ(), ForgeDirection.UP);
     }
 
 }

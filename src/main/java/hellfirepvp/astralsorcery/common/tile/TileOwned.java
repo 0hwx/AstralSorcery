@@ -9,6 +9,7 @@
 package hellfirepvp.astralsorcery.common.tile;
 
 import hellfirepvp.astralsorcery.common.tile.base.TileEntitySynchronized;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.UUID;
@@ -35,7 +36,8 @@ public class TileOwned extends TileEntitySynchronized {
         super.readCustomNBT(compound);
 
         if(compound.hasKey("owner")) {
-            this.ownerUUID = compound.getUniqueId("owner");
+            this.ownerUUID = NBTHelper.getUUID(compound, "owner");
+//            this.ownerUUID = compound.getUniqueId("owner");
         }
     }
 
@@ -44,7 +46,8 @@ public class TileOwned extends TileEntitySynchronized {
         super.writeCustomNBT(compound);
 
         if(ownerUUID != null) {
-            compound.setUniqueId("owner", ownerUUID);
+            NBTHelper.setUUID(compound, "owner", ownerUUID);
+//            compound.setUniqueId("owner", ownerUUID);
         }
     }
 

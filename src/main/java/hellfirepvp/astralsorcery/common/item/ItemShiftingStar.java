@@ -8,27 +8,23 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.util.SoundHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -46,6 +42,7 @@ public class ItemShiftingStar extends Item {
         setMaxStackSize(1);
         setMaxDamage(0);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
+        setUnlocalizedName("ItemShiftingStar");
     }
 
     @Override
@@ -54,26 +51,26 @@ public class ItemShiftingStar extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand) {
-        playerIn.setActiveHand(hand);
-        return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer playerIn) {
+        playerIn.setItemInUse(stack, getMaxItemUseDuration(stack));
+        return stack;
     }
 
     @Nullable
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
+    public ItemStack onEaten(ItemStack stack, World worldIn, EntityPlayer entityLiving) {
         if(!worldIn.isRemote && entityLiving instanceof EntityPlayer) {
             EntityPlayer pl = (EntityPlayer) entityLiving;
             if(ResearchManager.setAttunedConstellation(pl, null)) {
-                pl.addChatMessage(new TextComponentTranslation("progress.remove.attunement").setStyle(new Style().setColor(TextFormatting.BLUE)));
-                SoundHelper.playSoundAround(SoundEvents.BLOCK_GLASS_BREAK, worldIn, entityLiving.getPosition(), 1F, 1F);
+                pl.addChatMessage(new ChatComponentTranslation("progress.remove.attunement").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.BLUE)));
+//                SoundHelper.playSoundAround(SoundEvents.BLOCK_GLASS_BREAK, worldIn, entityLiving.getPosition(), 1F, 1F);
             }
         }
         return null;
     }
 
     @Override
-    public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
+    public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
         if(player.getEntityWorld().isRemote) {
             playEffects();
         }
@@ -81,7 +78,7 @@ public class ItemShiftingStar extends Item {
 
     @SideOnly(Side.CLIENT)
     private void playEffects() {
-        EntityPlayer p = Minecraft.getMinecraft().player;
+        EntityPlayer p = Minecraft.getMinecraft().thePlayer;
         for (int i = 0; i < 3; i++) {
             EntityFXFacingParticle particle = EffectHelper.genericFlareParticle(p.posX, p.posY + p.getEyeHeight() / 2, p.posZ);
             particle.motion(-0.1 + itemRand.nextFloat() * 0.2, 0.01, -0.1 + itemRand.nextFloat() * 0.2);
@@ -98,7 +95,14 @@ public class ItemShiftingStar extends Item {
 
     @Override
     public EnumAction getItemUseAction(ItemStack stack) {
-        return EnumAction.BOW;
+        return EnumAction.bow;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister register)
+    {
+        this.itemIcon = register.registerIcon("astralsorcery:shifting_star");
     }
 
 }

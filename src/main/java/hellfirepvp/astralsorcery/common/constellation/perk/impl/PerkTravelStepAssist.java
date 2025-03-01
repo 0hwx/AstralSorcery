@@ -14,7 +14,7 @@ import hellfirepvp.astralsorcery.common.network.packet.server.PktSyncStepAssist;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * This class is part of the Astral Sorcery Mod

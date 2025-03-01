@@ -8,9 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.item.crystal;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.item.crystal.base.ItemRockCrystalBase;
 import hellfirepvp.astralsorcery.common.item.crystal.base.ItemTunedCrystalBase;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,6 +29,10 @@ import java.util.List;
  */
 public class ItemRockCrystalSimple extends ItemRockCrystalBase {
 
+
+    public ItemRockCrystalSimple() {
+        setUnlocalizedName("ItemRockCrystalSimple");
+    }
     @Override
     public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
         ItemStack stack = new ItemStack(this);
@@ -37,4 +44,11 @@ public class ItemRockCrystalSimple extends ItemRockCrystalBase {
     public ItemTunedCrystalBase getTunedItemVariant() {
         return ItemsAS.tunedRockCrystal;
     }
+
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister register)
+    {
+        this.itemIcon = register.registerIcon("astralsorcery:rock_crystal");
+    }
+
 }

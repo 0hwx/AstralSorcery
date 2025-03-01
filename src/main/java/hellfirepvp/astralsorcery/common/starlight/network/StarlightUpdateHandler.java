@@ -8,10 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.starlight.network;
 
+import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ public class StarlightUpdateHandler implements ITickHandler {
     }
 
     private List<IPrismTransmissionNode> getNodes(World world) {
-        int dimId = world.provider.getDimension();
+        int dimId = world.provider.dimensionId;
         List<IPrismTransmissionNode> nodes = updateRequired.get(dimId);
         if(nodes == null) {
             nodes = new LinkedList<>();
@@ -75,7 +75,7 @@ public class StarlightUpdateHandler implements ITickHandler {
 
     public void informWorldUnload(World world) {
         synchronized (accessLock) {
-            updateRequired.remove(world.provider.getDimension());
+            updateRequired.remove(world.provider.dimensionId);
         }
     }
 

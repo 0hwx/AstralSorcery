@@ -11,7 +11,6 @@ package hellfirepvp.astralsorcery.client.render;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -20,18 +19,18 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
  * Created by HellFirePvP
  * Date: 16.09.2016 / 15:46
  */
-public abstract class RenderEntityModel<T extends Entity> extends Render<T> {
+public abstract class RenderEntityModel<T extends Entity> extends Render {
 
-    protected RenderEntityModel(RenderManager renderManager) {
-        super(renderManager);
-    }
-
-    public abstract void doModelRender(T entity, float pTicks);
-
-    public static abstract class RenderEntityModelFactory<T extends Entity> implements IRenderFactory<T> {
-
-        public abstract RenderEntityModel<? super T> createRenderFor(RenderManager manager);
-
-    }
+//    protected RenderEntityModel(RenderManager renderManager) {
+//        super(renderManager);
+//    }
+//
+//    public abstract void doModelRender(T entity, float pTicks);
+//
+//    public static abstract class RenderEntityModelFactory<T extends Entity> implements IRenderFactory<T> {
+//
+//        public abstract RenderEntityModel<? super T> createRenderFor(RenderManager manager);
+//
+//    }
 
 }

@@ -8,7 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
+
 
 import java.util.Random;
 
@@ -30,7 +30,7 @@ public interface ChargedCrystalToolBase {
         ItemStack inert = new ItemStack(((ChargedCrystalToolBase) stack.getItem()).getInertVariant());
         applyToolProperties(inert, prop);
         if(stack.hasTagCompound()) {
-            inert.setTagCompound(stack.getTagCompound().copy());
+            inert.setTagCompound((NBTTagCompound) stack.getTagCompound().copy());
         }
         return inert;
     }
@@ -59,7 +59,7 @@ public interface ChargedCrystalToolBase {
         if(shouldRevert(stack)) {
             ItemStack inert = getAsInertVariant(stack);
             removeChargeRevertCounter(inert);
-            player.setHeldItem(EnumHand.MAIN_HAND, inert);
+            player.inventory.setInventorySlotContents(player.inventory.currentItem, inert);
             return true;
         }
         return false;

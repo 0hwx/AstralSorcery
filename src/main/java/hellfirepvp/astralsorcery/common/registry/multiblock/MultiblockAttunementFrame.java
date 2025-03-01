@@ -11,11 +11,11 @@ package hellfirepvp.astralsorcery.common.registry.multiblock;
 import hellfirepvp.astralsorcery.common.block.BlockBlackMarble;
 import hellfirepvp.astralsorcery.common.block.BlockMarble;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Map;
 
@@ -33,10 +33,10 @@ public class MultiblockAttunementFrame extends PatternBlockArray {
     }
 
     private void load() {
-        IBlockState mar = BlocksAS.blockMarble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
-        IBlockState mbl = BlocksAS.blockBlackMarble.getDefaultState().withProperty(BlockBlackMarble.BLACK_MARBLE_TYPE, BlockBlackMarble.BlackMarbleBlockType.RAW);
+        Block mar = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
+        Block mbl = BlocksAS.blockBlackMarble;//.getDefaultState().withProperty(BlockBlackMarble.BLACK_MARBLE_TYPE, BlockBlackMarble.BlackMarbleBlockType.RAW);
 
-        addBlock(0, 0, 0, BlocksAS.attunementAltar.getDefaultState());
+        addBlock(0, 0, 0, BlocksAS.attunementAltar);//.getDefaultState());
         //addBlock(0, 1, 0, BlocksAS.blockStructural.getDefaultState().withProperty(BlockStructural.BLOCK_TYPE, BlockStructural.BlockType.ATTUNEMENT_ALTAR_STRUCT));
 
         addBlockCube(mar, -7, -1, -8,  7, -1, -8);
@@ -77,9 +77,9 @@ public class MultiblockAttunementFrame extends PatternBlockArray {
     }
 
     private void pillarAt(int x, int y, int z) {
-        IBlockState mru = BlocksAS.blockMarble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RUNED);
-        IBlockState mpl = BlocksAS.blockMarble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
-        IBlockState mch = BlocksAS.blockMarble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
+        Block mru = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RUNED);
+        Block mpl = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
+        Block mch = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
 
         addBlock(x, y,     z, mru);
         addBlock(x, y + 1, z, mpl);
@@ -89,12 +89,13 @@ public class MultiblockAttunementFrame extends PatternBlockArray {
     }
 
     @Override
-    public Map<BlockPos, IBlockState> placeInWorld(World world, BlockPos center) {
-        Map<BlockPos, IBlockState> placed = super.placeInWorld(world, center);
-        world.setBlockToAir(center);
-        world.setBlockToAir(center.offset(EnumFacing.UP, 1));
+    public Map<BlockPos, Block> placeInWorld(World world, BlockPos center) {
+        Map<BlockPos, Block> placed = super.placeInWorld(world, center);
+        world.setBlockToAir(center.getX(), center.getY() + 1, center.getZ());
+        BlockPos up = center.offset(ForgeDirection.UP, 1);
+        world.setBlockToAir(up.getX(), up.getY(), up.getZ());
         placed.remove(center);
-        placed.remove(center.offset(EnumFacing.UP, 1));
+        placed.remove(center.offset(ForgeDirection.UP, 1));
         return placed;
     }
 }

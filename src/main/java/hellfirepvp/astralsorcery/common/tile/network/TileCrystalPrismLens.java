@@ -14,12 +14,12 @@ import hellfirepvp.astralsorcery.common.block.network.BlockCollectorCrystalBase;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 import hellfirepvp.astralsorcery.common.starlight.transmission.base.crystal.CrystalPrismTransmissionNode;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,19 +34,19 @@ import javax.annotation.Nullable;
 public class TileCrystalPrismLens extends TileCrystalLens {
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
-        if(world.isRemote && getLinkedPositions().size() > 0) {
+        if(worldObj.isRemote && getLinkedPositions().size() > 0) {
             playPrismEffects();
         }
     }
 
     @SideOnly(Side.CLIENT)
     private void playPrismEffects() {
-        Entity rView = Minecraft.getMinecraft().getRenderViewEntity();
-        if(rView == null) rView = Minecraft.getMinecraft().player;
-        if(rView.getDistanceSq(getPos()) > Config.maxEffectRenderDistanceSq) return;
+        Entity rView = Minecraft.getMinecraft().renderViewEntity;
+        if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
+        if(rView.getDistanceSq(xCoord, yCoord, zCoord) > Config.maxEffectRenderDistanceSq) return;
         Vector3 pos = new Vector3(this).add(0.5, 0.5, 0.5);
         EntityFXFacingParticle particle = EffectHelper.genericFlareParticle(pos.getX(), pos.getY(), pos.getZ());
         particle.setColor(BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL.displayColor);

@@ -17,7 +17,7 @@ import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -91,7 +91,7 @@ public abstract class EntityFXFacingSprite extends EntityComplexFX implements IC
 
     protected int getAgeBasedFrame() {
         float perc = ((float) age) / ((float) maxAge);
-        return MathHelper.floor(spriteSheet.getFrameCount() * perc);
+        return MathHelper.floor_float(spriteSheet.getFrameCount() * perc);
     }
 
     @Override
@@ -100,8 +100,8 @@ public abstract class EntityFXFacingSprite extends EntityComplexFX implements IC
 
         if(maxAge >= 0 && age >= maxAge) {
             if(refreshFunction != null) {
-                Entity rView = Minecraft.getMinecraft().getRenderViewEntity();
-                if(rView == null) rView = Minecraft.getMinecraft().player;
+                Entity rView = Minecraft.getMinecraft().renderViewEntity;
+                if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
                 if(rView.getDistanceSq(x, y, z) <= Config.maxEffectRenderDistanceSq) {
                     if(refreshFunction.shouldRefresh()) {
                         age = 0;

@@ -10,7 +10,7 @@ package hellfirepvp.astralsorcery.common.container;
 
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraftforge.items.SlotItemHandler;
+import net.minecraft.inventory.Slot;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,10 +31,10 @@ public class ContainerAltarTrait extends ContainerAltarConstellation {
     void bindAltarInventory() {
         super.bindAltarInventory();
 
-        addSlotToContainer(new SlotItemHandler(invHandler, 21,  120,  11)); //Up center
-        addSlotToContainer(new SlotItemHandler(invHandler, 22,  84,  47)); //Left center
-        addSlotToContainer(new SlotItemHandler(invHandler, 23, 156,  47)); //Right center
-        addSlotToContainer(new SlotItemHandler(invHandler, 24, 120,  83)); //Lower center
+        addSlotToContainer(new Slot(invHandler, 21,  120,  11)); //Up center
+        addSlotToContainer(new Slot(invHandler, 22,  84,  47)); //Left center
+        addSlotToContainer(new Slot(invHandler, 23, 156,  47)); //Right center
+        addSlotToContainer(new Slot(invHandler, 24, 120,  83)); //Lower center
 
         this.focusSlot = new ConstellationFocusSlot(invHandler, tileAltar, 35, 11);
         addSlotToContainer(this.focusSlot); //Focus item, not accessible from slot index.

@@ -9,10 +9,10 @@
 package hellfirepvp.astralsorcery.common.data;
 
 import hellfirepvp.astralsorcery.common.starlight.network.TransmissionChain;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -198,7 +198,7 @@ public class DataLightConnections extends AbstractData {
 
         clientReceivingData = true;
         try {
-            for (String dimStr : ((DataLightConnections) serverData).clientReadBuffer.getKeySet()) {
+            for (String dimStr : ((DataLightConnections) serverData).clientReadBuffer.func_150296_c()) {
                 int dimId = Integer.parseInt(dimStr);
                 NBTTagList list = ((DataLightConnections) serverData).clientReadBuffer.getTagList(dimStr, 10);
                 Map<BlockPos, List<BlockPos>> connectionMap = clientPosBuffer.get(dimId);

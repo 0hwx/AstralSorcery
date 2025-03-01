@@ -22,8 +22,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -80,8 +80,9 @@ public abstract class ItemRockCrystalBase extends Item implements IGrindable, It
     @Override
     public Entity createEntity(World world, Entity location, ItemStack itemstack) {
         EntityCrystal crystal = new EntityCrystal(world, location.posX, location.posY, location.posZ, itemstack);
-        crystal.setDefaultPickupDelay();
-        crystal.setNoDespawn();
+        crystal.delayBeforeCanPickup = 10;
+        crystal.age = -6000;
+//        crystal.setNoDespawn();
         crystal.motionX = location.motionX;
         crystal.motionY = location.motionY;
         crystal.motionZ = location.motionZ;

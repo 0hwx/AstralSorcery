@@ -4,9 +4,8 @@ import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.MobEffects;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
 /**
@@ -19,18 +18,18 @@ import net.minecraft.potion.PotionEffect;
 public class EnchantmentNightVision extends EnchantmentPlayerWornTick {
 
     public EnchantmentNightVision() {
-        super("as.nightvision", Rarity.VERY_RARE, EnumEnchantmentType.ARMOR, EntityEquipmentSlot.HEAD);
+        super("as.nightvision", 100,1, EnumEnchantmentType.armor_head);
     }
 
     @Override
     public void onWornTick(boolean isClient, EntityPlayer base, int level) {
-        base.addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, 300, level - 1, true, false));
+        base.addPotionEffect(new PotionEffect(Potion.nightVision.getId(), 300, level - 1, true));
     }
 
     @Override
-    public void onEntityDamaged(EntityLivingBase user, Entity target, int level) {
+    public void func_151368_a(EntityLivingBase user, Entity target, int level) {
         if(target instanceof EntityLivingBase) {
-            ((EntityLivingBase) target).addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, 300, level - 1, true, false));
+            ((EntityLivingBase) target).addPotionEffect(new PotionEffect(Potion.nightVision.getId(), 300, level - 1, true));
         }
     }
 

@@ -15,13 +15,13 @@ import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -61,10 +61,10 @@ public class PktDiscoverConstellation implements IMessage, IMessageHandler<PktDi
             if(prog != null && received.canDiscover(prog)) {
                 ResearchManager.discoverConstellation(received, ctx.getServerHandler().playerEntity);
                 ctx.getServerHandler().playerEntity.addChatMessage(
-                        new TextComponentTranslation("progress.discover.constellation.chat",
-                                new TextComponentTranslation(message.discoveredConstellation)
-                                        .setStyle(new Style().setColor(TextFormatting.GRAY)))
-                                .setStyle(new Style().setColor(TextFormatting.BLUE)));
+                        new ChatComponentTranslation("progress.discover.constellation.chat",
+                                new ChatComponentTranslation(message.discoveredConstellation)
+                                        .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GRAY)))
+                                .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.BLUE)));
             }
         }
         return null;

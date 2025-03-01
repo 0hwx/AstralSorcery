@@ -2,7 +2,7 @@ package hellfirepvp.astralsorcery.client.effect.compound;
 
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.Tessellator;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -18,7 +18,7 @@ public class CompoundGatewayShield extends CompoundEffectSphere {
     }
 
     @Override
-    public void render(VertexBuffer vb, float pTicks) {
+    public void render(Tessellator vb, float pTicks) {
         if(EffectHandler.getInstance().renderGateway) {
             super.render(vb, pTicks);
         }

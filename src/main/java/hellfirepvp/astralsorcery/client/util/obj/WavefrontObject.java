@@ -10,13 +10,10 @@ package hellfirepvp.astralsorcery.client.util.obj;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.io.BufferedReader;
@@ -148,39 +145,37 @@ public class WavefrontObject {
     }
 
     @SideOnly(Side.CLIENT)
-    public void renderAll(boolean expectTexture) {
-        VertexBuffer vb = Tessellator.getInstance().getBuffer();
+    public void renderAll() {
 
-        VertexFormat vf;
-        if (expectTexture) {
-            vf = DefaultVertexFormats.POSITION_TEX;
-        } else {
-            vf = DefaultVertexFormats.POSITION;
-        }
-        if (currentGroupObject != null) {
-            vb.begin(currentGroupObject.glDrawingMode, vf);
-        } else {
-            vb.begin(GL11.GL_TRIANGLES, vf);
-        }
-        tessellateAll(vb);
+        Tessellator tessellator = Tessellator.instance;
 
-        Tessellator.getInstance().draw();
+        if (currentGroupObject != null)
+        {
+            tessellator.startDrawing(currentGroupObject.glDrawingMode);
+        }
+        else
+        {
+            tessellator.startDrawing(GL11.GL_TRIANGLES);
+        }
+        tessellateAll(tessellator);
+
+        tessellator.draw();
     }
 
     @SideOnly(Side.CLIENT)
-    public void renderOnly(boolean expectTexture, String... groupNames) {
-        VertexBuffer vb = Tessellator.getInstance().getBuffer();
-
-        VertexFormat vf;
-        if (expectTexture) {
-            vf = DefaultVertexFormats.POSITION_TEX;
-        } else {
-            vf = DefaultVertexFormats.POSITION;
-        }
+    public void renderOnly(String... groupNames) {
+//        VertexBuffer vb = Tessellator.getInstance().getBuffer();
+        Tessellator tessellator = Tessellator.instance;
+//        VertexFormat vf;
+//        if (expectTexture) {
+//            vf = DefaultVertexFormats.POSITION_TEX;
+//        } else {
+//            vf = DefaultVertexFormats.POSITION;
+//        }
         if (currentGroupObject != null) {
-            vb.begin(currentGroupObject.glDrawingMode, vf);
+            tessellator.startDrawing(currentGroupObject.glDrawingMode);
         } else {
-            vb.begin(GL11.GL_TRIANGLES, vf);
+            tessellator.startDrawing(GL11.GL_TRIANGLES);
         }
 
         for (GroupObject groupObject : groupObjects) {
@@ -188,18 +183,18 @@ public class WavefrontObject {
             {
                 if (groupName.equalsIgnoreCase(groupObject.name))
                 {
-                    groupObject.render(vb);
+                    groupObject.render(tessellator);
                 }
             }
         }
 
-        Tessellator.getInstance().draw();
+        tessellator.draw();
     }
 
     @SideOnly(Side.CLIENT)
-    public void tessellateAll(VertexBuffer vb) {
+    public void tessellateAll(Tessellator tessellator) {
         for (GroupObject groupObject : groupObjects) {
-            groupObject.render(vb);
+            groupObject.render(tessellator);
         }
     }
 
@@ -259,7 +254,7 @@ public class WavefrontObject {
     }*/
 
     @SideOnly(Side.CLIENT)
-    public void tessellateAllExcept(VertexBuffer vb, String... excludedGroupNames) {
+    public void tessellateAllExcept(Tessellator tess, String... excludedGroupNames) {
         boolean exclude;
         for (GroupObject groupObject : groupObjects) {
             exclude = false;
@@ -269,7 +264,7 @@ public class WavefrontObject {
                 }
             }
             if (!exclude) {
-                groupObject.render(vb);
+                groupObject.render(tess);
             }
         }
     }

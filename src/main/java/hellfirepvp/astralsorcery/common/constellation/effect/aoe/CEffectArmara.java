@@ -16,6 +16,7 @@ import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffect
 import hellfirepvp.astralsorcery.common.event.listener.EventHandlerServer;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.TickTokenizedMap;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.data.WorldBlockPos;
@@ -23,16 +24,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -68,14 +68,14 @@ public class CEffectArmara extends ConstellationEffect {
             ctrl.setOrbitAxis(Vector3.RotAxis.Y_AXIS);
             ctrl.setTicksPerRotation(20 + rand.nextInt(20));
         }
-        List<Entity> projectiles = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(0, 0, 0, 1, 1, 1).offset(pos).expandXyz(protectionRange));
+        List<Entity> projectiles = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).offset(pos.getX(), pos.getY(), pos.getZ()).expand(protectionRange,protectionRange,protectionRange));
         if(!projectiles.isEmpty()) {
             for (Entity e : projectiles) {
                 if(!e.isDead) {
                     if(e instanceof IProjectile) {
                         double xRatio = (pos.getX() + 0.5) - e.posX;
                         double zRatio = (pos.getZ() + 0.5) - e.posZ;
-                        float f = MathHelper.sqrt(xRatio * xRatio + zRatio * zRatio);
+                        float f = MathHelper.sqrt_double(xRatio * xRatio + zRatio * zRatio);
                         e.motionX /= 2.0D;
                         e.motionZ /= 2.0D;
                         e.motionX -= xRatio / f * 0.4;
@@ -110,14 +110,14 @@ public class CEffectArmara extends ConstellationEffect {
 
         EntityPlayer owner = getOwningPlayerInWorld(world, pos);
 
-        List<Entity> projectiles = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(0, 0, 0, 1, 1, 1).offset(pos).expandXyz(protectionRange));
+        List<Entity> projectiles = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).offset(pos.getX(), pos.getY(), pos.getZ()).expand(protectionRange,protectionRange,protectionRange));
         if(!projectiles.isEmpty()) {
             for (Entity e : projectiles) {
                 if(!e.isDead) {
                     if(e instanceof IProjectile) {
                         double xRatio = (pos.getX() + 0.5) - e.posX;
                         double zRatio = (pos.getZ() + 0.5) - e.posZ;
-                        float f = MathHelper.sqrt(xRatio * xRatio + zRatio * zRatio);
+                        float f = MathHelper.sqrt_double(xRatio * xRatio + zRatio * zRatio);
                         e.motionX /= 2.0D;
                         e.motionZ /= 2.0D;
                         e.motionX -= xRatio / f * 0.4;
@@ -129,12 +129,12 @@ public class CEffectArmara extends ConstellationEffect {
                 }
             }
         }
-        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(0, 0, 0, 1, 1, 1).offset(pos).expandXyz(protectionRange));
+        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).offset(pos.getX(), pos.getY(), pos.getZ()).expand(protectionRange,protectionRange,protectionRange));
         for (EntityLivingBase entity : entities) {
             if(!entity.isDead) {
-                entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 30, potionAmplifier));
+                entity.addPotionEffect(new PotionEffect(Potion.resistance.getId(), 30, potionAmplifier));
                 if (entity instanceof EntityPlayer) {
-                    entity.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION, 30, potionAmplifier));
+                    entity.addPotionEffect(new PotionEffect(Potion.field_76444_x.getId(), 30, potionAmplifier));
                 }
             }
         }

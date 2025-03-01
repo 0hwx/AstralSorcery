@@ -24,7 +24,6 @@ import hellfirepvp.astralsorcery.common.lib.Sounds;
 import hellfirepvp.astralsorcery.common.util.SoundHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.opengl.GL11;
 
@@ -96,7 +95,7 @@ public class GuiConstellationPaper extends GuiWHScreen {
     private void drawHeader() {
         String locName = I18n.format(constellation.getUnlocalizedName()).toUpperCase();
         TextureHelper.refreshTextureBindState();
-        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         double length = fr.getStringWidth(locName) * 1.8;
         double offsetLeft = width / 2 - length / 2;
         int offsetTop = guiTop + 31;
@@ -107,7 +106,7 @@ public class GuiConstellationPaper extends GuiWHScreen {
         GL11.glScaled(1.8, 1.8, 1.8);
         fr.drawString(locName, 0, 0, 0xAA4D4D4D, false);
         GL11.glPopMatrix();
-        GlStateManager.color(1, 1, 1, 1);
+//        GL11.glColor4f(1, 1, 1, 1);
         GL11.glColor4f(1, 1, 1, 1);
     }
 
@@ -135,7 +134,7 @@ public class GuiConstellationPaper extends GuiWHScreen {
         if(constellation instanceof IConstellationSpecialShowup) {
             double scale = 1.8;
             TextureHelper.refreshTextureBindState();
-            FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
             double length = fr.getStringWidth("? ? ?") * scale;
             double offsetLeft = width / 2 - length / 2;
             int offsetTop = guiTop + 207;
@@ -144,7 +143,7 @@ public class GuiConstellationPaper extends GuiWHScreen {
             GL11.glScaled(scale, scale, scale);
             fr.drawString("? ? ?", 0, 0, 0xAA4D4D4D, false);
             GL11.glPopMatrix();
-            GlStateManager.color(1, 1, 1, 1);
+//            GL11.glColor4f(1, 1, 1, 1);
             GL11.glColor4f(1, 1, 1, 1);
             TextureHelper.refreshTextureBindState();
         } else {

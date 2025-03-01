@@ -8,6 +8,16 @@
 
 package hellfirepvp.astralsorcery;
 
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import hellfirepvp.astralsorcery.common.CommonProxy;
 import hellfirepvp.astralsorcery.common.base.CelestialGatewaySystem;
 import hellfirepvp.astralsorcery.common.cmd.CommandAstralSorcery;
@@ -22,10 +32,6 @@ import hellfirepvp.astralsorcery.common.item.ItemGatedVisibility;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  * Created by HellFirePvP
  * Date: 07.05.2016 / 00:20
  */
-@Mod(modid = AstralSorcery.MODID, name = AstralSorcery.NAME, version = AstralSorcery.VERSION, acceptedMinecraftVersions="[1.10.2]")
+@Mod(modid = AstralSorcery.MODID, name = AstralSorcery.NAME, version = AstralSorcery.VERSION, acceptedMinecraftVersions="[1.7.10]")
 public class AstralSorcery {
 
     public static final String MODID = "astralsorcery";
@@ -111,8 +117,8 @@ public class AstralSorcery {
         return devEnvChache;
     }
 
-    static {
-        FluidRegistry.enableUniversalBucket();
-    }
+//    static {
+//        FluidRegistry.enableUniversalBucket();
+//    }
 
 }

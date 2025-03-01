@@ -11,21 +11,19 @@ package hellfirepvp.astralsorcery.client.sky;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.client.IRenderHandler;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
+
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.glLogicOp;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -36,105 +34,105 @@ import java.util.Random;
  */
 public class RenderDefaultSkybox extends IRenderHandler {
 
-    private static VertexBuffer skyVBO;
-    private static VertexBuffer sky2VBO;
-    private static VertexBuffer starVBO;
+//    private static VertexBuffer skyVBO;
+//    private static VertexBuffer sky2VBO;
+//    private static VertexBuffer starVBO;
 
     private static int starGLCallList = -1;
     private static int glSkyList = -1;
     private static int glSkyList2 = -1;
 
-    private static VertexFormat vertexBufferFormat;
+//    private static VertexFormat vertexBufferFormat;
 
     private static final ResourceLocation MC_DEF_SUN_PNG = new ResourceLocation("textures/environment/sun.png");
     private static final ResourceLocation MC_DEF_MOON_PHASES_PNG = new ResourceLocation("textures/environment/moon_phases.png");
 
     public static void setupDefaultSkybox() {
-        vertexBufferFormat = new VertexFormat();
-        vertexBufferFormat.addElement(new VertexFormatElement(0, VertexFormatElement.EnumType.FLOAT, VertexFormatElement.EnumUsage.POSITION, 3));
+//        vertexBufferFormat = new VertexFormat();
+//        vertexBufferFormat.addElement(new VertexFormatElement(0, VertexFormatElement.EnumType.FLOAT, VertexFormatElement.EnumUsage.POSITION, 3));
 
-        Tessellator tessellator = Tessellator.getInstance();
-        net.minecraft.client.renderer.VertexBuffer vb = tessellator.getBuffer();
+        Tessellator tessellator = Tessellator.instance;
+//        net.minecraft.client.renderer.VertexBuffer vb = tessellator.getBuffer();
 
-        setupStars(vb);
-        setupSky1(vb);
-        setupSky2(vb);
+        setupStars(tessellator);
+        setupSky1(tessellator);
+        setupSky2(tessellator);
     }
 
-    private static void setupSky2(net.minecraft.client.renderer.VertexBuffer vb) {
-        if (sky2VBO != null) sky2VBO.deleteGlBuffers();
+    private static void setupSky2(Tessellator tess) {
+//        if (sky2VBO != null) sky2VBO.deleteGlBuffers();
 
         if (glSkyList2 >= 0) {
             GLAllocation.deleteDisplayLists(glSkyList2);
             glSkyList2 = -1;
         }
 
-        if (OpenGlHelper.useVbo()) {
-            sky2VBO = new VertexBuffer(vertexBufferFormat);
-            setupSkyVertices(vb, -16.0F, true);
-            vb.finishDrawing();
-            vb.reset();
-            sky2VBO.bufferData(vb.getByteBuffer());
-        } else {
+//        if (OpenGlHelper.useVbo()) {
+//            sky2VBO = new VertexBuffer(vertexBufferFormat);
+//            setupSkyVertices(vb, -16.0F, true);
+//            vb.finishDrawing();
+//            vb.reset();
+//            sky2VBO.bufferData(vb.getByteBuffer());
+//        } else {
             glSkyList2 = GLAllocation.generateDisplayLists(1);
             GL11.glNewList(glSkyList2, GL11.GL_COMPILE);
-            setupSkyVertices(vb, -16.0F, true);
-            Tessellator.getInstance().draw();
+            setupSkyVertices(tess, -16.0F, true);
+            Tessellator.instance.draw();
             GL11.glEndList();
-        }
+//        }
     }
 
-    private static void setupSky1(net.minecraft.client.renderer.VertexBuffer vb) {
-        if (skyVBO != null) skyVBO.deleteGlBuffers();
+    private static void setupSky1(Tessellator tess) {
+//        if (skyVBO != null) skyVBO.deleteGlBuffers();
 
         if (glSkyList >= 0) {
             GLAllocation.deleteDisplayLists(glSkyList);
             glSkyList = -1;
         }
 
-        if (OpenGlHelper.useVbo()) {
-            skyVBO = new VertexBuffer(vertexBufferFormat);
-            setupSkyVertices(vb, 16.0F, false);
-            vb.finishDrawing();
-            vb.reset();
-            skyVBO.bufferData(vb.getByteBuffer());
-        } else {
+//        if (OpenGlHelper.useVbo()) {
+//            skyVBO = new VertexBuffer(vertexBufferFormat);
+//            setupSkyVertices(vb, 16.0F, false);
+//            vb.finishDrawing();
+//            vb.reset();
+//            skyVBO.bufferData(vb.getByteBuffer());
+//        } else {
             glSkyList = GLAllocation.generateDisplayLists(1);
             GL11.glNewList(glSkyList, GL11.GL_COMPILE);
-            setupSkyVertices(vb, 16.0F, false);
-            Tessellator.getInstance().draw();
+            setupSkyVertices(tess, 16.0F, false);
+            Tessellator.instance.draw();
             GL11.glEndList();
-        }
+//        }
     }
 
-    private static void setupStars(net.minecraft.client.renderer.VertexBuffer vb) {
-        if (starVBO != null) starVBO.deleteGlBuffers();
+    private static void setupStars(Tessellator tess) {
+//        if (starVBO != null) starVBO.deleteGlBuffers();
 
         if (starGLCallList >= 0) {
             GLAllocation.deleteDisplayLists(starGLCallList);
             starGLCallList = -1;
         }
 
-        if (OpenGlHelper.useVbo()) {
-            starVBO = new VertexBuffer(vertexBufferFormat);
-            setupStarVertices(vb);
-            vb.finishDrawing();
-            vb.reset();
-            starVBO.bufferData(vb.getByteBuffer());
-        } else {
+//        if (OpenGlHelper.useVbo()) {
+//            starVBO = new VertexBuffer(vertexBufferFormat);
+//            setupStarVertices(vb);
+//            vb.finishDrawing();
+//            vb.reset();
+//            starVBO.bufferData(vb.getByteBuffer());
+//        } else {
             starGLCallList = GLAllocation.generateDisplayLists(1);
-            GlStateManager.pushMatrix();
+             GL11.glPushMatrix();
             GL11.glNewList(starGLCallList, GL11.GL_COMPILE);
-            setupStarVertices(vb);
-            Tessellator.getInstance().draw();
+            setupStarVertices(tess);
+            Tessellator.instance.draw();
             GL11.glEndList();
-            GlStateManager.popMatrix();
-        }
+            GL11.glPopMatrix();
+//        }
     }
 
-    private static void setupSkyVertices(net.minecraft.client.renderer.VertexBuffer vb, float y, boolean invert) {
-        vb.begin(7, DefaultVertexFormats.POSITION);
-
+    private static void setupSkyVertices(Tessellator tess, float y, boolean invert) {
+//        vb.begin(7, DefaultVertexFormats.POSITION);
+        tess.startDrawingQuads();
         for (int k = -384; k <= 384; k += 64) {
             for (int l = -384; l <= 384; l += 64) {
 
@@ -145,18 +143,22 @@ public class RenderDefaultSkybox extends IRenderHandler {
                     f1 = (float) k;
                     f = (float) (k + 64);
                 }
-
-                vb.pos((double) f, (double) y, (double) l).endVertex();
-                vb.pos((double) f1, (double) y, (double) l).endVertex();
-                vb.pos((double) f1, (double) y, (double) (l + 64)).endVertex();
-                vb.pos((double) f, (double) y, (double) (l + 64)).endVertex();
+                tess.addVertex((double) f, (double) y, (double) l);
+                tess.addVertex((double) f1, (double) y, (double) l);
+                tess.addVertex((double) f1, (double) y, (double) (l + 64));
+                tess.addVertex((double) f, (double) y, (double) (l + 64));
+//                vb.pos((double) f, (double) y, (double) l).endVertex();
+//                vb.pos((double) f1, (double) y, (double) l).endVertex();
+//                vb.pos((double) f1, (double) y, (double) (l + 64)).endVertex();
+//                vb.pos((double) f, (double) y, (double) (l + 64)).endVertex();
             }
         }
     }
 
-    private static void setupStarVertices(net.minecraft.client.renderer.VertexBuffer vb) {
+    private static void setupStarVertices(Tessellator tess) {
         Random random = new Random(10842L);
-        vb.begin(7, DefaultVertexFormats.POSITION);
+//        vb.begin(7, DefaultVertexFormats.POSITION);
+        tess.startDrawingQuads();
         for (int i = 0; i < 1500; ++i) {
             double x = (double) (random.nextFloat() * 2.0F - 1.0F);
             double y = (double) (random.nextFloat() * 2.0F - 1.0F);
@@ -202,7 +204,9 @@ public class RenderDefaultSkybox extends IRenderHandler {
 
                     double d25 = d24 * d9 - d22 * d10;
                     double d26 = d22 * d9 + d24 * d10;
-                    vb.pos(d5 + d25, d6 + d23, d7 + d26).endVertex();
+
+                    tess.addVertex(d5 + d25, d6 + d23, d7 + d26);
+//                    vb.pos(d5 + d25, d6 + d23, d7 + d26).endVertex();
                 }
             }
         }
@@ -218,8 +222,8 @@ public class RenderDefaultSkybox extends IRenderHandler {
     }
 
     private static void renderDefaultSkybox(float partialTicks) {
-        GlStateManager.disableTexture2D();
-        Vec3d vec3 = Minecraft.getMinecraft().world.getSkyColor(Minecraft.getMinecraft().getRenderViewEntity(), partialTicks);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        Vec3 vec3 = Minecraft.getMinecraft().theWorld.getSkyColor(Minecraft.getMinecraft().renderViewEntity, partialTicks);
         float f = (float) vec3.xCoord;
         float f1 = (float) vec3.yCoord;
         float f2 = (float) vec3.zCoord;
@@ -233,38 +237,39 @@ public class RenderDefaultSkybox extends IRenderHandler {
             f2 = f5;
         }
 
-        GlStateManager.color(f, f1, f2);
-        Tessellator tessellator = Tessellator.getInstance();
-        net.minecraft.client.renderer.VertexBuffer vb = tessellator.getBuffer();
-        GlStateManager.depthMask(false);
-        GlStateManager.enableFog();
-        GlStateManager.color(f, f1, f2);
+        GL11.glColor3f(f, f1, f2);
+        Tessellator tessellator = Tessellator.instance;
+//        net.minecraft.client.renderer.VertexBuffer vb = tessellator.getBuffer();
+         GL11.glDepthMask(false);
+//        GlStateManager.enableFog();
+        GL11.glColor3f(f, f1, f2);
 
-        if (OpenGlHelper.useVbo()) {
-            skyVBO.bindBuffer();
-            GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-            GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0L);
-            skyVBO.drawArrays(7);
-            skyVBO.unbindBuffer();
-            GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        } else {
-            GlStateManager.callList(glSkyList);
-        }
+//        if (OpenGlHelper.useVbo()) {
+//            skyVBO.bindBuffer();
+//            GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+//            GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0L);
+//            skyVBO.drawArrays(7);
+//            skyVBO.unbindBuffer();
+//            GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+//        } else {
+            GL11.glCallList(glSkyList);
+//        }
 
-        GlStateManager.disableFog();
-        GlStateManager.disableAlpha();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+//        GlStateManager.disableFog();
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL_BLEND);
+        OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+//        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         RenderHelper.disableStandardItemLighting();
-        float[] afloat = Minecraft.getMinecraft().world.provider.calcSunriseSunsetColors(Minecraft.getMinecraft().world.getCelestialAngle(partialTicks), partialTicks);
+        float[] afloat = Minecraft.getMinecraft().theWorld.provider.calcSunriseSunsetColors(Minecraft.getMinecraft().theWorld.getCelestialAngle(partialTicks), partialTicks);
 
         if (afloat != null) {
-            GlStateManager.disableTexture2D();
-            GlStateManager.shadeModel(7425);
-            GlStateManager.pushMatrix();
-            GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(MathHelper.sin(Minecraft.getMinecraft().world.getCelestialAngleRadians(partialTicks)) < 0.0F ? 180.0F : 0.0F, 0.0F, 0.0F, 1.0F);
-            GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GL11.glShadeModel(7425);
+             GL11.glPushMatrix();
+            GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
+            GL11.glRotatef(MathHelper.sin(Minecraft.getMinecraft().theWorld.getCelestialAngleRadians(partialTicks)) < 0.0F ? 180.0F : 0.0F, 0.0F, 0.0F, 1.0F);
+            GL11.glRotatef(90.0F, 0.0F, 0.0F, 1.0F);
             float f6 = afloat[0];
             float f7 = afloat[1];
             float f8 = afloat[2];
@@ -277,135 +282,173 @@ public class RenderDefaultSkybox extends IRenderHandler {
                 f7 = f10;
                 f8 = f11;
             }
-
-            vb.begin(6, DefaultVertexFormats.POSITION_COLOR);
-            vb.pos(0.0D, 100.0D, 0.0D).color(f6, f7, f8, afloat[3]).endVertex();
+            tessellator.startDrawing(6);
+            tessellator.setColorRGBA_F(f6, f7, f8, afloat[3]);
+            tessellator.addVertex(0.0D, 100.0D, 0.0D);
+//            vb.begin(6, DefaultVertexFormats.POSITION_COLOR);
+//            vb.pos(0.0D, 100.0D, 0.0D).color(f6, f7, f8, afloat[3]).endVertex();
             //int j = 16;
 
             for (int l = 0; l <= 16; ++l) {
                 float f21 = (float) l * (float) Math.PI * 2.0F / 16.0F;
                 float f12 = MathHelper.sin(f21);
                 float f13 = MathHelper.cos(f21);
-                vb.pos((double) (f12 * 120.0F), (double) (f13 * 120.0F), (double) (-f13 * 40.0F * afloat[3])).color(afloat[0], afloat[1], afloat[2], 0.0F).endVertex();
+                tessellator.setColorRGBA_F(afloat[0], afloat[1], afloat[2], 0.0F);
+                tessellator.addVertex((double) (f12 * 120.0F), (double) (f13 * 120.0F), (double) (-f13 * 40.0F * afloat[3]));
+//                vb.pos((double) (f12 * 120.0F), (double) (f13 * 120.0F), (double) (-f13 * 40.0F * afloat[3])).color(afloat[0], afloat[1], afloat[2], 0.0F).endVertex();
             }
 
             tessellator.draw();
-            GlStateManager.popMatrix();
-            GlStateManager.shadeModel(7424);
+            GL11.glPopMatrix();
+            GL11.glShadeModel(7424);
         }
 
-        GlStateManager.enableTexture2D();
-        GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0);
-        GlStateManager.pushMatrix();
-        float f16 = 1.0F - Minecraft.getMinecraft().world.getRainStrength(partialTicks);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, f16);
-        GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(Minecraft.getMinecraft().world.getCelestialAngle(partialTicks) * 360.0F, 1.0F, 0.0F, 0.0F);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO);
+//        GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0);
+         GL11.glPushMatrix();
+        float f16 = 1.0F - Minecraft.getMinecraft().theWorld.getRainStrength(partialTicks);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, f16);
+        GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(Minecraft.getMinecraft().theWorld.getCelestialAngle(partialTicks) * 360.0F, 1.0F, 0.0F, 0.0F);
         float f17 = 30.0F;
         Minecraft.getMinecraft().renderEngine.bindTexture(MC_DEF_SUN_PNG);
-        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-        vb.pos((double) (-f17), 100.0D, (double) (-f17)).tex(0.0D, 0.0D).endVertex();
-        vb.pos((double) f17, 100.0D, (double) (-f17)).tex(1.0D, 0.0D).endVertex();
-        vb.pos((double) f17, 100.0D, (double) f17).tex(1.0D, 1.0D).endVertex();
-        vb.pos((double) (-f17), 100.0D, (double) f17).tex(0.0D, 1.0D).endVertex();
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV((double) (-f17), 100.0D, (double) (-f17),0.0D, 0.0D);
+        tessellator.addVertexWithUV((double) f17, 100.0D, (double) (-f17),1.0D, 0.0D);
+        tessellator.addVertexWithUV((double) f17, 100.0D, (double) f17,1.0D, 1.0D);
+        tessellator.addVertexWithUV((double) (-f17), 100.0D, (double) f17,0.0D, 1.0D);
+//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos((double) (-f17), 100.0D, (double) (-f17)).tex(0.0D, 0.0D).endVertex();
+//        vb.pos((double) f17, 100.0D, (double) (-f17)).tex(1.0D, 0.0D).endVertex();
+//        vb.pos((double) f17, 100.0D, (double) f17).tex(1.0D, 1.0D).endVertex();
+//        vb.pos((double) (-f17), 100.0D, (double) f17).tex(0.0D, 1.0D).endVertex();
         tessellator.draw();
         f17 = 20.0F;
         Minecraft.getMinecraft().renderEngine.bindTexture(MC_DEF_MOON_PHASES_PNG);
-        int i = Minecraft.getMinecraft().world.getMoonPhase();
+        int i = Minecraft.getMinecraft().theWorld.getMoonPhase();
         int k = i % 4;
         int i1 = i / 4 % 2;
         float f22 = (float) (k) / 4.0F;
         float f23 = (float) (i1) / 2.0F;
         float f24 = (float) (k + 1) / 4.0F;
         float f14 = (float) (i1 + 1) / 2.0F;
-        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-        vb.pos((double) (-f17), -100.0D, (double) f17).tex((double) f24, (double) f14).endVertex();
-        vb.pos((double) f17, -100.0D, (double) f17).tex((double) f22, (double) f14).endVertex();
-        vb.pos((double) f17, -100.0D, (double) (-f17)).tex((double) f22, (double) f23).endVertex();
-        vb.pos((double) (-f17), -100.0D, (double) (-f17)).tex((double) f24, (double) f23).endVertex();
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV((double) (-f17), -100.0D, (double) f17, (double) f24, (double) f14);
+        tessellator.addVertexWithUV((double) f17, -100.0D, (double) f17, (double) f22, (double) f14);
+        tessellator.addVertexWithUV((double) f17, -100.0D, (double) (-f17), (double) f22, (double) f23);
+        tessellator.addVertexWithUV((double) (-f17), -100.0D, (double) (-f17), (double) f24, (double) f23);
+//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos((double) (-f17), -100.0D, (double) f17).tex((double) f24, (double) f14).endVertex();
+//        vb.pos((double) f17, -100.0D, (double) f17).tex((double) f22, (double) f14).endVertex();
+//        vb.pos((double) f17, -100.0D, (double) (-f17)).tex((double) f22, (double) f23).endVertex();
+//        vb.pos((double) (-f17), -100.0D, (double) (-f17)).tex((double) f24, (double) f23).endVertex();
         tessellator.draw();
-        GlStateManager.disableTexture2D();
-        float f15 = Minecraft.getMinecraft().world.getStarBrightness(partialTicks) * f16;
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        float f15 = Minecraft.getMinecraft().theWorld.getStarBrightness(partialTicks) * f16;
 
         if (f15 > 0.0F) {
-            GlStateManager.color(f15, f15, f15, f15);
+            GL11.glColor4f(f15, f15, f15, f15);
 
-            if (OpenGlHelper.useVbo()) {
-                starVBO.bindBuffer();
-                GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-                GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0L);
-                starVBO.drawArrays(7);
-                starVBO.unbindBuffer();
-                GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-            } else {
-                GlStateManager.callList(starGLCallList);
-            }
+//            if (OpenGlHelper.useVbo()) {
+//                starVBO.bindBuffer();
+//                GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+//                GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0L);
+//                starVBO.drawArrays(7);
+//                starVBO.unbindBuffer();
+//                GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+//            } else {
+                GL11.glCallList(starGLCallList);
+//            }
         }
 
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableFog();
-        GlStateManager.popMatrix();
-        GlStateManager.disableTexture2D();
-        GlStateManager.color(0.0F, 0.0F, 0.0F);
-        double d0 = Minecraft.getMinecraft().player.getPositionEyes(partialTicks).yCoord - Minecraft.getMinecraft().world.getHorizon();
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glDisable(GL11.GL_BLEND);
+//        GlStateManager.disableBlend();
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+//        GlStateManager.enableFog();
+        GL11.glPopMatrix();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glColor3f(0.0F, 0.0F, 0.0F);
+        double d0 = Minecraft.getMinecraft().thePlayer.getPosition(partialTicks).yCoord - Minecraft.getMinecraft().theWorld.getHorizon();
 
         if (d0 < 0.0D) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(0.0F, 12.0F, 0.0F);
+             GL11.glPushMatrix();
+            GL11.glTranslatef(0.0F, 12.0F, 0.0F);
 
-            if (OpenGlHelper.useVbo()) {
-                sky2VBO.bindBuffer();
-                GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-                GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0L);
-                sky2VBO.drawArrays(7);
-                sky2VBO.unbindBuffer();
-                GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-            } else {
-                GlStateManager.callList(glSkyList2);
-            }
+//            if (OpenGlHelper.useVbo()) {
+//                sky2VBO.bindBuffer();
+//                GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+//                GL11.glVertexPointer(3, GL11.GL_FLOAT, 12, 0L);
+//                sky2VBO.drawArrays(7);
+//                sky2VBO.unbindBuffer();
+//                GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+//            } else {
+                GL11.glCallList(glSkyList2);
+//            }
 
-            GlStateManager.popMatrix();
+            GL11.glPopMatrix();
             //float f18 = 1.0F;
             float f19 = -((float) (d0 + 65.0D));
             //float f20 = -1.0F;
-            vb.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            vb.pos(-1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(-1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(-1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(-1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-            vb.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+            tessellator.startDrawingQuads();
+            tessellator.setColorRGBA(0, 0, 0, 255);
+            tessellator.addVertex(-1.0D, (double) f19, 1.0D);
+            tessellator.addVertex(1.0D, (double) f19, 1.0D);
+            tessellator.addVertex(1.0D, -1.0D, 1.0D);
+            tessellator.addVertex(-1.0D, -1.0D, 1.0D);
+            tessellator.addVertex(-1.0D, -1.0D, -1.0D);
+            tessellator.addVertex(1.0D, -1.0D, -1.0D);
+            tessellator.addVertex(1.0D, (double) f19, -1.0D);
+            tessellator.addVertex(-1.0D, (double) f19, -1.0D);
+            tessellator.addVertex(1.0D, -1.0D, -1.0D);
+            tessellator.addVertex(1.0D, -1.0D, 1.0D);
+            tessellator.addVertex(1.0D, (double) f19, 1.0D);
+            tessellator.addVertex(1.0D, (double) f19, -1.0D);
+            tessellator.addVertex(-1.0D, (double) f19, -1.0D);
+            tessellator.addVertex(-1.0D, (double) f19, 1.0D);
+            tessellator.addVertex(-1.0D, -1.0D, 1.0D);
+            tessellator.addVertex(-1.0D, -1.0D, -1.0D);
+            tessellator.addVertex(-1.0D, -1.0D, -1.0D);
+            tessellator.addVertex(-1.0D, -1.0D, 1.0D);
+            tessellator.addVertex(1.0D, -1.0D, 1.0D);
+            tessellator.addVertex(1.0D, -1.0D, -1.0D);
+//            vb.begin(7, DefaultVertexFormats.POSITION_COLOR);
+//            vb.pos(-1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(-1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(-1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(-1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+//            vb.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
             tessellator.draw();
         }
 
-        if (Minecraft.getMinecraft().world.provider.isSkyColored()) {
-            GlStateManager.color(f * 0.2F + 0.04F, f1 * 0.2F + 0.04F, f2 * 0.6F + 0.1F);
+        if (Minecraft.getMinecraft().theWorld.provider.isSkyColored()) {
+            GL11.glColor3f(f * 0.2F + 0.04F, f1 * 0.2F + 0.04F, f2 * 0.6F + 0.1F);
         } else {
-            GlStateManager.color(f, f1, f2);
+            GL11.glColor3f(f, f1, f2);
         }
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(0.0F, -((float) (d0 - 16.0D)), 0.0F);
-        GlStateManager.callList(glSkyList2);
-        GlStateManager.popMatrix();
-        GlStateManager.enableTexture2D();
-        GlStateManager.depthMask(true);
+         GL11.glPushMatrix();
+        GL11.glTranslatef(0.0F, -((float) (d0 - 16.0D)), 0.0F);
+        GL11.glCallList(glSkyList2);
+        GL11.glPopMatrix();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDepthMask(true);
     }
 
 }

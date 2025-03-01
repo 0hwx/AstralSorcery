@@ -8,6 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk;
 
+import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
 import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
@@ -15,8 +16,7 @@ import hellfirepvp.astralsorcery.common.enchantment.EnchantmentPlayerWornTick;
 import hellfirepvp.astralsorcery.common.registry.RegistryEnchantments;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public class PlayerPerkHandler implements ITickHandler {
         }
         boolean client = ticked.getEntityWorld().isRemote;
         for (EnchantmentPlayerWornTick e : RegistryEnchantments.wearableTickEnchantments) {
-            int max = EnchantmentHelper.getMaxEnchantmentLevel(e, ticked);
+            int max = EnchantmentHelper.getMaxEnchantmentLevel(e.effectId, ticked.getLastActiveItems()); // todo check this
             if(max > 0) {
                 e.onWornTick(client, ticked, max);
             }

@@ -1,5 +1,10 @@
 package hellfirepvp.astralsorcery.client.event;
 
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
@@ -8,18 +13,15 @@ import hellfirepvp.astralsorcery.client.util.UIGateway;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.client.PktRequestTeleport;
 import hellfirepvp.astralsorcery.common.tile.TileCelestialGateway;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.data.WorldBlockPos;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 import java.awt.*;
 import java.util.Collections;
@@ -53,8 +55,8 @@ public class ClientGatewayHandler {
 
         UIGateway ui = EffectHandler.getInstance().getUiGateway();
         if(ui != null) {
-            EntityPlayer player = Minecraft.getMinecraft().player;
-            TileCelestialGateway gate = MiscUtils.getTileAt(player.world, new Vector3(player, true).toBlockPos(), TileCelestialGateway.class, true);
+            EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+            TileCelestialGateway gate = MiscUtils.getTileAt(player.worldObj, new Vector3(player, true).toBlockPos(), TileCelestialGateway.class, true);
             if(gate != null && gate.hasMultiblock() && gate.doesSeeSky()) {
                 if(lastScreenshotPos != null) {
                     WorldBlockPos currentPos = new WorldBlockPos(gate);
@@ -66,12 +68,12 @@ public class ClientGatewayHandler {
                     captureScreenshot(gate);
                 }
 
-                UIGateway.GatewayEntry entry = ui.findMatchingEntry(MathHelper.wrapDegrees(player.rotationYaw), MathHelper.wrapDegrees(player.rotationPitch));
+                UIGateway.GatewayEntry entry = ui.findMatchingEntry(MathHelper.wrapAngleTo180_float(player.rotationYaw), MathHelper.wrapAngleTo180_float(player.rotationPitch));
                 if(entry == null) {
                     focusingEntry = null;
                     focusTicks = 0;
                 } else {
-                    if(!Minecraft.getMinecraft().gameSettings.keyBindUseItem.isKeyDown()) {
+                    if(!Minecraft.getMinecraft().gameSettings.keyBindUseItem.isPressed()) {
                         focusTicks = 0;
                         focusingEntry = null;
                     } else {
@@ -98,7 +100,7 @@ public class ClientGatewayHandler {
         }
 
         if(focusingEntry != null) {
-            Vector3 dir = focusingEntry.relativePos.clone().add(ui.getPos()).subtract(new Vector3(Minecraft.getMinecraft().player, true).addY(1.62));
+            Vector3 dir = focusingEntry.relativePos.clone().add(ui.getPos()).subtract(new Vector3(Minecraft.getMinecraft().thePlayer, true).addY(1.62));
             Vector3 mov = dir.clone().normalize().multiply(0.25F).negate();
             Vector3 pos = focusingEntry.relativePos.clone().add(ui.getPos());
             if(focusTicks > 40) {
@@ -187,13 +189,14 @@ public class ClientGatewayHandler {
 
     @SideOnly(Side.CLIENT)
     private void captureScreenshot(TileCelestialGateway gate) {
-        ResourceLocation gatewayScreenshot = ClientScreenshotCache.tryQueryTextureFor(gate.getWorld().provider.getDimension(), gate.getPos());
-        if(gatewayScreenshot == null && Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.rotationPitch <= 0 &&
-                Minecraft.getMinecraft().currentScreen == null && Minecraft.getMinecraft().renderGlobal.getRenderedChunks() > 200) {
+        BlockPos pos = new BlockPos(gate.xCoord, gate.yCoord, gate.zCoord);
+        ResourceLocation gatewayScreenshot = ClientScreenshotCache.tryQueryTextureFor(gate.getWorldObj().provider.dimensionId, pos);
+        if(gatewayScreenshot == null && Minecraft.getMinecraft().thePlayer != null && Minecraft.getMinecraft().thePlayer.rotationPitch <= 0 &&
+                Minecraft.getMinecraft().currentScreen == null) { //&& Minecraft.getMinecraft().renderGlobal.getRenderedChunks() > 200) {
             screenshotCooldown = 10;
             lastScreenshotPos = new WorldBlockPos(gate);
 
-            ClientScreenshotCache.takeViewScreenshotFor(gate.getWorld().provider.getDimension(), gate.getPos());
+            ClientScreenshotCache.takeViewScreenshotFor(gate.getWorldObj().provider.dimensionId, pos);
         }
     }
 

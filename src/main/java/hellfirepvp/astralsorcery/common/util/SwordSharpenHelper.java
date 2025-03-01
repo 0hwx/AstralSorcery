@@ -13,7 +13,6 @@ import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
@@ -69,9 +68,9 @@ public class SwordSharpenHelper {
         return stack != null && stack.getItem() != null && (stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemAxe);
     }
 
-    public static void applySharpenModifier(ItemStack stack, EntityEquipmentSlot slot, Multimap<String, AttributeModifier> map) {
-        if(isSwordSharpened(stack) && slot.equals(EntityEquipmentSlot.MAINHAND)) {
-            map.put(SharedMonsterAttributes.ATTACK_DAMAGE.getAttributeUnlocalizedName(), MODIFIER_SHARPENED);
+    public static void applySharpenModifier(ItemStack stack, int slot, Multimap<String, AttributeModifier> map) {
+        if(isSwordSharpened(stack)){// && slot.equals(EntityEquipmentSlot.MAINHAND)) {
+            map.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(), MODIFIER_SHARPENED);
         }
     }
 

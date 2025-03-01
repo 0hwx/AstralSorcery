@@ -8,13 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.base;
 
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 import javax.annotation.Nullable;
 
@@ -66,9 +66,9 @@ public enum Mods {
         FMLInterModComms.sendMessage(this.modId, message, value);
     }
 
-    public void sendIMC(String message, ResourceLocation value) {
-        FMLInterModComms.sendMessage(this.modId, message, value);
-    }
+//    public void sendIMC(String message, ResourceLocation value) {
+//        FMLInterModComms.sendMessage(this.modId, message, value);
+//    }
 
     @Nullable
     public static Class<?> getGCPlayerClass() {

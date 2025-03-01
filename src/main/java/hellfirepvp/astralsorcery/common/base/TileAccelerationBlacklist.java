@@ -15,8 +15,8 @@ import hellfirepvp.astralsorcery.common.tile.TileFakeTree;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.tile.base.TileSourceBase;
 import hellfirepvp.astralsorcery.common.tile.base.TileTransmissionBase;
+import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ITickable;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;

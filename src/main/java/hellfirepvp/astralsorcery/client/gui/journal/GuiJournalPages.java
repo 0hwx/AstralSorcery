@@ -97,7 +97,9 @@ public class GuiJournalPages extends GuiScreenJournal {
 
         if(origin != null) {
             origin.rescaleAndRefresh = false;
-            origin.setGuiSize(width, height);
+//            origin.width = width;
+//            origin.height = height;
+//            origin.setGuiSize(width, height); //todo check this
             origin.initGui();
         }
     }
@@ -310,7 +312,7 @@ public class GuiJournalPages extends GuiScreenJournal {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if(mouseButton != 0) return;

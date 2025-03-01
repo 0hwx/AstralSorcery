@@ -16,11 +16,11 @@ import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.tile.network.TileCrystalLens;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -33,7 +33,7 @@ import java.util.List;
  * Created by HellFirePvP
  * Date: 20.09.2016 / 13:07
  */
-public class TESRLens extends TileEntitySpecialRenderer<TileCrystalLens> {
+public class TESRLens extends TileEntitySpecialRenderer {
 
     private static final ASlens modelLensPart = new ASlens();
     private static final BindableResource texLensPart = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MODELS, "base/lens");
@@ -42,7 +42,8 @@ public class TESRLens extends TileEntitySpecialRenderer<TileCrystalLens> {
     private static final BindableResource texLensColorFrame = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MODELS, "lens/lens_color");
 
     @Override
-    public void renderTileEntityAt(TileCrystalLens te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileCrystalLens te = (TileCrystalLens) tile;
         List<BlockPos> linked = te.getLinkedPositions();
         float yaw = 0; //Degree
         float pitch = 0; //Degree
@@ -88,11 +89,11 @@ public class TESRLens extends TileEntitySpecialRenderer<TileCrystalLens> {
 
     private void renderHandle(float yaw, float pitch) {
 
-        GlStateManager.pushMatrix();
-        GlStateManager.rotate(-30.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(165.0F, 1.0F, 0.0F, 0.0F);
+         GL11.glPushMatrix();
+        GL11.glRotatef(-30.0F, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(165.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.popMatrix();
+        GL11.glPopMatrix();
 
         texLensPart.bind();
         modelLensPart.render(null, yaw, pitch, 0, 0, 0, 1);

@@ -8,9 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
+import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.client.audio.SoundManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
+import net.minecraftforge.client.event.sound.SoundEvent;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -63,7 +64,7 @@ public class SoundUtils {
 
         @SideOnly(Side.CLIENT)
         private EntityPlayer getClientPlayer() {
-            return Minecraft.getMinecraft().player;
+            return Minecraft.getMinecraft().thePlayer;
         }
 
     }*/
@@ -80,7 +81,7 @@ public class SoundUtils {
 
         private final SoundCategory category;
 
-        public CategorizedSoundEvent(ResourceLocation soundNameIn, SoundCategory category) {
+        public CategorizedSoundEvent(SoundManager soundNameIn, SoundCategory category) {
             super(soundNameIn);
             this.category = category;
         }

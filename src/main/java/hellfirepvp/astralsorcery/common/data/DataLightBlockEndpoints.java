@@ -8,10 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.data;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -109,12 +109,12 @@ public class DataLightBlockEndpoints extends AbstractData {
     }
 
     public boolean doesPositionReceiveStarlightClient(World world, BlockPos pos) {
-        int dim = world.provider.getDimension();
+        int dim = world.provider.dimensionId;
         return clientPositions.containsKey(dim) && clientPositions.get(dim).contains(pos);
     }
 
     public boolean doesPositionReceiveStarlightServer(World world, BlockPos pos) {
-        int dim = world.provider.getDimension();
+        int dim = world.provider.dimensionId;
         return serverPositions.containsKey(dim) && serverPositions.get(dim).contains(pos);
     }
 
@@ -176,7 +176,7 @@ public class DataLightBlockEndpoints extends AbstractData {
     public void handleIncomingData(AbstractData serverData) {
         if(!(serverData instanceof DataLightBlockEndpoints)) return;
 
-        for (String dimStr : ((DataLightBlockEndpoints) serverData).clientReadBuffer.getKeySet()) {
+        for (String dimStr : ((DataLightBlockEndpoints) serverData).clientReadBuffer.func_150296_c()) {
             int dimId = Integer.parseInt(dimStr);
             NBTTagList list = ((DataLightBlockEndpoints) serverData).clientReadBuffer.getTagList(dimStr, 10);
             List<BlockPos> positions = clientPositions.get(dimId);

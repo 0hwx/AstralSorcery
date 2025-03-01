@@ -8,10 +8,10 @@
 
 package hellfirepvp.astralsorcery.client.util.item;
 
-import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ICustomModelLoader;
-import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.IModelCustom;
+import net.minecraftforge.client.model.IModelCustomLoader;
+import net.minecraftforge.client.model.ModelFormatException;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -20,23 +20,38 @@ import net.minecraftforge.client.model.IModel;
  * Created by HellFirePvP
  * Date: 23.07.2016 / 16:17
  */
-public class DummyModelLoader implements ICustomModelLoader {
+public class DummyModelLoader implements IModelCustomLoader {
 
-    @Override
-    public boolean accepts(ResourceLocation modelLocation) {
-        return ItemRenderRegistry.isRegistered(modelLocation);
-    }
-
-    @Override
-    public IModel loadModel(ResourceLocation modelLocation) throws Exception {
-        return new ItemRendererModelDummy(modelLocation);
-    }
-
-    @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {}
+//    @Override
+//    public boolean accepts(ResourceLocation modelLocation) {
+//        return ItemRenderRegistry.isRegistered(modelLocation);
+//    }
+//
+//    @Override
+//    public IModel loadModel(ResourceLocation modelLocation) throws Exception {
+//        return new ItemRendererModelDummy(modelLocation);
+//    }
+//
+//    @Override
+//    public void onResourceManagerReload(IResourceManager resourceManager) {}
 
     @Override
     public String toString() {
         return "IItemRenderer-DummyModelLoader";
+    }
+
+    @Override
+    public String getType() {
+        return "";
+    }
+
+    @Override
+    public String[] getSuffixes() {
+        return new String[0];
+    }
+
+    @Override
+    public IModelCustom loadInstance(ResourceLocation modelLocation) throws ModelFormatException {
+        return new ItemRendererModelDummy(modelLocation);
     }
 }

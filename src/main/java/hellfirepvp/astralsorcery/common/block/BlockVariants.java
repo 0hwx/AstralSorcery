@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 
 import java.util.List;
 
@@ -21,12 +21,14 @@ import java.util.List;
  */
 public interface BlockVariants {
 
-    public List<IBlockState> getValidStates();
+    public List<Block> getValidStates();
 
-    public String getStateName(IBlockState state);
+    public String getMetaName(int meta);
 
-    default public String getBlockName(IBlockState state) {
-        return state.getBlock().getClass().getSimpleName();
+    int getMeta();
+
+    default public String getBlockName(Block state) {
+        return state.getClass().getSimpleName();
     }
 
 }

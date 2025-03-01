@@ -18,12 +18,11 @@ import hellfirepvp.astralsorcery.common.starlight.WorldNetworkHandler;
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionReceiver;
 import hellfirepvp.astralsorcery.common.starlight.transmission.NodeConnection;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.CrystalCalculations;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -41,7 +40,7 @@ import java.util.Map;
  */
 public class TransmissionChain {
 
-    private List<ChunkPos> involvedChunks = new LinkedList<>();
+    private List<ChunkCoordIntPair> involvedChunks = new LinkedList<>();
     private List<LightConnection> foundConnections = new LinkedList<>();
     private Map<BlockPos, Float> remainMultiplierMap = new HashMap<>();
 
@@ -61,9 +60,9 @@ public class TransmissionChain {
             TransmissionChain chain = buildFromSource(netHandler, sourcePos);
             handle.threadTransmissionChainCallback(chain, source, netHandler, sourcePos);
             DataLightConnections connections = SyncDataHolder.getDataServer(SyncDataHolder.DATA_LIGHT_CONNECTIONS);
-            connections.updateNewConnectionsThreaded(netHandler.getWorld().provider.getDimension(), chain.getFoundConnections());
+            connections.updateNewConnectionsThreaded(netHandler.getWorld().provider.dimensionId, chain.getFoundConnections());
             DataLightBlockEndpoints endpoints = SyncDataHolder.getDataServer(SyncDataHolder.DATA_LIGHT_BLOCK_ENDPOINTS);
-            endpoints.updateNewEndpoints(netHandler.getWorld().provider.getDimension(), chain.resolvedNormalBlockPositions);
+            endpoints.updateNewEndpoints(netHandler.getWorld().provider.dimensionId, chain.resolvedNormalBlockPositions);
         });
         tr.setName("TrChainCalculationThread");
         tr.start();
@@ -86,10 +85,9 @@ public class TransmissionChain {
         Iterator<BlockPos> iterator = uncheckedEndpointsBlock.iterator();
         while (iterator.hasNext()) {
             BlockPos pos = iterator.next();
-            if (MiscUtils.isChunkLoaded(world, new ChunkPos(pos))) {
-                IBlockState state = world.getBlockState(pos);
-                Block b = state.getBlock();
-                if (b instanceof IBlockStarlightRecipient) continue;
+            if (MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ()))) {
+                Block block = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+                if (block instanceof IBlockStarlightRecipient) continue;
                 if (!resolvedNormalBlockPositions.contains(pos)) {
                     resolvedNormalBlockPositions.add(pos);
                 }
@@ -102,7 +100,7 @@ public class TransmissionChain {
         if(uncheckedEndpointsBlock.contains(pos) && !resolvedNormalBlockPositions.contains(pos)) {
             resolvedNormalBlockPositions.add(pos);
             DataLightBlockEndpoints endpoints = SyncDataHolder.getDataServer(SyncDataHolder.DATA_LIGHT_BLOCK_ENDPOINTS);
-            endpoints.updateNewEndpoint(world.provider.getDimension(), pos);
+            endpoints.updateNewEndpoint(world.provider.dimensionId, pos);
         }
     }
 
@@ -155,7 +153,7 @@ public class TransmissionChain {
     //After calculating everything...
     private void calculateInvolvedChunks() {
         for (BlockPos nodePos : remainMultiplierMap.keySet()) {
-            ChunkPos ch = new ChunkPos(nodePos);
+            ChunkCoordIntPair ch = new ChunkCoordIntPair(nodePos.chunkX(), nodePos.chunkZ());
             if(!involvedChunks.contains(ch)) involvedChunks.add(ch);
         }
     }
@@ -174,7 +172,7 @@ public class TransmissionChain {
         return transmissionUpdateList;
     }
 
-    public List<ChunkPos> getInvolvedChunks() {
+    public List<ChunkCoordIntPair> getInvolvedChunks() {
         return involvedChunks;
     }
 

@@ -8,21 +8,20 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.item.ItemCraftingComponent;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -40,14 +39,16 @@ public class BlockCustomSandOre extends BlockFalling implements BlockCustomName,
 
     private static final Random rand = new Random();
 
-    public static PropertyEnum<OreType> ORE_TYPE = PropertyEnum.create("oretype", OreType.class);
+    private IIcon[] icons = new IIcon[OreType.values().length];
+//    public static PropertyEnum<OreType> ORE_TYPE = PropertyEnum.create("oretype", OreType.class);
 
     public BlockCustomSandOre() {
-        super(Material.SAND);
+        super(Material.sand);
         setHardness(0.5F);
-        setSoundType(SoundType.SAND);
+//        setSoundType(SoundType.SAND);
         setHarvestLevel("shovel", 1);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
+        setBlockName("BlockCustomSandOre");
     }
 
     @Override
@@ -57,28 +58,28 @@ public class BlockCustomSandOre extends BlockFalling implements BlockCustomName,
         }
     }
 
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        OreType type = state.getValue(ORE_TYPE);
-        return type == null ? 0 : type.getMeta();
-    }
+//    @Override
+//    public int getMeta(Block state) {
+//        OreType type = state.getValue(ORE_TYPE);
+//        return type == null ? 0 : type.getMeta();
+//    }
+//
+//    @Override
+//    public Block getStateFromMeta(int meta) {
+//        return meta < OreType.values().length ? getDefaultState().withProperty(ORE_TYPE, OreType.values()[meta]) : getDefaultState();
+//    }
+//
+//    @Override
+//    protected BlockStateContainer createBlockState() {
+//        return new BlockStateContainer(this, ORE_TYPE);
+//    }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return meta < OreType.values().length ? getDefaultState().withProperty(ORE_TYPE, OreType.values()[meta]) : getDefaultState();
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, ORE_TYPE);
-    }
-
-    @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        OreType type = state.getValue(ORE_TYPE);
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
+//        OreType type = state.getValue(ORE_TYPE);
         List<ItemStack> drops = new ArrayList<>();
-        switch (type) {
-            case AQUAMARINE:
+        switch (metadata) {
+            case 0://AQUAMARINE
                 int f = fortune + 3;
                 int i = rand.nextInt(f * 2) - 1;
                 if(i < 0) {
@@ -89,55 +90,79 @@ public class BlockCustomSandOre extends BlockFalling implements BlockCustomName,
                 }
                 break;
         }
-        return drops;
+        return (ArrayList<ItemStack>) drops;
     }
 
     @Override
-    public int damageDropped(IBlockState state) {
-        return getMetaFromState(state);
+    public int damageDropped(int meta) {
+        return meta;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube() {
         return true;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
+    public boolean isNormalCube() {
         return true;
     }
 
     @Override
-    public boolean isFullBlock(IBlockState state) {
+    public boolean func_149730_j() {
         return true;
     }
 
-    @Override
-    public boolean isFullyOpaque(IBlockState state) {
-        return true;
-    }
+//    @Override
+//    public boolean isFullyOpaque() {
+//        return true;
+//    }
 
     @Override
     public String getIdentifierForMeta(int meta) {
-        OreType ot = getStateFromMeta(meta).getValue(ORE_TYPE);
-        return ot == null ? "null" : ot.getName();
+        OreType ot = OreType.values()[meta];
+        return ot.getName();
     }
 
     @Override
-    public List<IBlockState> getValidStates() {
-        List<IBlockState> ret = new LinkedList<>();
-        for (OreType type : OreType.values()) {
-            ret.add(getDefaultState().withProperty(ORE_TYPE, type));
-        }
+    public List<Block> getValidStates() {
+        List<Block> ret = new LinkedList<>();
+//        for (OreType type : OreType.values()) {
+//            ret.add(getDefaultState().withProperty(ORE_TYPE, type));
+//        }
         return ret;
     }
 
     @Override
-    public String getStateName(IBlockState state) {
-        return state.getValue(ORE_TYPE).getName();
+    public String getMetaName(int meta) {
+        return meta + "";
     }
 
-    public static enum OreType implements IStringSerializable {
+    @Override
+    public int getMeta() {
+        for (OreType type : OreType.values()) {
+            return type.getMeta();
+        }
+        return 0;
+    }
+    @Override
+    public IIcon getIcon(int side, int meta)
+    {
+        return icons[meta];
+    }
+
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerBlockIcons(IIconRegister reg)
+    {
+        for (OreType type : OreType.values()) {
+            icons[type.getMeta()] = reg.registerIcon("astralsorcery:ore_" + type.getName());
+        }
+    }
+
+
+    public static enum OreType  {
 
         AQUAMARINE(0);
 
@@ -155,7 +180,6 @@ public class BlockCustomSandOre extends BlockFalling implements BlockCustomName,
             return meta;
         }
 
-        @Override
         public String getName() {
             return name().toLowerCase();
         }

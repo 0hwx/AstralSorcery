@@ -16,12 +16,9 @@ import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
 import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerkMap;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -106,23 +103,29 @@ public abstract class GuiScreenJournal extends GuiWHScreen {
         GL11.glColor4f(1F, 1F, 1F, 1F);
         textureBookmark.bind();
 
-        Rectangle r = new Rectangle(MathHelper.floor(offsetX), MathHelper.floor(offsetY), MathHelper.floor(width), MathHelper.floor(height));
+        Rectangle r = new Rectangle(MathHelper.floor_double(offsetX), MathHelper.floor_double(offsetY), MathHelper.floor_double(width), MathHelper.floor_double(height));
         if(r.contains(mousePoint)) {
             if(mouseOverWidth > width) {
                 textureBookmarkStr.bind();
             }
             width = mouseOverWidth;
-            r = new Rectangle(MathHelper.floor(offsetX), MathHelper.floor(offsetY), MathHelper.floor(width), MathHelper.floor(height));
+            r = new Rectangle(MathHelper.floor_double(offsetX), MathHelper.floor_double(offsetY), MathHelper.floor_double(width), MathHelper.floor_double(height));
         }
 
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
-        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
-        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
-        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
-        tes.draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(offsetX, offsetY + height, zLevel, 0, 1);
+        tess.addVertexWithUV(offsetX + width, offsetY + height, zLevel, 1, 1);
+        tess.addVertexWithUV(offsetX + width, offsetY, zLevel, 1, 0);
+        tess.addVertexWithUV(offsetX, offsetY, zLevel, 0, 0);
+        tess.draw();
+//        VertexBuffer vb = tes.getBuffer();
+//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
+//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
+//        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
+//        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
+//        tes.draw();
 
         GL11.glPushMatrix();
         GL11.glTranslated(offsetX + 2, offsetY + 4, zLevel + 50);
@@ -130,7 +133,7 @@ public abstract class GuiScreenJournal extends GuiWHScreen {
         fontRendererObj.drawString(I18n.format(title), 0, 0, titleRGBColor);
         GL11.glPopMatrix();
 
-        GlStateManager.color(1F, 1F, 1F, 1F);
+        GL11.glColor4f(1F, 1F, 1F, 1F);
 
         GL11.glPopMatrix();
 

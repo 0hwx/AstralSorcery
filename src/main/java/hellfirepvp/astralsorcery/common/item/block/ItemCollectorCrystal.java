@@ -15,6 +15,7 @@ import hellfirepvp.astralsorcery.common.entities.EntityItemHighlighted;
 import hellfirepvp.astralsorcery.common.item.base.ItemHighlighted;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
@@ -29,8 +30,8 @@ import net.minecraft.world.World;
  */
 public class ItemCollectorCrystal extends ItemBlockCustomName implements ItemHighlighted {
 
-    public ItemCollectorCrystal(BlockCollectorCrystalBase collectorCrystalBase) {
-        super(collectorCrystalBase);
+    public ItemCollectorCrystal(Block block) {
+        super(block);
         setMaxStackSize(1);
         setCreativeTab(RegistryItems.creativeTabAstralSorceryTunedCrystals);
     }
@@ -45,7 +46,7 @@ public class ItemCollectorCrystal extends ItemBlockCustomName implements ItemHig
         EntityItemHighlighted ei = new EntityItemHighlighted(world, entity.posX, entity.posY, entity.posZ, itemstack);
         BlockCollectorCrystalBase.CollectorCrystalType type = getType(itemstack);
         ei.applyColor(type.displayColor);
-        ei.setDefaultPickupDelay();
+        ei.delayBeforeCanPickup = 10;
         ei.motionX = entity.motionX;
         ei.motionY = entity.motionY;
         ei.motionZ = entity.motionZ;

@@ -13,21 +13,19 @@ import hellfirepvp.astralsorcery.common.item.ItemInfusedGlass;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.tile.base.TileSkybound;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.AxisAlignedBB;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -53,23 +51,23 @@ public class TileMapDrawingTable extends TileSkybound {
     protected void onFirstTick() {}
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
-        if(world.isRemote) {
+        if(worldObj.isRemote) {
             playWorkEffects();
         } else {
-            if(ConstellationSkyHandler.getInstance().isNight(getWorld()) && doesSeeSky() &&
+            if(ConstellationSkyHandler.getInstance().isNight(getWorldObj()) && doesSeeSky() &&
                     slotGlassLens != null && slotGlassLens.getItem() != null && slotGlassLens.getItem() instanceof ItemInfusedGlass) {
                 ActiveStarMap map = ItemInfusedGlass.getMapEngravingInformations(slotGlassLens);
                 if(map != null && slotIn != null && slotIn.getItem() != null && !hasParchment() &&
                         ((slotIn.isItemEnchantable() && map.tryApplyEnchantments(ItemUtils.copyStackWithSize(slotIn, slotIn.stackSize)))
-                                || (slotIn.getItem() instanceof ItemPotion && PotionUtils.getEffectsFromStack(slotIn).isEmpty()))) {
+                                || (slotIn.getItem() instanceof ItemPotion))) {// && PotionUtils.getEffectsFromStack(slotIn).isEmpty()))) {
                     runTick++;
                     if(runTick > RUN_TIME) {
                         if(slotIn.isItemEnchantable()) {
                             if(slotIn.getItem() instanceof ItemBook && map.tryApplyEnchantments(ItemUtils.copyStackWithSize(slotIn, slotIn.stackSize))) {
-                                slotIn = new ItemStack(Items.ENCHANTED_BOOK);
+                                slotIn = new ItemStack(Items.enchanted_book);
                             }
                             map.tryApplyEnchantments(slotIn);
                             if(slotGlassLens.attemptDamageItem(1, rand)) {
@@ -77,9 +75,9 @@ public class TileMapDrawingTable extends TileSkybound {
                                 if(slotGlassLens.stackSize <= 0) {
                                     slotGlassLens = null;
                                 }
-                                world.playSound(null, pos, SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, rand.nextFloat() * 0.5F + 1F, rand.nextFloat() * 0.2F + 0.8F);
+//                                worldObj.playSound(xCoord, yCoord, zCoord, SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, rand.nextFloat() * 0.5F + 1F, rand.nextFloat() * 0.2F + 0.8F);
                             }
-                        } else if(PotionUtils.getEffectsFromStack(slotIn).isEmpty()) {
+                        } else if(Items.potionitem.getEffects(slotIn).isEmpty()) {
                             map.tryApplyPotionEffects(slotIn);
 
                             if(rand.nextInt(3) == 0 && slotGlassLens.attemptDamageItem(1, rand)) {
@@ -87,7 +85,7 @@ public class TileMapDrawingTable extends TileSkybound {
                                 if(slotGlassLens.stackSize <= 0) {
                                     slotGlassLens = null;
                                 }
-                                world.playSound(null, pos, SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, rand.nextFloat() * 0.5F + 1F, rand.nextFloat() * 0.2F + 0.8F);
+//                                worldObj.playSound(null, pos, SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, rand.nextFloat() * 0.5F + 1F, rand.nextFloat() * 0.2F + 0.8F);
                             }
                         }
                         runTick = 0;
@@ -120,7 +118,7 @@ public class TileMapDrawingTable extends TileSkybound {
         if(random > 2) {
             offset.addZ(1.0 / 16.0D); //Gap in the middle..
         }
-        offset.add(rand.nextFloat() * 0.1, 0, rand.nextFloat() * 0.1).add(pos);
+        offset.add(rand.nextFloat() * 0.1, 0, rand.nextFloat() * 0.1).add(xCoord, yCoord, zCoord);
 
         Color c;
         switch (random) {
@@ -153,7 +151,7 @@ public class TileMapDrawingTable extends TileSkybound {
         if(rand.nextFloat() < getPercRunning()) {
             Vector3 center = new Vector3(this).add(0.5, 1, 0.5);
 
-            AstralSorcery.proxy.fireLightning(world, offset, center, c);
+            AstralSorcery.proxy.fireLightning(worldObj, offset, center, c);
             p = EffectHelper.genericFlareParticle(offset.getX(), offset.getY(), offset.getZ());
             p.scale(rand.nextFloat() * 0.1F + 0.15F).enableAlphaFade(EntityComplexFX.AlphaFunction.FADE_OUT);
             p.gravity(0.004F).setMaxAge(rand.nextInt(30) + 35);
@@ -252,11 +250,11 @@ public class TileMapDrawingTable extends TileSkybound {
 
     public void dropContents() {
         if(slotIn != null && slotIn.getItem() != null) {
-            ItemUtils.dropItemNaturally(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, slotIn);
+            ItemUtils.dropItemNaturally(worldObj, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, slotIn);
             slotIn = null;
         }
         if(slotGlassLens != null && slotGlassLens.getItem() != null) {
-            ItemUtils.dropItemNaturally(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, slotGlassLens);
+            ItemUtils.dropItemNaturally(worldObj, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, slotGlassLens);
             slotGlassLens = null;
         }
         markForUpdate();
@@ -309,7 +307,7 @@ public class TileMapDrawingTable extends TileSkybound {
             ItemInfusedGlass.setMapEngravingInformations(getSlotGlassLens(), ActiveStarMap.compile(constellations));
             markForUpdate();
             PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.ENGRAVE_LENS, new Vector3(this));
-            PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(world, getPos(), 16));
+            PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(worldObj, new BlockPos(xCoord, yCoord, zCoord), 16));
         }
     }
 
@@ -318,7 +316,7 @@ public class TileMapDrawingTable extends TileSkybound {
             slotIn.stackSize--;
             markForUpdate();
             PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.BURN_PARCHMENT, new Vector3(this));
-            PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(world, getPos(), 16));
+            PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(worldObj, new BlockPos(xCoord, yCoord, zCoord), 16));
             return true;
         }
         return false;
@@ -326,17 +324,17 @@ public class TileMapDrawingTable extends TileSkybound {
 
     @SideOnly(Side.CLIENT)
     public static void burnParchmentEffects(PktParticleEvent pktParticleEvent) {
-        if(Minecraft.getMinecraft().world == null) return;
+        if(Minecraft.getMinecraft().theWorld == null) return;
 
         Vector3 offset = pktParticleEvent.getVec();
-        Minecraft.getMinecraft().world.playSound(offset.getX(), offset.getY(), offset.getZ(),
-                SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS,
-                rand.nextFloat() * 0.5F + 1F, rand.nextFloat() * 0.1F + 0.9F, true);
+//        Minecraft.getMinecraft().theWorld.playSound(offset.getX(), offset.getY(), offset.getZ(),
+//                SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS,
+//                rand.nextFloat() * 0.5F + 1F, rand.nextFloat() * 0.1F + 0.9F, true);
 
         offset.add(-0.2, 1.1, -0.2);
         for (int i = 0; i < 50; i++) {
             Vector3 at = offset.clone().add(rand.nextFloat() * 1.4, 0, rand.nextFloat() * 1.4);
-            Minecraft.getMinecraft().world.spawnParticle(EnumParticleTypes.FLAME,
+            Minecraft.getMinecraft().theWorld.spawnParticle("flame",
                     at.getX(), at.getY(), at.getZ(),
                     rand.nextFloat() * 0.2 * (rand.nextBoolean() ? 1 : -1),
                     rand.nextFloat() * 0.05 * (rand.nextBoolean() ? 1 : -1),

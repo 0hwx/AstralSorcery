@@ -9,12 +9,12 @@
 package hellfirepvp.astralsorcery.common.constellation.effect;
 
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -85,7 +85,7 @@ public abstract class CEffectPositionListGen<T extends CEffectPositionListGen.CE
             int offY = -searchRange + world.rand.nextInt(searchRange * 2);
             int offZ = -searchRange + world.rand.nextInt(searchRange * 2);
             BlockPos at = pos.add(offX, offY, offZ);
-            if(MiscUtils.isChunkLoaded(world, new ChunkPos(at)) && verifier.isValid(world, at) && !containsElementAt(at)) {
+            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(at.chunkX(), at.chunkZ())) && verifier.isValid(world, at) && !containsElementAt(at)) {
                 elements.add(newElement(world, at));
                 return true;
             }

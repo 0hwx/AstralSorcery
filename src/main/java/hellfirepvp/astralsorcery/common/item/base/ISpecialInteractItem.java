@@ -8,11 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.item.base;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -26,6 +25,6 @@ public interface ISpecialInteractItem {
 
     public boolean needsSpecialHandling(World world, BlockPos at, EntityPlayer player, ItemStack stack);
 
-    public void onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, EnumFacing side, EnumHand hand, ItemStack stack);
+    public void onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, int side, ItemStack stack);
 
 }

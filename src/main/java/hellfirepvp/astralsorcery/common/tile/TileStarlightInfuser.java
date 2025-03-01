@@ -27,22 +27,18 @@ import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionRece
 import hellfirepvp.astralsorcery.common.starlight.transmission.base.SimpleTransmissionReceiver;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.TransmissionClassRegistry;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBase;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.SoundHelper;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -80,18 +76,18 @@ public class TileStarlightInfuser extends TileReceiverBase implements IWandInter
     private boolean hasMultiblock = false, doesSeeSky = false;
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
         if((ticksExisted & 15) == 0) {
             updateSkyState();
         }
 
         if((ticksExisted & 31) == 0) {
-            updateMultiblockState();
+            updateMultBlock();
         }
 
-        if(!world.isRemote) {
+        if(!worldObj.isRemote) {
             if(doTryCraft()) {
                 markForUpdate();
             }
@@ -161,7 +157,7 @@ public class TileStarlightInfuser extends TileReceiverBase implements IWandInter
 
         if(out != null) {
             if(out.stackSize > 0) {
-                ItemUtils.dropItem(world, pos.getX() + 0.5, pos.getY() + 1.3, pos.getZ() + 0.5, out).setNoDespawn();
+                ItemUtils.dropItem(worldObj, xCoord + 0.5, yCoord + 1.3, zCoord + 0.5, out).age = -6000;
             }
         }
         int size = offsetsLiquidStarlight.length;
@@ -173,21 +169,23 @@ public class TileStarlightInfuser extends TileReceiverBase implements IWandInter
         while (size > 0) {
             BlockPos offset = offsetsLiquidStarlight[indexes.get(size - 1)];
             size--;
-            if(world.rand.nextFloat() < craftingTask.getRecipeToCraft().getLiquidStarlightConsumptionChance()) {
-                world.setBlockToAir(getPos().add(offset));
-                EntityFlare.spawnAmbient(world, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
+            if(worldObj.rand.nextFloat() < craftingTask.getRecipeToCraft().getLiquidStarlightConsumptionChance()) {
+                BlockPos pos = new BlockPos(xCoord, yCoord, zCoord).add(offset);
+                worldObj.setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
+                EntityFlare.spawnAmbient(worldObj, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
                 if(!altarRecipe.doesConsumeMultiple()) break;
             }
         }
         craftingTask.getRecipeToCraft().onCraftServerFinish(this, rand);
         ResearchManager.informCraftingInfusionCompletion(this, craftingTask);
-        SoundHelper.playSoundAround(Sounds.craftFinish, world, getPos(), 1F, 1.7F);
-        EntityFlare.spawnAmbient(world, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
+        SoundHelper.playSoundAround(Sounds.craftFinish, worldObj, xCoord, yCoord, zCoord, 1F, 1.7F);
+        EntityFlare.spawnAmbient(worldObj, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
         craftingTask = null;
     }
 
-    private void updateMultiblockState() {
-        boolean found = MultiBlockArrays.patternStarlightInfuser.matches(world, getPos());
+    private void updateMultBlock() {
+        BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
+        boolean found = MultiBlockArrays.patternStarlightInfuser.matches(worldObj, pos);
         boolean update = hasMultiblock != found;
         this.hasMultiblock = found;
         if(update) {
@@ -196,7 +194,7 @@ public class TileStarlightInfuser extends TileReceiverBase implements IWandInter
     }
 
     private void updateSkyState() {
-        boolean seesSky = world.canSeeSky(getPos());
+        boolean seesSky = worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord);
         boolean update = doesSeeSky != seesSky;
         this.doesSeeSky = seesSky;
         if(update) {
@@ -272,9 +270,9 @@ public class TileStarlightInfuser extends TileReceiverBase implements IWandInter
             int recipeId = compound.getInteger("recipeId");
             AbstractInfusionRecipe recipe = InfusionRecipeRegistry.getRecipe(recipeId);
             if(recipe == null) {
-                AstralSorcery.log.info("Recipe with unknown/invalid ID found: " + recipeId + " for Starlight Infuser at " + getPos());
+                AstralSorcery.log.info("Recipe with unknown/invalid ID found: " + recipeId + " for Starlight Infuser at " + xCoord + ", " + yCoord + ", " + zCoord);
             } else {
-                UUID uuidCraft = compound.getUniqueId("crafterUUID");
+                UUID uuidCraft = NBTHelper.getUUID(compound, "crafterUUID"); //compound.getUniqueId("crafterUUID");
                 int tick = compound.getInteger("recipeTick");
                 this.craftingTask = new ActiveInfusionTask(recipe, uuidCraft);
                 this.craftingTask.forceTick(tick);
@@ -298,7 +296,8 @@ public class TileStarlightInfuser extends TileReceiverBase implements IWandInter
         if(craftingTask != null) {
             compound.setInteger("recipeId", craftingTask.getRecipeToCraft().getUniqueRecipeId());
             compound.setInteger("recipeTick", craftingTask.getTicksCrafting());
-            compound.setUniqueId("crafterUUID", craftingTask.getPlayerCraftingUUID());
+            NBTHelper.setUUID(compound, "crafterUUID", craftingTask.getPlayerCraftingUUID());
+//            compound.setUniqueId("crafterUUID", craftingTask.getPlayerCraftingUUID());
         }
     }
 
@@ -316,17 +315,17 @@ public class TileStarlightInfuser extends TileReceiverBase implements IWandInter
         return new TransmissionReceiverStarlightInfuser(at);
     }
 
-    public void onInteract(EntityPlayer playerIn, EnumHand heldHand, @Nullable ItemStack heldItem) {
+    public void onInteract(EntityPlayer playerIn, @Nullable ItemStack heldItem) {
         if(!playerIn.getEntityWorld().isRemote) {
             if(playerIn.isSneaking()) {
                 if(stack != null) {
                     ItemUtils.dropItemNaturally(playerIn.getEntityWorld(),
-                            getPos().getX() + 0.5,
-                            getPos().getY() + 1,
-                            getPos().getZ() + 0.5,
+                            xCoord + 0.5,
+                            yCoord + 1,
+                            zCoord + 0.5,
                             stack);
                     stack = null;
-                    world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.5F, world.rand.nextFloat() * 0.2F + 0.8F);
+                    worldObj.playSound(xCoord, yCoord, zCoord, "SoundEvents.ENTITY_ITEM_PICKUP", 0.5F, worldObj.rand.nextFloat() * 0.2F + 0.8F,false);
                     markForUpdate();
                 }
             } else {
@@ -335,9 +334,9 @@ public class TileStarlightInfuser extends TileReceiverBase implements IWandInter
                         heldItem.stackSize--;
                         this.stack = ItemUtils.copyStackWithSize(heldItem, 1);
                         if(heldItem.stackSize <= 0) {
-                            playerIn.setHeldItem(heldHand, null);
+                            playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
                         }
-                        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.5F, world.rand.nextFloat() * 0.2F + 0.8F);
+                        worldObj.playSound(xCoord, yCoord, zCoord, "SoundEvents.ENTITY_ITEM_PICKUP", 0.5F, worldObj.rand.nextFloat() * 0.2F + 0.8F,false);
                         markForUpdate();
                     }/* else if(heldItem.getItem() instanceof ItemWand) {
                         findRecipe(playerIn);
@@ -348,7 +347,7 @@ public class TileStarlightInfuser extends TileReceiverBase implements IWandInter
     }
 
     @Override
-    public void onInteract(World world, BlockPos pos, EntityPlayer player, EnumFacing side, boolean sneak) {
+    public void onInteract(World world, BlockPos pos, EntityPlayer player, int side, boolean sneak) {
         if(!world.isRemote) {
             findRecipe(player);
         }

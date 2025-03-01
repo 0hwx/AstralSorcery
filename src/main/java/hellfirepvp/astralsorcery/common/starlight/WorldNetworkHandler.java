@@ -16,9 +16,9 @@ import hellfirepvp.astralsorcery.common.starlight.network.TransmissionWorldHandl
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionSource;
 import hellfirepvp.astralsorcery.common.starlight.transmission.NodeConnection;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -79,12 +79,12 @@ public class WorldNetworkHandler {
                 IPrismTransmissionNode node = getTransmissionNode(source.key);
                 if(node == null) {
                     AstralSorcery.log.warn("Didn't find a TransmissionNode at a position that's supposed to be a source!");
-                    AstralSorcery.log.warn("Details: Dim=" + getWorld().provider.getDimension() + " at " + source.key);
+                    AstralSorcery.log.warn("Details: Dim=" + getWorld().provider.dimensionId + " at " + source.key);
                     continue;
                 }
                 if(!(node instanceof ITransmissionSource)) {
                     AstralSorcery.log.warn("Found TransmissionNode that isn't a source at a source position!");
-                    AstralSorcery.log.warn("Details: Dim=" + getWorld().provider.getDimension() + " at " + source.key);
+                    AstralSorcery.log.warn("Details: Dim=" + getWorld().provider.dimensionId + " at " + source.key);
                     continue;
                 }
                 ITransmissionSource sourceNode = (ITransmissionSource) node;
@@ -108,12 +108,12 @@ public class WorldNetworkHandler {
                 IPrismTransmissionNode node = getTransmissionNode(source.key);
                 if(node == null) {
                     AstralSorcery.log.warn("Didn't find a TransmissionNode at a position that's supposed to be a source!");
-                    AstralSorcery.log.warn("Details: Dim=" + getWorld().provider.getDimension() + " at " + source.key);
+                    AstralSorcery.log.warn("Details: Dim=" + getWorld().provider.dimensionId + " at " + source.key);
                     continue;
                 }
                 if(!(node instanceof ITransmissionSource)) {
                     AstralSorcery.log.warn("Found TransmissionNode that isn't a source at a source position!");
-                    AstralSorcery.log.warn("Details: Dim=" + getWorld().provider.getDimension() + " at " + source.key);
+                    AstralSorcery.log.warn("Details: Dim=" + getWorld().provider.dimensionId + " at " + source.key);
                     continue;
                 }
                 ITransmissionSource sourceNode = (ITransmissionSource) node;
@@ -256,19 +256,19 @@ public class WorldNetworkHandler {
     //Might be empty, if there's no network nearby.
     private List<LightNetworkBuffer.ChunkSectionNetworkData> getAffectedChunkSections(BlockPos centralPos) {
         List<LightNetworkBuffer.ChunkSectionNetworkData> dataList = new LinkedList<>();
-        ChunkPos central = new ChunkPos(centralPos);
+        ChunkCoordIntPair central = new ChunkCoordIntPair(centralPos.chunkX(), centralPos.chunkZ());
         int posYLevel = (centralPos.getY() & 255) >> 4;
         for (int xx = -1; xx <= 1; xx++) {
             for (int zz = -1; zz <= 1; zz++) {
                 for (int yy = -1; yy <= 1; yy++) {
-                    queryData(new ChunkPos(central.chunkXPos + xx, central.chunkZPos + zz), posYLevel + yy, dataList);
+                    queryData(new ChunkCoordIntPair(central.chunkXPos + xx, central.chunkZPos + zz), posYLevel + yy, dataList);
                 }
             }
         }
         return dataList;
     }
 
-    private void queryData(ChunkPos pos, int yLevel, List<LightNetworkBuffer.ChunkSectionNetworkData> out) {
+    private void queryData(ChunkCoordIntPair pos, int yLevel, List<LightNetworkBuffer.ChunkSectionNetworkData> out) {
         LightNetworkBuffer.ChunkSectionNetworkData data = buffer.getSectionData(pos, yLevel);
         if(data != null && !data.isEmpty()) out.add(data);
     }

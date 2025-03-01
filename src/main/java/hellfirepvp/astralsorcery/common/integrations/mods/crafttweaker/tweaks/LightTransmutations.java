@@ -15,7 +15,7 @@ import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network.L
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import minetweaker.MineTweakerAPI;
 import minetweaker.api.item.IItemStack;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -41,7 +41,7 @@ public class LightTransmutations extends BaseTweaker {
             return;
         }
 
-        IBlockState state = ItemUtils.createBlockState(in);
+        Block state = ItemUtils.createBlockState(in);
         if(state == null) {
             MineTweakerAPI.logError("[" + name + "] Skipping recipe - Can't create a valid BlockState from given Input");
             return;

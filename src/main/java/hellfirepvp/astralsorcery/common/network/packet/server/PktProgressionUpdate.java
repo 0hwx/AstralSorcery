@@ -17,13 +17,13 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.ChatComponentText;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -97,14 +97,14 @@ public class PktProgressionUpdate implements IMessage, IMessageHandler<PktProgre
         ResearchProgression prog = ResearchProgression.getById(resId);
         String tr = I18n.format(prog.getUnlocalizedName());
         String out = I18n.format("progress.gain.research.chat", tr);
-        out = TextFormatting.AQUA + out;
-        Minecraft.getMinecraft().player.addChatMessage(new TextComponentString(out));
+        out = ChatFormatting.AQUA + out;
+        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(out));
     }
 
     @SideOnly(Side.CLIENT)
     private void addProgressChatMessage(int progId) {
-        String out = TextFormatting.BLUE + I18n.format("progress.gain.progress.chat");
-        Minecraft.getMinecraft().player.addChatMessage(new TextComponentString(out));
+        String out = ChatFormatting.BLUE + I18n.format("progress.gain.progress.chat");
+        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(out));
     }
 
 }

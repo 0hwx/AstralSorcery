@@ -1,9 +1,12 @@
 package hellfirepvp.astralsorcery.common.item.tool;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.effect.CelestialStrike;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -19,15 +22,19 @@ import net.minecraft.item.ItemStack;
  */
 public class ItemChargedCrystalSword extends ItemCrystalSword implements ChargedCrystalToolBase {
 
+
+    public ItemChargedCrystalSword() {
+        setUnlocalizedName("ItemChargedCrystalSword");
+    }
     @Override
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
         if (!player.getEntityWorld().isRemote && player instanceof EntityPlayerMP) {
             EntityPlayerMP playerMp = (EntityPlayerMP) player;
-            if(!MiscUtils.isPlayerFakeMP(playerMp) && !playerMp.getCooldownTracker().hasCooldown(ItemsAS.chargedCrystalSword)) {
+            if(!MiscUtils.isPlayerFakeMP(playerMp)) {// && !playerMp.getCooldownTracker().hasCooldown(ItemsAS.chargedCrystalSword)) {
                 CelestialStrike.play(player, player.getEntityWorld(), new Vector3(entity), new Vector3(entity, true));
-                if(!ChargedCrystalToolBase.tryRevertMainHand(playerMp, stack)) {
-                    playerMp.getCooldownTracker().setCooldown(ItemsAS.chargedCrystalSword, 80);
-                }
+//                if(!ChargedCrystalToolBase.tryRevertMainHand(playerMp, stack)) {
+//                    playerMp.getCooldownTracker().setCooldown(ItemsAS.chargedCrystalSword, 80);
+//                }
             }
         }
         return false;
@@ -37,5 +44,10 @@ public class ItemChargedCrystalSword extends ItemCrystalSword implements Charged
     public Item getInertVariant() {
         return ItemsAS.crystalSword;
     }
-
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerIcons(IIconRegister register)
+    {
+        this.itemIcon = register.registerIcon("astralsorcery:crystal_sword_s");
+    }
 }

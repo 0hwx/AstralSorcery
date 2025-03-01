@@ -16,23 +16,21 @@ import hellfirepvp.astralsorcery.common.constellation.effect.GenListEntries;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -57,8 +55,9 @@ public class CEffectOctans extends CEffectPositionListGen<GenListEntries.Counter
 
     public CEffectOctans() {
         super(Constellations.octans, "octans", searchRange, maxFishingGrounds, (world, pos) -> {
-            IBlockState at = world.getBlockState(pos);
-            return at.getBlock() instanceof BlockLiquid && at.getBlock().getMaterial(at).equals(Material.WATER) && at.getValue(BlockLiquid.LEVEL) == 0 && world.isAirBlock(pos.up());
+            Block at = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+            int meta = world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
+            return at instanceof BlockLiquid && at.getMaterial().equals(Material.water) && meta == 0 && world.isAirBlock(pos.up().getX(), pos.up().getY(), pos.up().getZ());
         }, (pos) -> new GenListEntries.CounterMaxListEntry(pos, minFishTickTime + rand.nextInt(maxFishTickTime - minFishTickTime + 1)));
     }
 
@@ -73,7 +72,7 @@ public class CEffectOctans extends CEffectPositionListGen<GenListEntries.Counter
         boolean changed = false;
         GenListEntries.CounterMaxListEntry entry = getRandomElementByChance(rand);
         if(entry != null) {
-            if(MiscUtils.isChunkLoaded(world, new ChunkPos(entry.getPos()))) {
+            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(entry.getPos().chunkX(), entry.getPos().chunkZ()))) {
                 if(!verifier.isValid(world, entry.getPos())) {
                     removeElement(entry);
                     changed = true;
@@ -87,12 +86,12 @@ public class CEffectOctans extends CEffectPositionListGen<GenListEntries.Counter
                         Vector3 dropLoc = new Vector3(entry.getPos()).add(0.5, 0.85, 0.5);
                         entry.maxCount = minFishTickTime + rand.nextInt(maxFishTickTime - minFishTickTime + 1);
                         entry.counter = 0;
-                        LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-                        builder.withLuck(rand.nextInt(2) * rand.nextFloat());
-                        for(ItemStack loot : world.getLootTableManager().getLootTableFromLocation(LootTableList.GAMEPLAY_FISHING).generateLootForPools(rand, builder.build())) {
-                            EntityItem ei = ItemUtils.dropItemNaturally(world, dropLoc.getX(), dropLoc.getY(), dropLoc.getZ(), loot);
-                            ei.motionY = Math.abs(ei.motionY);
-                        }
+//                        LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+//                        builder.withLuck(rand.nextInt(2) * rand.nextFloat());
+//                        for(ItemStack loot : world.getLootTableManager().getLootTableFromLocation(LootTableList.GAMEPLAY_FISHING).generateLootForPools(rand, builder.build())) {
+//                            EntityItem ei = ItemUtils.dropItemNaturally(world, dropLoc.getX(), dropLoc.getY(), dropLoc.getZ(), loot);
+//                            ei.motionY = Math.abs(ei.motionY);
+//                        }
                     }
                     PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.CE_WATER_FISH, entry.getPos());
                     PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(world, entry.getPos(), 8));

@@ -31,12 +31,9 @@ import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.Tessellator;;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.ChatComponentText;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -125,8 +122,8 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
         double offsetY = guiTop  + ((guiHeight) / 2D) - widthHeight;
         Vector3 offset = new Vector3(offsetX, offsetY, zLevel);
 
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
         Iterator<ConstellationPerks> iterator = unlockPlayMap.keySet().iterator();
         GL11.glEnable(GL11.GL_BLEND);
         Blending.DEFAULT.apply();
@@ -142,8 +139,8 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
                 iterator.remove();
                 continue;
             }
-
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+            tess.startDrawingQuads();
+//            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
             sprite.getResource().bind();
             int starX = position.x;
@@ -162,9 +159,10 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
                 int v = ((i + 2) & 2) >> 1;
 
                 Vector3 pos = starVec.clone().addX(whStar * u * 2).addY(whStar * v * 2);
-                vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(frameUV.key + uLength * u, frameUV.value + vLength * v).endVertex();
+                tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), frameUV.key + uLength * u, frameUV.value + vLength * v);
+//                vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(frameUV.key + uLength * u, frameUV.value + vLength * v).endVertex();
             }
-            tes.draw();
+            tess.draw();
         }
         Blending.DEFAULT.apply();
         GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -211,8 +209,8 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
                     unlockStr = "perk.info.locked";
                 }
                 toolTip.add(I18n.format(unlockStr));
-                RenderingUtils.renderBlueTooltip(mouse.x, mouse.y, toolTip, Minecraft.getMinecraft().fontRendererObj);
-                GlStateManager.color(1F, 1F, 1F, 1F);
+                RenderingUtils.renderBlueTooltip(mouse.x, mouse.y, toolTip, Minecraft.getMinecraft().fontRenderer);
+//                GL11.glColor4f(1F, 1F, 1F, 1F);
                 GL11.glColor4f(1F, 1F, 1F, 1F);
             }
         }
@@ -242,14 +240,14 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
         ConstellationPerkMap.Position pos = mapToDisplay.getPosition(perk);
         if(pos != null) {
             unlockPlayMap.put(perk, ClientScheduler.getClientTick());
-            Minecraft.getMinecraft().player.addChatMessage(new TextComponentString(I18n.format("perk.info.unlock", I18n.format(perk.getSingleInstance().getUnlocalizedName()))));
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(I18n.format("perk.info.unlock", I18n.format(perk.getSingleInstance().getUnlocalizedName()))));
         }
     }
 
     private void drawConnections(ConstellationPerkMap mapToDisplay, double offsetX, double offsetY, double whBetweenStars, double linebreadth) {
         PlayerProgress prog = ResearchManager.clientProgress;
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
 
         Vector3 offset = new Vector3(offsetX, offsetY, zLevel);
         GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -286,7 +284,8 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
                 GL11.glColor4f(rR, rG, rB, aPart + (rA * 0.85F * mouseHoverPerc));
 
                 tex.bind();
-                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+                tess.startDrawingQuads();
+//                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
                 Vector3 fromStar = new Vector3(offset.getX() + from.x * whBetweenStars, offset.getY() + from.y * whBetweenStars, offset.getZ());
                 Vector3 toStar = new Vector3(offset.getX() + to.x * whBetweenStars, offset.getY() + to.y * whBetweenStars, offset.getZ());
 
@@ -301,9 +300,10 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
                     int v = ((i + 2) & 2) >> 1;
 
                     Vector3 pos = vec00.clone().add(dir.clone().multiply(u)).add(vecV.clone().multiply(v));
-                    vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
+                    tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), u, v);
+//                    vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
                 }
-                tes.draw();
+                tess.draw();
             }
         }
         GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -313,12 +313,13 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
         Map<Rectangle, ConstellationPerks> drawn = new HashMap<>(perks.size());
         PlayerProgress prog = ResearchManager.clientProgress;
 
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
         Vector3 offset = new Vector3(offsetX, offsetY, zLevel);
         GL11.glColor4f(1F, 1F, 1F, 1F);
         for (Map.Entry<ConstellationPerks, ConstellationPerkMap.Position> star : perks.entrySet()) {
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+            tess.startDrawingQuads();
+//            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
             SpriteSheetResource sprite;
             if(prog.hasPerkUnlocked(star.getKey())) {
                 sprite = SpriteLibrary.spritePerkActive;
@@ -361,11 +362,12 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
                 int v = ((i + 2) & 2) >> 1;
 
                 Vector3 pos = starVec.clone().addX(whStar * u * 2).addY(whStar * v * 2);
-                vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(frameUV.key + uLength * u, frameUV.value + vLength * v).endVertex();
+                tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), frameUV.key + uLength * u, frameUV.value + vLength * v);
+//                vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(frameUV.key + uLength * u, frameUV.value + vLength * v).endVertex();
             }
 
             drawn.put(new Rectangle(upperLeft.x, upperLeft.y, (int) (whStar * 2), (int) (whStar * 2)), star.getKey());
-            tes.draw();
+            tess.draw();
         }
 
         GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -385,14 +387,20 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
         double cY = guiTop + guiHeight / 2D - overlayWH;
 
         overlayTex.bind();
-
-        VertexBuffer vb = Tessellator.getInstance().getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(cX,                 cY + overlayWH * 2, zLevel).tex(0, 1).endVertex();
-        vb.pos(cX + overlayWH * 2, cY + overlayWH * 2, zLevel).tex(1, 1).endVertex();
-        vb.pos(cX + overlayWH * 2, cY,                 zLevel).tex(1, 0).endVertex();
-        vb.pos(cX,                 cY,                 zLevel).tex(0, 0).endVertex();
-        Tessellator.getInstance().draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(cX, cY + overlayWH * 2, zLevel, 0, 1);
+        tess.addVertexWithUV(cX + overlayWH * 2, cY + overlayWH * 2, zLevel, 1, 1);
+        tess.addVertexWithUV(cX + overlayWH * 2, cY, zLevel, 1, 0);
+        tess.addVertexWithUV(cX, cY, zLevel, 0, 0);
+        tess.draw();
+//        VertexBuffer vb = Tessellator.getInstance().getBuffer();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(cX,                 cY + overlayWH * 2, zLevel).tex(0, 1).endVertex();
+//        vb.pos(cX + overlayWH * 2, cY + overlayWH * 2, zLevel).tex(1, 1).endVertex();
+//        vb.pos(cX + overlayWH * 2, cY,                 zLevel).tex(1, 0).endVertex();
+//        vb.pos(cX,                 cY,                 zLevel).tex(0, 0).endVertex();
+//        Tessellator.getInstance().draw();
 
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -404,21 +412,27 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
         GL11.glColor4f(br, br, br, 1.0F);
         GL11.glDisable(GL11.GL_BLEND);
         textureResBack.bind();
-
-        VertexBuffer vb = Tessellator.getInstance().getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(guiLeft + 10,            guiTop - 10 + guiHeight, zLevel).tex(0, 1).endVertex();
-        vb.pos(guiLeft - 10 + guiWidth, guiTop - 10 + guiHeight, zLevel).tex(1, 1).endVertex();
-        vb.pos(guiLeft - 10 + guiWidth, guiTop + 10,             zLevel).tex(1, 0).endVertex();
-        vb.pos(guiLeft + 10,            guiTop + 10,             zLevel).tex(0, 0).endVertex();
-        Tessellator.getInstance().draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(guiLeft + 10,            guiTop - 10 + guiHeight, zLevel, 0, 1);
+        tess.addVertexWithUV(guiLeft - 10 + guiWidth, guiTop - 10 + guiHeight, zLevel, 1, 1);
+        tess.addVertexWithUV(guiLeft - 10 + guiWidth, guiTop + 10,             zLevel, 1, 0);
+        tess.addVertexWithUV(guiLeft + 10,            guiTop + 10,             zLevel, 0, 0);
+        tess.draw();
+//        VertexBuffer vb = Tessellator.getInstance().getBuffer();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(guiLeft + 10,            guiTop - 10 + guiHeight, zLevel).tex(0, 1).endVertex();
+//        vb.pos(guiLeft - 10 + guiWidth, guiTop - 10 + guiHeight, zLevel).tex(1, 1).endVertex();
+//        vb.pos(guiLeft - 10 + guiWidth, guiTop + 10,             zLevel).tex(1, 0).endVertex();
+//        vb.pos(guiLeft + 10,            guiTop + 10,             zLevel).tex(0, 0).endVertex();
+//        Tessellator.getInstance().draw();
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glColor4f(1F, 1F, 1F, 1F);
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if(mouseButton != 0) return;

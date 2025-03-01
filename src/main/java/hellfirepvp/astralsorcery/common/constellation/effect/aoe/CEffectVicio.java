@@ -14,15 +14,15 @@ import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
 import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffect;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.MobEffects;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -65,11 +65,11 @@ public class CEffectVicio extends ConstellationEffect {
 
     @Override
     public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect, @Nullable IMinorConstellation possibleTraitEffect) {
-        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(0, 0, 0, 1, 1, 1).offset(pos).expandXyz(effectRange));
+        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).offset(pos.getX(), pos.getY(), pos.getZ()).expand(effectRange,effectRange,effectRange));
         for (EntityLivingBase entity : entities) {
             if(!entity.isDead) {
-                entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 30, potionAmplifierSpeed));
-                entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 30, potionAmplifierJump));
+                entity.addPotionEffect(new PotionEffect(Potion.moveSpeed.getId(), 30, potionAmplifierSpeed));
+                entity.addPotionEffect(new PotionEffect(Potion.jump.getId(), 30, potionAmplifierJump));
             }
         }
         return false;

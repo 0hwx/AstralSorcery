@@ -24,8 +24,8 @@ import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.OreDictAlias;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
@@ -88,12 +88,12 @@ public class AttunementAltarRecipe extends AttunementRecipe implements INighttim
                         break;
                     case ATTUNEMENT:
                         for (Vector3 offset : offsetPillarsT2) {
-                            EffectHandler.getInstance().lightbeam(offset.clone().add(altar.getPos()).add(0.5, 0.5, 0.5), vec, 1.2F);
+                            EffectHandler.getInstance().lightbeam(offset.clone().add(altar.xCoord,altar.yCoord,altar.zCoord).add(0.5, 0.5, 0.5), vec, 1.2F);
                         }
                         break;
                     case CONSTELLATION_CRAFT:
                         for (Vector3 offset : offsetPillarsT3) {
-                            EffectHandler.getInstance().lightbeam(offset.clone().add(altar.getPos()).add(0.5, 0.5, 0.5), vec, 1.2F);
+                            EffectHandler.getInstance().lightbeam(offset.clone().add(altar.xCoord,altar.yCoord,altar.zCoord).add(0.5, 0.5, 0.5), vec, 1.2F);
                         }
                         break;
                     case TRAIT_CRAFT:
@@ -106,7 +106,7 @@ public class AttunementAltarRecipe extends AttunementRecipe implements INighttim
             if(rand.nextInt(10) == 0) {
                 Vector3 from = new Vector3(altar).add(0.5, -0.6, 0.5);
                 MiscUtils.applyRandomOffset(from, rand, 1.8F);
-                from.setY(altar.getPos().getY() - 0.6 + 1 * rand.nextFloat() * (rand.nextBoolean() ? 1 : -1));
+                from.setY(altar.yCoord - 0.6 + 1 * rand.nextFloat() * (rand.nextBoolean() ? 1 : -1));
                 EffectLightbeam lightbeam = EffectHandler.getInstance().lightbeam(from.clone().addY(5 + rand.nextInt(3)), from, 1);
                 lightbeam.setMaxAge(64);
             }

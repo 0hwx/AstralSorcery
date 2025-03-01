@@ -10,13 +10,11 @@ package hellfirepvp.astralsorcery.common.base;
 
 import hellfirepvp.astralsorcery.common.CommonProxy;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityPolarBear;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntityMooshroom;
 import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.init.Blocks;
@@ -24,10 +22,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootTableList;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,10 +51,10 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
         register(new Sheep());
         register(new Pig());
         register(new Horse());
-        register(new Rabbit());
+//        register(new Rabbit());
         register(new Squid());
         register(new Mooshroom());
-        register(new PolarBear());
+//        register(new PolarBear());
     }
 
     public static void register(HerdableAnimal herd) {
@@ -69,21 +66,21 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
     @Nonnull
     public List<ItemStack> getHerdingDropsTick(T entity, World world, Random rand, float herdingLuck);
 
-    public static class PolarBear implements HerdableAnimal<EntityPolarBear> {
-
-        @Override
-        public Class<EntityPolarBear> getEntityClass() {
-            return EntityPolarBear.class;
-        }
-
-        @Nonnull
-        @Override
-        public List<ItemStack> getHerdingDropsTick(EntityPolarBear entity, World world, Random rand, float herdingLuck) {
-            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
-            return world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_POLAR_BEAR).generateLootForPools(rand, builder.build());
-        }
-    }
+//    public static class PolarBear implements HerdableAnimal<EntityPolarBear> {
+//
+//        @Override
+//        public Class<EntityPolarBear> getEntityClass() {
+//            return EntityPolarBear.class;
+//        }
+//
+//        @Nonnull
+//        @Override
+//        public List<ItemStack> getHerdingDropsTick(EntityPolarBear entity, World world, Random rand, float herdingLuck) {
+//            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+//            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
+//            return world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_POLAR_BEAR).generateLootForPools(rand, builder.build());
+//        }
+//    }
 
     public static class Mooshroom implements HerdableAnimal<EntityMooshroom> {
 
@@ -95,31 +92,31 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
         @Nonnull
         @Override
         public List<ItemStack> getHerdingDropsTick(EntityMooshroom entity, World world, Random rand, float herdingLuck) {
-            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
-            List<ItemStack> drops = world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_MUSHROOM_COW).generateLootForPools(rand, builder.build());
-            if(rand.nextFloat() <= 0.05 * Math.max(0, herdingLuck)) {
-                drops.add(new ItemStack(Items.MUSHROOM_STEW));
-            }
-            return drops;
+//            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+//            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
+//            List<ItemStack> drops = world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_MUSHROOM_COW).generateLootForPools(rand, builder.build());
+//            if(rand.nextFloat() <= 0.05 * Math.max(0, herdingLuck)) {
+//                drops.add(new ItemStack(Items.mushroom_stew));
+//            }
+            return Collections.emptyList();
         }
     }
 
-    public static class Rabbit implements HerdableAnimal<EntityRabbit> {
-
-        @Override
-        public Class<EntityRabbit> getEntityClass() {
-            return EntityRabbit.class;
-        }
-
-        @Nonnull
-        @Override
-        public List<ItemStack> getHerdingDropsTick(EntityRabbit entity, World world, Random rand, float herdingLuck) {
-            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
-            return world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_RABBIT).generateLootForPools(rand, builder.build());
-        }
-    }
+//    public static class Rabbit implements HerdableAnimal<EntityRabbit> {
+//
+//        @Override
+//        public Class<EntityRabbit> getEntityClass() {
+//            return EntityRabbit.class;
+//        }
+//
+//        @Nonnull
+//        @Override
+//        public List<ItemStack> getHerdingDropsTick(EntityRabbit entity, World world, Random rand, float herdingLuck) {
+//            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+//            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
+//            return world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_RABBIT).generateLootForPools(rand, builder.build());
+//        }
+//    }
 
     public static class Horse implements HerdableAnimal<EntityHorse> {
 
@@ -131,9 +128,10 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
         @Nonnull
         @Override
         public List<ItemStack> getHerdingDropsTick(EntityHorse entity, World world, Random rand, float herdingLuck) {
-            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
-            return world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_HORSE).generateLootForPools(rand, builder.build());
+//            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+//            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
+//            return world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_HORSE).generateLootForPools(rand, builder.build());
+            return Collections.emptyList();
         }
     }
 
@@ -147,9 +145,10 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
         @Nonnull
         @Override
         public List<ItemStack> getHerdingDropsTick(EntitySquid entity, World world, Random rand, float herdingLuck) {
-            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
-            return world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_SQUID).generateLootForPools(rand, builder.build());
+//            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+//            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
+//            return world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_SQUID).generateLootForPools(rand, builder.build());
+            return Collections.emptyList();
         }
 
     }
@@ -164,13 +163,14 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
         @Override
         @Nonnull
         public List<ItemStack> getHerdingDropsTick(EntityCow entity, World world, Random rand, float herdingLuck) {
-            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
-            List<ItemStack> drops = world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_COW).generateLootForPools(rand, builder.build());
-            if(rand.nextFloat() <= 0.15 * Math.max(0, herdingLuck)) {
-                drops.add(new ItemStack(Items.MILK_BUCKET));
-            }
-            return drops;
+//            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+//            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
+//            List<ItemStack> drops = world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_COW).generateLootForPools(rand, builder.build());
+//            if(rand.nextFloat() <= 0.15 * Math.max(0, herdingLuck)) {
+//                drops.add(new ItemStack(Items.MILK_BUCKET));
+//            }
+//            return drops;
+            return Collections.emptyList();
         }
 
     }
@@ -185,13 +185,14 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
         @Nonnull
         @Override
         public List<ItemStack> getHerdingDropsTick(EntityChicken entity, World world, Random rand, float herdingLuck) {
-            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
-            List<ItemStack> drops = world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_CHICKEN).generateLootForPools(rand, builder.build());
-            if(rand.nextFloat() <= 0.2) {
-                drops.add(new ItemStack(Items.EGG));
-            }
-            return drops;
+//            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+//            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
+//            List<ItemStack> drops = world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_CHICKEN).generateLootForPools(rand, builder.build());
+//            if(rand.nextFloat() <= 0.2) {
+//                drops.add(new ItemStack(Items.EGG));
+//            }
+//            return drops;
+            return Collections.emptyList();
         }
 
     }
@@ -206,16 +207,17 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
         @Nonnull
         @Override
         public List<ItemStack> getHerdingDropsTick(EntitySheep entity, World world, Random rand, float herdingLuck) {
-            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
-            List<ItemStack> drops = world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_SHEEP).generateLootForPools(rand, builder.build());
-            if(rand.nextFloat() <= 0.01) {
-                entity.setSheared(true);
-            }
-            if(!entity.getSheared() && rand.nextFloat() <= 0.05) {
-                drops.add(new ItemStack(Blocks.WOOL, rand.nextInt(2) + 1));
-            }
-            return drops;
+//            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+//            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
+//            List<ItemStack> drops = world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_SHEEP).generateLootForPools(rand, builder.build());
+//            if(rand.nextFloat() <= 0.01) {
+//                entity.setSheared(true);
+//            }
+//            if(!entity.getSheared() && rand.nextFloat() <= 0.05) {
+//                drops.add(new ItemStack(Blocks.WOOL, rand.nextInt(2) + 1));
+//            }
+//            return drops;
+            return Collections.emptyList();
         }
 
     }
@@ -230,9 +232,10 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
         @Nonnull
         @Override
         public List<ItemStack> getHerdingDropsTick(EntityPig entity, World world, Random rand, float herdingLuck) {
-            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
-            return world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_PIG).generateLootForPools(rand, builder.build());
+//            LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+//            builder.withDamageSource(CommonProxy.dmgSourceStellar).withLootedEntity(entity).withLuck(herdingLuck);
+//            return world.getLootTableManager().getLootTableFromLocation(LootTableList.ENTITIES_PIG).generateLootForPools(rand, builder.build());
+            return Collections.emptyList();
         }
 
     }

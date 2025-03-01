@@ -26,6 +26,7 @@ import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.tile.TileAttunementRelay;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
@@ -34,13 +35,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -215,7 +215,8 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
                 if(stack.stackIndex < 0 || stack.stackIndex >= additionallyRequiredStacks.size()) continue; //Duh
 
                 ItemHandle required = additionallyRequiredStacks.get(stack.stackIndex);
-                TileAttunementRelay tar = MiscUtils.getTileAt(altar.getWorld(), altar.getPos().add(stack.offset), TileAttunementRelay.class, true);
+                BlockPos pos = new BlockPos(altar.xCoord, altar.yCoord, altar.zCoord);
+                TileAttunementRelay tar = MiscUtils.getTileAt(altar.getWorldObj(), pos.add(stack.offset), TileAttunementRelay.class, true);
                 if(tar != null) { //If it's null then the server messed up or we're desynced..
                     ItemStack found = tar.getInventoryHandler().getStackInSlot(0);
                     if(found != null && found.getItem() != null && required.matchCrafting(found)) {
@@ -247,8 +248,8 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
                         List<ItemStack> stacksApplicable = required.getApplicableItemsForRender();
                         if(stacksApplicable.size() > 0) {
                             int mod = (int) (ClientScheduler.getClientTick() % (stacksApplicable.size() * 60));
-                            ItemStack element = stacksApplicable.get(MathHelper.floor(
-                                    MathHelper.clamp(stacksApplicable.size() * (mod / (stacksApplicable.size() * 60)), 0, stacksApplicable.size() - 1)));
+                            ItemStack element = stacksApplicable.get(MathHelper.floor_double(
+                                    MathHelper.clamp_double(stacksApplicable.size() * (mod / (stacksApplicable.size() * 60)), 0, stacksApplicable.size() - 1)));
                             Color c = ItemColorizationHelper.getDominantColorFromItemStack(element);
                             if(c == null) {
                                 c = BlockCollectorCrystal.CollectorCrystalType.CELESTIAL_CRYSTAL.displayColor;
@@ -288,7 +289,8 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
                 if(xx == 0 && zz == 0) continue; //Not that it matters tho
 
                 BlockPos offset = new BlockPos(xx, 0, zz);
-                TileAttunementRelay tar = MiscUtils.getTileAt(center.getWorld(), center.getPos().add(offset), TileAttunementRelay.class, true);
+                BlockPos pos = new BlockPos(center.xCoord, center.yCoord, center.zCoord);
+                TileAttunementRelay tar = MiscUtils.getTileAt(center.getWorldObj(), pos.add(offset), TileAttunementRelay.class, true);
                 if(tar != null) {
                     eligableRelayOffsets.add(offset);
                 }
@@ -300,7 +302,7 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
         if(eligableRelayOffsets.size() <= 0) {
             return null;
         }
-        return eligableRelayOffsets.get(center.getWorld().rand.nextInt(eligableRelayOffsets.size()));
+        return eligableRelayOffsets.get(center.getWorldObj().rand.nextInt(eligableRelayOffsets.size()));
     }
 
     protected boolean matchFocusStacks(TileAltar altar, List<CraftingFocusStack> stacks) {
@@ -308,7 +310,8 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
             int index = stack.stackIndex;
             if(index < 0 || index >= additionallyRequiredStacks.size()) continue;
             ItemHandle required = additionallyRequiredStacks.get(index);
-            TileAttunementRelay relay = MiscUtils.getTileAt(altar.getWorld(), altar.getPos().add(stack.offset), TileAttunementRelay.class, true);
+            BlockPos pos = new BlockPos(altar.xCoord, altar.yCoord, altar.zCoord);
+            TileAttunementRelay relay = MiscUtils.getTileAt(altar.getWorldObj(), pos.add(stack.offset), TileAttunementRelay.class, true);
             if(relay == null) {
                 return false;
             }

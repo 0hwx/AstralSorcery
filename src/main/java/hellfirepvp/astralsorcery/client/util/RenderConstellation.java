@@ -16,11 +16,9 @@ import hellfirepvp.astralsorcery.common.constellation.star.StarLocation;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -38,8 +36,8 @@ public class RenderConstellation {
 
     @SideOnly(Side.CLIENT)
     public static void renderConstellation(IConstellation c, ClientConstellationPositionMapping.RenderPosition renderPos, BrightnessFunction brFunc) {
-        Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vb = tessellator.getBuffer();
+        Tessellator tessellator = Tessellator.instance;
+//        VertexBuffer vb = tessellator.getBuffer();
 
         Vector3 renderOffset = renderPos.offset;
         Color rC = c.getRenderColor();
@@ -51,7 +49,8 @@ public class RenderConstellation {
         RenderAstralSkybox.TEX_CONNECTION.bind();
         for (int j = 0; j < 2; j++) {
             for (StarConnection con : c.getStarConnections()) {
-                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+                tessellator.startDrawingQuads();
                 float brightness = brFunc.getBrightness();
                 GL11.glColor4f(((float) rC.getRed()) / 255F, ((float) rC.getGreen()) / 255F, ((float) rC.getBlue()) / 255F, brightness < 0 ? 0 : brightness);
                 Vector3 vecA = renderOffset.clone().add(dirU.clone().multiply(con.from.x + 1)).add(dirV.clone().multiply(con.from.y + 1));
@@ -64,7 +63,8 @@ public class RenderConstellation {
 
                 for (int i = 0; i < 4; i++) {
                     Vector3 pos = offset00.clone().add(vecU.clone().multiply(((i + 1) & 2) >> 1)).add(vecCV.clone().multiply(((i + 2) & 2) >> 1));
-                    vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(((i + 2) & 2) >> 1, ((i + 3) & 2) >> 1).endVertex();
+//                    vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(((i + 2) & 2) >> 1, ((i + 3) & 2) >> 1).endVertex();
+                    tessellator.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), ((i + 2) & 2) >> 1, ((i + 3) & 2) >> 1);
                 }
                 tessellator.draw();
             }
@@ -72,7 +72,8 @@ public class RenderConstellation {
 
         RenderAstralSkybox.TEX_STAR_1.bind();
         for (StarLocation star : c.getStars()) {
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+            tessellator.startDrawingQuads();
             float brightness = brFunc.getBrightness();
             GL11.glColor4f(((float) rC.getRed()) / 255F, ((float) rC.getGreen()) / 255F, ((float) rC.getBlue()) / 255F, brightness < 0 ? 0 : brightness);
             int x = star.x;
@@ -82,7 +83,8 @@ public class RenderConstellation {
                 int u = ((i + 1) & 2) >> 1;
                 int v = ((i + 2) & 2) >> 1;
                 Vector3 pos = ofStar.clone().add(dirU.clone().multiply(u << 1)).add(dirV.clone().multiply(v << 1));
-                vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
+//                vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
+                tessellator.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), u, v);
             }
             tessellator.draw();
         }
@@ -92,8 +94,8 @@ public class RenderConstellation {
     public static void renderConstellationIntoWorldFlat(IConstellation c, Color rC, Vector3 offsetPos, double scale, double lineBreadth, float br) {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
 
         double s = 1D / 31D * scale;
 
@@ -109,7 +111,8 @@ public class RenderConstellation {
         float fBlue = ((float) rC.getBlue()) / 255F;
 
         RenderAstralSkybox.TEX_CONNECTION.bind();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        tess.startDrawingQuads();
         for (StarConnection sc : c.getStarConnections()) {
             float brightness = br;
             brightness *= 0.8;
@@ -121,19 +124,25 @@ public class RenderConstellation {
             Vector3 offsetRender = offset.subtract(dirV.clone().divide(2));
 
             Vector3 pos = offsetRender.clone().add(dirU.clone().multiply(0)).add(dirV.clone().multiply(1));
-            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(1, 0).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+            tess.setColorRGBA_F(fRed, fGreen, fBlue, fAlpha);
+            tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), 1, 0);
+//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(1, 0).color(fRed, fGreen, fBlue, fAlpha).endVertex();
             pos =         offsetRender.clone().add(dirU.clone().multiply(1)).add(dirV.clone().multiply(1));
-            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(0, 0).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+            tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), 0, 0);
+//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(0, 0).color(fRed, fGreen, fBlue, fAlpha).endVertex();
             pos =         offsetRender.clone().add(dirU.clone().multiply(1)).add(dirV.clone().multiply(0));
-            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(0, 1).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+            tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), 0, 1);
+//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(0, 1).color(fRed, fGreen, fBlue, fAlpha).endVertex();
             pos =         offsetRender.clone().add(dirU.clone().multiply(0)).add(dirV.clone().multiply(0));
-            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(1, 1).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+            tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), 1, 1);
+//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(1, 1).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 
         }
-        tes.draw();
+        tess.draw();
 
         RenderAstralSkybox.TEX_STAR_1.bind();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        tess.startDrawingQuads();
         for (StarLocation sl : c.getStars()) {
             float fAlpha = br < 0 ? 0 : br;
 
@@ -142,15 +151,20 @@ public class RenderConstellation {
             Vector3 dirV = new Vector3(0, 0, s * 2);
 
             Vector3 pos = offsetRender.clone().add(dirU.clone().multiply(0)).add(dirV.clone().multiply(1));
-            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(1, 0).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+            tess.setColorRGBA_F(fRed, fGreen, fBlue, fAlpha);
+            tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), 1, 0);
+//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(1, 0).color(fRed, fGreen, fBlue, fAlpha).endVertex();
             pos =         offsetRender.clone().add(dirU.clone().multiply(1)).add(dirV.clone().multiply(1));
-            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(0, 0).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+            tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), 0, 0);
+//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(0, 0).color(fRed, fGreen, fBlue, fAlpha).endVertex();
             pos =         offsetRender.clone().add(dirU.clone().multiply(1)).add(dirV.clone().multiply(0));
-            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(0, 1).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+            tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), 0, 1);
+//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(0, 1).color(fRed, fGreen, fBlue, fAlpha).endVertex();
             pos =         offsetRender.clone().add(dirU.clone().multiply(0)).add(dirV.clone().multiply(0));
-            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(1, 1).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+            tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), 1, 1);
+//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(1, 1).color(fRed, fGreen, fBlue, fAlpha).endVertex();
         }
-        tes.draw();
+        tess.draw();
 
         GL11.glPopMatrix();
         GL11.glPopAttrib();
@@ -158,8 +172,8 @@ public class RenderConstellation {
 
     public static void renderConstellationIntoWorld(IConstellation c, Color rC, Vector3 offsetPos, double lineBreadth, BrightnessFunction func) {
         GL11.glPushMatrix();
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
 
         Vector3 dirV = new Vector3(0, 0, 1);
         Vector3 dirU = new Vector3(1, 0, 0);
@@ -167,7 +181,8 @@ public class RenderConstellation {
         RenderAstralSkybox.TEX_CONNECTION.bind();
         for (int j = 0; j < 2; j++) {
             for (StarConnection con : c.getStarConnections()) {
-                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//                vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+                tess.startDrawingQuads();
                 float brightness = func.getBrightness();
                 GL11.glColor4f(((float) rC.getRed()) / 255F, ((float) rC.getGreen()) / 255F, ((float) rC.getBlue()) / 255F, brightness < 0 ? 0 : brightness);
 
@@ -181,15 +196,17 @@ public class RenderConstellation {
 
                 for (int i = 0; i < 4; i++) {
                     Vector3 pos = offset00.clone().add(vecU.clone().multiply(((i + 1) & 2) >> 1)).add(vecCV.clone().multiply(((i + 2) & 2) >> 1));
-                    vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(((i + 2) & 2) >> 1, ((i + 3) & 2) >> 1).endVertex();
+                    tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), ((i + 2) & 2) >> 1, ((i + 3) & 2) >> 1);
+//                    vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(((i + 2) & 2) >> 1, ((i + 3) & 2) >> 1).endVertex();
                 }
-                tes.draw();
+                tess.draw();
             }
         }
 
         RenderAstralSkybox.TEX_STAR_1.bind();
         for (StarLocation star : c.getStars()) {
-            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+            tess.startDrawingQuads();
+//            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
             float brightness = func.getBrightness();
             GL11.glColor4f(((float) rC.getRed()) / 255F, ((float) rC.getGreen()) / 255F, ((float) rC.getBlue()) / 255F, brightness < 0 ? 0 : brightness);
             int x = star.x;
@@ -199,9 +216,10 @@ public class RenderConstellation {
                 int u = ((i + 1) & 2) >> 1;
                 int v = ((i + 2) & 2) >> 1;
                 Vector3 pos = ofStar.clone().add(dirU.clone().multiply(u << 1)).add(dirV.clone().multiply(v << 1));
-                vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
+                tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), u, v);
+//                vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
             }
-            tes.draw();
+            tess.draw();
         }
         GL11.glPopMatrix();
     }
@@ -215,8 +233,8 @@ public class RenderConstellation {
     }
 
     public static Map<StarLocation, Rectangle> renderConstellationIntoGUI(Color col, IConstellation c, int offsetX, int offsetY, float zLevel, int width, int height, double linebreadth, BrightnessFunction func, boolean isKnown, boolean applyStarBrightness) {
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
         double ulength = ((double) width) / 31;
         double vlength = ((double) height) / 31;
 
@@ -227,13 +245,14 @@ public class RenderConstellation {
                 for (StarConnection sc : c.getStarConnections()) {
                     float brightness = func.getBrightness();
                     if (applyStarBrightness) {
-                        float starBr = Minecraft.getMinecraft().world.getStarBrightness(1.0F);
+                        float starBr = Minecraft.getMinecraft().theWorld.getStarBrightness(1.0F);
                         if (starBr <= 0.23F) {
                             continue;
                         }
                         brightness *= (starBr * 2);
                     }
-                    vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+//                    vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+                    tess.startDrawingQuads();
                     GL11.glColor4f(((float) col.getRed()) / 255F, ((float) col.getGreen()) / 255F, ((float) col.getBlue()) / 255F, brightness < 0 ? 0 : brightness);
                     Vector3 fromStar = new Vector3(offsetVec.getX() + sc.from.x * ulength, offsetVec.getY() + sc.from.y * vlength, offsetVec.getZ());
                     Vector3 toStar = new Vector3(offsetVec.getX() + sc.to.x * ulength, offsetVec.getY() + sc.to.y * vlength, offsetVec.getZ());
@@ -249,10 +268,11 @@ public class RenderConstellation {
                         int v = ((i + 2) & 2) >> 1;
 
                         Vector3 pos = vec00.clone().add(dir.clone().multiply(u)).add(vecV.clone().multiply(v));
-                        vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
+                        tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), u, v);
+//                        vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
                     }
 
-                    tes.draw();
+                    tess.draw();
                 }
             }
         }
@@ -264,14 +284,15 @@ public class RenderConstellation {
 
             float brightness = func.getBrightness();
             if (applyStarBrightness) {
-                float starBr = Minecraft.getMinecraft().world.getStarBrightness(1.0F);
+                float starBr = Minecraft.getMinecraft().theWorld.getStarBrightness(1.0F);
                 if (starBr <= 0.23F) {
                     continue;
                 }
                 brightness *= (starBr * 2);
             }
 
-            vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+//            vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+            tess.startDrawingQuads();
             if (isKnown) {
                 GL11.glColor4f(((float) col.getRed()) / 255F, ((float) col.getGreen()) / 255F, ((float) col.getBlue()) / 255F, brightness);
             } else {
@@ -288,11 +309,12 @@ public class RenderConstellation {
                 int v = ((i + 2) & 2) >> 1;
 
                 Vector3 pos = starVec.clone().addX(ulength * u * 2).addY(vlength * v * 2);
-                vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
+                tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), u, v);
+//                vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
             }
 
             starRectangles.put(sl, new Rectangle(upperLeft.x, upperLeft.y, (int) (ulength * 2), (int) (vlength * 2)));
-            tes.draw();
+            tess.draw();
         }
 
         GL11.glColor4f(1F, 1F, 1F, 1F);

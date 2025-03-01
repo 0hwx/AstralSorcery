@@ -15,14 +15,14 @@ import hellfirepvp.astralsorcery.common.constellation.distribution.WorldSkyHandl
 import hellfirepvp.astralsorcery.common.item.ItemCraftingComponent;
 import hellfirepvp.astralsorcery.common.lib.MultiBlockArrays;
 import hellfirepvp.astralsorcery.common.tile.base.TileInventoryBase;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -53,42 +53,43 @@ public class TileAttunementRelay extends TileInventoryBase {
         if(dstSqOtherRelay <= 1E-4) {
             collectionMultiplier = 1F;
         } else {
-            collectionMultiplier = 1F - ((float) (MathHelper.clamp(dstSqOtherRelay, 0, MAX_DST) / MAX_DST));
+            collectionMultiplier = 1F - ((float) (MathHelper.clamp_double(dstSqOtherRelay, 0, MAX_DST) / MAX_DST));
         }
         markForUpdate();
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
         if((ticksExisted & 15) == 0) {
             updateSkyState();
         }
 
         if((ticksExisted & 31) == 0) {
-            updateMultiblockState();
+            updateMultBlock();
         }
 
         ItemStack slotted = getInventoryHandler().getStackInSlot(0);
-        if(!world.isRemote) {
+        if(!worldObj.isRemote) {
             if(slotted != null) {
-                if(!world.isAirBlock(pos.up())) {
+                BlockPos pos = new BlockPos(xCoord, yCoord, zCoord).up();
+                if(!worldObj.isAirBlock(pos.getX(), pos.getY(), pos.getZ())) {
                     ItemStack in = getInventoryHandler().getStackInSlot(0);
                     ItemStack out = ItemUtils.copyStackWithSize(in, in.stackSize);
-                    ItemUtils.dropItem(world, pos.getX(), pos.getY(), pos.getZ(), out);
-                    getInventoryHandler().setStackInSlot(0, null);
+                    ItemUtils.dropItem(worldObj, pos.getX(), pos.getY(), pos.getZ(), out);
+                    getInventoryHandler().setInventorySlotContents(0, null);
                 }
 
                 if(ItemUtils.matchStackLoosely(slotted, ItemCraftingComponent.MetaType.GLASS_LENS.asStack())) {
                     if(linked != null) {
-                        TileAltar ta = MiscUtils.getTileAt(world, linked, TileAltar.class, true);
+                        TileAltar ta = MiscUtils.getTileAt(worldObj, linked, TileAltar.class, true);
                         if(ta == null) {
                             linked = null;
                             markForUpdate();
                         } else if(hasMultiblock && doesSeeSky()) {
-                            WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(getWorld());
-                            int yLevel = getPos().getY();
+                            WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(getWorldObj());
+                            int yLevel = pos.getY();
                             if(handle != null && yLevel > 40) {
                                 double coll = 0.2;
 
@@ -101,7 +102,7 @@ public class TileAttunementRelay extends TileInventoryBase {
 
                                 coll *= dstr;
                                 coll *= collectionMultiplier;
-                                coll *= (0.2 + (0.8 * ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(getWorld())));
+                                coll *= (0.2 + (0.8 * ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(getWorldObj())));
                                 ta.receiveStarlight(null, coll);
                             }
                         }
@@ -141,8 +142,8 @@ public class TileAttunementRelay extends TileInventoryBase {
         }
     }
 
-    private void updateMultiblockState() {
-        boolean found = MultiBlockArrays.patternCollectorRelay.matches(world, getPos());
+    private void updateMultBlock() {
+        boolean found = MultiBlockArrays.patternCollectorRelay.matches(worldObj, new BlockPos(xCoord, yCoord, zCoord));
         boolean update = hasMultiblock != found;
         this.hasMultiblock = found;
         if(update) {
@@ -151,7 +152,7 @@ public class TileAttunementRelay extends TileInventoryBase {
     }
 
     private void updateSkyState() {
-        boolean seesSky = world.canSeeSky(getPos());
+        boolean seesSky = worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord);
         boolean update = canSeeSky != seesSky;
         this.canSeeSky = seesSky;
         if(update) {

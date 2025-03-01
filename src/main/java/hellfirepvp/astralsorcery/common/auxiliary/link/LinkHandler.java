@@ -8,16 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.auxiliary.link;
 
+import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
+import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -39,7 +40,7 @@ public class LinkHandler implements ITickHandler {
     @Nonnull
     public static RightClickResult onRightClick(EntityPlayer clicked, World world, BlockPos pos, boolean sneak) {
         if(!players.containsKey(clicked)) {
-            TileEntity te = world.getTileEntity(pos);
+            TileEntity te = world.getTileEntity(pos.getX(), pos.getY(), pos.getZ());
             if(te == null || !(te instanceof ILinkableTile)) {
                 return new RightClickResult(RightClickResultType.NONE, null);
             }
@@ -59,17 +60,17 @@ public class LinkHandler implements ITickHandler {
 
     public static void propagateClick(RightClickResult result, EntityPlayer playerIn, World worldIn, BlockPos pos) {
         ILinkableTile tile = result.getInteracted();
-        Style green = new Style().setColor(TextFormatting.GREEN);
+        ChatStyle green = new ChatStyle().setColor(EnumChatFormatting.GREEN);
         switch (result.getType()) {
             case SELECT:
                 String name = tile.getUnLocalizedDisplayName();
                 if(name != null) {
-                    playerIn.addChatMessage(new TextComponentTranslation("misc.link.start", new TextComponentTranslation(name)).setStyle(green));
+                    playerIn.addChatMessage(new ChatComponentTranslation("misc.link.start", new ChatComponentTranslation(name)).setChatStyle(green));
                 }
                 tile.onSelect(playerIn);
                 break;
             case TRY_LINK:
-                TileEntity te = worldIn.getTileEntity(pos);
+                TileEntity te = worldIn.getTileEntity(pos.getX(), pos.getY(), pos.getZ());
                 if(te != null && te instanceof ILinkableTile) {
                     if(!((ILinkableTile) te).doesAcceptLinks()) return;
                 }
@@ -84,14 +85,14 @@ public class LinkHandler implements ITickHandler {
                     }
                     String linkedFrom = tile.getUnLocalizedDisplayName();
                     if(linkedFrom != null) {
-                        playerIn.addChatMessage(new TextComponentTranslation("misc.link.link", new TextComponentTranslation(linkedFrom), new TextComponentTranslation(linkedTo)).setStyle(green));
+                        playerIn.addChatMessage(new ChatComponentTranslation("misc.link.link", new ChatComponentTranslation(linkedFrom), new ChatComponentTranslation(linkedTo)).setChatStyle(green));
                     }
                 }
                 break;
             case TRY_UNLINK:
                 if(tile.tryUnlink(playerIn, pos)) {
                     String linkedTo = "misc.link.link.block";
-                    te = worldIn.getTileEntity(pos);
+                    te = worldIn.getTileEntity(pos.getX(), pos.getY(), pos.getZ());
                     if(te != null && te instanceof ILinkableTile) {
                         String unloc = ((ILinkableTile) te).getUnLocalizedDisplayName();
                         if(unloc != null) {
@@ -100,7 +101,7 @@ public class LinkHandler implements ITickHandler {
                     }
                     String linkedFrom = tile.getUnLocalizedDisplayName();
                     if(linkedFrom != null) {
-                        playerIn.addChatMessage(new TextComponentTranslation("misc.link.unlink", new TextComponentTranslation(linkedFrom), new TextComponentTranslation(linkedTo)).setStyle(green));
+                        playerIn.addChatMessage(new ChatComponentTranslation("misc.link.unlink", new ChatComponentTranslation(linkedFrom), new ChatComponentTranslation(linkedTo)).setChatStyle(green));
                     }
                 }
                 break;
@@ -118,17 +119,17 @@ public class LinkHandler implements ITickHandler {
             LinkSession session = players.get(pl);
 
             boolean needsRemoval = true;
-            ItemStack inhand = pl.getHeldItemMainhand();
+            ItemStack inhand = pl.getHeldItem();
             if (inhand != null && inhand.getItem() != null && inhand.getItem() instanceof IItemLinkingTool)
                 needsRemoval = false;
-            inhand = pl.getHeldItemOffhand();
-            if (inhand != null && inhand.getItem() != null && inhand.getItem() instanceof IItemLinkingTool)
-                needsRemoval = false;
-            int dimId = session.selected.getLinkWorld().provider.getDimension();
+//            inhand = pl.getHeldItem();
+//            if (inhand != null && inhand.getItem() != null && inhand.getItem() instanceof IItemLinkingTool)
+//                needsRemoval = false;
+            int dimId = session.selected.getLinkWorld().provider.dimensionId;
             if(dimId != pl.dimension) needsRemoval = true;
             if (needsRemoval) {
                 iterator.remove();
-                pl.addChatMessage(new TextComponentTranslation("misc.link.stop").setStyle(new Style().setColor(TextFormatting.RED)));
+                pl.addChatMessage(new ChatComponentTranslation("misc.link.stop").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)));
             }
         }
     }

@@ -13,10 +13,11 @@ import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ITickableSound;
 import net.minecraft.client.audio.PositionedSoundRecord;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.sound.SoundEvent;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,12 +32,13 @@ public class PositionedLoopSound extends PositionedSoundRecord implements ITicka
     private ActivityFunction func = null;
     private boolean hasStoppedPlaying = false;
 
-    public PositionedLoopSound(SoundUtils.CategorizedSoundEvent sound, float volume, float pitch, Vector3 pos) {
-        this(sound, sound.getCategory(), volume, pitch, pos);
-    }
+//    public PositionedLoopSound(SoundUtils.CategorizedSoundEvent sound, float volume, float pitch, Vector3 pos) {
+//        this(sound, sound.getCategory(), volume, pitch, pos);
+//    }
 
-    public PositionedLoopSound(SoundEvent sound, SoundCategory category, float volume, float pitch, Vector3 pos) {
-        super(sound.getSoundName(), category, volume, pitch, true, 0, AttenuationType.LINEAR, (float) pos.getX(), (float) pos.getY(), (float) pos.getZ());
+    public PositionedLoopSound(ResourceLocation soundResource, float volume, float pitch, Vector3 pos) {
+//        super(soundResource, volume, pitch, true, 0, AttenuationType.LINEAR, (float) pos.getX(), (float) pos.getY(), (float) pos.getZ());
+        super(soundResource, volume, pitch, (float) pos.getX(), (float) pos.getY(), (float) pos.getZ());
     }
 
     public void setRefreshFunction(ActivityFunction func) {

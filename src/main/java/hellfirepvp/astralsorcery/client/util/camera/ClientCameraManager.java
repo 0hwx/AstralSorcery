@@ -8,21 +8,22 @@
 
 package hellfirepvp.astralsorcery.client.util.camera;
 
+import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHandSide;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.IChatComponent;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -107,7 +108,7 @@ public class ClientCameraManager implements ITickHandler {
     public void addTransformer(ICameraTransformer transformer) {
         this.transformers.add(transformer);
     }
-    
+
     public boolean hasActiveTransformer() {
         return !transformers.isEmpty();
     }
@@ -143,7 +144,7 @@ public class ClientCameraManager implements ITickHandler {
             this.viewBobbing = Minecraft.getMinecraft().gameSettings.viewBobbing;
             this.hideGui = Minecraft.getMinecraft().gameSettings.hideGUI;
             this.thirdPersonView = Minecraft.getMinecraft().gameSettings.thirdPersonView;
-            EntityPlayer player = Minecraft.getMinecraft().player;
+            EntityPlayer player = Minecraft.getMinecraft().thePlayer;
             this.flying = player.capabilities.isFlying;
             this.startPosition = new Vector3(player.posX, player.posY, player.posZ);
             this.startYaw = player.rotationYaw;
@@ -159,7 +160,7 @@ public class ClientCameraManager implements ITickHandler {
                 settings.viewBobbing = viewBobbing;
                 settings.hideGUI = hideGui;
                 settings.thirdPersonView = thirdPersonView;
-                EntityPlayer player = Minecraft.getMinecraft().player;
+                EntityPlayer player = Minecraft.getMinecraft().thePlayer;
                 player.capabilities.isFlying = flying;
                 player.setPositionAndRotation(startPosition.getX(), startPosition.getY(), startPosition.getZ(), startYaw, startPitch);
                 player.setVelocity(0, 0, 0);
@@ -174,8 +175,8 @@ public class ClientCameraManager implements ITickHandler {
             settings.hideGUI = true;
             settings.viewBobbing = false;
             settings.thirdPersonView = 0;
-            Minecraft.getMinecraft().player.capabilities.isFlying = true;
-            Minecraft.getMinecraft().player.setVelocity(0, 0, 0);
+            Minecraft.getMinecraft().thePlayer.capabilities.isFlying = true;
+            Minecraft.getMinecraft().thePlayer.setVelocity(0, 0, 0);
         }
 
     }
@@ -197,8 +198,10 @@ public class ClientCameraManager implements ITickHandler {
             super.onStartTransforming(pTicks);
 
             EntityClientReplacement repl = new EntityClientReplacement();
-            repl.readFromNBT(Minecraft.getMinecraft().player.writeToNBT(new NBTTagCompound()));
-            Minecraft.getMinecraft().world.spawnEntityInWorld(repl);
+            NBTTagCompound tag = new NBTTagCompound(); // todo check this
+            Minecraft.getMinecraft().thePlayer.writeToNBT(tag);
+            repl.readFromNBT(tag);
+            Minecraft.getMinecraft().theWorld.spawnEntityInWorld(repl);
             this.clientEntity = repl;
 
             entity.setAsRenderViewEntity();
@@ -208,19 +211,19 @@ public class ClientCameraManager implements ITickHandler {
         public void onStopTransforming(float pTicks) {
             super.onStopTransforming(pTicks);
 
-            if(Minecraft.getMinecraft().world != null) {
-                Minecraft.getMinecraft().world.removeEntity(this.clientEntity);
+            if(Minecraft.getMinecraft().theWorld != null) {
+                Minecraft.getMinecraft().theWorld.removeEntity(this.clientEntity);
             }
 
-            if(Minecraft.getMinecraft().player != null) {
-                EntityPlayer player = Minecraft.getMinecraft().player;
+            if(Minecraft.getMinecraft().thePlayer != null) {
+                EntityPlayer player = Minecraft.getMinecraft().thePlayer;
                 player.setPositionAndRotation(this.clientEntity.posX, this.clientEntity.posY, this.clientEntity.posZ, this.clientEntity.rotationYaw, this.clientEntity.rotationPitch);
                 player.setVelocity(0, 0, 0);
             }
 
             RenderingUtils.unsafe_resetCamera();
 
-            if(Minecraft.getMinecraft().world != null) {
+            if(Minecraft.getMinecraft().theWorld != null) {
                 entity.onStopTransforming();
             }
         }
@@ -262,13 +265,13 @@ public class ClientCameraManager implements ITickHandler {
 
     }
 
-    public static abstract class EntityRenderViewReplacement extends EntityPlayerSP {
+    public static abstract class EntityRenderViewReplacement extends EntityClientPlayerMP {
 
         private Vector3 cameraFocus = null;
 
         public EntityRenderViewReplacement() {
-            super(Minecraft.getMinecraft(), Minecraft.getMinecraft().world,
-                    Minecraft.getMinecraft().player.connection, Minecraft.getMinecraft().player.getStatFileWriter());
+            super(Minecraft.getMinecraft(), Minecraft.getMinecraft().theWorld,
+                  Minecraft.getMinecraft().getSession(), Minecraft.getMinecraft().thePlayer.sendQueue, Minecraft.getMinecraft().thePlayer.getStatFileWriter());
             capabilities.allowFlying = true;
             capabilities.isFlying = true;
         }
@@ -283,7 +286,7 @@ public class ClientCameraManager implements ITickHandler {
         }
 
         public void setAsRenderViewEntity() {
-            Minecraft.getMinecraft().setRenderViewEntity(this);
+            Minecraft.getMinecraft().renderViewEntity = this;
         }
 
         public void transformToFocusOnPoint(Vector3 toFocus, float pTicks, boolean propagate) {
@@ -307,41 +310,56 @@ public class ClientCameraManager implements ITickHandler {
 
         public abstract void onStopTransforming();
 
-        @Override
-        public boolean isSpectator() {
-            return false;
-        }
-
-        @Override
-        public boolean isCreative() {
-            return false;
-        }
-
-        @Override
-        public Iterable<ItemStack> getArmorInventoryList() {
-            return Collections.emptyList();
-        }
-
-        @Nullable
-        @Override
-        public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn) {
-            return null;
-        }
-
-        @Override
-        public void setItemStackToSlot(EntityEquipmentSlot slotIn, @Nullable ItemStack stack) {}
-
-        @Override
-        public EnumHandSide getPrimaryHand() {
-            return EnumHandSide.RIGHT;
-        }
+//        @Override
+//        public boolean isSpectator() {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean isCreative() {
+//            return false;
+//        }
+//
+//        @Override
+//        public Iterable<ItemStack> getArmorInventoryList() {
+//            return Collections.emptyList();
+//        }
+//
+//        @Nullable
+//        @Override
+//        public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn) {
+//            return null;
+//        }
+//
+//        @Override
+//        public void setItemStackToSlot(EntityEquipmentSlot slotIn, @Nullable ItemStack stack) {}
+//
+//        @Override
+//        public EnumHandSide getPrimaryHand() {
+//            return EnumHandSide.RIGHT;
+//        }
 
     }
 
     public static class EntityClientReplacement extends AbstractClientPlayer {
 
         public EntityClientReplacement() {
-            super(Minecraft.getMinecraft().world, Minecraft.getMinecraft().player.getGameProfile());
+            super(Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer.getGameProfile());
+        }
+
+        @Override
+        public void addChatMessage(IChatComponent message) {
+
+        }
+
+        @Override
+        public boolean canCommandSenderUseCommand(int permissionLevel, String command) {
+            return false;
+        }
+
+        @Override
+        public ChunkCoordinates getPlayerCoordinates() {
+            return null;
         }
     }
 

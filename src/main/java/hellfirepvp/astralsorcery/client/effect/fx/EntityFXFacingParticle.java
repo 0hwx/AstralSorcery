@@ -15,8 +15,6 @@ import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -32,7 +30,7 @@ import java.util.List;
  * Created by HellFirePvP
  * Date: 16.10.2016 / 16:10
  */
-public final class EntityFXFacingParticle extends EntityComplexFX {
+public class EntityFXFacingParticle extends EntityComplexFX {
 
     public static final BindableResource staticFlareTex = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "flareStatic");
 
@@ -134,13 +132,14 @@ public final class EntityFXFacingParticle extends EntityComplexFX {
 
         staticFlareTex.bind();
 
-        Tessellator t = Tessellator.getInstance();
-        VertexBuffer vb = t.getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        Tessellator t = Tessellator.instance;
+//        VertexBuffer vb = t.getBuffer();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        t.startDrawingQuads();
 
         for (EntityFXFacingParticle particle : new ArrayList<>(particles)) {
             if(particle == null) continue;
-            particle.renderFast(parTicks, vb);
+            particle.renderFast(parTicks, t);
         }
 
         t.draw();
@@ -154,7 +153,7 @@ public final class EntityFXFacingParticle extends EntityComplexFX {
 
     //Vertex format: DefaultVertexFormats.POSITION_TEX_COLOR
     //GL states have to be preinitialized.
-    public void renderFast(float pTicks, VertexBuffer vbDrawing) {
+    public void renderFast(float pTicks, Tessellator vbDrawing) {
         float alpha = fadeFunction.getAlpha(age, maxAge);
         alpha *= alphaMultiplier;
         double intX = RenderingUtils.interpolate(oldX, x, pTicks);

@@ -1,12 +1,13 @@
 package hellfirepvp.astralsorcery.common.util;
 
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,17 +30,17 @@ public class BlockDropCaptureAssist {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onDrop(EntityJoinWorldEvent event) {
-        if (event.getEntity() instanceof EntityItem && capturing) {
-            ItemStack stack = ((EntityItem) event.getEntity()).getEntityItem();
+        if (event.entity instanceof EntityItem && capturing) {
+            ItemStack stack = ((EntityItem) event.entity).getEntityItem();
             event.setCanceled(true);
             if(!expectCaptureStone) {
-                if(stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).getBlock().equals(Blocks.STONE)) {
-                    event.getEntity().setDead();
+                if(stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).field_150939_a.equals(Blocks.stone)) {
+                    event.entity.setDead();
                     return;
                 }
             }
             capturedStacks.add(stack);
-            event.getEntity().setDead();
+            event.entity.setDead();
         }
     }
 

@@ -13,6 +13,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
 
 import java.util.UUID;
 
@@ -148,6 +150,21 @@ public class NBTHelper {
 
     public static long getLong(NBTTagCompound compound, String tag, long defaultValue) {
         return compound.hasKey(tag) ? compound.getLong(tag) : defaultValue;
+    }
+
+    public static int getIntAt(NBTTagList List, int i)
+    {
+        if (i >= 0 && i < List.tagList.size())
+        {
+            NBTBase nbtbase = (NBTBase) List.tagList.get(i);
+
+            if (nbtbase.getId() == 3)
+            {
+                return ((NBTTagInt)nbtbase).func_150287_d();
+            }
+        }
+
+        return 0;
     }
 
 }

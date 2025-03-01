@@ -13,9 +13,9 @@ import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.item.block.ItemCollectorCrystal;
 import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -33,7 +33,8 @@ import java.util.List;
 public class BlockCelestialCollectorCrystal extends BlockCollectorCrystalBase {
 
     public BlockCelestialCollectorCrystal() {
-        super(Material.GLASS, MapColor.CYAN);
+        super(Material.glass);
+        setBlockName("BlockCelestialCollectorCrystal");
     }
 
     @Override
@@ -49,7 +50,7 @@ public class BlockCelestialCollectorCrystal extends BlockCollectorCrystalBase {
 
     @Nonnull
     @Override
-    public ItemStack getDecriptor(IBlockState state) {
+    public ItemStack getDecriptor(Block block) {
         ItemStack stack = new ItemStack(BlocksAS.collectorCrystal);
         ItemCollectorCrystal.setType(stack, CollectorCrystalType.CELESTIAL_CRYSTAL);
         return stack;

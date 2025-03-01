@@ -15,8 +15,8 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
@@ -73,7 +73,7 @@ public class AccessibleRecipeAdapater implements IAccessibleRecipe {
         List<ItemStack> out = new LinkedList<>();
         for (ItemStack oreDictIn : applicableItems) {
             if(oreDictIn.getItemDamage() == OreDictionary.WILDCARD_VALUE && !oreDictIn.isItemStackDamageable()) {
-                oreDictIn.getItem().getSubItems(oreDictIn.getItem(), CreativeTabs.BUILDING_BLOCKS, out);
+                oreDictIn.getItem().getSubItems(oreDictIn.getItem(), CreativeTabs.tabDecorations, out);
             } else {
                 out.add(oreDictIn);
             }
@@ -103,8 +103,8 @@ public class AccessibleRecipeAdapater implements IAccessibleRecipe {
         return parent.getRecipeOutput();
     }
 
-    @Override
-    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-        return parent.getRemainingItems(inv);
-    }
+//    @Override
+//    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+//        return parent.getRemainingItems(inv);
+//    }
 }

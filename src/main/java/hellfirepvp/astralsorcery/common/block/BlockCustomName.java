@@ -17,6 +17,6 @@ package hellfirepvp.astralsorcery.common.block;
  */
 public interface BlockCustomName {
 
-    public String getIdentifierForMeta(int meta);
+    String getIdentifierForMeta(int meta);
 
 }

@@ -13,13 +13,13 @@ import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.data.config.entry.WorldGenEntry;
 import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
 import hellfirepvp.astralsorcery.common.data.world.data.StructureGenBuffer;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.struct.StructureBlockArray;
 import hellfirepvp.astralsorcery.common.world.structure.WorldGenAttributeStructure;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 import java.util.Random;
 
@@ -76,13 +76,13 @@ public abstract class WorldGenAttributeCommon extends WorldGenAttribute {
 
     public boolean canGenerateAtAll(int chX, int chZ, World world, Random rand) {
         if(!cfgEntry.shouldGenerate()) return false;
-        if(onlyGenerateInSkyDimensions && !Config.worldGenDimWhitelist.contains(world.provider.getDimension())) return false;
+        if(onlyGenerateInSkyDimensions && !Config.worldGenDimWhitelist.contains(world.provider.dimensionId)) return false;
         double chanceMultiplier = 1F;
         if(Config.respectIdealDistances && this instanceof WorldGenAttributeStructure) {
             StructureGenBuffer.StructureType type = ((WorldGenAttributeStructure) this).getStructureType();
             StructureGenBuffer buf = WorldCacheManager.getOrLoadData(world, WorldCacheManager.SaveKey.STRUCTURE_GEN);
             BlockPos pos = new BlockPos(chX * 16, 0, chZ * 16);
-            double dst = buf.getDstToClosest(type, new BlockPos(pos.getX(), world.getTopSolidOrLiquidBlock(pos).getY(), pos.getZ()));
+            double dst = buf.getDstToClosest(type, new BlockPos(pos.getX(), world.getTopSolidOrLiquidBlock(pos.getX(), pos.getZ()), pos.getZ()));
             if(dst != -1) {
                 if(dst < 32) {
                     return false;

@@ -10,11 +10,12 @@ import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
 import hellfirepvp.astralsorcery.common.data.world.data.GatewayCache;
 import hellfirepvp.astralsorcery.common.lib.MultiBlockArrays;
 import hellfirepvp.astralsorcery.common.tile.base.TileEntityTick;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.awt.*;
 
@@ -35,30 +36,31 @@ public class TileCelestialGateway extends TileEntityTick {
     private Object clientSphere = null;
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
-        if(world.isRemote) {
+        if(worldObj.isRemote) {
             playEffects();
         } else {
+            BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
             if((ticksExisted & 15) == 0) {
-                updateSkyState(world.canSeeSky(getPos().up()));
+                updateSkyState(worldObj.canBlockSeeTheSky(pos.up().getX(), pos.up().getY(), pos.up().getZ()));
             }
 
             if((ticksExisted & 15) == 0) {
-                updateMultiblockState(MultiBlockArrays.patternCelestialGateway.matches(world, pos));
+                updateMultBlock(MultiBlockArrays.patternCelestialGateway.matches(worldObj, pos));
             }
 
             if(gatewayRegistered) {
                 if(!hasMultiblock() || !doesSeeSky()) {
-                    GatewayCache cache = WorldCacheManager.getOrLoadData(world, WorldCacheManager.SaveKey.GATEWAY_DATA);
-                    cache.removePosition(world, pos);
+                    GatewayCache cache = WorldCacheManager.getOrLoadData(worldObj, WorldCacheManager.SaveKey.GATEWAY_DATA);
+                    cache.removePosition(worldObj, pos);
                     gatewayRegistered = false;
                 }
             } else {
                 if(hasMultiblock() && doesSeeSky()) {
-                    GatewayCache cache = WorldCacheManager.getOrLoadData(world, WorldCacheManager.SaveKey.GATEWAY_DATA);
-                    cache.offerPosition(world, pos);
+                    GatewayCache cache = WorldCacheManager.getOrLoadData(worldObj, WorldCacheManager.SaveKey.GATEWAY_DATA);
+                    cache.offerPosition(worldObj, pos);
                     gatewayRegistered = true;
                 }
             }
@@ -68,7 +70,7 @@ public class TileCelestialGateway extends TileEntityTick {
     @Override
     protected void onFirstTick() {}
 
-    private void updateMultiblockState(boolean matches) {
+    private void updateMultBlock(boolean matches) {
         boolean update = hasMultiblock != matches;
         this.hasMultiblock = matches;
         if(update) {
@@ -104,6 +106,7 @@ public class TileCelestialGateway extends TileEntityTick {
     @SideOnly(Side.CLIENT)
     private void setupGatewayUI(boolean preconditionsFulfilled) {
         if(preconditionsFulfilled) {
+            BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
             Vector3 sphereVec = new Vector3(pos).add(0.5, 1.62, 0.5);
             if(clientSphere == null) {
                 CompoundEffectSphere sphere = new CompoundGatewayShield(sphereVec.clone(), Vector3.RotAxis.Y_AXIS, 6, 8, 10);
@@ -111,7 +114,7 @@ public class TileCelestialGateway extends TileEntityTick {
                 EffectHandler.getInstance().registerFX(sphere);
                 clientSphere = sphere;
             }
-            double playerDst = new Vector3(Minecraft.getMinecraft().player).distance(sphereVec);
+            double playerDst = new Vector3(Minecraft.getMinecraft().thePlayer).distance(sphereVec);
             if(clientSphere != null) {
                 if(!((CompoundEffectSphere) clientSphere).getPosition().equals(sphereVec)) {
                     ((CompoundEffectSphere) clientSphere).requestRemoval();
@@ -129,7 +132,7 @@ public class TileCelestialGateway extends TileEntityTick {
                 Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
             }
             if(playerDst < 2.5) {
-                EffectHandler.getInstance().requestGatewayUIFor(world, sphereVec, 5.5);
+                EffectHandler.getInstance().requestGatewayUIFor(worldObj, sphereVec, 5.5);
             }
         } else {
             if(clientSphere != null) {
@@ -143,6 +146,7 @@ public class TileCelestialGateway extends TileEntityTick {
     @SideOnly(Side.CLIENT)
     private void playFrameParticles() {
         for (int i = 0; i < 2; i++) {
+            BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
             Vector3 offset = new Vector3(pos).add(-2, 0, -2);
             if(rand.nextBoolean()) {
                 offset.add(5 * (rand.nextBoolean() ? 1 : 0), 0, rand.nextFloat() * 5);

@@ -13,7 +13,6 @@ import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.tile.TileCelestialOrrery;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -27,7 +26,7 @@ import net.minecraft.world.World;
 public class BlockCelestialOrrery extends BlockStarlightNetwork {
 
     public BlockCelestialOrrery() {
-        super(Material.ROCK, MapColor.QUARTZ);
+        super("BlockCelestialOrrery",Material.rock);
         setHardness(0.5F);
         setHarvestLevel("axe", 1);
         setResistance(10F);
@@ -35,12 +34,12 @@ public class BlockCelestialOrrery extends BlockStarlightNetwork {
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state) {
+    public boolean hasTileEntity() {
         return true;
     }
 
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state) {
+    public TileEntity createTileEntity(World world, int meta) {
         return new TileCelestialOrrery();
     }
 

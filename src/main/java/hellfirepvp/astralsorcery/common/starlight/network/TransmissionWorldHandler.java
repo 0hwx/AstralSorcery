@@ -17,12 +17,11 @@ import hellfirepvp.astralsorcery.common.starlight.IIndependentStarlightSource;
 import hellfirepvp.astralsorcery.common.starlight.WorldNetworkHandler;
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionReceiver;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -45,12 +44,12 @@ public class TransmissionWorldHandler {
     private static final Random rand = new Random();
 
     //If a source looses all chunks/all chunks in its network get unloaded it doesn't need to broadcast starlight anymore
-    //This map exists to associate a certain chunkPosition to the involved networks in it.
-    private Map<ChunkPos, List<IIndependentStarlightSource>> involvedSourceMap = new HashMap<>();
+    //This map exists to associate a certain ChunkCoordIntPairition to the involved networks in it.
+    private Map<ChunkCoordIntPair, List<IIndependentStarlightSource>> involvedSourceMap = new HashMap<>();
 
     //The counterpart to check faster
     //Removing a source here will also stop production!
-    private Map<IIndependentStarlightSource, List<ChunkPos>> activeChunkMap = new HashMap<>();
+    private Map<IIndependentStarlightSource, List<ChunkCoordIntPair>> activeChunkMap = new HashMap<>();
 
     private Map<IIndependentStarlightSource, TransmissionChain> cachedSourceChain = new HashMap<>(); //The distribution source chain.
 
@@ -81,7 +80,7 @@ public class TransmissionWorldHandler {
                     }
                 }
 
-                List<ChunkPos> activeChunks = activeChunkMap.get(source);
+                List<ChunkCoordIntPair> activeChunks = activeChunkMap.get(source);
                 if(activeChunks == null || activeChunks.isEmpty()) {
                     continue; //Not producing anything.
                 }
@@ -96,7 +95,7 @@ public class TransmissionWorldHandler {
                     BlockPos pos = rec.getPos();
                     Float multiplier = lossMultipliers.get(pos);
                     if (multiplier != null) {
-                        rec.onStarlightReceive(world, MiscUtils.isChunkLoaded(world, new ChunkPos(pos)), type, starlight * multiplier);
+                        rec.onStarlightReceive(world, MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ())), type, starlight * multiplier);
                     }
                 }
 
@@ -109,16 +108,16 @@ public class TransmissionWorldHandler {
                 Iterator<BlockPos> iterator = chain.getUncheckedEndpointsBlock().iterator();
                 while (iterator.hasNext()) {
                     BlockPos endPointPos = iterator.next();
-                    if (MiscUtils.isChunkLoaded(world, new ChunkPos(endPointPos))) {
-                        IBlockState endState = world.getBlockState(endPointPos);
-                        Block b = endState.getBlock();
+                    if (MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(endPointPos.chunkX(), endPointPos.chunkZ()))) {
+                        Block b = world.getBlock(endPointPos.getX(), endPointPos.getY(), endPointPos.getZ());
+                        int meta = world.getBlockMetadata(endPointPos.getX(), endPointPos.getY(), endPointPos.getZ());
                         if (b instanceof IBlockStarlightRecipient) {
                             Float multiplier = lossMultipliers.get(endPointPos);
                             if (multiplier != null) {
                                 ((IBlockStarlightRecipient) b).receiveStarlight(world, rand, endPointPos, type, starlight * multiplier);
                             }
                         } else {
-                            StarlightNetworkRegistry.IStarlightBlockHandler handle = StarlightNetworkRegistry.getStarlightHandler(world, endPointPos, endState);
+                            StarlightNetworkRegistry.IStarlightBlockHandler handle = StarlightNetworkRegistry.getStarlightHandler(world, endPointPos, meta);
                             if(handle != null) {
                                 Float multiplier = lossMultipliers.get(endPointPos);
                                 if (multiplier != null) {
@@ -143,8 +142,8 @@ public class TransmissionWorldHandler {
             sourcePosBuilding.remove(sourcePos);
 
             cachedSourceChain.put(source, chain);
-            List<ChunkPos> activeChunks = new LinkedList<>();
-            for (ChunkPos pos : chain.getInvolvedChunks()) {
+            List<ChunkCoordIntPair> activeChunks = new LinkedList<>();
+            for (ChunkCoordIntPair pos : chain.getInvolvedChunks()) {
                 List<IIndependentStarlightSource> sources = involvedSourceMap.get(pos);
                 if(sources == null) {
                     sources = new LinkedList<>();
@@ -192,7 +191,7 @@ public class TransmissionWorldHandler {
         synchronized (accessLock) {
             TransmissionChain knownChain = cachedSourceChain.get(source);
             if(knownChain != null) {
-                for (ChunkPos chPos : knownChain.getInvolvedChunks()) {
+                for (ChunkCoordIntPair chPos : knownChain.getInvolvedChunks()) {
                     List<IIndependentStarlightSource> sources = involvedSourceMap.get(chPos);
                     if(sources != null) {
                         sources.remove(source);
@@ -212,12 +211,12 @@ public class TransmissionWorldHandler {
                 }
                 Thread tr = new Thread(() -> {
                     DataLightConnections connections = SyncDataHolder.getDataServer(SyncDataHolder.DATA_LIGHT_CONNECTIONS);
-                    connections.removeOldConnectionsThreaded(world.provider.getDimension(), knownChain.getFoundConnections());
+                    connections.removeOldConnectionsThreaded(world.provider.dimensionId, knownChain.getFoundConnections());
                 });
                 tr.start();
                 Thread t = new Thread(() -> {
                     DataLightBlockEndpoints connections = SyncDataHolder.getDataServer(SyncDataHolder.DATA_LIGHT_BLOCK_ENDPOINTS);
-                    connections.removeEndpoints(world.provider.getDimension(), knownChain.getResolvedNormalBlockPositions());
+                    connections.removeEndpoints(world.provider.dimensionId, knownChain.getResolvedNormalBlockPositions());
                 });
                 t.start();
             }
@@ -226,12 +225,12 @@ public class TransmissionWorldHandler {
         }
     }
 
-    public void informChunkUnload(ChunkPos pos) {
+    public void informChunkUnload(ChunkCoordIntPair pos) {
         synchronized (accessLock) {
             List<IIndependentStarlightSource> sources = involvedSourceMap.get(pos);
             if(sources != null) {
                 for (IIndependentStarlightSource source : sources) {
-                    List<ChunkPos> activeChunks = activeChunkMap.get(source);
+                    List<ChunkCoordIntPair> activeChunks = activeChunkMap.get(source);
                     if (activeChunks != null) {
                         activeChunks.remove(pos);
                         if(activeChunks.isEmpty()) {
@@ -243,7 +242,7 @@ public class TransmissionWorldHandler {
         }
     }
 
-    public void informChunkLoad(ChunkPos pos) {
+    public void informChunkLoad(ChunkCoordIntPair pos) {
         synchronized (accessLock) {
             List<IIndependentStarlightSource> sources = involvedSourceMap.get(pos);
             if(sources != null) {
@@ -252,10 +251,10 @@ public class TransmissionWorldHandler {
                     if(chain != null) {
                         if(chain.getInvolvedChunks().contains(pos)) {
                             if(activeChunkMap.containsKey(source)) {
-                                List<ChunkPos> positions = activeChunkMap.get(source);
+                                List<ChunkCoordIntPair> positions = activeChunkMap.get(source);
                                 if(!positions.contains(pos)) positions.add(pos);
                             } else {
-                                List<ChunkPos> positions = new LinkedList<>();
+                                List<ChunkCoordIntPair> positions = new LinkedList<>();
                                 positions.add(pos);
                                 activeChunkMap.put(source, positions);
                             }

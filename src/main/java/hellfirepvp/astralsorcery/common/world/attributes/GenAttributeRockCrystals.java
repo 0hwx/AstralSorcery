@@ -13,11 +13,11 @@ import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
 import hellfirepvp.astralsorcery.common.data.world.data.RockCrystalBuffer;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.world.WorldGenAttribute;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockStone;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
@@ -42,15 +42,15 @@ public class GenAttributeRockCrystals extends WorldGenAttribute {
             int zPos = chunkZ * 16 + random.nextInt(16) + 8;
             int yPos = 2 + random.nextInt(4);
             BlockPos pos = new BlockPos(xPos, yPos, zPos);
-            IBlockState state = world.getBlockState(pos);
-            if (state.getBlock().equals(Blocks.STONE)) {
-                BlockStone.EnumType stoneType = state.getValue(BlockStone.VARIANT);
-                if (stoneType != null && stoneType.equals(BlockStone.EnumType.STONE)) {
-                    IBlockState newState = BlocksAS.customOre.getDefaultState().withProperty(BlockCustomOre.ORE_TYPE, BlockCustomOre.OreType.ROCK_CRYSTAL);
-                    world.setBlockState(pos, newState);
+            Block state = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+            if (state.equals(Blocks.stone)) {
+//                BlockStone stoneType = state.getItemDropped(BlockStone.VARIANT);
+//                if (stoneType != null && stoneType.equals(BlockStone.EnumType.STONE)) {
+                    int newState = BlocksAS.customOre.damageDropped(BlockCustomOre.OreType.ROCK_CRYSTAL.getMeta());//getDefaultState().withProperty(BlockCustomOre.ORE_TYPE, BlockCustomOre.OreType.ROCK_CRYSTAL);
+                    world.setBlock(pos.getX(), pos.getY(), pos.getZ(),state, newState,3);
                     RockCrystalBuffer buf = WorldCacheManager.getOrLoadData(world, WorldCacheManager.SaveKey.ROCK_CRYSTAL);
                     buf.addOre(pos);
-                }
+//                }
             }
         }
     }

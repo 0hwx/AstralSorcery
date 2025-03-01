@@ -8,6 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.event.listener;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.LoaderState;
+import cpw.mods.fml.common.eventhandler.Event;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.render.tile.TESRTranslucentBlock;
 import hellfirepvp.astralsorcery.common.block.BlockCustomOre;
@@ -34,6 +42,7 @@ import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.registry.RegistryAchievements;
 import hellfirepvp.astralsorcery.common.registry.RegistryPotions;
 import hellfirepvp.astralsorcery.common.starlight.WorldNetworkHandler;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.data.TickTokenizedMap;
 import hellfirepvp.astralsorcery.common.util.data.TimeoutList;
@@ -44,7 +53,7 @@ import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import hellfirepvp.astralsorcery.common.world.WorldProviderBrightnessInj;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockWorkbench;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -54,18 +63,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Enchantments;
-import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -75,16 +81,8 @@ import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -111,24 +109,24 @@ public class EventHandlerServer {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onLoad(WorldEvent.Load event) {
-        World w = event.getWorld();
-        int id = w.provider.getDimension();
+        World w = event.world;
+        int id = w.provider.dimensionId;
         if(!w.isRemote && !isDataInitialized) {
             //This is kinda an early point in server startup, when it loads the overworld.
             //Since the FML Server start events are either too early or too late, we do it here.
             ServerData.reloadDataFromSaveHandler(w.getSaveHandler());
             isDataInitialized = true;
         }
-        if(DataWorldSkyHandlers.hasWorldHandler(id, w.isRemote ? Side.CLIENT : Side.SERVER) && !Config.weakSkyRendersWhitelist.contains(w.provider.getDimension())) {
+        if(DataWorldSkyHandlers.hasWorldHandler(id, w.isRemote ? Side.CLIENT : Side.SERVER) && !Config.weakSkyRendersWhitelist.contains(w.provider.dimensionId)) {
             AstralSorcery.log.info("[AstralSorcery] Found worldProvider in Dimension " + id + " : " + w.provider.getClass().getName());
-            w.provider = new WorldProviderBrightnessInj(w, w.provider);
+//            w.provider = new WorldProviderBrightnessInj(w, w.provider);
             AstralSorcery.log.info("[AstralSorcery] Injected WorldProvider into dimension " + id + " (chaining old provider.)");
         }
     }
 
     @SubscribeEvent
     public void onUnload(WorldEvent.Unload event) {
-        World w = event.getWorld();
+        World w = event.world;
         ConstellationSkyHandler.getInstance().informWorldUnload(w);
         if(w.isRemote) {
             clientUnload();
@@ -142,8 +140,8 @@ public class EventHandlerServer {
 
     @SubscribeEvent
     public void onDamage(LivingHurtEvent event) {
-        EntityLivingBase living = event.getEntityLiving();
-        if(living == null || living.getEntityWorld().isRemote) return;
+        EntityLivingBase living = event.entityLiving;
+        if(living == null || living.worldObj.isRemote) return;
 
         if(!living.isDead && living instanceof EntityPlayer) {
             if (invulnerabilityCooldown.contains((EntityPlayer) living)) {
@@ -152,7 +150,7 @@ public class EventHandlerServer {
             }
         }
 
-        DamageSource source = event.getSource();
+        DamageSource source = event.source;
         lblIn: if(source.getSourceOfDamage() != null) {
             EntityPlayer p;
             if(source.getSourceOfDamage() instanceof EntityPlayer) {
@@ -169,22 +167,22 @@ public class EventHandlerServer {
             }
             PlayerProgress prog = ResearchManager.getProgress(p);
             if(prog != null) {
-                float dmg = event.getAmount();
+                float dmg = event.ammount;
                 Map<ConstellationPerk, Integer> perks = prog.getAppliedPerks();
                 for (ConstellationPerk perk : perks.keySet()) {
                     if(!prog.isPerkActive(perk)) continue;
                     if(perk.mayExecute(ConstellationPerk.Target.ENTITY_ATTACK)) {
-                        dmg = perk.onEntityAttack(p, event.getEntityLiving(), dmg);
+                        dmg = perk.onEntityAttack(p, event.entityLiving, dmg);
                     }
                 }
-                event.setAmount(dmg);
+                event.ammount = dmg;
             }
         }
-        if(event.getEntityLiving() != null && event.getEntityLiving() instanceof EntityPlayer) {
-            EntityPlayer hurt = (EntityPlayer) event.getEntityLiving();
+        if(event.entityLiving != null && event.entityLiving instanceof EntityPlayer) {
+            EntityPlayer hurt = (EntityPlayer) event.entityLiving;
             PlayerProgress prog = ResearchManager.getProgress(hurt);
             if(prog != null) {
-                float dmg = event.getAmount();
+                float dmg = event.ammount;
                 Map<ConstellationPerk, Integer> perks = prog.getAppliedPerks();
                 for (ConstellationPerk perk : perks.keySet()) {
                     if(!prog.isPerkActive(perk)) continue;
@@ -192,19 +190,19 @@ public class EventHandlerServer {
                         dmg = perk.onEntityHurt(hurt, source, dmg);
                     }
                 }
-                event.setAmount(dmg);
+                event.ammount = dmg;
             }
         }
     }
 
     @SubscribeEvent
     public void onTarget(LivingSetAttackTargetEvent event) {
-        EntityLivingBase living = event.getTarget();
+        EntityLivingBase living = event.target;
         if(living != null && !living.isDead && living instanceof EntityPlayer) {
             if (invulnerabilityCooldown.contains((EntityPlayer) living)) {
-                event.getEntityLiving().setRevengeTarget(null);
-                if(event.getEntityLiving() instanceof EntityLiving) {
-                    ((EntityLiving) event.getEntityLiving()).setAttackTarget(null);
+                event.entityLiving.setRevengeTarget(null);
+                if(event.entityLiving instanceof EntityLiving) {
+                    ((EntityLiving) event.entityLiving).setAttackTarget(null);
                 }
             }
         }
@@ -213,7 +211,7 @@ public class EventHandlerServer {
     @SubscribeEvent
     public void onKnockback(EntityKnockbackEvent event) {
         Entity attacker = event.getAttacker();
-        if(attacker == null || attacker.getEntityWorld().isRemote) return;
+        if(attacker == null || attacker.worldObj.isRemote) return;
 
         if(attacker instanceof EntityPlayer) {
             EntityPlayer p = (EntityPlayer) attacker;
@@ -223,7 +221,7 @@ public class EventHandlerServer {
                 for (ConstellationPerk perk : perks.keySet()) {
                     if(!prog.isPerkActive(perk)) continue;
                     if(perk.mayExecute(ConstellationPerk.Target.ENTITY_KNOCKBACK)) {
-                        perk.onEntityKnockback(p, event.getEntityLiving());
+                        perk.onEntityKnockback(p, event.entityLiving);
                     }
                 }
             }
@@ -232,12 +230,12 @@ public class EventHandlerServer {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onDeath(LivingDeathEvent event) {
-        if (phoenixProtect(event.getEntityLiving())) {
+        if (phoenixProtect(event.entityLiving)) {
             event.setCanceled(true);
         } else {
-            if(event.getEntityLiving() == null || event.getEntityLiving().getEntityWorld().isRemote) return;
+            if(event.entityLiving == null || event.entityLiving.worldObj.isRemote) return;
 
-            DamageSource source = event.getSource();
+            DamageSource source = event.source;
             if(source.getEntity() != null && source.getEntity() instanceof EntityPlayer) {
                 EntityPlayer p = (EntityPlayer) source.getEntity();
                 PlayerProgress prog = ResearchManager.getProgress(p);
@@ -246,7 +244,7 @@ public class EventHandlerServer {
                     for (ConstellationPerk perk : perks.keySet()) {
                         if(!prog.isPerkActive(perk)) continue;
                         if (perk.mayExecute(ConstellationPerk.Target.ENTITY_KILL)) {
-                            perk.onEntityKilled(p, event.getEntityLiving());
+                            perk.onEntityKilled(p, event.entityLiving);
                         }
                     }
                 }
@@ -266,19 +264,20 @@ public class EventHandlerServer {
 
     private void phoenixEffects(EntityLivingBase entity, int level) {
         entity.setHealth(6 + level * 2);
-        entity.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 200, 2, false, false));
-        entity.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 500, 1, false, false));
-        List<EntityLivingBase> others = entity.getEntityWorld().getEntitiesWithinAABB(EntityLivingBase.class, entity.getEntityBoundingBox().expandXyz(3), (e) -> !e.isDead && e != entity);
+        entity.addPotionEffect(new PotionEffect(Potion.regeneration.getId(), 200, 2, false));
+        entity.addPotionEffect(new PotionEffect(Potion.fireResistance.getId(), 500, 1, false));
+        List<EntityLivingBase> others = entity.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, entity.boundingBox.expand(3,3,3)); //, (e) -> !e.isDead && e != entity);
         for (EntityLivingBase lb : others) {
             lb.setFire(16);
             lb.knockBack(entity, 2F, lb.posX - entity.posX, lb.posZ - entity.posZ);
         }
         PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.PHOENIX_PROC, new Vector3(entity.posX, entity.posY, entity.posZ));
-        PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(entity.world, entity.getPosition(), 32));
+        BlockPos getPosition = new BlockPos(entity).getPosition();; //getPosition
+        PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(entity.worldObj, getPosition, 32));
 
-        MinecraftServer server = entity.getServer();
+        MinecraftServer server = MinecraftServer.getServer();
         if(server != null) {
-            server.addScheduledTask(() -> entity.removePotionEffect(RegistryPotions.potionCheatDeath));
+            entity.removePotionEffect(RegistryPotions.potionCheatDeath.getId());
         }
     }
 
@@ -286,12 +285,12 @@ public class EventHandlerServer {
     public void onSpawnTest(LivingSpawnEvent.CheckSpawn event) {
         if(event.getResult() == Event.Result.DENY) return; //Already denied anyway.
 
-        EntityLivingBase toTest = event.getEntityLiving();
+        EntityLivingBase toTest = event.entityLiving;
         Vector3 at = new Vector3(toTest);
-        boolean mayDeny = Config.doesMobSpawnDenyDenyEverything || toTest.isCreatureType(EnumCreatureType.MONSTER, false);
+        boolean mayDeny = Config.doesMobSpawnDenyDenyEverything || toTest.isCreatureType(EnumCreatureType.monster, false);
         if(mayDeny) {
             for (Map.Entry<WorldBlockPos, TickTokenizedMap.SimpleTickToken<Double>> entry : spawnDenyRegions.entrySet()) {
-                if(!entry.getKey().getWorld().equals(toTest.getEntityWorld())) continue;
+                if(!entry.getKey().getWorld().equals(toTest.worldObj)) continue;
                 if(at.distance(entry.getKey()) <= entry.getValue().getValue()) {
                     event.setResult(Event.Result.DENY);
                     return;
@@ -301,42 +300,45 @@ public class EventHandlerServer {
     }
 
     @SubscribeEvent
-    public void onRightClick(PlayerInteractEvent.RightClickBlock event) {
-        ItemStack hand = event.getItemStack();
-        if(event.getHand() == EnumHand.OFF_HAND) {
-            hand = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
-        }
+    public void onRightClick(PlayerInteractEvent event) {
+        ItemStack hand = event.entityPlayer.getHeldItem();
+//        if(event.getHand() == EnumHand.OFF_HAND) {
+//            hand = event.entityPlayer.getHeldItem(EnumHand.MAIN_HAND);
+//        }
         if(hand == null) return;
         if(hand.getItem() instanceof ISpecialInteractItem) {
             ISpecialInteractItem i = (ISpecialInteractItem) hand.getItem();
-            if(i.needsSpecialHandling(event.getWorld(), event.getPos(), event.getEntityPlayer(), hand)) {
-                i.onRightClick(event.getWorld(), event.getPos(), event.getEntityPlayer(), event.getFace(), event.getHand(), hand);
+            BlockPos pos = new BlockPos(event.x, event.y, event.z);
+            if(i.needsSpecialHandling(event.world, pos, event.entityPlayer, hand)) {
+                i.onRightClick(event.world, pos, event.entityPlayer, event.face, hand);
                 event.setCanceled(true);
             }
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onRightClickLast(PlayerInteractEvent.RightClickBlock event) {
-        if(!event.getWorld().isRemote) {
-            IBlockState interacted = event.getWorld().getBlockState(event.getPos());
-            if(interacted.getBlock() instanceof BlockWorkbench) {
-                PktCraftingTableFix fix = new PktCraftingTableFix(event.getPos());
-                PacketChannel.CHANNEL.sendTo(fix, (EntityPlayerMP) event.getEntityPlayer());
+    public void onRightClickLast(PlayerInteractEvent event) {
+        if(!event.world.isRemote) {
+            Block interacted = event.world.getBlock(event.x, event.y, event.z);
+            if(interacted instanceof BlockWorkbench) {
+                BlockPos at = new BlockPos(event.x, event.y, event.z);
+                PktCraftingTableFix fix = new PktCraftingTableFix(at);
+                PacketChannel.CHANNEL.sendTo(fix, (EntityPlayerMP) event.entityPlayer);
             }
         }
     }
 
     @SubscribeEvent
     public void onCraft(PlayerEvent.ItemCraftedEvent event) {
-        if(event.player.getServer() != null) {
+        MinecraftServer server = MinecraftServer.getServer();
+        if(server != null) {
             ResearchManager.informCraftingGridCompletion(event.player, event.crafting);
 
             Item crafted = event.crafting.getItem();
             Block blockCrafted = Block.getBlockFromItem(crafted);
             if(blockCrafted instanceof BlockMachine) {
                 if(event.crafting.getItemDamage() == BlockMachine.MachineType.TELESCOPE.getMeta()) {
-                    event.player.addStat(RegistryAchievements.achvBuildActTelescope);
+                    event.player.addStat(RegistryAchievements.achvBuildActTelescope,1);
                 }
             }
         }
@@ -356,7 +358,7 @@ public class EventHandlerServer {
 
     @SubscribeEvent
     public void onSave(WorldEvent.Save event) {
-        WorldCacheManager.getInstance().doSave(event.getWorld());
+        WorldCacheManager.getInstance().doSave(event.world);
     }
 
     @SubscribeEvent
@@ -368,19 +370,19 @@ public class EventHandlerServer {
         BlockPos at = event.getPos();
         WorldNetworkHandler.getNetworkHandler(event.getWorld()).informBlockChange(at);
 
-        if(event.getNewBlock().equals(Blocks.CRAFTING_TABLE)) {
-            if(!event.getOldBlock().equals(Blocks.CRAFTING_TABLE)) {
+        if(event.getNewBlock().equals(Blocks.crafting_table)) {
+            if(!event.getOldBlock().equals(Blocks.crafting_table)) {
                 WorldNetworkHandler.getNetworkHandler(event.getWorld()).informTablePlacement(at);
             }
         }
-        if(event.getOldBlock().equals(Blocks.CRAFTING_TABLE)) {
-            if(!event.getNewBlock().equals(Blocks.CRAFTING_TABLE)) {
+        if(event.getOldBlock().equals(Blocks.crafting_table)) {
+            if(!event.getNewBlock().equals(Blocks.crafting_table)) {
                 WorldNetworkHandler.getNetworkHandler(event.getWorld()).informTableRemoval(at);
             }
         }
         if(event.getOldBlock().equals(BlocksAS.customOre)) {
-            IBlockState oldState = event.getOldState();
-            if(oldState.getValue(BlockCustomOre.ORE_TYPE).equals(BlockCustomOre.OreType.ROCK_CRYSTAL)) {
+            Block oldState = event.getOldBlock();
+            if(oldState.equals(BlockCustomOre.OreType.ROCK_CRYSTAL)) {//oldState.getValue(BlockCustomOre.ORE_TYPE).equals(BlockCustomOre.OreType.ROCK_CRYSTAL)) {
                 ((RockCrystalBuffer) WorldCacheManager.getOrLoadData(event.getWorld(), WorldCacheManager.SaveKey.ROCK_CRYSTAL)).removeOre(event.getPos());
             }
         }
@@ -388,50 +390,50 @@ public class EventHandlerServer {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPlace(BlockEvent.PlaceEvent event) {
-        if(event.getWorld().isRemote) return;
-        BlockPos at = event.getPos();
+        if(event.world.isRemote) return;
+        BlockPos at = new BlockPos(event.x, event.y, event.z);
 
-        if(event.getPlacedBlock().getBlock().equals(Blocks.CRAFTING_TABLE)) {
-            WorldNetworkHandler.getNetworkHandler(event.getWorld()).informTablePlacement(at);
+        if(event.placedBlock.equals(Blocks.crafting_table)) {
+            WorldNetworkHandler.getNetworkHandler(event.world).informTablePlacement(at);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onBreak(BlockEvent.BreakEvent event) {
-        if(event.getWorld().isRemote) return;
-        BlockPos at = event.getPos();
+        if(event.world.isRemote) return;
+        BlockPos at = new BlockPos(event.x, event.y, event.z);
 
-        if(event.getState().getBlock().equals(Blocks.CRAFTING_TABLE)) {
-            WorldNetworkHandler.getNetworkHandler(event.getWorld()).informTableRemoval(at);
+        if(event.block.equals(Blocks.crafting_table)) {
+            WorldNetworkHandler.getNetworkHandler(event.world).informTableRemoval(at);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onHarvest(BlockEvent.HarvestDropsEvent event) {
-        if(event.getHarvester() != null && !event.isSilkTouching()) {
-            ItemStack main = event.getHarvester().getHeldItemMainhand();
+        if(event.harvester != null && !event.isSilkTouching) {
+            ItemStack main = event.harvester.getHeldItem();
             if(main != null && main.getItem() != null) {
-                if(EnchantmentHelper.getEnchantmentLevel(EnchantmentsAS.enchantmentScorchingHeat, main) > 0) {
-                    int fortuneLvl = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, main);
+                if(EnchantmentHelper.getEnchantmentLevel(EnchantmentsAS.enchantmentScorchingHeat.effectId, main) > 0) {
+                    int fortuneLvl = EnchantmentHelper.getEnchantmentLevel(Enchantment.fortune.effectId, main);
                     List<ItemStack> dropsCopy = new LinkedList<>();
-                    dropsCopy.addAll(event.getDrops());
-                    event.getDrops().clear();
+                    dropsCopy.addAll(event.drops);
+                    event.drops.clear();
                     for (ItemStack stack : dropsCopy) {
-                        ItemStack out = FurnaceRecipes.instance().getSmeltingResult(stack);
+                        ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(stack);
                         if(out != null && out.getItem() != null) {
                             ItemStack furnaced = ItemUtils.copyStackWithSize(out, 1);
-                            event.getDrops().add(furnaced);
-                            furnaced.onCrafting(event.getWorld(), event.getHarvester(), 1);
-                            FMLCommonHandler.instance().firePlayerSmeltedEvent(event.getHarvester(), furnaced);
+                            event.drops.add(furnaced);
+                            furnaced.onCrafting(event.world, event.harvester, 1);
+                            FMLCommonHandler.instance().firePlayerSmeltedEvent(event.harvester, furnaced);
                             if(fortuneLvl > 0 && !(out.getItem() instanceof ItemBlock)) {
                                 for (int i = 0; i < fortuneLvl; i++) {
                                     if(rand.nextFloat() < 0.5F) {
-                                        event.getDrops().add(ItemUtils.copyStackWithSize(out, 1));
+                                        event.drops.add(ItemUtils.copyStackWithSize(out, 1));
                                     }
                                 }
                             }
                         } else {
-                            event.getDrops().add(stack);
+                            event.drops.add(stack);
                         }
                     }
                 }

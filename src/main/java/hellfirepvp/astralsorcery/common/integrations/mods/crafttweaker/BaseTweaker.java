@@ -16,6 +16,7 @@ import minetweaker.api.liquid.ILiquidStack;
 import minetweaker.api.oredict.IOreDictEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
@@ -55,7 +56,7 @@ public abstract class BaseTweaker {
         } else {
             FluidStack flStack = (FluidStack) objStack;
             if(capAndLimitToBuckets) {
-                flStack.amount = Fluid.BUCKET_VOLUME; //Only full buckets please...
+                flStack.amount = FluidContainerRegistry.BUCKET_VOLUME; //Only full buckets please...
             }
             return flStack;
         }

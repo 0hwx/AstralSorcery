@@ -11,7 +11,7 @@ package hellfirepvp.astralsorcery.common.registry.multiblock;
 import hellfirepvp.astralsorcery.common.block.BlockMarble;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 
 /**
@@ -28,22 +28,22 @@ public class MultiblockStarlightInfuser extends PatternBlockArray {
     }
 
     private void load() {
-        IBlockState mar = BlocksAS.blockMarble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
-        IBlockState mrw = BlocksAS.blockMarble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW);
-        IBlockState mpl = BlocksAS.blockMarble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
-        IBlockState mch = BlocksAS.blockMarble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
-        IBlockState mru = BlocksAS.blockMarble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RUNED);
+        Block mar = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
+        Block mrw = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW);
+        Block mpl = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
+        Block mch = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
+        Block mru = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RUNED);
 
-        IBlockState liquidStarlight = BlocksAS.blockLiquidStarlight.getDefaultState();
+        Block liquidStarlight = BlocksAS.blockLiquidStarlight;//.getDefaultState();
 
-        addBlock(0, 0, 0, BlocksAS.starlightInfuser.getDefaultState());
+        addBlock(0, 0, 0, BlocksAS.starlightInfuser);//.getDefaultState());
 
         addBlockCube(mar, -2, -1, -3, 2, -1, 3);
         addBlockCube(mar, -3, -1, -2, 3, -1, 2);
 
         addBlockCube(mru, -2, -1, -2, 2, -1, 2);
 
-        addBlock(0, -1, 0, Blocks.LAPIS_BLOCK.getDefaultState());
+        addBlock(0, -1, 0, Blocks.lapis_block);//.getDefaultState());
         addBlock(-2, -1, -1, liquidStarlight);
         addBlock(-2, -1,  0, liquidStarlight);
         addBlock(-2, -1,  1, liquidStarlight);

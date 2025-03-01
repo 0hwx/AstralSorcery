@@ -16,19 +16,19 @@ import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.CropHelper;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.MobEffects;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -78,7 +78,7 @@ public class CEffectAevitas extends CEffectPositionListGen<CropHelper.GrowablePl
         boolean changed = false;
         CropHelper.GrowablePlant plant = getRandomElementByChance(rand);
         if(plant != null) {
-            if(MiscUtils.isChunkLoaded(world, new ChunkPos(plant.getPos()))) {
+            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(plant.getPos().chunkX(), plant.getPos().chunkZ()))) {
                 if(!plant.isValid(world, true)) {
                     removeElement(plant);
                     changed = true;
@@ -95,10 +95,10 @@ public class CEffectAevitas extends CEffectPositionListGen<CropHelper.GrowablePl
         if(findNewPosition(world, pos)) changed = true;
         if(findNewPosition(world, pos)) changed = true;
 
-        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(0, 0, 0, 1, 1, 1).offset(pos).expandXyz(searchRange));
+        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).offset(pos.getX(), pos.getY(), pos.getZ()).expand(searchRange,searchRange,searchRange));
         for (EntityLivingBase entity : entities) {
             if(!entity.isDead) {
-                entity.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 200, potionAmplifier));
+                entity.addPotionEffect(new PotionEffect(Potion.regeneration.getId(), 200, potionAmplifier));
             }
         }
 

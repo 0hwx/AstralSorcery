@@ -9,22 +9,15 @@
 package hellfirepvp.astralsorcery.client.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stats.StatisticsManager;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameType;
+import net.minecraft.stats.StatFileWriter;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldSettings;
 
 import javax.annotation.Nullable;
 
@@ -41,7 +34,7 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
     private float reachModifier = 0.0F;
 
     public ExtendedChainingPlayerController(PlayerControllerMP oldCtrl) {
-        super(Minecraft.getMinecraft(), oldCtrl.connection);
+        super(Minecraft.getMinecraft(), oldCtrl.netClientHandler);
         this.delegate = oldCtrl;
     }
 
@@ -54,13 +47,13 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
         delegate.setPlayerCapabilities(player);
     }
 
-    @Override
-    public boolean isSpectator() {
-        return delegate.isSpectator();
-    }
+//    @Override
+//    public boolean isSpectator() {
+//        return delegate.isSpectator();
+//    }
 
     @Override
-    public void setGameType(GameType type) {
+    public void setGameType(WorldSettings.GameType type) {
         delegate.setGameType(type);
     }
 
@@ -75,13 +68,13 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
     }
 
     @Override
-    public boolean onPlayerDestroyBlock(BlockPos pos) {
-        return delegate.onPlayerDestroyBlock(pos);
+    public boolean onPlayerDestroyBlock(int x, int y, int z, int side) {
+        return delegate.onPlayerDestroyBlock(x, y, z, side);
     }
 
     @Override
-    public boolean clickBlock(BlockPos loc, EnumFacing face) {
-        return delegate.clickBlock(loc, face);
+    public void clickBlock(int x, int y, int z, int side) {
+         delegate.clickBlock(x, y, z, side);
     }
 
     @Override
@@ -90,8 +83,8 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
     }
 
     @Override
-    public boolean onPlayerDamageBlock(BlockPos posBlock, EnumFacing directionFacing) {
-        return delegate.onPlayerDamageBlock(posBlock, directionFacing);
+    public void onPlayerDamageBlock(int x, int y, int z, int side) {
+        delegate.onPlayerDamageBlock(x, y, z, side);
     }
 
     @Override
@@ -104,24 +97,24 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
         delegate.updateController();
     }
 
+//    @Override
+//    public boolean getIsHittingBlock() {
+//        return delegate.getIsHittingBlock();
+//    }
+
     @Override
-    public boolean getIsHittingBlock() {
-        return delegate.getIsHittingBlock();
+    public boolean sendUseItem(EntityPlayer player, World worldIn, ItemStack stack) {
+        return delegate.sendUseItem(player, worldIn, stack);
     }
 
     @Override
-    public EnumActionResult processRightClick(EntityPlayer player, World worldIn, ItemStack stack, EnumHand hand) {
-        return delegate.processRightClick(player, worldIn, stack, hand);
+    public boolean onPlayerRightClick(EntityPlayer player, World worldIn, @Nullable ItemStack stack, int x, int y, int z, int side, Vec3 hitVector){
+        return delegate.onPlayerRightClick(player, worldIn, stack, x, y, z, side, hitVector);
     }
 
     @Override
-    public EnumActionResult processRightClickBlock(EntityPlayerSP player, WorldClient worldIn, @Nullable ItemStack stack, BlockPos pos, EnumFacing facing, Vec3d vec, EnumHand hand) {
-        return delegate.processRightClickBlock(player, worldIn, stack, pos, facing, vec, hand);
-    }
-
-    @Override
-    public EntityPlayerSP createClientPlayer(World worldIn, StatisticsManager statWriter) {
-        return delegate.createClientPlayer(worldIn, statWriter);
+    public EntityClientPlayerMP func_147493_a(World worldIn, StatFileWriter statWriter) {
+        return delegate.func_147493_a(worldIn, statWriter);
     }
 
     @Override
@@ -130,17 +123,17 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
     }
 
     @Override
-    public EnumActionResult interactWithEntity(EntityPlayer player, Entity target, @Nullable ItemStack heldItem, EnumHand hand) {
-        return delegate.interactWithEntity(player, target, heldItem, hand);
+    public boolean interactWithEntitySendPacket(EntityPlayer player, Entity target) {
+        return delegate.interactWithEntitySendPacket(player, target);
     }
 
-    @Override
-    public EnumActionResult interactWithEntity(EntityPlayer player, Entity target, RayTraceResult raytrace, @Nullable ItemStack heldItem, EnumHand hand) {
-        return delegate.interactWithEntity(player, target, raytrace, heldItem, hand);
-    }
+//    @Override
+//    public EnumActionResult interactWithEntity(EntityPlayer player, Entity target, RayTraceResult raytrace, @Nullable ItemStack heldItem, EnumHand hand) {
+//        return delegate.interactWithEntity(player, target, raytrace, heldItem, hand);
+//    }
 
     @Override
-    public ItemStack windowClick(int windowId, int slotId, int mouseButton, ClickType type, EntityPlayer player) {
+    public ItemStack windowClick(int windowId, int slotId, int mouseButton, int type, EntityPlayer player) {
         return delegate.windowClick(windowId, slotId, mouseButton, type, player);
     }
 
@@ -180,27 +173,27 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
     }
 
     @Override
-    public boolean isRidingHorse() {
-        return delegate.isRidingHorse();
+    public boolean func_110738_j() {
+        return delegate.func_110738_j();
     }
 
-    @Override
-    public boolean isSpectatorMode() {
-        return delegate.isSpectatorMode();
-    }
+//    @Override
+//    public boolean isSpectatorMode() {
+//        return delegate.isSpectatorMode();
+//    }
 
     @Override
     public boolean extendedReach() {
         return delegate.extendedReach();
     }
 
-    @Override
-    public GameType getCurrentGameType() {
-        return delegate.getCurrentGameType();
-    }
-
-    @Override
-    public void pickItem(int index) {
-        delegate.pickItem(index);
-    }
+//    @Override
+//    public GameType getCurrentGameType() {
+//        return delegate.getCurrentGameType();
+//    }
+//
+//    @Override
+//    public void pickItem(int index) {
+//        delegate.pickItem(index);
+//    }
 }

@@ -41,7 +41,7 @@ public class RegistryStructures {
         patternCollectorEnhancement = new MultiblockCrystalEnhancement();
 
         patternRitualPedestalWithLink = new MultiblockRitualPedestal();
-        patternRitualPedestalWithLink.addBlock(0, 5, 0, BlocksAS.ritualLink.getDefaultState());
+        patternRitualPedestalWithLink.addBlock(0, 5, 0, BlocksAS.ritualLink);
     }
 
 }

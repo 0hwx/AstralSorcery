@@ -8,9 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod

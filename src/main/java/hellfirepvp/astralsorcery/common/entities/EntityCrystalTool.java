@@ -17,14 +17,16 @@ import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
 import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalSword;
 import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalToolBase;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.EntityUtils;
+import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -39,7 +41,7 @@ import java.util.List;
  */
 public class EntityCrystalTool extends EntityItem implements EntityStarlightReacttant {
 
-    private static final AxisAlignedBB boxCraft = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+    private static final AxisAlignedBB boxCraft = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1);
 
     public static final int TOTAL_MERGE_TIME = 100 * 20;
     private int inertMergeTick = 0;
@@ -71,7 +73,7 @@ public class EntityCrystalTool extends EntityItem implements EntityStarlightReac
     }
 
     private void checkIncreaseConditions() {
-        if(world.isRemote) {
+        if(worldObj.isRemote) {
             if(canCraft()) {
                 spawnCraftingParticles();
             }
@@ -124,9 +126,10 @@ public class EntityCrystalTool extends EntityItem implements EntityStarlightReac
     }
 
     private void increaseSize() {
-        world.setBlockToAir(getPosition());
-        List<Entity> foundItems = world.getEntitiesInAABBexcluding(this, boxCraft.offset(posX, posY, posZ).expandXyz(0.1),
-                Predicates.or(EntityUtils.selectItemClassInstaceof(ItemCrystalToolBase.class), EntityUtils.selectItemClassInstaceof(ItemCrystalSword.class)));
+        BlockPos pos = new BlockPos(this).getPosition();
+        worldObj.setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
+        List<Entity> foundItems = worldObj.getEntitiesWithinAABBExcludingEntity(this, boxCraft.offset(posX, posY, posZ).expand(0.1,0.1,0.1),
+            (net.minecraft.command.IEntitySelector) Predicates.or(EntityUtils.selectItemClassInstaceof(ItemCrystalToolBase.class), EntityUtils.selectItemClassInstaceof(ItemCrystalSword.class)));
         if(foundItems.size() <= 0) {
             CrystalProperties prop = getProperties();
             if(prop != null) {
@@ -154,8 +157,8 @@ public class EntityCrystalTool extends EntityItem implements EntityStarlightReac
 
     private boolean canCraft() {
         if(!isInLiquidStarlight(this)) return false;
-
-        List<Entity> foundEntities = world.getEntitiesInAABBexcluding(this, boxCraft.offset(getPosition()), EntityUtils.selectEntities(Entity.class));
+        BlockPos pos = new BlockPos(this).getPosition();
+        List<Entity> foundEntities = worldObj.getEntitiesWithinAABBExcludingEntity(this, boxCraft.offset(pos.getX(), pos.getY(), pos.getZ()), (IEntitySelector) EntityUtils.selectEntities(Entity.class));
         return foundEntities.size() <= 0;
     }
 }

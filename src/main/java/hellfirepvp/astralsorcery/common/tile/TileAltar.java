@@ -40,24 +40,24 @@ import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionRece
 import hellfirepvp.astralsorcery.common.starlight.transmission.base.SimpleTransmissionReceiver;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.TransmissionClassRegistry;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.SkyCollectionHelper;
 import hellfirepvp.astralsorcery.common.util.SoundHelper;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -92,7 +92,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     }
 
     public TileAltar(AltarLevel level) {
-        super(25, EnumFacing.UP);
+        super(25, ForgeDirection.UP);
         this.level = level;
     }
 
@@ -104,18 +104,18 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
         if((ticksExisted & 15) == 0) {
-            updateSkyState(world.canSeeSky(getPos()));
+            updateSkyState(worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord));
         }
 
         if((ticksExisted & 15) == 0) {
             if(matchLevel(false)) markForUpdate();
         }
 
-        if(!world.isRemote) {
+        if(!worldObj.isRemote) {
             boolean needUpdate = false;
 
             needUpdate = starlightPassive(needUpdate);
@@ -148,7 +148,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
     @Nullable
     public IConstellation getFocusedConstellation() {
-        WorldSkyHandler wh = ConstellationSkyHandler.getInstance().getWorldHandler(world);
+        WorldSkyHandler wh = ConstellationSkyHandler.getInstance().getWorldHandler(worldObj);
         if (focusItem != null && focusItem.getItem() instanceof ItemConstellationFocus && wh != null) {
             return ((ItemConstellationFocus) focusItem.getItem()).getFocusConstellation(focusItem);
         }
@@ -168,8 +168,8 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     public void onBreak() {
         super.onBreak();
 
-        if (!world.isRemote && focusItem != null) {
-            ItemUtils.dropItemNaturally(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, focusItem);
+        if (!worldObj.isRemote && focusItem != null) {
+            ItemUtils.dropItemNaturally(worldObj, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, focusItem);
             this.focusItem = null;
         }
     }
@@ -269,7 +269,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
             /*for (EnumFacing dir : EnumFacing.VALUES) { FIXME Item capability system break here :|
                 if(dir == EnumFacing.UP) continue;
 
-                TileEntity te = MiscUtils.getTileAt(world, pos.offset(dir), TileEntity.class, true);
+                TileEntity te = MiscUtils.getTileAt(worldObj, pos.offset(dir), TileEntity.class, true);
                 if(te != null) {
                     IItemHandler handle = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
                     if(handle != null) {
@@ -281,7 +281,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
                 }
             }*/
             if(out.stackSize > 0) {
-                ItemUtils.dropItem(world, pos.getX() + 0.5, pos.getY() + 1.3, pos.getZ() + 0.5, out).setNoDespawn();
+                ItemUtils.dropItem(worldObj, xCoord + 0.5, yCoord + 1.3, zCoord + 0.5, out).age = -6000;
             }
         }
 
@@ -290,14 +290,15 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
         if (!recipe.allowsForChaining() || !recipe.matches(this, getInventoryHandler(), false) || !matchDownMultiblocks(recipe.getNeededLevel())) {
             if(getAltarLevel().ordinal() >= AltarLevel.CONSTELLATION_CRAFT.ordinal()) {
-                Vector3 pos = new Vector3(getPos()).add(0.5, 0, 0.5);
+                Vector3 pos = new Vector3(xCoord, yCoord, zCoord).add(0.5, 0, 0.5);
+                BlockPos pointFromPos = new BlockPos(xCoord, yCoord, zCoord);
                 PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.CRAFT_FINISH_BURST, pos.getX(), pos.getY() + 0.05, pos.getZ());
-                PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(getWorld(), getPos(), 32));
+                PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(worldObj, pointFromPos, 32));
             }
             craftingTask.getRecipeToCraft().onCraftServerFinish(this, rand);
             ResearchManager.informCraftingAltarCompletion(this, craftingTask);
-            SoundHelper.playSoundAround(Sounds.craftFinish, world, getPos(), 1F, 1.7F);
-            EntityFlare.spawnAmbient(world, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
+            SoundHelper.playSoundAround(Sounds.craftFinish, worldObj, xCoord, yCoord, zCoord, 1F, 1.7F);
+            EntityFlare.spawnAmbient(worldObj, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
             craftingTask = null;
         }
         markForUpdate();
@@ -343,12 +344,12 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         level = to;
         experience = 0;
         mbState = false;
-        world.setBlockState(getPos(), BlocksAS.blockAltar.getDefaultState().withProperty(BlockAltar.ALTAR_TYPE, level.getCorrespondingAltarType()));
+        worldObj.setBlock(xCoord, yCoord, zCoord,BlocksAS.blockAltar, BlocksAS.blockAltar.damageDropped(level.getCorrespondingAltarType().ordinal()),3);//.getDefaultState().withProperty(BlockAltar.ALTAR_TYPE, level.getCorrespondingAltarType()));
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-        return oldState.getBlock() != newSate.getBlock();
+    public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta, World world, int x, int y, int z) {
+        return oldBlock != newBlock;
     }
 
     private void onLevelUp(AltarLevel current, AltarLevel next) {}
@@ -362,9 +363,9 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         if(starlightStored > 0) needUpdate = true;
         starlightStored *= 0.95;
 
-        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(getWorld());
+        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(getWorldObj());
         if(doesSeeSky() && handle != null) {
-            int yLevel = getPos().getY();
+            int yLevel = yCoord;
             if(yLevel > 40) {
                 float collect = 200;
                 if(getAltarLevel().ordinal() >= AltarLevel.ATTUNEMENT.ordinal()) {
@@ -382,12 +383,12 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
                 }
 
                 if(posDistribution == -1) {
-                    posDistribution = SkyCollectionHelper.getSkyNoiseDistribution(world, pos);
+                    posDistribution = SkyCollectionHelper.getSkyNoiseDistribution(worldObj, new BlockPos(xCoord, yCoord, zCoord));
                 }
 
                 collect *= dstr;
                 collect *= posDistribution;
-                collect *= 0.2 + (0.8 * ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(getWorld()));
+                collect *= 0.2 + (0.8 * ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(getWorldObj()));
 
                 starlightStored = Math.min(getMaxStarlightStorage(), (int) (starlightStored + collect));
                 return true;
@@ -405,7 +406,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         return experience;
     }
 
-    public boolean getMultiblockState() {
+    public boolean getMultBlock() {
         return mbState;
     }
 
@@ -422,7 +423,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     }
 
     @Override
-    public void onInteract(World world, BlockPos pos, EntityPlayer player, EnumFacing side, boolean sneaking) {
+    public void onInteract(World world, BlockPos pos, EntityPlayer player, int side, boolean sneaking) {
         if(!world.isRemote) {
             if(getActiveCraftingTask() != null) {
                 AbstractAltarRecipe altarRecipe = craftingTask.getRecipeToCraft();
@@ -660,7 +661,8 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
         @Override
         public boolean mbAllowsForCrafting(TileAltar ta) {
-            return pba.matches(ta.getWorld(), ta.getPos());
+            if(pba == null) return false;
+            return pba.matches(ta.getWorldObj(), new BlockPos(ta.xCoord, ta.yCoord, ta.zCoord));
         }
     }
 

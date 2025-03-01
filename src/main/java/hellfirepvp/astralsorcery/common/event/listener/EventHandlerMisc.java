@@ -8,11 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.event.listener;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import hellfirepvp.astralsorcery.common.util.SwordSharpenHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,8 +29,8 @@ public class EventHandlerMisc {
 
     @SubscribeEvent
     public void onToolTip(ItemTooltipEvent event) {
-        List<String> toolTip = event.getToolTip();
-        ItemStack stack = event.getItemStack();
+        List<String> toolTip = event.toolTip;
+        ItemStack stack = event.itemStack;
         if(SwordSharpenHelper.isSwordSharpened(stack)) {
             LinkedList<String> mod = new LinkedList<>();
             mod.addAll(toolTip);
@@ -54,8 +55,8 @@ public class EventHandlerMisc {
 
     @SubscribeEvent
     public void onClone(PlayerEvent.Clone event) {
-        IPlayerCapabilityPerks current = PlayerPerkHelper.getPerks(event.getEntityPlayer());
-        IPlayerCapabilityPerks cloned = PlayerPerkHelper.getPerks(event.getEntityPlayer());
+        IPlayerCapabilityPerks current = PlayerPerkHelper.getPerks(event.entityPlayer);
+        IPlayerCapabilityPerks cloned = PlayerPerkHelper.getPerks(event.entityPlayer);
         if(cloned != null && current != null) {
             cloned.updatePerks(current.getAttunedConstellation(), current.getCurrentPlayerPerks());
         }

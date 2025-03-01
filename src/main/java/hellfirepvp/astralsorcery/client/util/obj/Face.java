@@ -9,9 +9,9 @@
 package hellfirepvp.astralsorcery.client.util.obj;
 
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.Tessellator;
 
 /**
  * HellFirePvP@Admin
@@ -26,12 +26,12 @@ public class Face {
     public TextureCoordinate[] textureCoordinates;
 
     @SideOnly(Side.CLIENT)
-    public void addFaceForRender(VertexBuffer vb) {
-        addFaceForRender(vb, 0.0005F);
+    public void addFaceForRender(Tessellator tess) {
+        addFaceForRender(tess, 0.0005F);
     }
 
     @SideOnly(Side.CLIENT)
-    public void addFaceForRender(VertexBuffer vb, float textureOffset) {
+    public void addFaceForRender(Tessellator tess, float textureOffset) {
         /*if (faceNormal == null) {
             faceNormal = this.calculateFaceNormal();
         }
@@ -66,11 +66,11 @@ public class Face {
                     offsetV = -offsetV;
                 }
 
-                vb.pos(vertices[i].x, vertices[i].y, vertices[i].z).tex(textureCoordinates[i].u + offsetU, textureCoordinates[i].v + offsetV).endVertex();
-                //tessellator.addVertexWithUV(vertices[i].x, vertices[i].y, vertices[i].z, textureCoordinates[i].u + offsetU, textureCoordinates[i].v + offsetV);
+//                vb.pos(vertices[i].x, vertices[i].y, vertices[i].z).tex(textureCoordinates[i].u + offsetU, textureCoordinates[i].v + offsetV).endVertex();
+                tess.addVertexWithUV(vertices[i].x, vertices[i].y, vertices[i].z, textureCoordinates[i].u + offsetU, textureCoordinates[i].v + offsetV);
             } else {
-                vb.pos(vertices[i].x, vertices[i].y, vertices[i].z).endVertex();
-                //tessellator.addVertex(vertices[i].x, vertices[i].y, vertices[i].z);
+//                vb.pos(vertices[i].x, vertices[i].y, vertices[i].z).endVertex();
+                tess.addVertex(vertices[i].x, vertices[i].y, vertices[i].z);
             }
 
         }

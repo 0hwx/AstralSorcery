@@ -2,15 +2,15 @@ package hellfirepvp.astralsorcery.common.network.packet.client;
 
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.tile.TileCelestialGateway;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -46,7 +46,7 @@ public class PktRequestTeleport implements IMessage, IMessageHandler<PktRequestT
     @Override
     public IMessage onMessage(PktRequestTeleport message, MessageContext ctx) {
         EntityPlayer request = ctx.getServerHandler().playerEntity;
-        TileCelestialGateway gate = MiscUtils.getTileAt(request.world, new Vector3(request, true).toBlockPos(), TileCelestialGateway.class, false);
+        TileCelestialGateway gate = MiscUtils.getTileAt(request.worldObj, new Vector3(request, true).toBlockPos(), TileCelestialGateway.class, false);
         if(gate != null && gate.hasMultiblock() && gate.doesSeeSky()) {
             AstralSorcery.proxy.scheduleDelayed(() -> MiscUtils.transferEntityTo(request, message.dimId, message.pos));
         }

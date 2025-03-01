@@ -214,16 +214,16 @@ public class RegistryResearch {
         resLens.addPage(getTextPage("LENS.3"));
         resLens.addPage(getTextPage("LENS.4"));
 
-        ResearchNode resStarOre = new ResearchNode(new ItemStack(Blocks.IRON_ORE), "STARMETAL_ORE", 2, 4);
+        ResearchNode resStarOre = new ResearchNode(new ItemStack(Blocks.iron_ore), "STARMETAL_ORE", 2, 4);
         resStarOre.addPage(getTextPage("STARMETAL_ORE.1"));
 
         ResearchNode resOtherOres = new ResearchNode(new ItemStack[] {
-                new ItemStack(Blocks.COAL_BLOCK),
-                new ItemStack(Blocks.SAND),
-                new ItemStack(Blocks.DIAMOND_ORE),
-                new ItemStack(Blocks.NETHER_WART_BLOCK),
-                new ItemStack(Blocks.PUMPKIN),
-                new ItemStack(Blocks.LAPIS_BLOCK)
+                new ItemStack(Blocks.coal_block),
+                new ItemStack(Blocks.sand),
+                new ItemStack(Blocks.diamond_ore),
+                new ItemStack(Blocks.nether_wart,9),
+                new ItemStack(Blocks.pumpkin),
+                new ItemStack(Blocks.lapis_block)
         }, "TRANSMUTATION_ORES", 3, 3);
         resOtherOres.addPage(getTextPage("TRANSMUTATION_ORES.1"));
 

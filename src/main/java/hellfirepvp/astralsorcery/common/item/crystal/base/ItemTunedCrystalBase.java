@@ -22,9 +22,9 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
@@ -55,9 +55,9 @@ public abstract class ItemTunedCrystalBase extends ItemRockCrystalBase implement
             IWeakConstellation c = getMainConstellation(stack);
             if(c != null) {
                 if(EnumGatedKnowledge.CRYSTAL_TUNE.canSee(tier) && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
-                    tooltip.add(TextFormatting.GRAY + I18n.format("crystal.attuned") + " " + TextFormatting.BLUE + I18n.format(c.getUnlocalizedName()));
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.attuned") + " " + ChatFormatting.BLUE + I18n.format(c.getUnlocalizedName()));
                 } else if(!out.get()) {
-                    tooltip.add(TextFormatting.GRAY + I18n.format("progress.missing.knowledge"));
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
                     out = Optional.of(true);
                 }
             }
@@ -65,9 +65,9 @@ public abstract class ItemTunedCrystalBase extends ItemRockCrystalBase implement
             IMinorConstellation tr = getTrait(stack);
             if(tr != null) {
                 if(EnumGatedKnowledge.CRYSTAL_TUNE.canSee(tier) && ResearchManager.clientProgress.hasConstellationDiscovered(tr.getUnlocalizedName())) {
-                    tooltip.add(TextFormatting.GRAY + I18n.format("crystal.trait") + " " + TextFormatting.BLUE + I18n.format(tr.getUnlocalizedName()));
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.trait") + " " + ChatFormatting.BLUE + I18n.format(tr.getUnlocalizedName()));
                 } else if(!out.get()) {
-                    tooltip.add(TextFormatting.GRAY + I18n.format("progress.missing.knowledge"));
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
                 }
             }
         }

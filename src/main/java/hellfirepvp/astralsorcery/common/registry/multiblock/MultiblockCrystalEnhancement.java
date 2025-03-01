@@ -7,13 +7,12 @@ import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.tile.network.TileCollectorCrystal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fluids.BlockFluidBase;
 
 import java.util.Random;
 
@@ -31,19 +30,19 @@ public class MultiblockCrystalEnhancement extends PatternBlockArray {
     }
 
     private void load() {
-        IBlockState mru = BlockMarble.MarbleBlockType.RUNED.asBlock();
-        IBlockState mpl = BlockMarble.MarbleBlockType.PILLAR.asBlock();
-        IBlockState mch = BlockMarble.MarbleBlockType.CHISELED.asBlock();
-        IBlockState mgr = BlockMarble.MarbleBlockType.ENGRAVED.asBlock();
-        IBlockState mrw = BlockMarble.MarbleBlockType.RAW.asBlock();
+        Block mru = BlockMarble.MarbleBlockType.RUNED.asBlock();
+        Block mpl = BlockMarble.MarbleBlockType.PILLAR.asBlock();
+        Block mch = BlockMarble.MarbleBlockType.CHISELED.asBlock();
+        Block mgr = BlockMarble.MarbleBlockType.ENGRAVED.asBlock();
+        Block mrw = BlockMarble.MarbleBlockType.RAW.asBlock();
 
         addBlockCube(mrw, -1, -5, -1, 1, -5, 1);
         for (BlockPos offset : TileCollectorCrystal.offsetsLiquidStarlight) {
-            addBlock(offset, BlocksAS.blockLiquidStarlight.getDefaultState(),
-                    (world, pos, state) -> state.getBlock().equals(BlocksAS.blockLiquidStarlight) && state.getValue(BlockFluidBase.LEVEL) == 0);
+            addBlock(offset, BlocksAS.blockLiquidStarlight,
+                    (world, pos, state) -> state.equals(BlocksAS.blockLiquidStarlight) && world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ()) == 0);
         }
-        addBlockCube(Blocks.AIR.getDefaultState(), 1, 1, 1, -1, -1, -1);
-        addBlock(0, 0, 0, BlocksAS.celestialCollectorCrystal.getDefaultState());
+        addBlockCube(Blocks.air, 1, 1, 1, -1, -1, -1);
+        addBlock(0, 0, 0, BlocksAS.celestialCollectorCrystal);
         addTileCallback(BlockPos.ORIGIN, new TileEntityCallback() {
             @Override
             public boolean isApplicable(TileEntity te) {

@@ -12,7 +12,7 @@ import hellfirepvp.astralsorcery.common.constellation.charge.PlayerChargeHandler
 import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -24,7 +24,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public interface ItemAlignmentChargeConsumer extends ItemAlignmentChargeRevealer {
 
     default public boolean drainTempCharge(EntityPlayer player, float charge, boolean simulate) {
-        if(player.isCreative()) return true;
+        if(player.capabilities.isCreativeMode) return true;
 
         if(!PlayerChargeHandler.instance.hasAtLeast(player, charge)) {
             return false;
@@ -36,7 +36,7 @@ public interface ItemAlignmentChargeConsumer extends ItemAlignmentChargeRevealer
     }
 
     default public void gainPermCharge(EntityPlayer player, double charge) {
-        if(player.isCreative()) return;
+        if(player.capabilities.isCreativeMode) return;
         ResearchManager.modifyAlignmentCharge(player, charge);
     }
 
@@ -47,7 +47,7 @@ public interface ItemAlignmentChargeConsumer extends ItemAlignmentChargeRevealer
     }
 
     default public boolean hasAtLeastPermCharge(EntityPlayer player, Side side, double required) {
-        return player.isCreative() || getPermCharge(player, side) >= required;
+        return player.capabilities.isCreativeMode || getPermCharge(player, side) >= required;
     }
 
 }

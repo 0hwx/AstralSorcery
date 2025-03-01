@@ -10,6 +10,7 @@ package hellfirepvp.astralsorcery.common.crafting;
 
 import hellfirepvp.astralsorcery.common.data.DataLightBlockEndpoints;
 import hellfirepvp.astralsorcery.common.data.SyncDataHolder;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -20,7 +21,6 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.oredict.OreDictionary;
@@ -156,7 +156,7 @@ public class ShapedLightProximityRecipe implements IRecipe {
         Container c = inv.eventHandler;
         if (!(c instanceof ContainerWorkbench)) return false;
         ContainerWorkbench workbench = (ContainerWorkbench) c;
-        BlockPos pos = workbench.pos;
+        BlockPos pos = new BlockPos(workbench.posX, workbench.posY, workbench.posZ);
         if (pos == null) return false;
         if (world.isRemote) {
             GuiScreen sc = Minecraft.getMinecraft().currentScreen;
@@ -233,9 +233,9 @@ public class ShapedLightProximityRecipe implements IRecipe {
         return this.input;
     }
 
-    @Override
-    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-        return ForgeHooks.defaultRecipeGetRemainingItems(inv);
-    }
+//    @Override
+//    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+//        return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+//    }
 
 }

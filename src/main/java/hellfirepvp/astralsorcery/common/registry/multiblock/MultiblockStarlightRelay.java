@@ -13,7 +13,6 @@ import hellfirepvp.astralsorcery.common.block.BlockMarble;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -30,11 +29,11 @@ public class MultiblockStarlightRelay extends PatternBlockArray {
 
     private void load() {
         Block marble = BlocksAS.blockMarble;
-        IBlockState chiseled = marble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
-        IBlockState arch = marble.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
-        IBlockState sooty = BlocksAS.blockBlackMarble.getDefaultState().withProperty(BlockBlackMarble.BLACK_MARBLE_TYPE, BlockBlackMarble.BlackMarbleBlockType.RAW);
+        Block chiseled = marble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
+        Block arch = marble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
+        Block sooty = BlocksAS.blockBlackMarble;//.getDefaultState().withProperty(BlockBlackMarble.BLACK_MARBLE_TYPE, BlockBlackMarble.BlackMarbleBlockType.RAW);
 
-        addBlock(0, 0, 0, BlocksAS.attunementRelay.getDefaultState());
+        addBlock(0, 0, 0, BlocksAS.attunementRelay);//.getDefaultState());
 
         addBlock(-1, -1, -1, chiseled);
         addBlock( 1, -1, -1, chiseled);

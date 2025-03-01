@@ -8,13 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.util.struct;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.BlockStateCheck;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -32,27 +31,26 @@ public class BlockDiscoverer {
     public static BlockArray searchForBlocksAround(World world, BlockPos origin, int cubeSize, BlockStateCheck match) {
         BlockArray out = new BlockArray();
 
-        BlockPos.PooledMutableBlockPos offset = BlockPos.PooledMutableBlockPos.retain();
-        for (int xx = -cubeSize; xx <= cubeSize; xx++) {
-            for (int zz = -cubeSize; zz <= cubeSize; zz++) {
-                for (int yy = -cubeSize; yy <= cubeSize; yy++) {
-                    offset.setPos(origin.getX() + xx, origin.getY() + yy, origin.getZ() + zz);
-                    IBlockState atState = world.getBlockState(offset);
-                    if(match.isStateValid(world, offset, atState)) {
-                        out.addBlock(new BlockPos(offset), atState);
-                    }
-                }
-            }
-        }
-        offset.release();
+//        BlockPos.PooledMutableBlockPos offset = BlockPos.PooledMutableBlockPos.retain();
+//        for (int xx = -cubeSize; xx <= cubeSize; xx++) {
+//            for (int zz = -cubeSize; zz <= cubeSize; zz++) {
+//                for (int yy = -cubeSize; yy <= cubeSize; yy++) {
+//                    offset.setPos(origin.getX() + xx, origin.getY() + yy, origin.getZ() + zz);
+//                    Block atState = world.getBlockState(offset);
+//                    if(match.isStateValid(world, offset, atState)) {
+//                        out.addBlock(new BlockPos(offset), atState);
+//                    }
+//                }
+//            }
+//        }
+//        offset.release();
         return out;
     }
 
     public static BlockArray discoverBlocksWithSameStateAround(World world, BlockPos origin, boolean onlyExposed, int cubeSize, int limit, boolean searchCorners) {
-        IBlockState toMatch = world.getBlockState(origin);
-
-        Block matchBlock = toMatch.getBlock();
-        int matchMeta = matchBlock.getMetaFromState(toMatch);
+        Block toMatch = world.getBlock(origin.getX(), origin.getY(), origin.getZ());
+        Block matchBlock = toMatch;
+        int matchMeta = world.getBlockMetadata(origin.getX(), origin.getY(), origin.getZ());;
 
         BlockArray foundArray = new BlockArray();
         foundArray.addBlock(origin, toMatch);
@@ -78,8 +76,9 @@ public class BlockDiscoverer {
                                 visited.add(search);
 
                                 if (!onlyExposed || isExposedToAir(world, search)) {
-                                    IBlockState current = world.getBlockState(search);
-                                    if (current.getBlock() == matchBlock && current.getBlock().getMetaFromState(current) == matchMeta) {
+                                    Block current = world.getBlock(search.getX(), search.getY(), search.getZ());
+                                    int currentMeta = world.getBlockMetadata(search.getX(), search.getY(), search.getZ());
+                                    if (current == matchBlock && currentMeta == matchMeta) {
                                         foundArray.addBlock(search, current);
                                         searchNext.add(search);
                                     }
@@ -88,7 +87,7 @@ public class BlockDiscoverer {
                         }
                     }
                 } else {
-                    for (EnumFacing face : EnumFacing.VALUES) {
+                    for (ForgeDirection face : ForgeDirection.values()) {
                         BlockPos search = offsetPos.offset(face);
                         if (visited.contains(search)) continue;
                         if (getCubeDistance(search, origin) > cubeSize) continue;
@@ -97,8 +96,9 @@ public class BlockDiscoverer {
                         visited.add(search);
 
                         if (!onlyExposed || isExposedToAir(world, search)) {
-                            IBlockState current = world.getBlockState(search);
-                            if (current.getBlock() == matchBlock && current.getBlock().getMetaFromState(current) == matchMeta) {
+                            Block current = world.getBlock(search.getX(), search.getY(), search.getZ());
+                            int currentMeta = world.getBlockMetadata(search.getX(), search.getY(), search.getZ());
+                            if (current == matchBlock && currentMeta == matchMeta) {
                                 foundArray.addBlock(search, current);
                                 searchNext.add(search);
                             }
@@ -112,13 +112,13 @@ public class BlockDiscoverer {
     }
 
     public static int getCubeDistance(BlockPos p1, BlockPos p2) {
-        return (int) MathHelper.absMax(MathHelper.absMax(p1.getX() - p2.getX(), p1.getY() - p2.getY()), p1.getZ() - p2.getZ());
+        return (int) MathHelper.abs_max(MathHelper.abs_max(p1.getX() - p2.getX(), p1.getY() - p2.getY()), p1.getZ() - p2.getZ());
     }
 
     public static boolean isExposedToAir(World world, BlockPos pos) {
-        for (EnumFacing face : EnumFacing.VALUES) {
+        for (ForgeDirection face : ForgeDirection.values()) {
             BlockPos offset = pos.offset(face);
-            if (world.isAirBlock(offset) || world.getBlockState(offset).getBlock().isReplaceable(world, offset)) return true;
+            if (world.isAirBlock(offset.getX(), offset.getY(), offset.getZ()) || world.getBlock(offset.getX(), offset.getY(), offset.getZ()).isReplaceable(world, offset.getX(), offset.getY(), offset.getZ())) return true;
         }
         return false;
     }

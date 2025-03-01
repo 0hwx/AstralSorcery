@@ -8,7 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.item.block;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.block.BlockCustomName;
+import hellfirepvp.astralsorcery.common.block.BlockCustomOre;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -34,9 +38,9 @@ public class ItemBlockCustomName extends ItemBlock {
 
     @Override
     public String getUnlocalizedName(ItemStack stack) {
-        Block b = getBlock();
-        if (b instanceof BlockCustomName) {
-            String identifier = ((BlockCustomName) b).getIdentifierForMeta(stack.getItemDamage());
+        if (field_150939_a instanceof BlockCustomName) {
+            String identifier = ((BlockCustomName) field_150939_a).getIdentifierForMeta(stack.getItemDamage());
+            AstralSorcery.log.debug("Identifier: " + identifier);
             return super.getUnlocalizedName(stack) + "." + identifier;
         }
         return super.getUnlocalizedName(stack);

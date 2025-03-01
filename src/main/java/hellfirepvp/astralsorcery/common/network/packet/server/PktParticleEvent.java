@@ -19,17 +19,17 @@ import hellfirepvp.astralsorcery.common.potion.PotionCheatDeath;
 import hellfirepvp.astralsorcery.common.starlight.network.handlers.BlockTransmutationHandler;
 import hellfirepvp.astralsorcery.common.tile.*;
 import hellfirepvp.astralsorcery.common.tile.network.TileCollectorCrystal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.RaytraceAssist;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.effect.CelestialStrike;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.Vec3i;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -46,8 +46,8 @@ public class PktParticleEvent implements IMessage, IMessageHandler<PktParticleEv
 
     public PktParticleEvent() {}
 
-    public PktParticleEvent(ParticleEventType type, Vec3i vec) {
-        this(type, vec.getX(), vec.getY(), vec.getZ());
+    public PktParticleEvent(ParticleEventType type, BlockPos pos) {
+        this(type, pos.getX(), pos.getY(), pos.getZ());
     }
 
     public PktParticleEvent(ParticleEventType type, Vector3 vec) {
@@ -103,7 +103,7 @@ public class PktParticleEvent implements IMessage, IMessageHandler<PktParticleEv
 
     @SideOnly(Side.CLIENT)
     private void triggerClientside(EventAction trigger, PktParticleEvent message) {
-        if(Minecraft.getMinecraft().world == null) return;
+        if(Minecraft.getMinecraft().theWorld == null) return;
         AstralSorcery.proxy.scheduleClientside(() -> trigger.trigger(message));
     }
 

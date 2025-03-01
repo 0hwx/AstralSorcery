@@ -12,11 +12,11 @@ import hellfirepvp.astralsorcery.common.auxiliary.link.ILinkableTile;
 import hellfirepvp.astralsorcery.common.starlight.IStarlightTransmission;
 import hellfirepvp.astralsorcery.common.starlight.transmission.TransmissionNetworkHelper;
 import hellfirepvp.astralsorcery.common.tile.network.TileCrystalLens;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -75,7 +75,8 @@ public abstract class TileTransmissionBase extends TileNetwork implements IStarl
 
     @Override
     public void onLinkCreate(EntityPlayer player, BlockPos other) {
-        if(other.equals(getPos())) return;
+        BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
+        if(other.equals(pos)) return;
 
         if(TransmissionNetworkHelper.createTransmissionLink(this, other)) {
             if(singleLink)
@@ -91,23 +92,25 @@ public abstract class TileTransmissionBase extends TileNetwork implements IStarl
     @Override
     @Nonnull
     public BlockPos getTrPos() {
-        return getPos();
+        return new BlockPos(xCoord, yCoord, zCoord);
     }
 
     @Override
     @Nonnull
     public World getTrWorld() {
-        return getWorld();
+        return getWorldObj();
     }
 
     @Override
     public boolean tryLink(EntityPlayer player, BlockPos other) {
-        return !other.equals(getPos()) && TransmissionNetworkHelper.canCreateTransmissionLink(this, other);
+        BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
+        return !other.equals(pos) && TransmissionNetworkHelper.canCreateTransmissionLink(this, other);
     }
 
     @Override
     public boolean tryUnlink(EntityPlayer player, BlockPos other) {
-        if(other.equals(getPos())) return false;
+        BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
+        if(other.equals(pos)) return false;
 
         if(TransmissionNetworkHelper.hasTransmissionLink(this, other)) {
             TransmissionNetworkHelper.removeTransmissionLink(this, other);

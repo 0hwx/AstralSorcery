@@ -23,14 +23,15 @@ import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.client.PktBurnParchment;
 import hellfirepvp.astralsorcery.common.network.packet.client.PktEngraveGlass;
 import hellfirepvp.astralsorcery.common.tile.TileMapDrawingTable;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -38,6 +39,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.lwjgl.opengl.GL11.GL_BLEND;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -68,7 +71,7 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         TileMapDrawingTable tile = getOwningTileEntity();
-        GlStateManager.color(1F, 1F, 1F, 1F);
+        GL11.glColor4f(1F, 1F, 1F, 1F);
         if (!tile.hasParchment()) {
             drawWHRect(texMapDrawingEmpty);
         } else {
@@ -81,7 +84,7 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
         TextureHelper.setActiveTextureToAtlasSprite();
 
         List<String> tooltip = null;
-        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         boolean hasLens = false;
         if(itemRender != null) {
             float prev = zLevel;
@@ -92,18 +95,18 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
             ItemStack in = tile.getSlotIn();
             if(in != null && in.getItem() != null) {
                 Rectangle rc = new Rectangle(guiLeft + 111, guiTop + 8, 16, 16);
-                GlStateManager.pushMatrix();
-                GlStateManager.translate(rc.x, rc.y, 0);
-                GlStateManager.enableDepth();
-                itemRender.renderItemAndEffectIntoGUI(this.mc.player, in, 0, 0);
-                itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, in, 0, 0, null);
-                GlStateManager.popMatrix();
+                 GL11.glPushMatrix();
+                GL11.glTranslatef(rc.x, rc.y, 0);
+                GL11.glEnable(GL11.GL_DEPTH_TEST);
+                itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj,this.mc.renderEngine, in, 0, 0);
+                itemRender.renderItemOverlayIntoGUI(this.fontRendererObj,this.mc.renderEngine, in, 0, 0, null);
+                GL11.glPopMatrix();
                 if(rc.contains(mouseX, mouseY)) {
                     FontRenderer custom = in.getItem().getFontRenderer(in);
                     if(custom != null) {
                         fr = custom;
                     }
-                    tooltip = in.getTooltip(Minecraft.getMinecraft().player, Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
+                    tooltip = in.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
                 }
             }
             in = tile.getSlotGlassLens();
@@ -113,18 +116,18 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
                 }
 
                 Rectangle rc = new Rectangle(guiLeft + 129, guiTop + 8, 16, 16);
-                GlStateManager.pushMatrix();
-                GlStateManager.translate(rc.x, rc.y, 0);
-                GlStateManager.enableDepth();
-                itemRender.renderItemAndEffectIntoGUI(this.mc.player, in, 0, 0);
-                itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, in, 0, 0, null);
-                GlStateManager.popMatrix();
+                 GL11.glPushMatrix();
+                GL11.glTranslatef(rc.x, rc.y, 0);
+                GL11.glEnable(GL11.GL_DEPTH_TEST);
+                itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj,this.mc.renderEngine, in, 0, 0);
+                itemRender.renderItemOverlayIntoGUI(this.fontRendererObj,this.mc.renderEngine, in, 0, 0, null);
+                GL11.glPopMatrix();
                 if(rc.contains(mouseX, mouseY)) {
                     FontRenderer custom = in.getItem().getFontRenderer(in);
                     if(custom != null) {
                         fr = custom;
                     }
-                    tooltip = in.getTooltip(Minecraft.getMinecraft().player, Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
+                    tooltip = in.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
                 }
             }
 
@@ -135,16 +138,16 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
         RenderConstellation.BrightnessFunction f = new RenderConstellation.BrightnessFunction() {
             @Override
             public float getBrightness() {
-                return ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().world);
+                return ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().theWorld);
             }
         };
         if(hasLens) {
-            WorldSkyHandler wsh = ConstellationSkyHandler.getInstance().getWorldHandler(tile.getWorld());
+            WorldSkyHandler wsh = ConstellationSkyHandler.getInstance().getWorldHandler(tile.getWorldObj());
             if(wsh != null && tile.doesSeeSky()) {
 
                 if(f.getBrightness() > 1E-4) {
                     DataActiveCelestials dac = SyncDataHolder.getDataClient(SyncDataHolder.DATA_CONSTELLATIONS);
-                    Collection<IConstellation> cst = dac.getActiveConstellations(Minecraft.getMinecraft().world.provider.getDimension());
+                    Collection<IConstellation> cst = dac.getActiveConstellations(Minecraft.getMinecraft().theWorld.provider.dimensionId);
 
                     if(cst != null) {
                         List<IConstellation> filtered = cst.stream()
@@ -192,27 +195,27 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
             SpriteSheetResource halo = SpriteLibrary.spriteHalo2;
             halo.getResource().bind();
             Tuple<Double, Double> uvFrame = halo.getUVOffset(ClientScheduler.getClientTick());
-            GlStateManager.pushMatrix();
+             GL11.glPushMatrix();
 
             float rot =     ((float) (ClientScheduler.getClientTick()     % 2000) / 2000F * 360F);
 
             float scale = 160F;
 
-            GlStateManager.translate(guiLeft + guiWidth / 2, guiTop + guiHeight / 2 + 10, 0);
-            GlStateManager.rotate(rot, 0, 0, 1);
-            GlStateManager.translate(-scale / 2, -scale / 2, 0);
+            GL11.glTranslatef(guiLeft + guiWidth / 2, guiTop + guiHeight / 2 + 10, 0);
+            GL11.glRotatef(rot, 0, 0, 1);
+            GL11.glTranslatef(-scale / 2, -scale / 2, 0);
 
-            GlStateManager.color(1F, 1F, 1F, tile.getPercRunning());
-            GlStateManager.enableBlend();
-            Blending.DEFAULT.applyStateManager();
-            GlStateManager.disableAlpha();
+            GL11.glColor4f(1F, 1F, 1F, tile.getPercRunning());
+            GL11.glEnable(GL_BLEND);
+            Blending.DEFAULT.apply();
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
 
             drawTexturedRectAtCurrentPos(scale, scale,
                     (float) (double) uvFrame.key, (float) (double) uvFrame.value, //Jeeez. Double -> float is not a thing.
                     (float)  halo.getULength(), (float) halo.getVLength());
 
-            GlStateManager.enableAlpha();
-            GlStateManager.popMatrix();
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+            GL11.glPopMatrix();
             TextureHelper.refreshTextureBindState();
         }
 
@@ -225,18 +228,18 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
             itemRender.zLevel += 100;
 
             ItemStack in = tile.getSlotIn();
-            GlStateManager.pushMatrix();
-            GlStateManager.color(1F, 1F, 1F, 1F);
-            GlStateManager.translate(guiLeft + 63, guiTop + 42, 0); //-> +130, +130
-            GlStateManager.scale(8, 8, 0);
-            GlStateManager.enableBlend();
-            Blending.DEFAULT.applyStateManager();
-            GlStateManager.enableDepth();
+             GL11.glPushMatrix();
+            GL11.glColor4f(1F, 1F, 1F, 1F);
+            GL11.glTranslatef(guiLeft + 63, guiTop + 42, 0); //-> +130, +130
+            GL11.glScalef(8, 8, 0);
+            GL11.glEnable(GL_BLEND);
+            Blending.DEFAULT.apply();
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
 
-            itemRender.renderItemAndEffectIntoGUI(this.mc.player, in, 0, 0);
-            itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, in, 0, 0, null);
+            itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj,this.mc.renderEngine, in, 0, 0);
+            itemRender.renderItemOverlayIntoGUI(this.fontRendererObj,this.mc.renderEngine, in, 0, 0, null);
 
-            GlStateManager.popMatrix();
+            GL11.glPopMatrix();
 
             zLevel = prev;
             itemRender.zLevel = itemPrev;
@@ -266,7 +269,7 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
             RenderConstellation.renderConstellationIntoGUI(dragging, offset.x, offset.y, zLevel, whDragging * 2, whDragging * 2,
                     1.6F, f, true, false);
 
-            if(ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().world) <= 1E-4) {
+            if(ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().theWorld) <= 1E-4) {
                 dragging = null;
             }
         }
@@ -321,15 +324,15 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
                 at.translate(-rctDrawingGrid.x, -rctDrawingGrid.y);
                 filtered.add(new DrawnConstellation(at, c.constellation));
             }
-            PktEngraveGlass pkt = new PktEngraveGlass(getOwningTileEntity().getWorld().provider.getDimension(),
-                    getOwningTileEntity().getPos(), filtered);
+            BlockPos pos = new BlockPos(getOwningTileEntity().xCoord, getOwningTileEntity().yCoord, getOwningTileEntity().zCoord);
+            PktEngraveGlass pkt = new PktEngraveGlass(getOwningTileEntity().getWorldObj().provider.dimensionId, pos, filtered);
             PacketChannel.CHANNEL.sendToServer(pkt);
             drawnConstellations.clear();
         }
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if(mouseButton == 0 && getOwningTileEntity().hasParchment() &&
@@ -350,8 +353,8 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
-        super.mouseReleased(mouseX, mouseY, state);
+    protected void mouseMovedOrUp(int mouseX, int mouseY, int state) {
+        super.mouseMovedOrUp(mouseX, mouseY, state);
 
         if(getOwningTileEntity().hasParchment() &&
                 drawnConstellations.size() < 3 && getOwningTileEntity().hasUnengravedGlass()) {
@@ -376,8 +379,9 @@ public class GuiMapDrawing extends GuiTileBase<TileMapDrawingTable> {
 
     private boolean tryBurnParchment() {
         for (int i = 0; i < drawnConstellations.size() + 1; i++) {
-            if(EffectHandler.STATIC_EFFECT_RAND.nextInt(Math.max(1, MathHelper.ceil(7 * ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().world)))) == 0) {
-                PktBurnParchment pkt = new PktBurnParchment(Minecraft.getMinecraft().world.provider.getDimension(), getOwningTileEntity().getPos());
+            if(EffectHandler.STATIC_EFFECT_RAND.nextInt(Math.max(1, MathHelper.ceiling_double_int(7 * ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().theWorld)))) == 0) {
+                 BlockPos pos = new BlockPos(getOwningTileEntity().xCoord, getOwningTileEntity().yCoord, getOwningTileEntity().zCoord);
+                PktBurnParchment pkt = new PktBurnParchment(Minecraft.getMinecraft().theWorld.provider.dimensionId, pos);
                 PacketChannel.CHANNEL.sendToServer(pkt);
                 return true;
             }

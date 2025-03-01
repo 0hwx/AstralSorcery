@@ -8,9 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.event;
 
+import cpw.mods.fml.common.eventhandler.Event;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.SourceClassRegistry;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.TransmissionClassRegistry;
-import net.minecraftforge.fml.common.eventhandler.Event;
+
 
 /**
  * This class is part of the Astral Sorcery Mod

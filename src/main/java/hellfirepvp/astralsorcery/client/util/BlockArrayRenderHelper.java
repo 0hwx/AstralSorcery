@@ -8,29 +8,25 @@
 
 package hellfirepvp.astralsorcery.client.util;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.struct.BlockArray;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -70,12 +66,13 @@ public class BlockArrayRenderHelper {
 
     public void render3DGUI(double x, double y, float pTicks) {
         GuiScreen scr = Minecraft.getMinecraft().currentScreen;
+
         if(scr == null) return;
 
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
         Minecraft mc = Minecraft.getMinecraft();
-        double sc = new ScaledResolution(mc).getScaleFactor();
+        double sc = new ScaledResolution(mc,mc.displayWidth,mc.displayHeight).getScaleFactor();
         GL11.glTranslated(x + 16D / sc, y + 16D / sc, 512);
 
         double mul = 10.5;
@@ -83,15 +80,15 @@ public class BlockArrayRenderHelper {
         double size = 2;
         double minSize = 0.5;
 
-        Vec3i max = blocks.getMax();
-        Vec3i min = blocks.getMin();
+        Vec3 max = blocks.getMax();
+        Vec3 min = blocks.getMin();
 
         double maxLength = 0;
-        double pointDst = max.getX() - min.getX();
+        double pointDst = max.xCoord - min.xCoord;
         if(pointDst > maxLength) maxLength = pointDst;
-        pointDst = max.getY() - min.getY();
+        pointDst = max.yCoord - min.yCoord;
         if(pointDst > maxLength) maxLength = pointDst;
-        pointDst = max.getZ() - min.getZ();
+        pointDst = max.zCoord - min.zCoord;
         if(pointDst > maxLength) maxLength = pointDst;
         maxLength -= 5;
 
@@ -108,29 +105,30 @@ public class BlockArrayRenderHelper {
 
         GL11.glScaled(-size*mul, -size*mul, -size*mul);
 
-        BlockRendererDispatcher brd = Minecraft.getMinecraft().getBlockRendererDispatcher();
-        VertexFormat blockFormat = DefaultVertexFormats.BLOCK;
+        RenderBlocks brd = new RenderBlocks();
+//        VertexFormat blockFormat = DefaultVertexFormats.BLOCK;
 
         TextureHelper.setActiveTextureToAtlasSprite();
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
 
-        vb.begin(GL11.GL_QUADS, blockFormat);
+//        vb.begin(GL11.GL_QUADS, blockFormat);
+        tess.startDrawingQuads();
         for (Map.Entry<BlockPos, BakedBlockData> data : renderAccess.blockRenderData.entrySet()) {
             BlockPos offset = data.getKey();
             BakedBlockData renderData = data.getValue();
-            if(renderData.type != Blocks.AIR) {
-                brd.renderBlock(renderData.state, offset, renderAccess, vb);
+            if(renderData.type != Blocks.air) {
+//                brd.renderBlock(renderData.metadata, offset, renderAccess, vb);
             }
         }
-        tes.draw();
+        tess.draw();
 
         for (Map.Entry<BlockPos, BakedBlockData> data : renderAccess.blockRenderData.entrySet()) {
             BlockPos offset = data.getKey();
             BakedBlockData renderData = data.getValue();
             if(renderData.tileEntity != null && renderData.tesr != null) {
-                renderData.tileEntity.setWorldObj(Minecraft.getMinecraft().world);
-                renderData.tesr.renderTileEntityAt(renderData.tileEntity, offset.getX(), offset.getY(), offset.getZ(), pTicks, 0);
+                renderData.tileEntity.setWorldObj(Minecraft.getMinecraft().theWorld);
+                renderData.tesr.renderTileEntityAt(renderData.tileEntity, offset.getX(), offset.getY(), offset.getZ(), pTicks);
             }
         }
 
@@ -143,8 +141,8 @@ public class BlockArrayRenderHelper {
         private TileEntity tileEntity;
         private TileEntitySpecialRenderer tesr;
 
-        protected BakedBlockData(Block type, IBlockState state, TileEntity te) {
-            super(type, state);
+        protected BakedBlockData(Block type, int meta, TileEntity te) {
+            super(type, meta);
             this.tileEntity = te;
             if(te != null) {
                 tesr = TileEntityRendererDispatcher.instance.getSpecialRenderer(te);
@@ -161,47 +159,55 @@ public class BlockArrayRenderHelper {
             for (Map.Entry<BlockPos, BlockArray.BlockInformation> entry : array.getPattern().entrySet()) {
                 BlockPos offset = entry.getKey();
                 BlockArray.BlockInformation info = entry.getValue();
-                if(info.type.hasTileEntity(info.state)) {
-                    TileEntity te = info.type.createTileEntity(Minecraft.getMinecraft().world, info.state);
+                if(info.type.hasTileEntity(info.metadata)) {
+                    TileEntity te = info.type.createTileEntity(Minecraft.getMinecraft().theWorld, info.metadata);
                     BlockArray.TileEntityCallback callback = array.getTileCallbacks().get(offset);
                     if(te != null && callback != null) {
                         if(callback.isApplicable(te)) {
                             callback.onPlace(this, offset, te);
                         }
                     }
-                    blockRenderData.put(offset, new BakedBlockData(info.type, info.state, te));
+                    blockRenderData.put(offset, new BakedBlockData(info.type, info.metadata, te));
                 } else {
-                    blockRenderData.put(offset, new BakedBlockData(info.type, info.state, null));
+                    blockRenderData.put(offset, new BakedBlockData(info.type, info.metadata, null));
                 }
             }
         }
 
+        @Override
+        public Block getBlock(int x, int y, int z) {
+            return null;
+        }
+
         @Nullable
         @Override
-        public TileEntity getTileEntity(BlockPos pos) {
+        public TileEntity getTileEntity(int x, int y, int z) {
+            BlockPos pos = new BlockPos(x, y, z);
             return blockRenderData.containsKey(pos) ? blockRenderData.get(pos).tileEntity : null;
         }
 
         @Override
         @SideOnly(Side.CLIENT)
-        public int getCombinedLight(BlockPos pos, int lightValue) {
+        public int getLightBrightnessForSkyBlocks(int x, int y, int z, int lightValue) {
             return 0;
         }
 
         @Override
-        public IBlockState getBlockState(BlockPos pos) {
-            return isInBounds(pos) ? blockRenderData.get(pos).state : Blocks.AIR.getDefaultState();
+        public int getBlockMetadata(int x, int y, int z) {
+            BlockPos pos = new BlockPos(x, y, z);
+            return isInBounds(pos) ? blockRenderData.get(pos).metadata : 0; //Blocks.AIR.getDefaultState();
         }
 
         @Override
-        public boolean isAirBlock(BlockPos pos) {
-            return !isInBounds(pos) || blockRenderData.get(pos).type == Blocks.AIR;
+        public boolean isAirBlock(int x, int y, int z) {
+            BlockPos pos = new BlockPos(x, y, z);
+            return !isInBounds(pos) || blockRenderData.get(pos).type == Blocks.air;
         }
 
         @Override
         @SideOnly(Side.CLIENT)
-        public Biome getBiome(BlockPos pos) {
-            return Biome.getBiome(0);
+        public BiomeGenBase getBiomeGenForCoords(int x, int z) {
+            return BiomeGenBase.getBiome(0);
         }
 
         private boolean isInBounds(BlockPos pos) {
@@ -209,19 +215,30 @@ public class BlockArrayRenderHelper {
         }
 
         @Override
-        public int getStrongPower(BlockPos pos, EnumFacing direction) {
+        public int getHeight() {
             return 0;
         }
 
         @Override
-        @SideOnly(Side.CLIENT)
-        public WorldType getWorldType() {
-            return Minecraft.getMinecraft().world.getWorldType();
+        public boolean extendedLevelsInChunkCache() {
+            return false;
         }
 
         @Override
-        public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
-            return isInBounds(pos) ? getBlockState(pos).isSideSolid(this, pos, side) : _default;
+        public int isBlockProvidingPowerTo(int x, int y, int z, int directionIn) {
+            return 0;
+        }
+
+//        @Override
+//        @SideOnly(Side.CLIENT)
+//        public WorldType getWorldType() {
+//            return Minecraft.getMinecraft().theWorld.getWorldType();
+//        }
+
+        @Override
+        public boolean isSideSolid(int x, int y, int z, ForgeDirection side, boolean _default) {
+            BlockPos pos = new BlockPos(x, y, z);
+            return isInBounds(pos) ? getBlock(pos.getX(), pos.getY(), pos.getZ()).isSideSolid(this, pos.getX(), pos.getY(), pos.getZ(), side) : _default;
         }
 
     }

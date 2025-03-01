@@ -8,6 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
+import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
@@ -16,27 +17,21 @@ import hellfirepvp.astralsorcery.common.item.crystal.base.ItemRockCrystalBase;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,60 +47,69 @@ import java.util.Random;
 public class BlockCustomOre extends Block implements BlockCustomName, BlockVariants {
 
     private static final Random rand = new Random();
+    public IIcon[] icons = new IIcon[OreType.values().length];
 
-    public static PropertyEnum<OreType> ORE_TYPE = PropertyEnum.create("oretype", OreType.class);
+//    public static PropertyEnum<OreType> ORE_TYPE = PropertyEnum.create("oretype", OreType.class);
 
     public BlockCustomOre() {
-        super(Material.ROCK, MapColor.GRAY);
+        super(Material.rock);
         setHardness(3.0F);
-        setHarvestLevel("pickaxe", 3);
         setResistance(25.0F);
+//        setHarvestLevel("pickaxe", 3);
+        setStepSound(soundTypeStone);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
+        setBlockName("BlockCustomOre");
+        for (OreType type : OreType.values()) {
+            this.setHarvestLevel("pickaxe", type.getHarvestLevel(), type.getMeta());
+        }
     }
 
     @Override
     public void getSubBlocks(Item item, CreativeTabs tab, List<ItemStack> list) {
-        for (OreType t : OreType.values()) {
-            list.add(new ItemStack(item, 1, t.ordinal()));
-        }
+       for (OreType t : OreType.values()) {
+           list.add(new ItemStack(item, 1, t.getMeta()));
+       }
     }
 
     @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        super.breakBlock(worldIn, pos, state);
+    public void breakBlock(World worldIn, int x, int y, int z, Block blockBroken, int meta) {
+        super.breakBlock(worldIn, x, y, z, blockBroken, meta);
 
-        if(state.getValue(ORE_TYPE).equals(OreType.STARMETAL)) {
+        if(blockBroken.equals(OreType.STARMETAL)) {
+            BlockPos pos = new BlockPos(x, y, z);
             ((RockCrystalBuffer) WorldCacheManager.getOrLoadData(worldIn, WorldCacheManager.SaveKey.ROCK_CRYSTAL)).removeOre(pos);
         }
     }
 
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        OreType type = state.getValue(ORE_TYPE);
-        return type == null ? 0 : type.getMeta();
-    }
+//    @Override
+//    public int getMeta(Block state) {
+//        OreType type = state.getValue(ORE_TYPE);
+//        return type == null ? 0 : type.getMeta();
+//    }
+//
+//    @Override
+//    public Block getStateFromMeta(int meta) {
+//        return meta < OreType.values().length ? getDefaultState().withProperty(ORE_TYPE, OreType.values()[meta]) : getDefaultState();
+//    }
+//
+//    @Override
+//    protected BlockStateContainer createBlockState() {
+//        return new BlockStateContainer(this, ORE_TYPE);
+//    }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return meta < OreType.values().length ? getDefaultState().withProperty(ORE_TYPE, OreType.values()[meta]) : getDefaultState();
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, ORE_TYPE);
-    }
-
-    @Override
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack) {
-        OreType type = state.getValue(ORE_TYPE);
+    public void harvestBlock(World worldIn, EntityPlayer player, int x, int y, int z, int meta) {
+        OreType type = OreType.values()[meta];
+        BlockPos pos = new BlockPos(x, y, z);
         if(type != OreType.ROCK_CRYSTAL || (securityCheck(worldIn, pos, player) && checkSafety(worldIn, pos))) {
-            super.harvestBlock(worldIn, player, pos, state, te, stack);
+            super.harvestBlock(worldIn, player, x, y, z, meta);
         }
     }
 
     @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        OreType type = state.getValue(ORE_TYPE);
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
+        OreType type = OreType.values()[metadata];
+        BlockPos pos = new BlockPos(x, y, z);
         List<ItemStack> drops = new ArrayList<>();
         switch (type) {
             case ROCK_CRYSTAL:
@@ -125,7 +129,7 @@ public class BlockCustomOre extends Block implements BlockCustomName, BlockVaria
                 drops.add(new ItemStack(this, 1, OreType.STARMETAL.ordinal()));
                 break;
         }
-        return drops;
+        return (ArrayList<ItemStack>) drops;
     }
 
     private boolean securityCheck(World world, BlockPos pos, EntityPlayer player) {
@@ -133,46 +137,46 @@ public class BlockCustomOre extends Block implements BlockCustomName, BlockVaria
     }
 
     private boolean checkSafety(World world, BlockPos pos) {
-        EntityPlayer player = world.getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), 10, false);
-        return player != null && player.getDistanceSq(pos) < 100;
+        EntityPlayer player = world.getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), 10);
+        return player != null && player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) < 100;
     }
 
     @Override
-    public int damageDropped(IBlockState state) {
-        return getMetaFromState(state);
+    public int damageDropped(int meta) {
+        return meta;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube() {
         return true;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
+    public boolean isNormalCube() {
         return true;
     }
 
     @Override
-    public boolean isFullBlock(IBlockState state) {
+    public boolean func_149730_j() {
         return true;
     }
 
-    @Override
-    public boolean isFullyOpaque(IBlockState state) {
-        return true;
-    }
+//    @Override
+//    public boolean isFullyOpaque() {
+//        return true;
+//    }
 
     @Override
     public String getIdentifierForMeta(int meta) {
-        OreType ot = getStateFromMeta(meta).getValue(ORE_TYPE);
-        return ot == null ? "null" : ot.getName();
+        OreType ot = OreType.values()[meta];
+        return ot.getName();
     }
 
     @Override
-    public List<IBlockState> getValidStates() {
-        List<IBlockState> ret = new LinkedList<>();
+    public List<Block> getValidStates() {
+        List<Block> ret = new LinkedList<>();
         for (OreType type : OreType.values()) {
-            ret.add(getDefaultState().withProperty(ORE_TYPE, type));
+            ret.add(type.asBlock());
         }
         return ret;
     }
@@ -183,9 +187,18 @@ public class BlockCustomOre extends Block implements BlockCustomName, BlockVaria
     }
 
     @Override
-    public String getStateName(IBlockState state) {
-        return state.getValue(ORE_TYPE).getName();
+    public String getMetaName(int meta) {
+        return OreType.values()[meta].getName();
     }
+
+    @Override
+    public int getMeta() {
+        for (OreType type : OreType.values()) {
+            return type.getMeta();
+        }
+        return 0;
+    }
+
 
     @SideOnly(Side.CLIENT)
     public static void playStarmetalOreEffects(PktParticleEvent event) {
@@ -197,28 +210,59 @@ public class BlockCustomOre extends Block implements BlockCustomName, BlockVaria
         p.scale(0.2F);
     }
 
-    public static enum OreType implements IStringSerializable {
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerBlockIcons(IIconRegister reg)
+    {
+        for (OreType type : OreType.values()) {
+            icons[type.getMeta()] = reg.registerIcon("astralsorcery:ore_" + type.getName());
+//            icons[0] = reg.registerIcon("astralsorcery:ore_rockcrystal");
+//            icons[1] = reg.registerIcon("astralsorcery:ore_starmetal");
+        }
+    }
 
-        ROCK_CRYSTAL(0),
-        STARMETAL(1);
+    @Override
+    public IIcon getIcon(int side, int meta) {
+        if (meta >= 0 && meta < icons.length) {
+            return icons[meta];
+        }
+        return null;
+    }
 
+
+
+    public enum OreType {
+
+        ROCK_CRYSTAL(0,"rock_crystal",2),
+        STARMETAL(1,"starmetal",3);
+
+        private final String name;
+        private final int harvestLevel;
         private final int meta;
 
-        private OreType(int meta) {
+        private OreType(int meta ,String name, int harvestLevel) {
             this.meta = meta;
+            this.name = name;
+            this.harvestLevel = harvestLevel;
         }
 
+        public Block asBlock() {
+            return BlocksAS.customOre;//.getStateFromMeta(meta);
+        }
         public ItemStack asStack() {
             return new ItemStack(BlocksAS.customOre, 1, meta);
         }
 
-        public int getMeta() {
-            return meta;
+        public String getName() {
+            return name.toLowerCase();
         }
 
-        @Override
-        public String getName() {
-            return name().toLowerCase();
+        public int getHarvestLevel() {
+            return harvestLevel;
+        }
+
+        public int getMeta() {
+            return meta;
         }
     }
 

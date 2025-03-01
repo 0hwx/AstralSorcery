@@ -15,7 +15,7 @@ import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -42,7 +42,7 @@ public abstract class ItemCrystalToolBase extends ItemTool implements IGrindable
     private final int crystalCount;
 
     public ItemCrystalToolBase(int crystalCount) {
-        super(0, 0, RegistryItems.crystalToolMaterial, Collections.emptySet());
+        super(0, RegistryItems.crystalToolMaterial, Collections.emptySet());
         setMaxDamage(0);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
         this.crystalCount = crystalCount;
@@ -52,9 +52,9 @@ public abstract class ItemCrystalToolBase extends ItemTool implements IGrindable
         this.damageVsEntity = damageVsEntity;
     }
 
-    public void setAttackSpeed(float attackSpeed) {
-        this.attackSpeed = attackSpeed;
-    }
+//    public void setAttackSpeed(float attackSpeed) {
+//        this.attackSpeed = attackSpeed;
+//    }
 
     public int getCrystalCount() {
         return crystalCount;
@@ -68,8 +68,8 @@ public abstract class ItemCrystalToolBase extends ItemTool implements IGrindable
     }
 
     @Override
-    public float getStrVsBlock(ItemStack stack, IBlockState state) {
-        float str = super.getStrVsBlock(stack, state);
+    public float func_150893_a(ItemStack stack, Block block) {
+        float str = super.func_150893_a(stack, block);
         ToolCrystalProperties properties = getToolProperties(stack);
         return str * properties.getEfficiencyMultiplier();
     }
@@ -91,11 +91,11 @@ public abstract class ItemCrystalToolBase extends ItemTool implements IGrindable
 
     @Override
     public Entity createEntity(World world, Entity ei, ItemStack itemstack) {
-        EntityCrystalTool newItem = new EntityCrystalTool(ei.world, ei.posX, ei.posY, ei.posZ, itemstack);
+        EntityCrystalTool newItem = new EntityCrystalTool(ei.worldObj, ei.posX, ei.posY, ei.posZ, itemstack);
         newItem.motionX = ei.motionX;
         newItem.motionY = ei.motionY;
         newItem.motionZ = ei.motionZ;
-        newItem.setPickupDelay(40);
+        newItem.delayBeforeCanPickup = 40;
         return newItem;
     }
 

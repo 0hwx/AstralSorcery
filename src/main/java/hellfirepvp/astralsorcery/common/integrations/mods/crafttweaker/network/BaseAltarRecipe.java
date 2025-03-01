@@ -21,7 +21,8 @@ import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
+
 
 import java.util.List;
 
@@ -87,7 +88,7 @@ public abstract class BaseAltarRecipe implements SerializeableRecipe {
     }
 
     protected AbstractAltarRecipe buildRecipeUnsafe(TileAltar.AltarLevel altarLevel, int starlightConsumption, int craftingTickTime, ItemStack out, ItemHandle[] inputs) {
-        starlightConsumption = MathHelper.clamp(starlightConsumption, 1, altarLevel.getStarlightMaxStorage());
+        starlightConsumption = MathHelper.clamp_int(starlightConsumption, 1, altarLevel.getStarlightMaxStorage());
         final int sConsumption = starlightConsumption;
         List<Integer> fluidStacks = computeFluidConsumptionSlots(inputs);
         switch (altarLevel) {

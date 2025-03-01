@@ -8,6 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.event.listener;
 
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.base.CelestialGatewaySystem;
 import hellfirepvp.astralsorcery.common.base.Mods;
@@ -24,11 +28,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SPacketCustomPayload;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.minecraft.network.play.server.S3FPacketCustomPayload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class EventHandlerNetwork {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onLogin(PlayerEvent.PlayerLoggedInEvent e) {
         EntityPlayerMP p = (EntityPlayerMP) e.player;
-        AstralSorcery.log.info("Synchronizing configuration to " + p.getName());
+        AstralSorcery.log.info("Synchronizing configuration to " + p.getDisplayName());
         PacketChannel.CHANNEL.sendTo(new PktSyncConfig(), p);
         PacketChannel.CHANNEL.sendTo(new PktSyncAlignmentLevels(ConstellationPerkLevelManager.levelsRequired), p);
         if(Mods.MINETWEAKER.isPresent()) {
@@ -68,16 +68,16 @@ public class EventHandlerNetwork {
         for (int i : dimensions) {
             buf.writeInt(i);
         }
-        event.getManager().sendPacket(new SPacketCustomPayload(AS_WORLDHANDLERS_PAYLOAD, buf));
+        event.manager.scheduleOutboundPacket(new S3FPacketCustomPayload(AS_WORLDHANDLERS_PAYLOAD, buf));
     }
 
-    public static void clientCatchWorldHandlerPayload(SPacketCustomPayload pkt) {
-        if(pkt.getChannelName().equals(AS_WORLDHANDLERS_PAYLOAD)) {
-            PacketBuffer buf = pkt.getBufferData();
-            int size = buf.readInt();
+    public static void clientCatchWorldHandlerPayload(S3FPacketCustomPayload pkt) {
+        if(pkt.func_149169_c().equals(AS_WORLDHANDLERS_PAYLOAD)) {
+            byte[] buf = pkt.func_149168_d(); //todo check this
+            int size = buf.length;
             List<Integer> dimensions = new ArrayList<>(size);
             for (int i = 0; i < size; i++) {
-                dimensions.add(buf.readInt());
+                dimensions.add(buf.length);
             }
 
             ((DataWorldSkyHandlers) SyncDataHolder.getDataClient(SyncDataHolder.DATA_SKY_HANDLERS)).updateClient(dimensions);

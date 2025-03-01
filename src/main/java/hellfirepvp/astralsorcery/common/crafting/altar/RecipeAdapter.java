@@ -23,17 +23,21 @@ import net.minecraft.item.ItemStack;
 public class RecipeAdapter extends InventoryCrafting {
 
     private static final AdapterContainer emptyContainer = new AdapterContainer();
+    private static int getWidth;
+    private static int getHeight;
 
     public RecipeAdapter(int width, int height) {
         super(emptyContainer, width, height);
+        this.getWidth = width;
+        this.getHeight = height;
     }
 
     public void fill(ItemStack[] stacks) {
-        if(stacks.length != getWidth() * getHeight()) return; //Ugh... ?
+        if(stacks.length != getWidth * getHeight) return; //Ugh... ?
 
-        for (int xx = 0; xx < getWidth(); xx++) {
-            for (int zz = 0; zz < getHeight(); zz++) {
-                setInventorySlotContents(xx * getHeight() + zz, stacks[xx * getHeight() + zz]);
+        for (int xx = 0; xx < getWidth; xx++) {
+            for (int zz = 0; zz < getHeight; zz++) {
+                setInventorySlotContents(xx * getHeight + zz, stacks[xx * getHeight + zz]);
             }
         }
     }

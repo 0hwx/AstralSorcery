@@ -27,7 +27,7 @@ public class Materials {
         private int mobilityFlag;
 
         public NoPushMaterial() {
-            super(MapColor.AIR);
+            super(MapColor.airColor);
             setNoPushMobility();
         }
 

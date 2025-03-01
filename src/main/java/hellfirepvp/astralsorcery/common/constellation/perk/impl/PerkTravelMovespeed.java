@@ -10,12 +10,12 @@ package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
 import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.BaseAttributeMap;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 import java.util.UUID;
 
@@ -40,11 +40,11 @@ public class PerkTravelMovespeed extends ConstellationPerk {
     @Override
     public void onPlayerTick(EntityPlayer player, Side side) {
         if(side == Side.SERVER) {
-            AbstractAttributeMap map = player.getAttributeMap();
-            IAttributeInstance instance = map.getAttributeInstance(SharedMonsterAttributes.MOVEMENT_SPEED);
-            if(!instance.hasModifier(modMovespeedIncrease)) {
+            BaseAttributeMap map = player.getAttributeMap();
+            IAttributeInstance instance = map.getAttributeInstance(SharedMonsterAttributes.movementSpeed);
+//            if(!instance.hasModifier(modMovespeedIncrease)) {
                 instance.applyModifier(modMovespeedIncrease);
-            }
+//            }
             addAlignmentCharge(player, 0.002);
             setCooldownActiveForPlayer(player, 20);
         }
@@ -52,11 +52,11 @@ public class PerkTravelMovespeed extends ConstellationPerk {
 
     @Override
     public void onTimeout(EntityPlayer player) {
-        AbstractAttributeMap map = player.getAttributeMap();
-        IAttributeInstance instance = map.getAttributeInstance(SharedMonsterAttributes.MOVEMENT_SPEED);
-        if(instance.hasModifier(modMovespeedIncrease)) {
+        BaseAttributeMap map = player.getAttributeMap();
+        IAttributeInstance instance = map.getAttributeInstance(SharedMonsterAttributes.movementSpeed);
+//        if(instance.hasModifier(modMovespeedIncrease)) {
             instance.removeModifier(modMovespeedIncrease);
-        }
+//        }
     }
 
     @Override
@@ -75,5 +75,4 @@ public class PerkTravelMovespeed extends ConstellationPerk {
         mod.setSaved(false);
         modMovespeedIncrease = mod;
     }
-
 }

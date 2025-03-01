@@ -18,8 +18,8 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,8 +41,8 @@ public class PerkCreationReach extends ConstellationPerk {
         if(side == Side.SERVER) {
             if(!isCooldownActiveForPlayer(player)) {
                 if(player instanceof EntityPlayerMP) {
-                    double reach = Math.max(5D, ((EntityPlayerMP) player).interactionManager.getBlockReachDistance() + reachModifier);
-                    ((EntityPlayerMP) player).interactionManager.setBlockReachDistance(reach);
+                    double reach = Math.max(5D, ((EntityPlayerMP) player).theItemInWorldManager.getBlockReachDistance() + reachModifier);
+                    ((EntityPlayerMP) player).theItemInWorldManager.setBlockReachDistance(reach);
                     PktUpdateReach pkt = new PktUpdateReach(true, reachModifier);
                     PacketChannel.CHANNEL.sendTo(pkt, (EntityPlayerMP) player);
                 }
@@ -54,8 +54,8 @@ public class PerkCreationReach extends ConstellationPerk {
     @Override
     public void onTimeout(EntityPlayer player) {
         if(player instanceof EntityPlayerMP) {
-            double reach = Math.max(5D, ((EntityPlayerMP) player).interactionManager.getBlockReachDistance() - reachModifier);
-            ((EntityPlayerMP) player).interactionManager.setBlockReachDistance(reach);
+            double reach = Math.max(5D, ((EntityPlayerMP) player).theItemInWorldManager.getBlockReachDistance() - reachModifier);
+            ((EntityPlayerMP) player).theItemInWorldManager.setBlockReachDistance(reach);
             PktUpdateReach pkt = new PktUpdateReach(false, 0F);
             PacketChannel.CHANNEL.sendTo(pkt, (EntityPlayerMP) player);
         }
@@ -63,14 +63,14 @@ public class PerkCreationReach extends ConstellationPerk {
 
     @SideOnly(Side.CLIENT)
     public static void updateReach(boolean apply, float modifierIn) {
-        EntityPlayer pl = Minecraft.getMinecraft().player;
+        EntityPlayer pl = Minecraft.getMinecraft().thePlayer;
         PlayerControllerMP ctrl = Minecraft.getMinecraft().playerController;
         if(pl != null && ctrl != null) {
             if(!(ctrl instanceof ExtendedChainingPlayerController)) {
                 ExtendedChainingPlayerController ovr = new ExtendedChainingPlayerController(ctrl);
                 boolean isFlying = pl.capabilities.isFlying;
                 boolean allowFlight = pl.capabilities.allowFlying;
-                ovr.setGameType(ctrl.getCurrentGameType()); //Overwrites fly states depending on gametype. Please. no.
+                ovr.setGameType(ctrl.currentGameType); //Overwrites fly states depending on gametype. Please. no.
                 pl.capabilities.isFlying = isFlying;
                 pl.capabilities.allowFlying = allowFlight;
                 Minecraft.getMinecraft().playerController = ovr;

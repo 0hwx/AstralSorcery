@@ -106,17 +106,19 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
 
     @Override
     public void register() {
-        CraftingManager.getInstance().addRecipe(make());
+        CraftingManager.getInstance().addRecipe(null, make());
     }
 
     @Override
     public AccessibleRecipeAdapater make() {
-        return new AccessibleRecipeAdapater(RecipeHelper.getShapedOredictRecipe(getOutput(), getNativeObjOutArray()), this);
+//        return new AccessibleRecipeAdapater(RecipeHelper.getShapedOredictRecipe(getOutput(), getNativeObjOutArray()), this);
+        return null;
     }
 
     @Override
     public IRecipe makeNative() {
-        return RecipeHelper.getShapedOredictRecipe(getOutput(), getNativeObjOutArray());
+//        return RecipeHelper.getShapedOredictRecipe(getOutput(), getNativeObjOutArray());
+        return null;
     }
 
     public ShapedLightProximityRecipe makeLightProximityRecipe() {

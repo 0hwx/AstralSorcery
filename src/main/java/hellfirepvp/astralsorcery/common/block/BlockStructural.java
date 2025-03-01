@@ -10,38 +10,29 @@ package hellfirepvp.astralsorcery.common.block;
 
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.tile.TileStructuralConnector;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.Explosion;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.ForgeDirection;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -50,65 +41,72 @@ import java.util.List;
  * Created by HellFirePvP
  * Date: 30.07.2016 / 21:50
  */
-public class BlockStructural extends BlockContainer implements BlockCustomName, BlockVariants {
+public class BlockStructural extends BlockContainer implements BlockCustomName {
 
-    public static PropertyEnum<BlockType> BLOCK_TYPE = PropertyEnum.create("blocktype", BlockType.class);
+//    public static PropertyEnum<BlockType> BLOCK_TYPE = PropertyEnum.create("blocktype", BlockType.class);
+    public static final AxisAlignedBB FULL_BLOCK_AABB = AxisAlignedBB.getBoundingBox(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
 
     public BlockStructural() {
-        super(Material.BARRIER, MapColor.AIR);
+        super(Material.air);
         setBlockUnbreakable();
-        setSoundType(SoundType.GLASS);
+        setBlockName("BlockStructural");
+//        setSoundType(SoundType.GLASS);
     }
 
-    @Override
-    public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity) {
-        switch (state.getValue(BLOCK_TYPE)) {
-            case TELESCOPE_STRUCT:
-                IBlockState downState = world.getBlockState(pos.down());
-                return BlockType.TELESCOPE_STRUCT.getSupportedState().getBlock().getSoundType(downState, world, pos, entity);
-            //case ATTUNEMENT_ALTAR_STRUCT:
-            //    downState = world.getBlockState(pos.down());
-            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getSupportedState().getBlock().getSoundType(downState, world, pos, entity);
-        }
-        return super.getSoundType(state, world, pos, entity);
-    }
+//    @Override
+//    public SoundType getSoundType(Block state, World world, BlockPos pos, @Nullable Entity entity) {
+//        switch (state.getValue(BLOCK_TYPE)) {
+//            case TELESCOPE_STRUCT:
+//                Block downState = world.getBlockState(pos.down());
+//                return BlockType.TELESCOPE_STRUCT.getblock().getBlock().getSoundType(downState, world, pos, entity);
+//            //case ATTUNEMENT_ALTAR_STRUCT:
+//            //    downState = world.getBlockState(pos.down());
+//            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getblock().getBlock().getSoundType(downState, world, pos, entity);
+//        }
+//        return super.getSoundType(state, world, pos, entity);
+//    }
 
     @Override
-    public String getHarvestTool(IBlockState state) {
-        return state.getValue(BLOCK_TYPE).getSupportedState().getBlock().getHarvestTool(state.getValue(BLOCK_TYPE).getSupportedState());
+    public String getHarvestTool(int metadata) {
+        return super.getHarvestTool(metadata);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager manager) {
-        IBlockState state = world.getBlockState(pos);
-        switch (state.getValue(BLOCK_TYPE)) {
+    public boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
+        BlockPos pos = new BlockPos(x, y, z).down();
+        BlockType type = BlockType.values()[meta];
+        switch (type) {
             case TELESCOPE_STRUCT:
-                BlockType.TELESCOPE_STRUCT.getSupportedState().getBlock().addDestroyEffects(world, pos.down(), manager);
+                BlockType.TELESCOPE_STRUCT.getblock().addDestroyEffects(world, pos.getX(), pos.getY(), pos.getZ(),meta, effectRenderer);
                 return true;
             //case ATTUNEMENT_ALTAR_STRUCT:
-            //    BlockType.ATTUNEMENT_ALTAR_STRUCT.getSupportedState().getBlock().addDestroyEffects(world, pos.down(), manager);
+            //    BlockType.ATTUNEMENT_ALTAR_STRUCT.getblock().getBlock().addDestroyEffects(world, pos.down(), manager);
             //    return true;
         }
-        return super.addDestroyEffects(world, pos, manager);
+        return super.addDestroyEffects(world, x, y, z, meta, effectRenderer);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager manager) {
+    public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer) {
         return true;
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        switch (state.getValue(BLOCK_TYPE)) {
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
+        int meta = worldIn.getBlockMetadata(x, y, z);
+        BlockType type = BlockType.values()[meta];
+        switch (type) {
             case TELESCOPE_STRUCT:
-                return new AxisAlignedBB(0, -1, 0, 1, 1, 1);
+                return AxisAlignedBB.getBoundingBox(0, -1, 0, 1, 1, 1);
             //case ATTUNEMENT_ALTAR_STRUCT:
             //    return new AxisAlignedBB(0, 0, 0, 0, 0, 0);
         }
         return FULL_BLOCK_AABB;
     }
+
+
 
     @Override
     public void getSubBlocks(Item item, CreativeTabs tab, List list) {
@@ -118,20 +116,25 @@ public class BlockStructural extends BlockContainer implements BlockCustomName, 
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-        switch (state.getValue(BLOCK_TYPE)) {
+    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
+       BlockPos pos = new BlockPos(x, y, z).down();
+        int meta = worldIn.getBlockMetadata(x, y, z);
+        BlockType type = BlockType.values()[meta];
+        switch (type) {
             case TELESCOPE_STRUCT:
-                return BlockType.TELESCOPE_STRUCT.getSupportedState().getBlock().onBlockActivated(worldIn, pos.down(), BlockType.TELESCOPE_STRUCT.getSupportedState(), playerIn, hand, heldItem, side, hitX, hitY, hitZ);
+                return BlockType.TELESCOPE_STRUCT.getblock().onBlockActivated(worldIn, pos.getX(), pos.getY(), pos.getZ(), player, side, hitX, hitY, hitZ);
             //case ATTUNEMENT_ALTAR_STRUCT:
-            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getSupportedState().getBlock().onBlockActivated(worldIn, pos.down(), BlockType.ATTUNEMENT_ALTAR_STRUCT.getSupportedState(), playerIn, hand, heldItem, side, hitX, hitY, hitZ);
+            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getblock().getBlock().onBlockActivated(worldIn, pos.down(), BlockType.ATTUNEMENT_ALTAR_STRUCT.getblock(), playerIn, hand, heldItem, side, hitX, hitY, hitZ);
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
+        return super.onBlockActivated(worldIn, x, y, z, player, side, hitX, hitY, hitZ);
     }
 
     @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
         List<ItemStack> out = new LinkedList<>();
-        switch (state.getValue(BLOCK_TYPE)) {
+        int meta = world.getBlockMetadata(x, y, z);
+        BlockType type = BlockType.values()[meta];
+        switch (type) {
             case TELESCOPE_STRUCT:
                 out.add(BlockMachine.MachineType.TELESCOPE.asStack());
                 break;
@@ -139,50 +142,60 @@ public class BlockStructural extends BlockContainer implements BlockCustomName, 
             ///    out.add(new ItemStack(BlocksAS.attunementAltar));
             ///    break;
         }
-        return out;
+        return (ArrayList<ItemStack>) out;
     }
 
     @Override
-    public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
-        switch (blockState.getValue(BLOCK_TYPE)) {
+    public float getBlockHardness(World worldIn, int x, int y, int z) {
+        BlockPos pos = new BlockPos(x, y, z);
+        int meta = worldIn.getBlockMetadata(x, y, z);
+        BlockType type = BlockType.values()[meta];
+        switch (type) {
             case TELESCOPE_STRUCT:
-                return BlockType.TELESCOPE_STRUCT.getSupportedState().getBlockHardness(worldIn, pos.down());
+                return BlockType.TELESCOPE_STRUCT.getblock().getBlockHardness(worldIn, pos.down().getX(), pos.down().getY(), pos.down().getZ());
             //case ATTUNEMENT_ALTAR_STRUCT:
-            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getSupportedState().getBlockHardness(worldIn, pos.down());
+            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getblock().getBlockHardness(worldIn, pos.down());
         }
-        return super.getBlockHardness(blockState, worldIn, pos);
+        return super.getBlockHardness( worldIn, pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override
-    public float getExplosionResistance(World world, BlockPos pos, Entity exploder, Explosion explosion) {
-        IBlockState state = world.getBlockState(pos);
-        switch (state.getValue(BLOCK_TYPE)) {
+    public float getExplosionResistance(Entity par1Entity, World world, int x, int y, int z, double explosionX, double explosionY, double explosionZ) {
+        BlockPos pos = new BlockPos(x, y, z).down();
+        int meta = world.getBlockMetadata(x, y, z);
+        BlockType type = BlockType.values()[meta];
+        switch (type) {
             case TELESCOPE_STRUCT:
-                return BlockType.TELESCOPE_STRUCT.getSupportedState().getBlockHardness(world, pos.down());
+                return BlockType.TELESCOPE_STRUCT.getblock().getBlockHardness(world, pos.getX(), pos.getY(), pos.getZ());
             //case ATTUNEMENT_ALTAR_STRUCT:
-            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getSupportedState().getBlockHardness(world, pos.down());
+            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getblock().getBlockHardness(world, pos.down());
         }
-        return super.getExplosionResistance(world, pos, exploder, explosion);
+        return super.getExplosionResistance(par1Entity, world, x, y, z, explosionX, explosionY, explosionZ);
     }
 
     @Override
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-        state = world.getBlockState(pos);
-        switch (state.getValue(BLOCK_TYPE)) {
+    public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
+        BlockPos pos = new BlockPos(x, y, z);
+        int meta = world.getBlockMetadata(x, y, z);
+        BlockType type = BlockType.values()[meta];
+        switch (type) {
             case TELESCOPE_STRUCT:
-                return BlockType.TELESCOPE_STRUCT.getSupportedState().getBlock().getPickBlock(BlockType.TELESCOPE_STRUCT.getSupportedState(), target, world, pos.down(), player);
+                return BlockType.TELESCOPE_STRUCT.getblock().getPickBlock(target, world, pos.down().getX(), pos.down().getY(), pos.down().getZ(), player);
             //case ATTUNEMENT_ALTAR_STRUCT:
-            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getSupportedState().getBlock().getPickBlock(BlockType.ATTUNEMENT_ALTAR_STRUCT.getSupportedState(), target, world, pos.down(), player);
+            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getblock().getBlock().getPickBlock(BlockType.ATTUNEMENT_ALTAR_STRUCT.getblock(), target, world, pos.down(), player);
         }
-        return super.getPickBlock(state, target, world, pos, player);
+        return super.getPickBlock(target, world, pos.getX(), pos.getY(), pos.getZ(), player);
     }
 
     @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighbor) {
-        switch (state.getValue(BLOCK_TYPE)) {
+    public void onNeighborBlockChange(World worldIn, int x, int y, int z, Block neighbor) {
+        int meta = worldIn.getBlockMetadata(x, y, z);
+        BlockPos pos = new BlockPos(x, y, z);
+        BlockType type = BlockType.values()[meta];
+        switch (type) {
             case TELESCOPE_STRUCT:
-                if(world.isAirBlock(pos.down())) {
-                    world.setBlockToAir(pos);
+                if(worldIn.isAirBlock(pos.down().getX(), pos.down().getY(), pos.down().getZ())) {
+                    worldIn.setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
                 }
                 break;
             //case ATTUNEMENT_ALTAR_STRUCT:
@@ -194,16 +207,18 @@ public class BlockStructural extends BlockContainer implements BlockCustomName, 
     }
 
     @Override
-    public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
+    public void onNeighborChange(IBlockAccess world, int x, int y, int z, int tileX, int tileY, int tileZ) {
         if(!(world instanceof World)) {
-            super.onNeighborChange(world, pos, neighbor);
+            super.onNeighborChange(world, x, y, z, tileX, tileY, tileZ);
             return;
         }
-        IBlockState state = world.getBlockState(pos);
-        switch (state.getValue(BLOCK_TYPE)) {
+        BlockPos pos = new BlockPos(x, y, z);
+        int meta = world.getBlockMetadata(x, y, z);
+        BlockType type = BlockType.values()[meta];
+        switch (type) {
             case TELESCOPE_STRUCT:
-                if(world.isAirBlock(pos.down())) {
-                    ((World) world).setBlockToAir(pos);
+                if(world.isAirBlock(pos.down().getX(), pos.down().getY(), pos.down().getZ())) {
+                    ((World) world).setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
                 }
                 break;
             //case ATTUNEMENT_ALTAR_STRUCT:
@@ -214,101 +229,92 @@ public class BlockStructural extends BlockContainer implements BlockCustomName, 
         }
     }
 
+//    @Override
+//    public Block getStateFromMeta(int meta) {
+//        return meta < BlockType.values().length ? getDefaultState().withProperty(BLOCK_TYPE, BlockType.values()[meta]) : getDefaultState();
+//    }
+
+//    @Override
+//    public int getMeta(Block state) {
+//        BlockType type = state.getValue(BLOCK_TYPE);
+//        return type == null ? 0 : type.ordinal();
+//    }
+
     @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return meta < BlockType.values().length ? getDefaultState().withProperty(BLOCK_TYPE, BlockType.values()[meta]) : getDefaultState();
+    public int damageDropped(int meta) {
+        return meta;
+    }
+
+//    @Override
+//    protected BlockStateContainer createBlockState() {
+//        return new BlockStateContainer(this, BLOCK_TYPE);
+//    }
+//
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public boolean isTranslucent(Block state) {
+//        return true;
+//    }
+
+    @Override
+    public boolean isOpaqueCube() {
+        return false; //state.getValue(BLOCK_TYPE).getblock().isOpaqueCube();
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
-        BlockType type = state.getValue(BLOCK_TYPE);
-        return type == null ? 0 : type.ordinal();
+    public boolean isNormalCube() {
+        return false; // state.getValue(BLOCK_TYPE).getblock().isFullCube();
     }
 
-    @Override
-    public int damageDropped(IBlockState state) {
-        return getMetaFromState(state);
-    }
+//    @Override
+//    public boolean isNormalCube() {
+//        switch (state.getValue(BLOCK_TYPE)) {
+//            case TELESCOPE_STRUCT:
+//                return BlockType.TELESCOPE_STRUCT.getblock().isNormalCube();
+//            //case ATTUNEMENT_ALTAR_STRUCT:
+//            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getblock().isNormalCube();
+//        }
+//        return super.isNormalCube(state);
+//    }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, BLOCK_TYPE);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean isTranslucent(IBlockState state) {
-        return true;
-    }
-
-    @Override
-    public boolean isOpaqueCube(IBlockState state) {
-        return state.getValue(BLOCK_TYPE).getSupportedState().isOpaqueCube();
-    }
-
-    @Override
-    public boolean isFullCube(IBlockState state) {
-        return state.getValue(BLOCK_TYPE).getSupportedState().isFullCube();
-    }
-
-    @Override
-    public boolean isNormalCube(IBlockState state) {
-        switch (state.getValue(BLOCK_TYPE)) {
+    public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+        int meta = world.getBlockMetadata(x, y, z);
+        BlockPos pos = new BlockPos(x, y, z).down();
+        BlockType type = BlockType.values()[meta];
+        switch (type) {
             case TELESCOPE_STRUCT:
-                return BlockType.TELESCOPE_STRUCT.getSupportedState().isNormalCube();
+                return BlockType.TELESCOPE_STRUCT.getblock().isSideSolid(world, pos.getX(), pos.getY(), pos.getZ(), side);
             //case ATTUNEMENT_ALTAR_STRUCT:
-            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getSupportedState().isNormalCube();
+            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getblock().isSideSolid(world, pos.down(), side);
         }
-        return super.isNormalCube(state);
+        return super.isSideSolid(world, pos.getX(), pos.getY(), pos.getZ(), side);
     }
 
     @Override
-    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
-        switch (base_state.getValue(BLOCK_TYPE)) {
-            case TELESCOPE_STRUCT:
-                return BlockType.TELESCOPE_STRUCT.getSupportedState().isSideSolid(world, pos.down(), side);
-            //case ATTUNEMENT_ALTAR_STRUCT:
-            //    return BlockType.ATTUNEMENT_ALTAR_STRUCT.getSupportedState().isSideSolid(world, pos.down(), side);
-        }
-        return super.isSideSolid(base_state, world, pos, side);
-    }
-
-    @Override
-    public boolean isBlockSolid(IBlockAccess worldIn, BlockPos pos, EnumFacing side) {
+    public boolean isBlockSolid(IBlockAccess worldIn, int x, int y, int z, int side) {
         return false;
     }
 
     @Override
-    public EnumBlockRenderType getRenderType(IBlockState state) {
-        return EnumBlockRenderType.INVISIBLE;
+    public int getRenderType() {
+        return 1;
     }
 
     @Override
     public String getIdentifierForMeta(int meta) {
-        BlockType mt = getStateFromMeta(meta).getValue(BLOCK_TYPE);
-        return mt == null ? "null" : mt.getName();
+        return BlockType.values()[meta].getName();
     }
 
     @Override
-    public List<IBlockState> getValidStates() {
-        List<IBlockState> li = new ArrayList<>(BlockType.values().length);
-        for (BlockType bt : BlockType.values()) li.add(getDefaultState().withProperty(BLOCK_TYPE, bt));
-        return li;
+    public void addCollisionBoxesToList(World worldIn, int x, int y, int z, AxisAlignedBB mask, List<net.minecraft.util.AxisAlignedBB> list, Entity collider) {
+//        Block block = worldIn.getBlockState(pos);
+//        BlockType bt = state.getValue(BLOCK_TYPE);
+//        if(bt.equals(BlockType.ATTUNEMENT_ALTAR_STRUCT)) return;
+
+        super.addCollisionBoxesToList(worldIn, x, y, z, mask, list, collider);
     }
 
-    /*@Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn) {
-        state = worldIn.getBlockState(pos);
-        BlockType bt = state.getValue(BLOCK_TYPE);
-        if(bt.equals(BlockType.ATTUNEMENT_ALTAR_STRUCT)) return;
-
-        super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entityIn);
-    }*/
-
-    @Override
-    public String getStateName(IBlockState state) {
-        return state.getValue(BLOCK_TYPE).getName();
-    }
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
@@ -316,31 +322,35 @@ public class BlockStructural extends BlockContainer implements BlockCustomName, 
     }
 
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state) {
+    public TileEntity createTileEntity(World world, int meta) {
         return new TileStructuralConnector();
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state) {
+    public boolean hasTileEntity() {
         return true;
     }
 
-    public static enum BlockType implements IStringSerializable {
+    public static enum BlockType {
 
-        TELESCOPE_STRUCT(BlocksAS.blockMachine.getDefaultState().withProperty(BlockMachine.MACHINE_TYPE, BlockMachine.MachineType.TELESCOPE));
+        TELESCOPE_STRUCT(BlocksAS.blockMachine,0);
         //ATTUNEMENT_ALTAR_STRUCT(BlocksAS.attunementAltar.getDefaultState());
 
-        private final IBlockState supportedState;
-
-        private BlockType(IBlockState supportedState) {
-            this.supportedState = supportedState;
+        private final Block block;
+        private final int meta;
+        private BlockType(Block block, int meta) {
+            this.block = block;
+            this.meta =meta;
         }
 
-        public IBlockState getSupportedState() {
-            return supportedState;
+        public Block getblock() {
+            return block;
         }
 
-        @Override
+        public int getMeta(){
+            return meta;
+        }
+
         public String getName() {
             return name().toLowerCase();
         }

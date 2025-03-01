@@ -23,7 +23,7 @@ import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network.I
 import minetweaker.MineTweakerAPI;
 import minetweaker.api.item.IItemStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -48,7 +48,7 @@ public class InfusionRecipe extends BaseTweaker {
             return;
         }
 
-        consumptionChance = MathHelper.clamp(consumptionChance, 0F, 1F);
+        consumptionChance = MathHelper.clamp_float(consumptionChance, 0F, 1F);
         craftingTickTime = Math.max(1, craftingTickTime);
 
         ModIntegrationCrafttweaker.recipeModifications.add(new InfusionRecipeAdd(in, out, consumeMultiple, consumptionChance, craftingTickTime));

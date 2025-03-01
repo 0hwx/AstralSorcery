@@ -11,15 +11,15 @@ package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.CropHelper;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirt;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -40,7 +40,7 @@ public class PerkCreationGrowables extends ConstellationPerk {
     public void onPlayerTick(EntityPlayer player, Side side) {
         if(side == Side.SERVER) {
             if(rand.nextInt(chanceToBonemeal) == 0) {
-                BlockPos pos = player.getPosition().add(
+                BlockPos pos = new BlockPos(player).getPosition().add(
                         rand.nextInt(4) - 2,
                         rand.nextInt(4) - 2,
                         rand.nextInt(4) - 2);
@@ -53,14 +53,14 @@ public class PerkCreationGrowables extends ConstellationPerk {
                         addAlignmentCharge(player, 0.4);
                     }
                 } else {
-                    IBlockState at = w.getBlockState(pos);
+                    Block at = w.getBlock(pos.getX(), pos.getY(), pos.getZ());
                     /*if(at.getBlock() instanceof IGrowable) {
                         if(((IGrowable) at.getBlock()).canUseBonemeal(w, rand, pos, at)) {
                             ((IGrowable) at.getBlock()).grow(w, rand, pos, at);
                             pkt = new PktParticleEvent(PktParticleEvent.ParticleEventType.CE_CROP_INTERACT, pos);
                         }
-                    } else*/ if(at.getBlock() instanceof BlockDirt && at.getValue(BlockDirt.VARIANT).equals(BlockDirt.DirtType.DIRT)) {
-                        w.setBlockState(pos, Blocks.GRASS.getDefaultState());
+                    } else*/ if(at instanceof BlockDirt) {// && at.getValue(BlockDirt.VARIANT).equals(BlockDirt.DirtType.DIRT)) {
+                        w.setBlock(pos.getX(), pos.getY(), pos.getZ(), Blocks.grass);
                         pkt = new PktParticleEvent(PktParticleEvent.ParticleEventType.CE_CROP_INTERACT, pos);
                         addAlignmentCharge(player, 0.2);
                     }

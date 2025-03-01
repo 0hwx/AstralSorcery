@@ -11,7 +11,6 @@ package hellfirepvp.astralsorcery.common.crafting;
 import com.google.common.collect.Lists;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.base.Mods;
-import hellfirepvp.astralsorcery.common.integrations.ModIntegrationJEI;
 import hellfirepvp.astralsorcery.common.item.ItemGatedVisibility;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
@@ -23,9 +22,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.UniversalBucket;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
@@ -123,15 +121,17 @@ public final class ItemHandle {
             List<ItemStack> out = new LinkedList<>();
             for (ItemStack oreDictIn : stacks) {
                 if (oreDictIn.getItemDamage() == OreDictionary.WILDCARD_VALUE && !oreDictIn.isItemStackDamageable()) {
-                    oreDictIn.getItem().getSubItems(oreDictIn.getItem(), CreativeTabs.BUILDING_BLOCKS, out);
+                    oreDictIn.getItem().getSubItems(oreDictIn.getItem(), CreativeTabs.tabDecorations, out);
                 } else {
                     out.add(oreDictIn);
                 }
             }
             return out;
-        } else if(fluidTypeAndAmount != null) {
-            return Lists.newArrayList(UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluidTypeAndAmount.getFluid()));
-        } else {
+        }
+//        else if(fluidTypeAndAmount != null) {
+//            return Lists.newArrayList(UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluidTypeAndAmount.getFluid()));
+//        }
+        else {
             return Lists.newArrayList(applicableItems);
         }
     }
@@ -140,9 +140,9 @@ public final class ItemHandle {
         if(oreDictName != null) {
             return oreDictName;
         }
-        if(fluidTypeAndAmount != null) {
-            return UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluidTypeAndAmount.getFluid());
-        }
+//        if(fluidTypeAndAmount != null) {
+//            return UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluidTypeAndAmount.getFluid());
+//        }
         return applicableItems;
     }
 

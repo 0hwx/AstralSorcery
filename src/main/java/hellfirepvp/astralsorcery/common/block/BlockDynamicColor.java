@@ -8,8 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nullable;
@@ -24,6 +23,6 @@ import javax.annotation.Nullable;
 public interface BlockDynamicColor {
 
     //Return -1 for no color multiplication
-    public int getColorMultiplier(IBlockState state, @Nullable IBlockAccess access, @Nullable BlockPos pos, int renderPass);
+    public int getColorMultiplier(@Nullable IBlockAccess access, @Nullable BlockPos pos, int renderPass);
 
 }

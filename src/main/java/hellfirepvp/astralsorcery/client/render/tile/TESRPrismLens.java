@@ -18,10 +18,11 @@ import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.block.network.BlockCollectorCrystal;
 import hellfirepvp.astralsorcery.common.tile.network.TileCrystalPrismLens;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -36,7 +37,7 @@ import java.util.List;
  * Created by HellFirePvP
  * Date: 20.09.2016 / 13:08
  */
-public class TESRPrismLens extends TileEntitySpecialRenderer<TileCrystalPrismLens> {
+public class TESRPrismLens extends TileEntitySpecialRenderer {
 
     private static List<TileCrystalPrismLens> coloredPositions = new LinkedList<>();
 
@@ -46,7 +47,7 @@ public class TESRPrismLens extends TileEntitySpecialRenderer<TileCrystalPrismLen
     public static void renderColoredPrismsLast() {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
-        RenderingUtils.removeStandartTranslationFromTESRMatrix(Minecraft.getMinecraft().getRenderPartialTicks());
+        RenderingUtils.removeStandartTranslationFromTESRMatrix(Minecraft.getMinecraft().timer.renderPartialTicks);
 
         GL11.glEnable(GL11.GL_BLEND);
         Blending.DEFAULT.apply();
@@ -54,9 +55,8 @@ public class TESRPrismLens extends TileEntitySpecialRenderer<TileCrystalPrismLen
         for (TileCrystalPrismLens prism : coloredPositions) {
             Color c = prism.getLensColor().wrappedColor;
             GL11.glPushMatrix();
-            BlockPos pos = prism.getPos();
 
-            GL11.glTranslated(pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5);
+            GL11.glTranslated(prism.xCoord + 0.5, prism.yCoord + 1.5, prism.zCoord + 0.5);
             GL11.glScaled(0.0625, 0.0625, 0.0625);
             GL11.glRotated(180, 1, 0, 0);
 
@@ -74,15 +74,16 @@ public class TESRPrismLens extends TileEntitySpecialRenderer<TileCrystalPrismLen
     }
 
     @Override
-    public void renderTileEntityAt(TileCrystalPrismLens te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileCrystalPrismLens te = (TileCrystalPrismLens) tile;
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
 
         if(te.getLinkedPositions().size() > 0) {
             long sBase = 0x5911539513145924L;
-            sBase ^= (long) te.getPos().getX();
-            sBase ^= (long) te.getPos().getY();
-            sBase ^= (long) te.getPos().getZ();
+            sBase ^= (long) te.xCoord;
+            sBase ^= (long) te.yCoord;
+            sBase ^= (long) te.zCoord;
             RenderingUtils.renderLightRayEffects(x + 0.5, y + 0.6, z + 0.5, BlockCollectorCrystal.CollectorCrystalType.ROCK_CRYSTAL.displayColor, sBase, ClientScheduler.getClientTick(), 9, 50, 25);
         }
 

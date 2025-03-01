@@ -9,7 +9,6 @@
 package hellfirepvp.astralsorcery.common.item.wand;
 
 import hellfirepvp.astralsorcery.client.event.ClientRenderEventHandler;
-import hellfirepvp.astralsorcery.client.util.AirBlockRenderWorld;
 import hellfirepvp.astralsorcery.client.util.Blending;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
@@ -23,33 +22,29 @@ import hellfirepvp.astralsorcery.common.item.ItemHudRender;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.struct.BlockArray;
 import hellfirepvp.astralsorcery.common.util.struct.BlockDiscoverer;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.world.biome.BiomeGenBase;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Collection;
@@ -68,23 +63,23 @@ public class ItemExchangeWand extends ItemBlockStorage implements ItemHandRender
     public ItemExchangeWand() {
         setMaxDamage(0);
         setMaxStackSize(1);
+        setUnlocalizedName("ItemExchangeWand");
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
     }
-
     @Override
-    public float getStrVsBlock(ItemStack stack, IBlockState state) {
+    public float func_150893_a(ItemStack stack, Block block) { //getStrVsBlock
         return 0;
     }
 
     @Override
-    public boolean canHarvestBlock(IBlockState blockIn) {
+    public boolean canHarvestBlock(Block block, ItemStack itemStack) {
         return true;
     }
 
-    @Override
-    public boolean canHarvestBlock(IBlockState state, ItemStack stack) {
-        return true;
-    }
+//    @Override
+//    public boolean canHarvestBlock(Block state, ItemStack stack) {
+//        return true;
+//    }
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -94,9 +89,9 @@ public class ItemExchangeWand extends ItemBlockStorage implements ItemHandRender
 
         int amtFound = 0;
         if(Mods.BOTANIA.isPresent()) {
-            amtFound = ModIntegrationBotania.getItemCount(Minecraft.getMinecraft().player, lastCacheInstance, ItemUtils.createBlockState(blockStackStored));
+            amtFound = ModIntegrationBotania.getItemCount(Minecraft.getMinecraft().thePlayer, lastCacheInstance, ItemUtils.createBlockState(blockStackStored));
         } else {
-            Collection<ItemStack> stacks = ItemUtils.scanInventoryForMatching(new InvWrapper(Minecraft.getMinecraft().player.inventory), blockStackStored, false);
+            Collection<ItemStack> stacks = ItemUtils.scanInventoryForMatching(Minecraft.getMinecraft().thePlayer.inventory, blockStackStored, false);
             for (ItemStack stack : stacks) {
                 amtFound += stack.stackSize;
             }
@@ -115,24 +110,30 @@ public class ItemExchangeWand extends ItemBlockStorage implements ItemHandRender
         ClientRenderEventHandler.texHUDItemFrame.bind();
 
         GL11.glColor4f(1F, 1F, 1F, fadeAlpha * 0.9F);
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(offsetX,         offsetY + height, 10).tex(0, 1).endVertex();
-        vb.pos(offsetX + width, offsetY + height, 10).tex(1, 1).endVertex();
-        vb.pos(offsetX + width, offsetY,          10).tex(1, 0).endVertex();
-        vb.pos(offsetX,         offsetY,          10).tex(0, 0).endVertex();
-        tes.draw();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(offsetX, offsetY + height, 10, 0, 1);
+        tess.addVertexWithUV(offsetX + width, offsetY + height, 10, 1, 1);
+        tess.addVertexWithUV(offsetX + width, offsetY, 10, 1, 0);
+        tess.addVertexWithUV(offsetX, offsetY, 10, 0, 0);
+        tess.draw();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(offsetX,         offsetY + height, 10).tex(0, 1).endVertex();
+//        vb.pos(offsetX + width, offsetY + height, 10).tex(1, 1).endVertex();
+//        vb.pos(offsetX + width, offsetY,          10).tex(1, 0).endVertex();
+//        vb.pos(offsetX,         offsetY,          10).tex(0, 0).endVertex();
+//        tes.draw();
 
         TextureHelper.refreshTextureBindState();
         TextureHelper.setActiveTextureToAtlasSprite();
 
         RenderHelper.enableGUIStandardItemLighting();
-        RenderItem ri = Minecraft.getMinecraft().getRenderItem();
-        ri.renderItemAndEffectIntoGUI(Minecraft.getMinecraft().player, blockStackStored, offsetX + 5, offsetY + 5);
+        RenderItem ri = new RenderItem();
+        Minecraft mc = Minecraft.getMinecraft();
+        ri.renderItemAndEffectIntoGUI(mc.fontRenderer,mc.renderEngine, blockStackStored, offsetX + 5, offsetY + 5);
         RenderHelper.disableStandardItemLighting();
-        GlStateManager.enableAlpha(); //Because Mc item rendering..
+        GL11.glEnable(GL11.GL_ALPHA_TEST); //Because Mc item rendering..
 
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glPushMatrix();
@@ -141,14 +142,14 @@ public class ItemExchangeWand extends ItemBlockStorage implements ItemHandRender
         if(amtFound == -1) {
             amtString = "∞";
         }
-        GL11.glTranslated(-Minecraft.getMinecraft().fontRendererObj.getStringWidth(amtString) / 3, 0, 0);
+        GL11.glTranslated(-Minecraft.getMinecraft().fontRenderer.getStringWidth(amtString) / 3, 0, 0);
         GL11.glScaled(0.7, 0.7, 0.7);
         if(amtString.length() > 3) {
             GL11.glScaled(0.9, 0.9, 0.9);
         }
         int c = 0x00DDDDDD;
-        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(amtString, 0, 0, c);
-        GlStateManager.color(1F, 1F, 1F, 1F);
+        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(amtString, 0, 0, c);
+        GL11.glColor4f(1F, 1F, 1F, 1F);
         TextureHelper.refreshTextureBindState();
 
         GL11.glPopMatrix();
@@ -160,38 +161,40 @@ public class ItemExchangeWand extends ItemBlockStorage implements ItemHandRender
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void onRenderWhileInHand(ItemStack stack, EnumHand hand, float pTicks) {
-        IBlockState stored = getStoredState(stack);
+    public void onRenderWhileInHand(ItemStack stack, float pTicks) {
+        Block stored = getStoredState(stack,stack.getItemDamage());
         ItemStack matchStack = getStoredStateAsStack(stack);
-        if(stored == null || stored.getBlock().equals(Blocks.AIR) || matchStack == null) return;
+        if(stored == null || stored.equals(Blocks.air) || matchStack == null) return;
 
-        EntityPlayer pl = Minecraft.getMinecraft().player;
+        EntityPlayer pl = Minecraft.getMinecraft().thePlayer;
         PlayerControllerMP ctrl = Minecraft.getMinecraft().playerController;
         if(ctrl == null || pl == null) return;
-        RayTraceResult rtr = getLookBlock(pl, false, true, ctrl.getBlockReachDistance());
+        MovingObjectPosition rtr = getLookBlock(pl, false, true, ctrl.getBlockReachDistance());
         if(rtr == null) return;
 
-        IBlockAccess airWorld = new AirBlockRenderWorld(Biomes.PLAINS, Minecraft.getMinecraft().world.getWorldType());
-        BlockPos origin = rtr.getBlockPos();
-        IBlockState atOrigin = Minecraft.getMinecraft().world.getBlockState(origin);
-        if(stored.getBlock().equals(atOrigin.getBlock()) && stored.getBlock().getMetaFromState(stored) == atOrigin.getBlock().getMetaFromState(atOrigin)) {
+//        IBlockAccess airWorld = new AirBlockRenderWorld(BiomeGenBase.plains, Minecraft.getMinecraft().theWorld.getWorldInfo().getTerrainType());
+        BlockPos origin = new BlockPos(rtr.blockX, rtr.blockY, rtr.blockZ);
+        Block atOrigin = Minecraft.getMinecraft().theWorld.getBlock(origin.getX(), origin.getY(), origin.getZ());
+        int storedMeta = stored.damageDropped(stack.getItemDamage());
+        int atOriginMeta = atOrigin.damageDropped(stack.getItemDamage());
+        if(stored.equals(atOrigin) && storedMeta == atOriginMeta) {
             return;
         }
         int amt = 0;
-        if (pl.isCreative()) {
+        if (pl.capabilities.isCreativeMode) {
             amt = -1;
         } else {
             if(Mods.BOTANIA.isPresent()) {
-                amt = ModIntegrationBotania.getItemCount(Minecraft.getMinecraft().player, stack, stored);
+                amt = ModIntegrationBotania.getItemCount(Minecraft.getMinecraft().thePlayer, stack, stored);
             } else {
                 for (ItemStack st : ItemUtils.findItemsInPlayerInventory(pl, matchStack, false)) {
                     amt += st.stackSize;
                 }
             }
         }
-        BlockArray found = BlockDiscoverer.discoverBlocksWithSameStateAround(Minecraft.getMinecraft().world, origin, true, searchDepth, amt, false);
+        BlockArray found = BlockDiscoverer.discoverBlocksWithSameStateAround(Minecraft.getMinecraft().theWorld, origin, true, searchDepth, amt, false);
         if(found.isEmpty()) return;
-        if(atOrigin.getBlockHardness(Minecraft.getMinecraft().world, origin) == -1) {
+        if(atOrigin.getBlockHardness(Minecraft.getMinecraft().theWorld, origin.getX(), origin.getY(), origin.getZ()) == -1) {
             return;
         }
 
@@ -204,14 +207,15 @@ public class ItemExchangeWand extends ItemBlockStorage implements ItemHandRender
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         RenderingUtils.removeStandartTranslationFromTESRMatrix(pTicks);
 
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+//        VertexBuffer vb = tes.getBuffer();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
         for (BlockPos pos : found.getPattern().keySet()) {
-            Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(stored, pos, airWorld, vb);
+//            RenderBlocks.getInstance().renderBlock(stored, pos, airWorld, vb);
         }
-        vb.sortVertexData((float) TileEntityRendererDispatcher.staticPlayerX, (float) TileEntityRendererDispatcher.staticPlayerY, (float) TileEntityRendererDispatcher.staticPlayerZ);
-        tes.draw();
+        //tess.getVertexState((float) TileEntityRendererDispatcher.staticPlayerX, (float) TileEntityRendererDispatcher.staticPlayerY, (float) TileEntityRendererDispatcher.staticPlayerZ);
+        tess.draw();
 
         Blending.DEFAULT.apply();
         if(!blend) {
@@ -224,28 +228,30 @@ public class ItemExchangeWand extends ItemBlockStorage implements ItemHandRender
     }
 
     @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World world, BlockPos origin, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if(world.isRemote) return EnumActionResult.SUCCESS;
-
+    public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+        if(world.isRemote) return false;
+        BlockPos origin = new BlockPos(x, y, z);
         if(playerIn.isSneaking()) {
             tryStoreBlock(stack, world, origin);
-            return EnumActionResult.SUCCESS;
+            return false;
         }
 
-        IBlockState stored = getStoredState(stack);
+        Block stored = getStoredState(stack,stack.getItemDamage());
+        int storedMeta = stored.damageDropped(stack.getItemDamage());
         ItemStack consumeStack = getStoredStateAsStack(stack);
-        if(stored == null || stored.getBlock().equals(Blocks.AIR) || consumeStack == null) return EnumActionResult.SUCCESS;
-        IBlockState atOrigin = world.getBlockState(origin);
-        if(stored.getBlock().equals(atOrigin.getBlock()) && stored.getBlock().getMetaFromState(stored) == atOrigin.getBlock().getMetaFromState(atOrigin)) {
-            return EnumActionResult.SUCCESS;
+        if(stored == null || stored.equals(Blocks.air) || consumeStack == null) return false;
+        Block atOrigin = world.getBlock(origin.getX(), origin.getY(), origin.getZ());
+        int atOriginMeta = atOrigin.damageDropped(stack.getItemDamage());
+        if(stored.equals(atOrigin) && storedMeta == atOriginMeta) {
+            return false;
         }
-        IBlockState atState = world.getBlockState(origin);
-        if(atState.getBlockHardness(world, origin) == -1) {
-            return EnumActionResult.SUCCESS;
+        Block atState = world.getBlock(origin.getX(), origin.getY(), origin.getZ());
+        if(atState.getBlockHardness(world, origin.getX(), origin.getY(), origin.getZ()) == -1) {
+            return false;
         }
 
         int amt = 0;
-        if (playerIn.isCreative()) {
+        if (playerIn.capabilities.isCreativeMode) {
             amt = -1;
         } else {
             if(Mods.BOTANIA.isPresent()) {
@@ -257,26 +263,32 @@ public class ItemExchangeWand extends ItemBlockStorage implements ItemHandRender
             }
         }
         BlockArray found = BlockDiscoverer.discoverBlocksWithSameStateAround(world, origin, true, searchDepth, amt, false);
-        if (found.isEmpty()) return EnumActionResult.SUCCESS;
+        if (found.isEmpty()) return false;
 
         for (BlockPos placePos : found.getPattern().keySet()) {
             if(drainTempCharge(playerIn, Config.exchangeWandUseCost, true)
-                    && (playerIn.isCreative() || ItemUtils.consumeFromPlayerInventory(playerIn, stack, ItemUtils.copyStackWithSize(consumeStack, 1), true))) {
-                if(((EntityPlayerMP) playerIn).interactionManager.tryHarvestBlock(placePos)) {
+                    && (playerIn.capabilities.isCreativeMode || ItemUtils.consumeFromPlayerInventory(playerIn, stack, ItemUtils.copyStackWithSize(consumeStack, 1), true))) {
+                if(((EntityPlayerMP) playerIn).theItemInWorldManager.tryHarvestBlock(placePos.getX(), placePos.getY(), placePos.getZ())) {
                     drainTempCharge(playerIn, Config.exchangeWandUseCost, false);
                     gainPermCharge(playerIn, Config.exchangeWandUseCost / 4);
-                    if(!playerIn.isCreative()) {
+                    if(!playerIn.capabilities.isCreativeMode) {
                         ItemUtils.consumeFromPlayerInventory(playerIn, stack, ItemUtils.copyStackWithSize(consumeStack, 1), false);
                     }
-                    world.setBlockState(placePos, stored);
+                    world.setBlock(placePos.getX(), placePos.getY(), placePos.getZ(), stored);
                     PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.ARCHITECT_PLACE, placePos);
-                    ev.setAdditionalData(Block.getStateId(atOrigin));
+                    ev.setAdditionalData(Block.getIdFromBlock(atOrigin));
                     PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(world, placePos, 40));
                 }
             }
         }
 
-        return EnumActionResult.SUCCESS;
+        return false;
     }
 
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerIcons(IIconRegister register)
+    {
+        this.itemIcon = register.registerIcon("astralsorcery:exchangeWand");
+    }
 }

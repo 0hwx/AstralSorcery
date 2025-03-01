@@ -11,15 +11,14 @@ package hellfirepvp.astralsorcery.common.world.attributes;
 import hellfirepvp.astralsorcery.common.block.BlockCustomSandOre;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.world.WorldGenAttribute;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Random;
 
@@ -43,18 +42,18 @@ public class GenAttributeAquamarine extends WorldGenAttribute {
             int rY = 48 + random.nextInt(19);
             int rZ = (chunkZ  * 16) + random.nextInt(16) + 8;
             BlockPos pos = new BlockPos(rX, rY, rZ);
-            IBlockState stateAt = world.getBlockState(pos);
-            if(!stateAt.getBlock().equals(Blocks.SAND)) {
+            Block stateAt = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+            if(!stateAt.equals(Blocks.sand)) {
                 continue;
             }
 
             boolean foundWater = false;
             for (int yy = 0; yy < 2; yy++) {
-                BlockPos check = pos.offset(EnumFacing.UP, yy);
-                IBlockState bs = world.getBlockState(check);
-                Block block = bs.getBlock();
-                if((block instanceof BlockLiquid && bs.getMaterial() == Material.WATER) ||
-                        block.equals(Blocks.ICE) || block.equals(Blocks.PACKED_ICE) || block.equals(Blocks.FROSTED_ICE)) {
+                BlockPos check = pos.offset(ForgeDirection.UP, yy);
+                Block bs = world.getBlock(check.getX(), check.getY(), check.getZ());
+                Block block = bs;
+                if((block instanceof BlockLiquid && bs.getMaterial() == Material.water) ||
+                        block.equals(Blocks.ice) || block.equals(Blocks.packed_ice)){// || block.equals(Blocks.FROSTED_ICE)) {
                     foundWater = true;
                     break;
                 }
@@ -62,8 +61,8 @@ public class GenAttributeAquamarine extends WorldGenAttribute {
             if(!foundWater)
                 continue;
 
-            world.setBlockState(pos, BlocksAS.customSandOre.getDefaultState()
-                    .withProperty(BlockCustomSandOre.ORE_TYPE, BlockCustomSandOre.OreType.AQUAMARINE));
+            world.setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.customSandOre, BlockCustomSandOre.OreType.AQUAMARINE.getMeta(), 3);
+                   // .withProperty(BlockCustomSandOre.ORE_TYPE, BlockCustomSandOre.OreType.AQUAMARINE));
         }
     }
 }

@@ -2,15 +2,20 @@ package hellfirepvp.astralsorcery.client.util;
 
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ScreenShotHelper;
-import net.minecraft.util.math.BlockPos;
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -18,6 +23,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +43,11 @@ public class ClientScreenshotCache {
 
     private static String addrContext = null;
     private static Map<Integer, List<Tuple<BlockPos, ResourceLocation>>> clientScreenshots = new HashMap<>();
+
+    /** A buffer to hold pixel values returned by OpenGL. */
+    private static IntBuffer pixelBuffer;
+    /** The built-up array that contains all the pixel values returned by OpenGL. */
+    private static int[] pixelValues;
 
     @Nullable
     public static ResourceLocation tryQueryTextureFor(int dim, BlockPos pos) {
@@ -73,7 +85,7 @@ public class ClientScreenshotCache {
 
                 AstralSorcery.proxy.scheduleClientside(() -> {
                     try {
-                        BufferedImage bufferedimage = ScreenShotHelper.createScreenshot(
+                        BufferedImage bufferedimage = createScreenshot(
                                 Minecraft.getMinecraft().displayWidth,
                                 Minecraft.getMinecraft().displayHeight,
                                 Minecraft.getMinecraft().getFramebuffer());
@@ -202,7 +214,7 @@ public class ClientScreenshotCache {
         public void loadTexture(IResourceManager resourceManager) throws IOException {
             this.deleteGlTexture();
 
-            BufferedImage image = TextureUtil.readBufferedImage(new FileInputStream(f));
+            BufferedImage image = readBufferedImage(new FileInputStream(f));
             int pxWidth = image.getWidth();
             int pxHeight = image.getHeight();
             int nX = pxWidth / 5;
@@ -210,6 +222,58 @@ public class ClientScreenshotCache {
             TextureUtil.uploadTextureImageAllocate(getGlTextureId(), image.getSubimage(nX, nH, pxWidth - nX, pxHeight - nH), true, false);
         }
 
+    }
+
+    public static BufferedImage readBufferedImage(InputStream imageStream) throws IOException
+    {
+        BufferedImage bufferedimage;
+
+        try
+        {
+            bufferedimage = ImageIO.read(imageStream);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(imageStream);
+        }
+
+        return bufferedimage;
+    }
+    public static BufferedImage createScreenshot(int width, int height, Framebuffer framebufferIn)
+    {
+        if (OpenGlHelper.isFramebufferEnabled())
+        {
+            width = framebufferIn.framebufferTextureWidth;
+            height = framebufferIn.framebufferTextureHeight;
+        }
+
+        int i = width * height;
+
+        if (pixelBuffer == null || pixelBuffer.capacity() < i)
+        {
+            pixelBuffer = BufferUtils.createIntBuffer(i);
+            pixelValues = new int[i];
+        }
+
+        GL11.glPixelStorei(3333, 1);
+        GL11.glPixelStorei(3317, 1);
+        pixelBuffer.clear();
+
+        if (OpenGlHelper.isFramebufferEnabled())
+        {
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebufferIn.framebufferTexture);
+            GL11.glGetTexImage(3553, 0, 32993, 33639, pixelBuffer);
+        }
+        else
+        {
+            GL11.glReadPixels(0, 0, width, height, 32993, 33639, pixelBuffer);
+        }
+
+        pixelBuffer.get(pixelValues);
+        TextureUtil.func_147953_a(pixelValues, width, height);
+        BufferedImage bufferedimage = new BufferedImage(width, height, 1);
+        bufferedimage.setRGB(0, 0, width, height, pixelValues, 0, width);
+        return bufferedimage;
     }
 
 }

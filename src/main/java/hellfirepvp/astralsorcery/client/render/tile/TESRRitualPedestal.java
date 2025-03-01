@@ -23,6 +23,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -34,10 +35,11 @@ import java.awt.*;
  * Created by HellFirePvP
  * Date: 28.09.2016 / 20:07
  */
-public class TESRRitualPedestal extends TileEntitySpecialRenderer<TileRitualPedestal> {
+public class TESRRitualPedestal extends TileEntitySpecialRenderer {
 
     @Override
-    public void renderTileEntityAt(TileRitualPedestal te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileRitualPedestal te = (TileRitualPedestal) tile;
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         renderCrystalStack(te, x, y, z);
 
@@ -49,7 +51,7 @@ public class TESRRitualPedestal extends TileEntitySpecialRenderer<TileRitualPede
 
             IConstellation c = te.getDisplayConstellation();
             if(c != null) {
-                float alphaDaytime = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(te.getWorld());
+                float alphaDaytime = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(te.getWorldObj());
                 alphaDaytime *= 0.8F;
 
                 int max = 5000;
@@ -79,7 +81,7 @@ public class TESRRitualPedestal extends TileEntitySpecialRenderer<TileRitualPede
         float percRunning = ((float) tick / (float) TileRitualPedestal.MAX_EFFECT_TICK);
         if(percRunning > 1E-4) {
             TextureSpritePlane sprite = te.getHaloEffectSprite();
-            float alphaMul = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().world);
+            float alphaMul = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().theWorld);
             sprite.setAlphaMultiplier(percRunning * alphaMul);
         }
     }
@@ -94,9 +96,9 @@ public class TESRRitualPedestal extends TileEntitySpecialRenderer<TileRitualPede
                 boolean celestial = it instanceof ItemTunedCelestialCrystal;
                 Color c = celestial ? BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL.displayColor : BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL.displayColor;
                 long sBase = 1553015L;
-                sBase ^= (long) te.getPos().getX();
-                sBase ^= (long) te.getPos().getY();
-                sBase ^= (long) te.getPos().getZ();
+                sBase ^= (long) te.xCoord;
+                sBase ^= (long) te.yCoord;
+                sBase ^= (long) te.zCoord;
                 RenderingUtils.renderLightRayEffects(x + 0.5, y + 1.3, z + 0.5, c, sBase, ClientScheduler.getClientTick(), 20, 50, 25);
 
                 GL11.glTranslated(x + 0.5, y + 1, z + 0.5);

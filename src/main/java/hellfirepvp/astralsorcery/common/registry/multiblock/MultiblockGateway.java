@@ -4,7 +4,7 @@ import hellfirepvp.astralsorcery.common.block.BlockBlackMarble;
 import hellfirepvp.astralsorcery.common.block.BlockMarble;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -21,14 +21,14 @@ public class MultiblockGateway extends PatternBlockArray {
 
     private void load() {
 
-        IBlockState mar = BlockMarble.MarbleBlockType.ARCH.asBlock();
-        IBlockState mru = BlockMarble.MarbleBlockType.RUNED.asBlock();
-        IBlockState mgr = BlockMarble.MarbleBlockType.ENGRAVED.asBlock();
-        IBlockState sooty = BlockBlackMarble.BlackMarbleBlockType.RAW.asBlock();
+        Block mar = BlockMarble.MarbleBlockType.ARCH.asBlock();
+        Block mru = BlockMarble.MarbleBlockType.RUNED.asBlock();
+        Block mgr = BlockMarble.MarbleBlockType.ENGRAVED.asBlock();
+        Block sooty = BlockBlackMarble.BlackMarbleBlockType.RAW.asBlock();
 
         addBlockCube(mar, -3, -1, -3, 3, -1, 3);
         addBlockCube(sooty, -2, -1, -2, 2, -1, 2);
-        addBlock(0, 0, 0, BlocksAS.celestialGateway.getDefaultState());
+        addBlock(0, 0, 0, BlocksAS.celestialGateway);
 
         addBlock(-3, -1, -3, mru);
         addBlock( 3, -1, -3, mru);

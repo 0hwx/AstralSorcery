@@ -8,12 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.event;
 
+import cpw.mods.fml.common.eventhandler.Event;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.constellation.IConstellation;
 import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
 import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffect;
 import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffectRegistry;
-import net.minecraftforge.fml.common.eventhandler.Event;
+
 
 import java.util.function.Function;
 

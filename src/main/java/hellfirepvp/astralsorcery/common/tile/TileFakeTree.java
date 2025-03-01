@@ -14,22 +14,20 @@ import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktDualParticleEvent;
 import hellfirepvp.astralsorcery.common.tile.base.TileEntityTick;
 import hellfirepvp.astralsorcery.common.util.BlockDropCaptureAssist;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -46,18 +44,19 @@ import java.util.Map;
 public class TileFakeTree extends TileEntityTick {
 
     private TickAction ta;
-    private IBlockState fakedState;
+    private Block fakedState;
+    private int metadata;
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
-        if (!world.isRemote) {
+        if (!worldObj.isRemote) {
             if (ticksExisted > 5 && ticksExisted % 4 == 0) {
                 if (ta != null) {
                     ta.update(this);
                 }
-                if (fakedState == null || fakedState.getBlock().equals(Blocks.AIR)) {
+                if (fakedState == null || fakedState.equals(Blocks.air)) {
                     cleanUp();
                 }
             }
@@ -66,28 +65,28 @@ public class TileFakeTree extends TileEntityTick {
 
     private void cleanUp() {
         if(fakedState != null) {
-            world.setBlockState(getPos(), fakedState);
+            worldObj.setBlock(xCoord, yCoord, zCoord, fakedState);
         } else {
-            world.setBlockToAir(getPos());
+            worldObj.setBlockToAir(xCoord, yCoord, zCoord);
         }
     }
 
     @Override
     protected void onFirstTick() {}
 
-    public void setupTile(BlockPos treeBeaconRef, IBlockState fakedState) {
+    public void setupTile(BlockPos treeBeaconRef, Block fakedState) {
         this.ta = new TreeBeaconRef(treeBeaconRef);
         this.fakedState = fakedState;
         markForUpdate();
     }
 
-    public void setupTile(EntityPlayer breakingPlayer, ItemStack usedAxe, IBlockState fakedState) {
+    public void setupTile(EntityPlayer breakingPlayer, ItemStack usedAxe, Block fakedState) {
         this.ta = new PlayerHarvestRef(breakingPlayer, usedAxe);
         this.fakedState = fakedState;
         markForUpdate();
     }
 
-    public IBlockState getFakedState() {
+    public Block getFakedState() {
         return fakedState;
     }
 
@@ -109,10 +108,11 @@ public class TileFakeTree extends TileEntityTick {
         }
 
         if(compound.hasKey("Block") && compound.hasKey("Data")) {
-            int data = compound.getInteger("Data");
+            metadata = compound.getInteger("Data");
             Block b = Block.getBlockFromName(compound.getString("Block"));
             if(b != null) {
-                fakedState = b.getStateFromMeta(data);
+                metadata = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
+//                fakedState = b.getStateFromMeta(data);
             }
         }
     }
@@ -130,8 +130,8 @@ public class TileFakeTree extends TileEntityTick {
             ta.write(compound);
         }
         if(fakedState != null) {
-            compound.setString("Block", Block.REGISTRY.getNameForObject(fakedState.getBlock()).toString());
-            compound.setInteger("Data", fakedState.getBlock().getMetaFromState(fakedState));
+            compound.setString("Block", Block.blockRegistry.getNameForObject(fakedState).toString());
+            compound.setInteger("Data", metadata);
         }
     }
 
@@ -156,7 +156,7 @@ public class TileFakeTree extends TileEntityTick {
 
         @Override
         public void update(TileFakeTree tft) {
-            tft.world.setBlockToAir(tft.getPos());
+            tft.worldObj.setBlockToAir(tft.xCoord, tft.yCoord, tft.zCoord);
         }
 
         @Override
@@ -176,11 +176,11 @@ public class TileFakeTree extends TileEntityTick {
             this.player = player;
             if (usedAxe != null) {
                 this.usedTool = usedAxe.copy();
-                Map<Enchantment, Integer> levels = EnchantmentHelper.getEnchantments(this.usedTool);
-                if(levels.containsKey(Enchantments.FORTUNE)) {
-                    levels.put(Enchantments.FORTUNE, levels.get(Enchantments.FORTUNE) + 2);
+                Map<Integer, Integer> levels = EnchantmentHelper.getEnchantments(this.usedTool);
+                if(levels.containsKey(Enchantment.fortune.effectId)) {
+                    levels.put(Enchantment.fortune.effectId, levels.get(Enchantment.fortune.effectId) + 2);
                 } else {
-                    levels.put(Enchantments.FORTUNE, 2);
+                    levels.put(Enchantment.fortune.effectId, 2);
                 }
                 EnchantmentHelper.setEnchantments(levels, this.usedTool);
             } else {
@@ -211,16 +211,18 @@ public class TileFakeTree extends TileEntityTick {
                     } else {
                         ev.setAdditionalData(Color.GREEN.getRGB());
                     }
-                    PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(tft.world, tft.getPos(), 24));
+                    BlockPos pos = new BlockPos(tft.xCoord, tft.yCoord, tft.zCoord);
+                    PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(tft.worldObj, pos, 24));
                 }
-                tft.getWorld().setBlockToAir(tft.getPos());
+                tft.worldObj.setBlockToAir(tft.xCoord, tft.yCoord, tft.zCoord);
             //}
         }
 
         private void harvestAndAppend(TileFakeTree tft, List<ItemStack> out) {
             BlockDropCaptureAssist.startCapturing(false);
-            tft.getFakedState().getBlock().harvestBlock(player.getEntityWorld(), player, tft.getPos(), tft.getFakedState(), null, usedTool);
-            out.addAll(BlockDropCaptureAssist.getCapturedStacksAndStop());
+            tft.getFakedState().harvestBlock(player.getEntityWorld(), player, tft.xCoord, tft.yCoord, tft.zCoord, tft.blockMetadata);
+          //  tft.getFakedState().getBlock().harvestBlock(player.getEntityWorld(), player, tft.getPos(), tft.getFakedState(),
+                out.addAll(BlockDropCaptureAssist.getCapturedStacksAndStop());
         }
 
         @Override
@@ -241,8 +243,8 @@ public class TileFakeTree extends TileEntityTick {
 
         @Override
         public void update(TileFakeTree tft) {
-            if(MiscUtils.isChunkLoaded(tft.world, new ChunkPos(ref))) {
-                TileTreeBeacon beacon = MiscUtils.getTileAt(tft.world, ref, TileTreeBeacon.class, true);
+            if(MiscUtils.isChunkLoaded(tft.worldObj, new ChunkCoordIntPair(ref.chunkX(), ref.chunkZ()))) {
+                TileTreeBeacon beacon = MiscUtils.getTileAt(tft.worldObj, ref, TileTreeBeacon.class, true);
                 if(beacon == null || beacon.isInvalid()) {
                     tft.cleanUp();
                 }

@@ -15,9 +15,9 @@ import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
@@ -131,26 +131,26 @@ public class CrystalProperties {
             if (extended) {
                 boolean missing = false;
                 if(EnumGatedKnowledge.CRYSTAL_SIZE.canSee(tier)) {
-                    tooltip.add(TextFormatting.GRAY + I18n.format("crystal.size") + ": " + (prop.getSize() == maxSize ? TextFormatting.GOLD : TextFormatting.BLUE) + prop.getSize());
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.size") + ": " + (prop.getSize() == maxSize ? ChatFormatting.GOLD : ChatFormatting.BLUE) + prop.getSize());
                 } else {
                     missing = true;
                 }
                 if(EnumGatedKnowledge.CRYSTAL_PURITY.canSee(tier)) {
-                    tooltip.add(TextFormatting.GRAY + I18n.format("crystal.purity") + ": " + (prop.getPurity() == 100 ? TextFormatting.GOLD : TextFormatting.BLUE) + prop.getPurity() + "%");
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.purity") + ": " + (prop.getPurity() == 100 ? ChatFormatting.GOLD : ChatFormatting.BLUE) + prop.getPurity() + "%");
                 } else {
                     missing = true;
                 }
                 if(EnumGatedKnowledge.CRYSTAL_COLLECT.canSee(tier)) {
-                    tooltip.add(TextFormatting.GRAY + I18n.format("crystal.collectivity") + ": " + (prop.getCollectiveCapability() == 100 ? TextFormatting.GOLD : TextFormatting.BLUE) + prop.getCollectiveCapability() + "%");
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.collectivity") + ": " + (prop.getCollectiveCapability() == 100 ? ChatFormatting.GOLD : ChatFormatting.BLUE) + prop.getCollectiveCapability() + "%");
                 } else {
                     missing = true;
                 }
                 if(missing) {
-                    tooltip.add(TextFormatting.GRAY + I18n.format("progress.missing.knowledge"));
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
                 }
                 return Optional.of(missing);
             } else {
-                tooltip.add(TextFormatting.DARK_GRAY + TextFormatting.ITALIC.toString() + I18n.format("misc.moreInformation"));
+                tooltip.add(ChatFormatting.DARK_GRAY + ChatFormatting.ITALIC.toString() + I18n.format("misc.moreInformation"));
                 return Optional.empty();
             }
         }

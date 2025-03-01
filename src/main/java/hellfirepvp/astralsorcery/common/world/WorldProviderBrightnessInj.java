@@ -13,20 +13,16 @@ import hellfirepvp.astralsorcery.common.constellation.distribution.WorldSkyHandl
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.DimensionType;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeProvider;
-import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.client.IRenderHandler;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -51,20 +47,20 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return ConstellationSkyHandler.getInstance().getWorldHandler(parentWorld);
     }
 
-    @Override
-    public DimensionType getDimensionType() {
-        return parentOvrProvider.getDimensionType();
-    }
+//    @Override
+//    public DimensionType getDimensionType() {
+//        return parentOvrProvider.getDimensionType();
+//    }
 
-    @Override
-    public IChunkGenerator createChunkGenerator() {
-        return parentOvrProvider.createChunkGenerator();
-    }
+//    @Override
+//    public IChunkProvider createChunkGenerator() {
+//        return parentOvrProvider.createChunkGenerator();
+//    }
 
-    @Override
-    public WorldBorder createWorldBorder() {
-        return parentOvrProvider.createWorldBorder();
-    }
+//    @Override
+//    public WorldBorder createWorldBorder() {
+//        return parentOvrProvider.createWorldBorder();
+//    }
 
     @Override
     public boolean canCoordinateBeSpawn(int x, int z) {
@@ -97,35 +93,30 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.canDoLightning(chunk);
     }
 
-    @Override
-    public Biome getBiomeForCoords(BlockPos pos) {
-        return parentOvrProvider.getBiomeForCoords(pos);
+    public BiomeGenBase getBiomeGenForCoords(int x, int z)
+    {
+        return parentWorld.getBiomeGenForCoordsBody(x, z);
     }
 
     @Override
-    public BiomeProvider getBiomeProvider() {
-        return parentOvrProvider.getBiomeProvider();
-    }
-
-    @Override
-    public BlockPos getRandomizedSpawnPoint() {
+    public ChunkCoordinates getRandomizedSpawnPoint() {
         return parentOvrProvider.getRandomizedSpawnPoint();
     }
 
-    @Override
-    public BlockPos getSpawnCoordinate() {
-        return parentOvrProvider.getSpawnCoordinate();
-    }
+//    @Override
+//    public BlockPos getSpawnCoordinate() {
+//        return parentOvrProvider.getSpawnCoordinate();
+//    }
 
     @Override
-    public BlockPos getSpawnPoint() {
+    public ChunkCoordinates getSpawnPoint() {
         return parentOvrProvider.getSpawnPoint();
     }
 
-    @Override
-    public boolean getHasNoSky() {
-        return parentOvrProvider.getHasNoSky();
-    }
+//    @Override
+//    public boolean getHasNoSky() {
+//        return parentOvrProvider.getHasNoSky();
+//    }
 
     @Override
     public double getHorizon() {
@@ -189,10 +180,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.getStarBrightness(par1);
     }
 
-    @Override
-    public float[] getLightBrightnessTable() {
-        return parentOvrProvider.getLightBrightnessTable();
-    }
+//    @Override
+//    public float[] getLightBrightnessTable() {
+//        return parentOvrProvider.getLightBrightnessTable();
+//    }
 
     @Override
     public int getActualHeight() {
@@ -204,10 +195,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.getAverageGroundLevel();
     }
 
-    @Override
-    public int getDimension() {
-        return parentOvrProvider.getDimension();
-    }
+//    @Override
+//    public int getDimension() {
+//        return parentOvrProvider.getDimension();
+//    }
 
     @Override
     public int getHeight() {
@@ -264,29 +255,29 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.getWelcomeMessage();
     }
 
-    @Override
-    public Vec3d getCloudColor(float partialTicks) {
-        return parentOvrProvider.getCloudColor(partialTicks);
-    }
+//    @Override
+//    public Vec3d getCloudColor(float partialTicks) {
+//        return parentOvrProvider.getCloudColor(partialTicks);
+//    }
 
     @Override
-    public Vec3d getFogColor(float p_76562_1_, float p_76562_2_) {
+    public Vec3 getFogColor(float p_76562_1_, float p_76562_2_) {
         return parentOvrProvider.getFogColor(p_76562_1_, p_76562_2_);
     }
 
     @Override
-    public Vec3d getSkyColor(Entity cameraEntity, float partialTicks) {
+    public Vec3 getSkyColor(Entity cameraEntity, float partialTicks) {
         return parentOvrProvider.getSkyColor(cameraEntity, partialTicks);
     }
 
-    @Override
-    public boolean canDropChunk(int x, int z) {
-        return parentOvrProvider.canDropChunk(x, z);
-    }
+//    @Override
+//    public boolean canDropChunk(int x, int z) {
+//        return parentOvrProvider.canDropChunk(x, z);
+//    }
 
     @Override
-    public boolean canBlockFreeze(BlockPos pos, boolean byWater) {
-        return parentOvrProvider.canBlockFreeze(pos, byWater);
+    public boolean canBlockFreeze(int x, int y, int z, boolean byWater) {
+        return parentOvrProvider.canBlockFreeze(x, y, z, byWater);
     }
 
     @Override
@@ -295,8 +286,8 @@ public class WorldProviderBrightnessInj extends WorldProvider {
     }
 
     @Override
-    public boolean canMineBlock(EntityPlayer player, BlockPos pos) {
-        return parentOvrProvider.canMineBlock(player, pos);
+    public boolean canMineBlock(EntityPlayer player, int x, int y, int z) {
+        return parentOvrProvider.canMineBlock(player, x, y, z);
     }
 
     @Override
@@ -305,8 +296,8 @@ public class WorldProviderBrightnessInj extends WorldProvider {
     }
 
     @Override
-    public boolean canSnowAt(BlockPos pos, boolean checkLight) {
-        return parentOvrProvider.canSnowAt(pos, checkLight);
+    public boolean canSnowAt(int x, int y, int z, boolean checkLight) {
+        return parentOvrProvider.canSnowAt(x, y, z, checkLight);
     }
 
     @Override
@@ -314,10 +305,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.isSkyColored();
     }
 
-    @Override
-    public ICapabilityProvider initCapabilities() {
-        return parentOvrProvider.initCapabilities();
-    }
+//    @Override
+//    public ICapabilityProvider initCapabilities() {
+//        return parentOvrProvider.initCapabilities();
+//    }
 
     @Override
     public void setCloudRenderer(IRenderHandler renderer) {
@@ -329,10 +320,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         parentOvrProvider.resetRainAndThunder();
     }
 
-    @Override
-    public void onPlayerRemoved(EntityPlayerMP player) {
-        parentOvrProvider.onPlayerRemoved(player);
-    }
+//    @Override
+//    public void onPlayerRemoved(EntityPlayerMP player) {
+//        parentOvrProvider.onPlayerRemoved(player);
+//    }
 
     @Override
     public void setSkyRenderer(IRenderHandler skyRenderer) {
@@ -344,10 +335,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         parentOvrProvider.setWeatherRenderer(renderer);
     }
 
-    @Override
-    public boolean doesWaterVaporize() {
-        return parentOvrProvider.doesWaterVaporize();
-    }
+//    @Override
+//    public boolean doesWaterVaporize() {
+//        return parentOvrProvider.doesWaterVaporize();
+//    }
 
     @Override
     public boolean isDaytime() {
@@ -366,6 +357,11 @@ public class WorldProviderBrightnessInj extends WorldProvider {
     }
 
     @Override
+    public String getDimensionName() {
+        return "";
+    }
+
+    @Override
     public void setDimension(int dim) {
         parentOvrProvider.setDimension(dim);
     }
@@ -376,28 +372,28 @@ public class WorldProviderBrightnessInj extends WorldProvider {
     }
 
     @Override
-    public boolean isBlockHighHumidity(BlockPos pos) {
-        return parentOvrProvider.isBlockHighHumidity(pos);
+    public boolean isBlockHighHumidity(int x, int y, int z) {
+        return parentOvrProvider.isBlockHighHumidity(x, y, z);
     }
 
-    @Override
-    public void onWorldUpdateEntities() {
-        parentOvrProvider.onWorldUpdateEntities();
-    }
+//    @Override
+//    public void onWorldUpdateEntities() {
+//        parentOvrProvider.onWorldUpdateEntities();
+//    }
+//
+//    @Override
+//    public void onWorldSave() {
+//        parentOvrProvider.onWorldSave();
+//    }
+//
+//    @Override
+//    public void onPlayerAdded(EntityPlayerMP player) {
+//        parentOvrProvider.onPlayerAdded(player);
+//    }
 
     @Override
-    public void onWorldSave() {
-        parentOvrProvider.onWorldSave();
-    }
-
-    @Override
-    public void onPlayerAdded(EntityPlayerMP player) {
-        parentOvrProvider.onPlayerAdded(player);
-    }
-
-    @Override
-    public void setSpawnPoint(BlockPos pos) {
-        parentOvrProvider.setSpawnPoint(pos);
+    public void setSpawnPoint(int x, int y, int z) {
+        parentOvrProvider.setSpawnPoint(x, y, z);
     }
 
     @Override

@@ -8,13 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.util.data;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
 import java.util.Random;
 
@@ -76,17 +76,17 @@ public class Vector3 {
     }
 
     public Vector3(TileEntity te) {
-        this(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ());
+        this(te.xCoord, te.yCoord, te.zCoord);
     }
 
-    public Vector3(Vec3d vec) {
+    public Vector3(Vec3 vec) {
         this(vec.xCoord, vec.yCoord, vec.zCoord);
     }
 
-    public Vector3 add(Vec3i vec) {
-        this.x += vec.getX();
-        this.y += vec.getY();
-        this.z += vec.getZ();
+    public Vector3 add(Vec3 vec) {
+        this.x += vec.xCoord;
+        this.y += vec.yCoord;
+        this.z += vec.zCoord;
         return this;
     }
 
@@ -133,10 +133,10 @@ public class Vector3 {
         return this;
     }
 
-    public Vector3 subtract(Vec3i vec) {
-        this.x -= vec.getX();
-        this.y -= vec.getY();
-        this.z -= vec.getZ();
+    public Vector3 subtract(Vec3 vec) {
+        this.x -= vec.xCoord;
+        this.y -= vec.yCoord;
+        this.z -= vec.zCoord;
         return this;
     }
 
@@ -201,25 +201,25 @@ public class Vector3 {
         return difX * difX + difY * difY + difZ * difZ;
     }
 
-    public double distance(Vec3i o) {
+    public double distance(Vec3 o) {
         return Math.sqrt(distanceSquared(o));
     }
 
-    public double distanceSquared(Vec3i o) {
-        double difX = x - o.getX();
-        double difY = y - o.getY();
-        double difZ = z - o.getZ();
-        return difX * difX + difY * difY + difZ * difZ;
-    }
-
-    public double distance(Vec3d o) {
-        return Math.sqrt(distanceSquared(o));
-    }
-
-    public double distanceSquared(Vec3d o) {
+    public double distanceSquared(Vec3 o) {
         double difX = x - o.xCoord;
         double difY = y - o.yCoord;
         double difZ = z - o.zCoord;
+        return difX * difX + difY * difY + difZ * difZ;
+    }
+
+    public double distance(WorldBlockPos o) {
+        return Math.sqrt(distanceSquared(o));
+    }
+
+    public double distanceSquared(WorldBlockPos o) {
+        double difX = x - o.getX();
+        double difY = y - o.getY();
+        double difZ = z - o.getZ();
         return difX * difX + difY * difY + difZ * difZ;
     }
 
@@ -410,12 +410,12 @@ public class Vector3 {
         return (difX * difX + difY * difY + difZ * difZ) <= (radius * radius);
     }
 
-    public Vec3d toVec3d() {
-        return new Vec3d(x, y, z);
+    public Vec3 toVec3() {
+        return Vec3.createVectorHelper(x, y, z);
     }
 
     public BlockPos toBlockPos() {
-        return new BlockPos(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
+        return new BlockPos(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
     }
 
     public Vector3 vectorFromHereTo(Vector3 target) {

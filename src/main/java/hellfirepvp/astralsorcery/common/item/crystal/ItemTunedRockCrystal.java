@@ -13,11 +13,12 @@ import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.data.research.ProgressionTier;
 import hellfirepvp.astralsorcery.common.item.ItemGatedVisibility;
 import hellfirepvp.astralsorcery.common.item.crystal.base.ItemTunedCrystalBase;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -30,6 +31,10 @@ import java.util.List;
  */
 public class ItemTunedRockCrystal extends ItemTunedCrystalBase implements ItemGatedVisibility {
 
+
+    public ItemTunedRockCrystal() {
+        setUnlocalizedName("ItemTunedRockCrystal");
+    }
     @Override
     public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
         ItemStack stack;
@@ -51,5 +56,12 @@ public class ItemTunedRockCrystal extends ItemTunedCrystalBase implements ItemGa
     public boolean isSupposedToSeeInRender(ItemStack stack) {
         return getClientProgress().getTierReached().isThisLaterOrEqual(ProgressionTier.ATTUNEMENT);
     }
+
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister register)
+    {
+        this.itemIcon = register.registerIcon("astralsorcery:rock_crystal");
+    }
+
 
 }

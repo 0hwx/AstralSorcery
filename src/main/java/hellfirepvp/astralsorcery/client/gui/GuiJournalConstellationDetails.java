@@ -22,7 +22,6 @@ import hellfirepvp.astralsorcery.common.constellation.*;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.opengl.GL11;
 
@@ -76,7 +75,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
 
         List<String> lines = new LinkedList<>();
         for (String segment : text.split("<NL>")) {
-            lines.addAll(Minecraft.getMinecraft().fontRendererObj.listFormattedStringToWidth(segment, IJournalPage.DEFAULT_WIDTH));
+            lines.addAll(Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(segment, IJournalPage.DEFAULT_WIDTH));
             lines.add("");
         }
         locText.addAll(lines);
@@ -120,7 +119,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
         String info = I18n.format(constellation.getUnlocalizedInfo()).toUpperCase();
         info = detailed ? info : "???";
         TextureHelper.refreshTextureBindState();
-        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
 
         double width = fr.getStringWidth(info);
         double chX = 305 - (width * 1.8 / 2);
@@ -131,7 +130,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
         fr.drawString(info, 0, 0, 0xCCDDDDDD, true);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glPopMatrix();
-        GlStateManager.color(1F, 1F, 1F, 1F);
+//        GL11.glColor4f(1F, 1F, 1F, 1F); // todo check
         GL11.glColor4f(br, br, br, 0.8F);
         TextureHelper.refreshTextureBindState();
 
@@ -144,7 +143,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
                 fr.drawString(s, 0, 0, 0xCCDDDDDD, true);
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
                 GL11.glPopMatrix();
-                GlStateManager.color(1F, 1F, 1F, 1F);
+//                GL11.glColor4f(1F, 1F, 1F, 1F);
                 GL11.glColor4f(br, br, br, 0.8F);
                 TextureHelper.refreshTextureBindState();
                 offsetY += 13;
@@ -177,7 +176,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
             GL11.glDisable(GL11.GL_DEPTH_TEST);
             double scale = 1.8;
             TextureHelper.refreshTextureBindState();
-            FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
             double length = fr.getStringWidth("? ? ?") * scale;
             double offsetLeft = guiLeft + 296 - length / 2;
             int offsetTop = guiTop + 199;
@@ -186,7 +185,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
             GL11.glScaled(scale, scale, scale);
             fr.drawStringWithShadow("? ? ?", 0, 0, 0xCCDDDDDD);
             GL11.glPopMatrix();
-            GlStateManager.color(1, 1, 1, 1);
+//            GL11.glColor4f(1, 1, 1, 1);
             GL11.glColor4f(1, 1, 1, 1);
             TextureHelper.refreshTextureBindState();
             GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -210,7 +209,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
         GL11.glColor4f(br, br, br, 0.8F);
         String name = I18n.format(constellation.getUnlocalizedName()).toUpperCase();
         TextureHelper.refreshTextureBindState();
-        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         double width = fr.getStringWidth(name);
         double offsetX = 110 - (width * 1.8 / 2);
         GL11.glPushMatrix();
@@ -220,7 +219,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
         fr.drawString(name, 0, 0, 0xCCDDDDDD, true);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glPopMatrix();
-        GlStateManager.color(1F, 1F, 1F, 1F);
+//        GL11.glColor4f(1F, 1F, 1F, 1F);
         GL11.glColor4f(br, br, br, 0.8F);
         TextureHelper.refreshTextureBindState();
         String dstInfo = "astralsorcery.journal.constellation.dst.";
@@ -244,7 +243,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
         fr.drawString(dstInfo, 0, 0, 0xCCDDDDDD, true);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glPopMatrix();
-        GlStateManager.color(1F, 1F, 1F, 1F);
+//        GL11.glColor4f(1F, 1F, 1F, 1F);
         GL11.glColor4f(br, br, br, 0.8F);
         TextureHelper.refreshTextureBindState();
 
@@ -282,7 +281,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if(mouseButton != 0) return;

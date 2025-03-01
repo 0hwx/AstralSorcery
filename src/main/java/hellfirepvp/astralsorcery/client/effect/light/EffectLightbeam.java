@@ -17,8 +17,6 @@ import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
 
@@ -126,19 +124,19 @@ public class EffectLightbeam implements IComplexEffect, IComplexEffect.PreventRe
         SpriteLibrary.spriteLightbeam.getResource().bind();
         //RenderingUtils.removeStandartTranslationFromTESRMatrix(Minecraft.getMinecraft().getRenderPartialTicks());
 
-        Tessellator t = Tessellator.getInstance();
-        VertexBuffer vb = t.getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-
-        Entity rView = Minecraft.getMinecraft().getRenderViewEntity();
-        if(rView == null) rView = Minecraft.getMinecraft().player;
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = t.getBuffer();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        tess.startDrawingQuads();
+        Entity rView = Minecraft.getMinecraft().renderViewEntity;
+        if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
 
         for (EffectLightbeam beam : beams) {
             if(rView.getDistanceSq(beam.from.getX(), beam.from.getY(), beam.from.getZ()) > Config.maxEffectRenderDistanceSq) return;
-            beam.renderFast(vb);
+            beam.renderFast(tess);
         }
 
-        t.draw();
+        tess.draw();
 
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -149,17 +147,17 @@ public class EffectLightbeam implements IComplexEffect, IComplexEffect.PreventRe
         GL11.glPopAttrib();
     }
 
-    private void renderFast(VertexBuffer vb) {
+    private void renderFast(Tessellator tess) {
         float tr = alphaFunction.getAlpha(age, maxAge);
         tr *= 0.6;
         tr *= alphaMultiplier;
-        renderBeamOnAngles(vb, SpriteLibrary.spriteLightbeam.getUVOffset(age), tr);
+        renderBeamOnAngles(tess, SpriteLibrary.spriteLightbeam.getUVOffset(age), tr);
     }
 
     @Override
     public void render(float pTicks) {
-        Entity rView = Minecraft.getMinecraft().getRenderViewEntity();
-        if(rView == null) rView = Minecraft.getMinecraft().player;
+        Entity rView = Minecraft.getMinecraft().renderViewEntity;
+        if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
         if(rView.getDistanceSq(from.getX(), from.getY(), from.getZ()) > Config.maxEffectRenderDistanceSq) return;
 
         float tr = alphaFunction.getAlpha(age, maxAge);
@@ -203,7 +201,7 @@ public class EffectLightbeam implements IComplexEffect, IComplexEffect.PreventRe
         GL11.glTranslated(-x, -y, -z);
     }
 
-    private void renderBeamOnAngles(VertexBuffer vb, Tuple<Double, Double> uvOffset, float br) {
+    private void renderBeamOnAngles(Tessellator tess, Tuple<Double, Double> uvOffset, float br) {
         double uWidth = SpriteLibrary.spriteLightbeam.getULength();
         double vHeight = SpriteLibrary.spriteLightbeam.getVLength();
         double u = uvOffset.key;
@@ -214,39 +212,52 @@ public class EffectLightbeam implements IComplexEffect, IComplexEffect.PreventRe
         Vector3 perpTo = perp.multiply(toSize);
 
         Vector3 vec = from.clone().add(perpFrom.clone().multiply(-1));
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v + vHeight).color(br, br, br, br).endVertex();
+        tess.setColorRGBA_F(br, br, br, br);
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u,          v + vHeight);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v + vHeight).color(br, br, br, br).endVertex();
         vec = from.clone().add(perpFrom);
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v + vHeight).color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u + uWidth, v + vHeight);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v + vHeight).color(br, br, br, br).endVertex();
         vec = to.clone().add(perpTo);
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v)          .color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u + uWidth, v);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v)          .color(br, br, br, br).endVertex();
         vec = to.clone().add(perpTo.clone().multiply(-1));
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v)          .color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u,          v);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v)          .color(br, br, br, br).endVertex();
 
         perp = aimPerp.clone().rotate(Math.toRadians(120F), aim).normalize();
         perpFrom = perp.clone().multiply(fromSize);
         perpTo = perp.multiply(toSize);
 
         vec = from.clone().add(perpFrom.clone().multiply(-1));
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v + vHeight).color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u,          v + vHeight);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v + vHeight).color(br, br, br, br).endVertex();
         vec = from.clone().add(perpFrom);
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v + vHeight).color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u + uWidth, v + vHeight);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v + vHeight).color(br, br, br, br).endVertex();
         vec = to.clone().add(perpTo);
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v)          .color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u + uWidth, v);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v)          .color(br, br, br, br).endVertex();
         vec = to.clone().add(perpTo.clone().multiply(-1));
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v)          .color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u,          v);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v)          .color(br, br, br, br).endVertex();
 
         perp = aimPerp.clone().rotate(Math.toRadians(240F), aim).normalize();
         perpFrom = perp.clone().multiply(fromSize);
         perpTo = perp.multiply(toSize);
 
         vec = from.clone().add(perpFrom.clone().multiply(-1));
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v + vHeight).color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u,          v + vHeight);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v + vHeight).color(br, br, br, br).endVertex();
         vec = from.clone().add(perpFrom);
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v + vHeight).color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u + uWidth, v + vHeight);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v + vHeight).color(br, br, br, br).endVertex();
         vec = to.clone().add(perpTo);
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v)          .color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u + uWidth, v);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v)          .color(br, br, br, br).endVertex();
         vec = to.clone().add(perpTo.clone().multiply(-1));
-        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v)          .color(br, br, br, br).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u,          v);
+//        vb.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v)          .color(br, br, br, br).endVertex();
     }
 
     private void renderCurrentTextureAroundAxis(double angle) {
@@ -254,9 +265,10 @@ public class EffectLightbeam implements IComplexEffect, IComplexEffect.PreventRe
         Vector3 perpFrom = perp.clone().multiply(fromSize);
         Vector3 perpTo = perp.multiply(toSize);
 
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer buf = tes.getBuffer();
-        buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer buf = tes.getBuffer();
+//        buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        tess.startDrawingQuads();
 
         Tuple<Double, Double> uvOffset = SpriteLibrary.spriteLightbeam.getUVOffset(age);
         double u = uvOffset.key;
@@ -265,15 +277,19 @@ public class EffectLightbeam implements IComplexEffect, IComplexEffect.PreventRe
         double vHeight = SpriteLibrary.spriteLightbeam.getVLength();
 
         Vector3 vec = from.clone().add(perpFrom.clone().multiply(-1));
-        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v + vHeight).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u,          v + vHeight);
+//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v + vHeight).endVertex();
         vec = from.clone().add(perpFrom);
-        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v + vHeight).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u + uWidth, v + vHeight);
+//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v + vHeight).endVertex();
         vec = to.clone().add(perpTo);
-        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v)          .endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u + uWidth, v);
+//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uWidth, v)          .endVertex();
         vec = to.clone().add(perpTo.clone().multiply(-1));
-        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v)          .endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u,          v);
+//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,          v)          .endVertex();
 
-        tes.draw();
+        tess.draw();
     }
 
     @Override

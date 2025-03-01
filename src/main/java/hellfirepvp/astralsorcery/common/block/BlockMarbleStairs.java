@@ -1,6 +1,7 @@
 package hellfirepvp.astralsorcery.common.block;
 
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
 
 /**
@@ -13,7 +14,8 @@ import net.minecraft.block.BlockStairs;
 public class BlockMarbleStairs extends BlockStairs {
 
     public BlockMarbleStairs() {
-        super(BlockMarble.MarbleBlockType.BRICKS.asBlock());
+        super(BlockMarble.MarbleBlockType.BRICKS.asBlock(), BlockMarble.MarbleBlockType.BRICKS.getMeta());
+        setBlockName("BlockMarbleStairs");
         setHardness(1.0F);
         setHarvestLevel("pickaxe", 1);
         setResistance(3.0F);

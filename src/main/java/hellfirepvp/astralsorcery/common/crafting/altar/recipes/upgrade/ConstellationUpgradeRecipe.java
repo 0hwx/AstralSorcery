@@ -29,10 +29,10 @@ import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -128,9 +128,9 @@ public class ConstellationUpgradeRecipe extends AttunementRecipe implements IAlt
                 particle.setColor(MiscUtils.calcRandomConstellationColor(rand.nextFloat())).scale(0.2F + (0.2F * rand.nextFloat())).gravity(0.004);
             }
 
-            ParticleManager pm = Minecraft.getMinecraft().effectRenderer;
+            EffectRenderer pm = Minecraft.getMinecraft().effectRenderer;
             if(rand.nextInt(12) == 0) {
-                pm.addBlockDestroyEffects(altar.getPos(), BlocksAS.blockMarble.getDefaultState());
+                pm.addBlockDestroyEffects(altar.xCoord, altar.yCoord, altar.zCoord, BlocksAS.blockMarble,0);
             }
             if(tick % 48 == 0 && rand.nextInt(2) == 0) {
                 EffectHandler.getInstance().textureSpritePlane(SpriteLibrary.spriteCraftBurst, Vector3.RotAxis.Y_AXIS.clone()).setPosition(new Vector3(altar).add(0.5, 0.05, 0.5)).setScale(5 + rand.nextInt(2)).setNoRotation(rand.nextInt(360));

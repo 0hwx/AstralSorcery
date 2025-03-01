@@ -14,15 +14,14 @@ import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.tile.network.TileCollectorCrystal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.LootTableUtil;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.struct.StructureBlockArray;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 /**
@@ -40,14 +39,14 @@ public class StructureAncientShrine extends StructureBlockArray {
 
     private void load() {
         Block m = BlocksAS.blockMarble;
-        IBlockState mRaw = m.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW);
-        IBlockState mBrick = m.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.BRICKS);
-        IBlockState mChisel = m.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
-        IBlockState mPillar = m.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
-        IBlockState mArch = m.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
-        IBlockState mRuned = m.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RUNED);
-        IBlockState mEngraved = m.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ENGRAVED);
-        IBlockState air = Blocks.AIR.getDefaultState();
+        Block mRaw = m;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW);
+        Block mBrick = m;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.BRICKS);
+        Block mChisel = m;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
+        Block mPillar = m;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
+        Block mArch = m;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
+        Block mRuned = m;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RUNED);
+        Block mEngraved = m;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ENGRAVED);
+        Block air = Blocks.air;
 
         addBlockCube(mRaw, -7, 0, -7, 7, 0, 7);
         addBlockCube(air, -7, 1, -7, 7, 11, 7);
@@ -81,16 +80,16 @@ public class StructureAncientShrine extends StructureBlockArray {
 
         addBlockCube(mBrick, -2, 10, -2, 2, 10, 2);
 
-        addBlock( 0, 0,  0, Blocks.SEA_LANTERN.getDefaultState());
+        addBlock( 0, 0,  0, Blocks.bookshelf);//Blocks.SEA_LANTERN.getDefaultState()
         addBlock( 1, 0,  0, mChisel);
         addBlock(-1, 0,  0, mChisel);
         addBlock( 0, 0,  1, mChisel);
         addBlock( 0, 0, -1, mChisel);
 
-        addBlock(-5, -2,  0, Blocks.WATER.getDefaultState());
-        addBlock( 5, -2,  0, Blocks.WATER.getDefaultState());
-        addBlock( 0, -2, -5, Blocks.WATER.getDefaultState());
-        addBlock( 0, -2,  5, Blocks.WATER.getDefaultState());
+        addBlock(-5, -2,  0, Blocks.water);
+        addBlock( 5, -2,  0, Blocks.water);
+        addBlock( 0, -2, -5, Blocks.water);
+        addBlock( 0, -2,  5, Blocks.water);
 
         addBlock( 2, -6,  0, air);
         addBlock( 3, -6,  0, air);
@@ -246,22 +245,22 @@ public class StructureAncientShrine extends StructureBlockArray {
         addBlock( 5, 3,  5, mPillar);
         addBlock( 5, 4,  5, mPillar);
         addBlock( 5, 5,  5, mPillar);
-        addBlock( 5, 6,  5, Blocks.SEA_LANTERN.getDefaultState());
+        addBlock( 5, 6,  5, Blocks.bookshelf);//Blocks.SEA_LANTERN.getDefaultState()
         addBlock(-5, 2,  5, mRuned);
         addBlock(-5, 3,  5, mPillar);
         addBlock(-5, 4,  5, mPillar);
         addBlock(-5, 5,  5, mPillar);
-        addBlock(-5, 6,  5, Blocks.SEA_LANTERN.getDefaultState());
+        addBlock(-5, 6,  5, Blocks.bookshelf);//Blocks.SEA_LANTERN.getDefaultState()
         addBlock( 5, 2, -5, mRuned);
         addBlock( 5, 3, -5, mPillar);
         addBlock( 5, 4, -5, mPillar);
         addBlock( 5, 5, -5, mPillar);
-        addBlock( 5, 6, -5, Blocks.SEA_LANTERN.getDefaultState());
+        addBlock( 5, 6, -5, Blocks.bookshelf);//Blocks.SEA_LANTERN.getDefaultState()
         addBlock(-5, 2, -5, mRuned);
         addBlock(-5, 3, -5, mPillar);
         addBlock(-5, 4, -5, mPillar);
         addBlock(-5, 5, -5, mPillar);
-        addBlock(-5, 6, -5, Blocks.SEA_LANTERN.getDefaultState());
+        addBlock(-5, 6, -5, Blocks.bookshelf);//Blocks.SEA_LANTERN.getDefaultState()
 
         addBlock( 5, 6,  4, mArch);
         addBlock( 5, 6,  3, mArch);
@@ -369,7 +368,7 @@ public class StructureAncientShrine extends StructureBlockArray {
         addBlock( 0, 2,  0, mPillar);
         addBlock( 0, 3,  0, mPillar);
         addBlock( 0, 4,  0, mChisel);
-        addBlock( 0, 5,  0, Blocks.WATER.getDefaultState());
+        addBlock( 0, 5,  0, Blocks.water);
 
         TileEntityCallback lootCallback = new TileEntityCallback() {
             @Override
@@ -380,18 +379,18 @@ public class StructureAncientShrine extends StructureBlockArray {
             @Override
             public void onPlace(IBlockAccess access, BlockPos at, TileEntity te) {
                 if(te instanceof TileEntityChest) {
-                    ((TileEntityChest) te).setLootTable(LootTableUtil.LOOT_TABLE_SHRINE, STATIC_RAND.nextLong());
+//                    ((TileEntityChest) te).setLootTable(LootTableUtil.LOOT_TABLE_SHRINE, STATIC_RAND.nextLong());
                 }
             }
         };
 
-        addBlock( 4, -5, -4, Blocks.CHEST.getDefaultState());
+        addBlock( 4, -5, -4, Blocks.chest);
         addTileCallback(new BlockPos(4, -5, -4), lootCallback);
 
-        addBlock( -4, -5, 4, Blocks.CHEST.getDefaultState());
+        addBlock( -4, -5, 4, Blocks.chest);
         addTileCallback(new BlockPos(-4, -5, 4), lootCallback);
 
-        addBlock(0, -3, 0, BlocksAS.collectorCrystal.getDefaultState());
+        addBlock(0, -3, 0, BlocksAS.collectorCrystal);
         addTileCallback(new BlockPos(0, -3, 0), new TileEntityCallback() {
             @Override
             public boolean isApplicable(TileEntity te) {

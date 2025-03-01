@@ -15,10 +15,13 @@ import hellfirepvp.astralsorcery.common.tile.TileWell;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -29,16 +32,17 @@ import org.lwjgl.opengl.GL11;
  * Created by HellFirePvP
  * Date: 18.10.2016 / 16:25
  */
-public class TESRWell extends TileEntitySpecialRenderer<TileWell> {
+public class TESRWell extends TileEntitySpecialRenderer {
 
     @Override
-    public void renderTileEntityAt(TileWell te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileWell te = (TileWell) tile;
         ItemStack catalyst = te.getInventoryHandler().getStackInSlot(0);
         if(catalyst != null) {
-            EntityItem ei = new EntityItem(Minecraft.getMinecraft().world, 0, 0, 0, catalyst);
+            EntityItem ei = new EntityItem(Minecraft.getMinecraft().theWorld, 0, 0, 0, catalyst);
             ei.age = te.getTicksExisted();
             ei.hoverStart = 0;
-            Minecraft.getMinecraft().getRenderManager().doRenderEntity(ei, x + 0.5, y + 0.8, z + 0.5, 0, partialTicks, true);
+            RenderManager.instance.func_147939_a(ei, x + 0.5, y + 0.8, z + 0.5, 0, partialTicks, true);
         }
         if(te.getFluidAmount() > 0 && te.getHeldFluid() != null) {
             GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -49,9 +53,9 @@ public class TESRWell extends TileEntitySpecialRenderer<TileWell> {
             RenderHelper.disableStandardItemLighting();
             Vector3 offset = new Vector3(te).add(0.5D, 0.32D, 0.5D);
             offset.addY(te.getPercFilled() * 0.6);
-            ResourceLocation still = te.getHeldFluid().getStill(te.getWorld(), te.getPos());
+            IIcon still = te.getHeldFluid().getStillIcon();
             TextureAtlasSprite tas = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(still.toString());
-            if(tas == null) Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+//            if(tas == null) Minecraft.getMinecraft().getTextureMapBlocks().missingImage;
 
             TextureHelper.setActiveTextureToAtlasSprite();
             RenderingUtils.renderAngleRotatedTexturedRect(offset, Vector3.RotAxis.Y_AXIS.clone(), Math.toRadians(45), 0.54, tas.getMinU(), tas.getMinV(), tas.getMaxU() - tas.getMinU(), tas.getMaxV() - tas.getMinV(), partialTicks);

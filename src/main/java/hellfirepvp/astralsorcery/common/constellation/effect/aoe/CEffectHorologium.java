@@ -18,16 +18,16 @@ import hellfirepvp.astralsorcery.common.constellation.effect.GenListEntries;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
+import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -51,7 +51,7 @@ public class CEffectHorologium extends CEffectPositionList {
     public static int maxCount = 30;
 
     public CEffectHorologium() {
-        super(Constellations.horologium, "horologium", searchRange, maxCount, (world, pos) -> TileAccelerationBlacklist.canAccelerate(world.getTileEntity(pos)));
+        super(Constellations.horologium, "horologium", searchRange, maxCount, (world, pos) -> TileAccelerationBlacklist.canAccelerate(world.getTileEntity(pos.getX(), pos.getY(), pos.getZ())));
     }
 
     @Override
@@ -66,8 +66,8 @@ public class CEffectHorologium extends CEffectPositionList {
         GenListEntries.SimpleBlockPosEntry entry = getRandomElementByChance(rand);
         if(entry != null) {
             BlockPos sel = entry.getPos();
-            if(MiscUtils.isChunkLoaded(world, new ChunkPos(sel))) {
-                TileEntity te = world.getTileEntity(sel);
+            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(sel.chunkX(), sel.chunkZ()))) {
+                TileEntity te = world.getTileEntity(sel.getX(), sel.getY(), sel.getZ());
                 if(TileAccelerationBlacklist.canAccelerate(te)) { //Does != null && instanceof ITickable check.
                     PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.CE_ACCEL_TILE, sel.getX(), sel.getY(), sel.getZ());
                     PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(world, sel, 16));
@@ -75,7 +75,7 @@ public class CEffectHorologium extends CEffectPositionList {
                         long startNs = System.nanoTime();
                         int times = 5 + rand.nextInt(3);
                         while (times > 0) {
-                            ((ITickable) te).update();
+                            ((ITickable) te).tick();
                             if((System.nanoTime() - startNs) >= 80_000) {
                                 break;
                             }

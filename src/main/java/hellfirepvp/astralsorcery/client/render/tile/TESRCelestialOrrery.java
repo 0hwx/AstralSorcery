@@ -13,6 +13,7 @@ import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.tile.TileCelestialOrrery;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.tileentity.TileEntity;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -21,13 +22,13 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
  * Created by HellFirePvP
  * Date: 15.02.2017 / 22:49
  */
-public class TESRCelestialOrrery extends TileEntitySpecialRenderer<TileCelestialOrrery> {
+public class TESRCelestialOrrery extends TileEntitySpecialRenderer {
 
     public static final BindableResource texSmoke = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC, "smoke");
 
     @Override
-    public void renderTileEntityAt(TileCelestialOrrery te, double x, double y, double z, float partialTicks, int destroyStage) {
-
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileCelestialOrrery te = (TileCelestialOrrery) tile;
     }
 
 }

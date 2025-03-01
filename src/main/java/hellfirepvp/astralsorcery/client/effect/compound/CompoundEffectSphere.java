@@ -11,9 +11,8 @@ package hellfirepvp.astralsorcery.client.effect.compound;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
@@ -39,8 +38,8 @@ public class CompoundEffectSphere extends CompoundObjectEffect {
     public CompoundEffectSphere(Vector3 centralPoint, Vector3 southNorthAxis, double sphereRadius, int fractionsSplit, int fractionsCircle) {
         this.offset = centralPoint;
         this.axis = southNorthAxis.clone().normalize().multiply(sphereRadius);
-        fractionsSplit = MathHelper.clamp(fractionsSplit, 2, Integer.MAX_VALUE);
-        fractionsCircle = MathHelper.clamp(fractionsCircle, 3, Integer.MAX_VALUE);
+        fractionsSplit = MathHelper.clamp_int(fractionsSplit, 2, Integer.MAX_VALUE);
+        fractionsCircle = MathHelper.clamp_int(fractionsCircle, 3, Integer.MAX_VALUE);
         buildFaces(fractionsSplit, fractionsCircle);
     }
 
@@ -101,23 +100,24 @@ public class CompoundEffectSphere extends CompoundObjectEffect {
     }
 
     @Override
-    public void render(VertexBuffer vb, float pTicks) {
+    public void render(Tessellator vb, float pTicks) {
         RenderingUtils.removeStandartTranslationFromTESRMatrix(pTicks);
         GL11.glTranslated(offset.getX(), offset.getY(), offset.getZ());
         float alpha = 1F;
-        if(alphaFadeMaxDist != -1 && Minecraft.getMinecraft().player != null) {
-            Vector3 plVec = new Vector3(Minecraft.getMinecraft().player);
+        if(alphaFadeMaxDist != -1 && Minecraft.getMinecraft().thePlayer != null) {
+            Vector3 plVec = new Vector3(Minecraft.getMinecraft().thePlayer);
             double dst = plVec.distance(getPosition()) - 1.2;
             alpha *= 1D - (dst / alphaFadeMaxDist);
             if(removeIfInvisible && alpha <= 0) {
                 requestRemoval();
             }
-            alpha = MathHelper.clamp(alpha, 0, 1);
+            alpha = MathHelper.clamp_float(alpha, 0, 1);
         }
         for (SolidColorTriangleFace face : this.sphereFaces) {
-            vb.pos(face.v1.getX(), face.v1.getY(), face.v1.getZ()).color(0, 0, 0, alpha).endVertex();
-            vb.pos(face.v2.getX(), face.v2.getY(), face.v2.getZ()).color(0, 0, 0, alpha).endVertex();
-            vb.pos(face.v3.getX(), face.v3.getY(), face.v3.getZ()).color(0, 0, 0, alpha).endVertex();
+            vb.setColorRGBA_F(0, 0, 0, alpha);
+            vb.addVertex(face.v1.getX(), face.v1.getY(), face.v1.getZ());
+            vb.addVertex(face.v2.getX(), face.v2.getY(), face.v2.getZ());
+            vb.addVertex(face.v3.getX(), face.v3.getY(), face.v3.getZ());
         }
     }
 

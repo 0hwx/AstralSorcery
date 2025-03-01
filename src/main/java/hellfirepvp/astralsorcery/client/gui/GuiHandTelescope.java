@@ -32,6 +32,7 @@ import hellfirepvp.astralsorcery.common.item.ItemJournal;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.client.PktDiscoverConstellation;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
@@ -39,15 +40,11 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -86,7 +83,7 @@ public class GuiHandTelescope extends GuiWHScreen {
     public GuiHandTelescope() {
         super(216, 216);
 
-        Optional<Long> currSeed = ConstellationSkyHandler.getInstance().getSeedIfPresent(Minecraft.getMinecraft().world);
+        Optional<Long> currSeed = ConstellationSkyHandler.getInstance().getSeedIfPresent(Minecraft.getMinecraft().theWorld);
         if (currSeed.isPresent()) {
             setupInitialStars(currSeed.get());
         }
@@ -97,12 +94,12 @@ public class GuiHandTelescope extends GuiWHScreen {
         int width = guiWidth - 6, height = guiHeight - 6;
         Random rand = new Random(seed);
 
-        int day = (int) (Minecraft.getMinecraft().world.getWorldTime() / 24000);
+        int day = (int) (Minecraft.getMinecraft().theWorld.getWorldTime() / 24000);
         for (int i = 0; i < day; i++) {
             rand.nextLong(); //Flush
         }
 
-        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(Minecraft.getMinecraft().world);
+        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(Minecraft.getMinecraft().theWorld);
         if (handle != null) {
             IMajorConstellation bestGuess = (IMajorConstellation) handle.getHighestDistributionConstellation(rand, (c) -> c instanceof IMajorConstellation);
             if (bestGuess != null && handle.getCurrentDistribution(bestGuess, (f) -> 1F) >= 0.8F &&
@@ -129,7 +126,7 @@ public class GuiHandTelescope extends GuiWHScreen {
 
         mc.setIngameFocus();
 
-        if (Minecraft.IS_RUNNING_ON_MAC) {
+        if (Minecraft.isRunningOnMac) {
             Mouse.setGrabbed(false);
             Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2 - 20);
             Mouse.setGrabbed(true);
@@ -153,8 +150,8 @@ public class GuiHandTelescope extends GuiWHScreen {
 
         handleMouseMovement(partialTicks);
 
-        World w = Minecraft.getMinecraft().world;
-        float pitch = Minecraft.getMinecraft().player.rotationPitch;
+        World w = Minecraft.getMinecraft().theWorld;
+        float pitch = Minecraft.getMinecraft().thePlayer.rotationPitch;
         float transparency = 0F;
         if (pitch < -60F) {
             transparency = 1F;
@@ -167,7 +164,7 @@ public class GuiHandTelescope extends GuiWHScreen {
         boolean canSeeSky = canTelescopeSeeSky(w);
 
         if (usedStars.isEmpty()) {
-            Optional<Long> currSeed = ConstellationSkyHandler.getInstance().getSeedIfPresent(Minecraft.getMinecraft().world);
+            Optional<Long> currSeed = ConstellationSkyHandler.getInstance().getSeedIfPresent(Minecraft.getMinecraft().theWorld);
             if (currSeed.isPresent()) {
                 setupInitialStars(currSeed.get());
 
@@ -229,10 +226,10 @@ public class GuiHandTelescope extends GuiWHScreen {
                 movementX = f2;
                 movementY = f3 * i;
             }
-            boolean nullify = this.mc.player.rotationPitch <= -89.99F && Math.abs(movementY) == movementY;
-            this.mc.player.setAngles(movementX, movementY);
+            boolean nullify = this.mc.thePlayer.rotationPitch <= -89.99F && Math.abs(movementY) == movementY;
+            this.mc.thePlayer.setAngles(movementX, movementY);
             if (nullify) movementY = 0;
-            handleHandMovement(MathHelper.floor(movementX), MathHelper.floor(movementY));
+            handleHandMovement(MathHelper.floor_float(movementX), MathHelper.floor_float(movementY));
         }
     }
 
@@ -263,9 +260,9 @@ public class GuiHandTelescope extends GuiWHScreen {
     }
 
     private void drawCellWithEffects(float partialTicks, boolean canSeeSky, float transparency) {
-        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(Minecraft.getMinecraft().world);
+        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(Minecraft.getMinecraft().theWorld);
         int lastTracked = handle == null ? 5 : handle.lastRecordedDay;
-        Optional<Long> seed = ConstellationSkyHandler.getInstance().getSeedIfPresent(Minecraft.getMinecraft().world);
+        Optional<Long> seed = ConstellationSkyHandler.getInstance().getSeedIfPresent(Minecraft.getMinecraft().theWorld);
         long s = 0;
         if(seed.isPresent()) {
             s = seed.get();
@@ -342,8 +339,8 @@ public class GuiHandTelescope extends GuiWHScreen {
     }
 
     private void drawLine(Point start, Point end, RenderConstellation.BrightnessFunction func, float linebreadth, boolean applyFunc) {
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
 
         float brightness;
         if (applyFunc) {
@@ -351,12 +348,13 @@ public class GuiHandTelescope extends GuiWHScreen {
         } else {
             brightness = 1F;
         }
-        float starBr = Minecraft.getMinecraft().world.getStarBrightness(1.0F);
+        float starBr = Minecraft.getMinecraft().theWorld.getStarBrightness(1.0F);
         if (starBr <= 0.0F) {
             return;
         }
         brightness *= (starBr * 2);
-        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        tess.startDrawingQuads();
+//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
         GL11.glColor4f(brightness, brightness, brightness, brightness < 0 ? 0 : brightness);
 
         Vector3 fromStar = new Vector3(guiLeft + start.getX(), guiTop + start.getY(), zLevel);
@@ -373,10 +371,11 @@ public class GuiHandTelescope extends GuiWHScreen {
             int v = ((i + 2) & 2) >> 1;
 
             Vector3 pos = vec00.clone().add(dir.clone().multiply(u)).add(vecV.clone().multiply(v));
-            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
+            tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), u, v);
+//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
         }
 
-        tes.draw();
+        tess.draw();
     }
 
     private Optional<Map<StarLocation, Rectangle>> drawCellEffect(int offsetX, int offsetY, int width, int height, float partialTicks, float transparency) {
@@ -385,7 +384,7 @@ public class GuiHandTelescope extends GuiWHScreen {
         Blending.DEFAULT.apply();
         GL11.glDisable(GL11.GL_ALPHA_TEST);
 
-        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(Minecraft.getMinecraft().world);
+        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(Minecraft.getMinecraft().theWorld);
         int lastTracked = handle == null ? 5 : handle.lastRecordedDay;
         Random r = new Random();
 
@@ -394,10 +393,10 @@ public class GuiHandTelescope extends GuiWHScreen {
             r.setSeed(stars.seed);
             GL11.glPushMatrix();
             float brightness = 0.3F + (RenderConstellation.stdFlicker(ClientScheduler.getClientTick(), partialTicks, 10 + r.nextInt(20))) * 0.6F;
-            brightness *= Minecraft.getMinecraft().world.getStarBrightness(partialTicks) * 2 * transparency;
-            brightness *= (1F - Minecraft.getMinecraft().world.getRainStrength(partialTicks));
+            brightness *= Minecraft.getMinecraft().theWorld.getStarBrightness(partialTicks) * 2 * transparency;
+            brightness *= (1F - Minecraft.getMinecraft().theWorld.getRainStrength(partialTicks));
             GL11.glColor4f(brightness, brightness, brightness, brightness);
-            drawRect(MathHelper.floor(offsetX + stars.x), MathHelper.floor(offsetY + stars.y), 5, 5);
+            drawRect(MathHelper.floor_float(offsetX + stars.x), MathHelper.floor_float(offsetY + stars.y), 5, 5);
             GL11.glColor4f(1, 1, 1, 1);
             GL11.glPopMatrix();
         }
@@ -408,11 +407,11 @@ public class GuiHandTelescope extends GuiWHScreen {
         if (topFound != null) {
             zLevel += 1;
 
-            float playerYaw = Minecraft.getMinecraft().player.rotationYaw % 360F;
+            float playerYaw = Minecraft.getMinecraft().thePlayer.rotationYaw % 360F;
             if (playerYaw < 0) {
                 playerYaw += 360F;
             }
-            float playerPitch = Minecraft.getMinecraft().player.rotationPitch;
+            float playerPitch = Minecraft.getMinecraft().thePlayer.rotationPitch;
 
             float diffYaw = playerYaw - selectedYaw;
             float diffPitch = playerPitch - selectedPitch;
@@ -421,7 +420,7 @@ public class GuiHandTelescope extends GuiWHScreen {
             if ((Math.abs(diffYaw) <= sFactor || Math.abs(playerYaw + 360F) <= sFactor) &&
                     Math.abs(diffPitch) <= sFactor) {
 
-                ScaledResolution res = new ScaledResolution(mc);
+                ScaledResolution res = new ScaledResolution(mc,mc.displayWidth, mc.displayHeight);
                 GL11.glEnable(GL11.GL_SCISSOR_TEST);
                 GL11.glScissor((guiLeft + 5) * res.getScaleFactor(), (guiTop + 5) * res.getScaleFactor(), (guiWidth - 10) * res.getScaleFactor(), (guiHeight - 10) * res.getScaleFactor());
 
@@ -430,8 +429,8 @@ public class GuiHandTelescope extends GuiWHScreen {
 
                 rectangles = RenderConstellation.renderConstellationIntoGUI(
                         topFound,
-                        offsetX + wPart + MathHelper.floor((diffYaw / sFactor) * width),
-                        offsetY + hPart + MathHelper.floor((diffPitch / sFactor) *  height),
+                        offsetX + wPart + MathHelper.floor_float((diffYaw / sFactor) * width),
+                        offsetY + hPart + MathHelper.floor_float((diffPitch / sFactor) *  height),
                         zLevel,
                         width - (((int) (wPart * 1.5F))),
                         height - (((int) (hPart * 1.5F))),
@@ -462,7 +461,7 @@ public class GuiHandTelescope extends GuiWHScreen {
     private void drawGridBackground(float partialTicks, boolean canSeeSky, float angleTransparency) {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         Blending.PREALPHA.apply();
-        World renderWorld = Minecraft.getMinecraft().world;
+        World renderWorld = Minecraft.getMinecraft().theWorld;
         int rgbFrom, rgbTo;
         if (canSeeSky && angleTransparency > 1.0E-4) {
             float starBr = renderWorld.getStarBrightness(partialTicks) * 2;
@@ -480,16 +479,16 @@ public class GuiHandTelescope extends GuiWHScreen {
     }
 
     private boolean canTelescopeSeeSky(World renderWorld) {
-        BlockPos pos = Minecraft.getMinecraft().player.getPosition();
+        BlockPos pos = new BlockPos(Minecraft.getMinecraft().thePlayer).getPosition(); //getPosition
         for (int xx = -1; xx <= 1; xx++) {
             for (int zz = -1; zz <= 1; zz++) {
                 BlockPos other = pos.add(xx, 0, zz);
-                if (!renderWorld.canSeeSky(other)) {
+                if (!renderWorld.canBlockSeeTheSky(other.getX(), other.getY(), other.getZ())) {
                     return false;
                 }
             }
         }
-        return renderWorld.canSeeSky(pos);
+        return renderWorld.canBlockSeeTheSky(pos.getX(), pos.getY(), pos.getZ());
     }
 
     private static final float THRESHOLD_TO_START = 0.8F;
@@ -581,7 +580,7 @@ public class GuiHandTelescope extends GuiWHScreen {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if (mouseButton == 0) {
@@ -597,7 +596,7 @@ public class GuiHandTelescope extends GuiWHScreen {
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+    protected void mouseMovedOrUp(int mouseX, int mouseY, int mouseButton) {
         if (mouseButton == 0) {
             informRelease(mouseX, mouseY);
         }
@@ -619,9 +618,9 @@ public class GuiHandTelescope extends GuiWHScreen {
     }
 
     private boolean canStartDrawing() {
-        return Minecraft.getMinecraft().world.getStarBrightness(1.0F) >= 0.35F &&
-                Minecraft.getMinecraft().world.getRainStrength(1.0F) <= 0.1F &&
-                Minecraft.getMinecraft().player.rotationPitch <= -45F;
+        return Minecraft.getMinecraft().theWorld.getStarBrightness(1.0F) >= 0.35F &&
+                Minecraft.getMinecraft().theWorld.getRainStrength(1.0F) <= 0.1F &&
+                Minecraft.getMinecraft().thePlayer.rotationPitch <= -45F;
     }
 
     private void clearLines() {

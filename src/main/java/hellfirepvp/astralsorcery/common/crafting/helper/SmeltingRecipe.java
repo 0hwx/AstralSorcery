@@ -57,7 +57,7 @@ public class SmeltingRecipe extends AbstractRecipe {
 
     @Override
     public void register() {
-        FurnaceRecipes.instance().addSmeltingRecipe(smelted, getOutput(), exp);
+        FurnaceRecipes.smelting().func_151394_a(smelted, getOutput(), exp);
     }
 
 }

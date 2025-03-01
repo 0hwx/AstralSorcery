@@ -8,6 +8,7 @@
 
 package hellfirepvp.astralsorcery.client.render.tile;
 
+import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.models.base.ASaltarT2;
 import hellfirepvp.astralsorcery.client.models.base.ASaltarT3;
@@ -24,9 +25,10 @@ import hellfirepvp.astralsorcery.common.constellation.distribution.Constellation
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -39,7 +41,7 @@ import java.util.Random;
  * Created by HellFirePvP
  * Date: 11.05.2016 / 18:21
  */
-public class TESRAltar extends TileEntitySpecialRenderer<TileAltar> {
+public class TESRAltar extends TileEntitySpecialRenderer {
 
     private static final Random rand = new Random();
 
@@ -50,21 +52,23 @@ public class TESRAltar extends TileEntitySpecialRenderer<TileAltar> {
     private static final BindableResource texAltar3 = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MODELS, "base/altarT3");
 
     @Override
-    public void renderTileEntityAt(TileAltar te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        AstralSorcery.log.debug("Rendering Altar at " + x + ", " + y + ", " + z);
+        TileAltar te = (TileAltar) tile;
         long sBase = 7553015156732193565L;
-        sBase ^= (long) te.getPos().getX();
-        sBase ^= (long) te.getPos().getY();
-        sBase ^= (long) te.getPos().getZ();
+        sBase ^= (long) te.xCoord;
+        sBase ^= (long) te.yCoord;
+        sBase ^= (long) te.zCoord;
         double jBase = ClientScheduler.getClientTick() + partialTicks;
         jBase /= 20D;
-
+        AstralSorcery.log.debug("Base: " + te.getAltarLevel());
         switch (te.getAltarLevel()) {
             case ATTUNEMENT:
                 renderT2Additions(te, x, y, z, jBase);
                 break;
             case CONSTELLATION_CRAFT:
                 renderT3Additions(te, x, y, z, jBase);
-                if(te.getMultiblockState()) {
+                if(te.getMultBlock()) {
                     GL11.glPushMatrix();
                     renderCrystalEffects(te, x, y, z, partialTicks, sBase);
                     renderFocusLens(te, x, y, z, partialTicks);
@@ -73,11 +77,11 @@ public class TESRAltar extends TileEntitySpecialRenderer<TileAltar> {
                 }
                 break;
             case TRAIT_CRAFT:
-                if(te.getMultiblockState()) {
+                if(te.getMultBlock()) {
                     IConstellation c = te.getFocusedConstellation();
                     if (c != null) {
                         GL11.glPushMatrix();
-                        float alphaDaytime = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(te.getWorld());
+                        float alphaDaytime = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(te.getWorldObj());
                         alphaDaytime *= 0.8F;
 
                         int max = 5000;
@@ -124,12 +128,11 @@ public class TESRAltar extends TileEntitySpecialRenderer<TileAltar> {
         GL11.glScaled(0.0625, 0.0625, 0.0625);
         RenderHelper.disableStandardItemLighting();
 
-        GlStateManager.pushMatrix();
-        //GlStateManager.rotate(-30.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+         GL11.glPushMatrix();
+        //GL11.glRotatef(-30.0F, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.popMatrix();
-
+        GL11.glPopMatrix();
         texAltar3.bind();
         modelAltar3.render(null, (float) jump, 0, 0, 0, 0, 1F);
         RenderHelper.disableStandardItemLighting();
@@ -145,11 +148,11 @@ public class TESRAltar extends TileEntitySpecialRenderer<TileAltar> {
         GL11.glScaled(0.0625, 0.0625, 0.0625);
         RenderHelper.disableStandardItemLighting();
 
-        GlStateManager.pushMatrix();
-        //GlStateManager.rotate(-30.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+         GL11.glPushMatrix();
+        //GL11.glRotatef(-30.0F, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.popMatrix();
+        GL11.glPopMatrix();
 
         texAltar2.bind();
         modelAltar2.render(null, (float) jump, 0, 0, 0, 0, 1F);

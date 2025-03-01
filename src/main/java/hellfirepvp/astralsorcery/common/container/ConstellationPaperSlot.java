@@ -9,9 +9,9 @@
 package hellfirepvp.astralsorcery.common.container;
 
 import hellfirepvp.astralsorcery.common.item.ItemConstellationPaper;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nullable;
 
@@ -22,11 +22,11 @@ import javax.annotation.Nullable;
  * Created by HellFirePvP
  * Date: 22.11.2016 / 14:43
  */
-public class ConstellationPaperSlot extends SlotItemHandler {
+public class ConstellationPaperSlot extends Slot {
 
     private final ContainerJournal listener;
 
-    public ConstellationPaperSlot(IItemHandler handle, ContainerJournal containerJournal, int index, int xPosition, int yPosition) {
+    public ConstellationPaperSlot(IInventory handle, ContainerJournal containerJournal, int index, int xPosition, int yPosition) {
         super(handle, index, xPosition, yPosition);
         this.listener = containerJournal;
     }

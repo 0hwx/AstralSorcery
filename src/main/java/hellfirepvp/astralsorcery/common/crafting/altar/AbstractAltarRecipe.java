@@ -22,8 +22,8 @@ import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -86,13 +86,13 @@ public abstract class AbstractAltarRecipe {
         if(!ignoreStarlightRequirement && !fulfillesStarlightRequirement(altar)) return false;
 
         if(this instanceof IGatedRecipe) {
-            if(altar.getWorld().isRemote) {
+            if(altar.getWorldObj().isRemote) {
                 if(!((IGatedRecipe) this).hasProgressionClient()) return false;
             }
         }
 
         if(this instanceof INighttimeRecipe) {
-            if(!ConstellationSkyHandler.getInstance().isNight(altar.getWorld())) return false;
+            if(!ConstellationSkyHandler.getInstance().isNight(altar.getWorldObj())) return false;
         }
 
         ItemStack[] altarInv = new ItemStack[9];
@@ -101,7 +101,7 @@ public abstract class AbstractAltarRecipe {
         }
         RecipeAdapter adapter = new RecipeAdapter(altar.getCraftingRecipeWidth(), altar.getCraftingRecipeHeight());
         adapter.fill(altarInv);
-        return recipe.matches(adapter, altar.getWorld());
+        return recipe.matches(adapter, altar.getWorldObj());
     }
 
     public boolean fulfillesStarlightRequirement(TileAltar altar) {
@@ -172,7 +172,7 @@ public abstract class AbstractAltarRecipe {
         if(stack != null) {
             ItemStack result = ItemUtils.drainFluidFromItem(stack, handle.getFluidTypeAndAmount(), true);
             if(result != null) {
-                inventory.setStackInSlot(slot.getSlotID(), result);
+                inventory.setInventorySlotContents(slot.getSlotID(), result);
             }
         }
     }
@@ -188,7 +188,7 @@ public abstract class AbstractAltarRecipe {
         if(stack != null) {
             ItemStack result = ItemUtils.drainFluidFromItem(stack, handle.getFluidTypeAndAmount(), true);
             if(result != null) {
-                inventory.setStackInSlot(slot.getSlotId(), result);
+                inventory.setInventorySlotContents(slot.getSlotId(), result);
             }
         }
     }
@@ -204,7 +204,7 @@ public abstract class AbstractAltarRecipe {
         if(stack != null) {
             ItemStack result = ItemUtils.drainFluidFromItem(stack, handle.getFluidTypeAndAmount(), true);
             if(result != null) {
-                inventory.setStackInSlot(slot.getSlotId(), result);
+                inventory.setInventorySlotContents(slot.getSlotId(), result);
             }
         }
     }

@@ -15,7 +15,7 @@ import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import net.minecraft.stats.Achievement;
 import net.minecraftforge.common.AchievementPage;
 import net.minecraftforge.common.ForgeModContainer;
-import net.minecraftforge.fluids.UniversalBucket;
+//import net.minecraftforge.fluids.UniversalBucket;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,8 +41,8 @@ public class RegistryAchievements {
                 ItemsAS.rockCrystal, null);
         achvCelestialCrystal = new Achievement("achievement.as.celestialcrystal", "astralsorcery.celestialcrystal", -2, 1,
                 ItemsAS.celestialCrystal, achvRockCrystal);
-        achvLiqStarlight = new Achievement("achievement.as.liquidstarlight", "astralsorcery.liquidstarlight", 0, 0,
-                UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, BlocksAS.fluidLiquidStarlight), achvRockCrystal);
+//        achvLiqStarlight = new Achievement("achievement.as.liquidstarlight", "astralsorcery.liquidstarlight", 0, 0,
+//                UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, BlocksAS.fluidLiquidStarlight), achvRockCrystal);
 
         achvBuildHandTelescope = new Achievement("achievement.as.buildtelescope.1", "astralsorcery.buildtelescope.1", 2, 1,
                 ItemsAS.handTelescope, null);
@@ -53,8 +53,9 @@ public class RegistryAchievements {
         achvPlayerAttunement = new Achievement("achievement.as.playerAttunement", "astralsorcery.playerAttunement", 1, -3,
                 BlocksAS.attunementAltar, achvDiscoverConstellation);
 
+
         achvCelestialCrystal.setSpecial();
-        achvLiqStarlight.setSpecial();
+//        achvLiqStarlight.setSpecial();
         achvDiscoverConstellation.setSpecial();
         achvPlayerAttunement.setSpecial();
 
@@ -63,7 +64,7 @@ public class RegistryAchievements {
         achvBuildHandTelescope.registerStat();
         achvDiscoverConstellation.registerStat();
         achvBuildActTelescope.registerStat();
-        achvLiqStarlight.registerStat();
+//        achvLiqStarlight.registerStat();
         achvPlayerAttunement.registerStat();
 
         achievementPageAstralSorcery = new AchievementPage(AstralSorcery.NAME,

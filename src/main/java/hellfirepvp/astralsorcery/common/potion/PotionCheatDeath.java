@@ -15,8 +15,8 @@ import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.awt.*;
 
@@ -34,9 +34,9 @@ public class PotionCheatDeath extends PotionCustomTexture {
     public static final Color PHOENIX_COLOR = new Color(0xFF5711);
 
     public PotionCheatDeath() {
-        super(false, 0xFF5711);
+        super(24,false, 0xFF5711);
         setPotionName("effect.as.cheatdeath");
-        setBeneficial();
+//        setBeneficial(); could be isUsable()
     }
 
     @Override

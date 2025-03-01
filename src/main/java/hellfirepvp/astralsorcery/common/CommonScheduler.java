@@ -8,9 +8,10 @@
 
 package hellfirepvp.astralsorcery.common;
 
+import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
 import hellfirepvp.astralsorcery.common.util.Counter;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+
 
 import java.util.EnumSet;
 import java.util.HashMap;

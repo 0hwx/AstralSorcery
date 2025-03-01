@@ -12,7 +12,7 @@ import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -32,7 +32,7 @@ public class PerkCreationMending extends ConstellationPerk {
     @Override
     public void onPlayerTick(EntityPlayer player, Side side) {
         if(side == Side.SERVER) {
-            for (ItemStack armor : player.getArmorInventoryList()) {
+            for (ItemStack armor : player.getLastActiveItems()) {
                 if(rand.nextInt(chanceToRepair) != 0) continue;
                 if(armor != null && armor.isItemStackDamageable() && armor.isItemDamaged()) {
                     armor.setItemDamage(armor.getItemDamage() - 1);

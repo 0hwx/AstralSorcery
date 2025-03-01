@@ -8,7 +8,6 @@
 
 package hellfirepvp.astralsorcery.common.block.fluid;
 
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
@@ -26,13 +25,13 @@ public class FluidLiquidStarlight extends Fluid {
     private static final ResourceLocation starlightLiquidFlow = new ResourceLocation("astralsorcery:blocks/fluid/starlight_flow");
 
     public FluidLiquidStarlight() {
-        super("astralsorcery.liquidStarlight", starlightLiquidStill, starlightLiquidFlow);
-        setRarity(EnumRarity.EPIC);
+        super("astralsorcery.liquidStarlight");//, starlightLiquidStill, starlightLiquidFlow);
+        setRarity(EnumRarity.epic);
         setLuminosity(15);
         setDensity(1001);
         setViscosity(300);
         setTemperature(100);
-        setFillSound(SoundEvents.ITEM_BUCKET_FILL);
+//        setFillSound(SoundEvents.ITEM_BUCKET_FILL);
     }
 
 }

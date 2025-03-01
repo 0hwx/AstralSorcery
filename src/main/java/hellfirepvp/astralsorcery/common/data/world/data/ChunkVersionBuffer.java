@@ -13,7 +13,7 @@ import hellfirepvp.astralsorcery.common.data.world.CachedWorldData;
 import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
 import hellfirepvp.astralsorcery.common.world.AstralWorldGenerator;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -29,19 +29,19 @@ import java.util.Map;
  */
 public class ChunkVersionBuffer extends CachedWorldData {
 
-    private Map<ChunkPos, Integer> chunkVersions = new HashMap<>();
+    private Map<ChunkCoordIntPair, Integer> chunkVersions = new HashMap<>();
 
     public ChunkVersionBuffer() {
         super(WorldCacheManager.SaveKey.CHUNK_VERSIONING);
     }
 
-    public void markChunkGeneration(ChunkPos c) {
+    public void markChunkGeneration(ChunkCoordIntPair c) {
         chunkVersions.put(c, AstralWorldGenerator.CURRENT_WORLD_GENERATOR_VERSION);
         //markDirty();
     }
 
     @Nullable
-    public Integer getGenerationVersion(ChunkPos c) {
+    public Integer getGenerationVersion(ChunkCoordIntPair c) {
         return chunkVersions.get(c);
     }
 
@@ -52,9 +52,9 @@ public class ChunkVersionBuffer extends CachedWorldData {
     public void readFromNBT(NBTTagCompound compound) {
         chunkVersions.clear();
 
-        for (String key : compound.getKeySet()) {
+        for (String key : compound.func_150296_c()) {
             String[] chunkCoords = key.split(";");
-            ChunkPos pos = new ChunkPos(Integer.parseInt(chunkCoords[0]), Integer.parseInt(chunkCoords[1]));
+            ChunkCoordIntPair pos = new ChunkCoordIntPair(Integer.parseInt(chunkCoords[0]), Integer.parseInt(chunkCoords[1]));
             chunkVersions.put(pos, compound.getInteger(key));
         }
 
@@ -62,8 +62,8 @@ public class ChunkVersionBuffer extends CachedWorldData {
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
-        //for (Map.Entry<ChunkPos, Integer> versionEntry : chunkVersions.entrySet()) {
-        //    ChunkPos cp = versionEntry.getKey();
+        //for (Map.Entry<ChunkCoordIntPair, Integer> versionEntry : chunkVersions.entrySet()) {
+        //    ChunkCoordIntPair cp = versionEntry.getKey();
         //    compound.setInteger(String.format("%d;%d", cp.chunkXPos, cp.chunkZPos), versionEntry.getValue());
         //}
 

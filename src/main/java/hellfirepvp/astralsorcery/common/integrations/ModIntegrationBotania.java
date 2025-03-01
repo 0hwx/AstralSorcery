@@ -2,14 +2,11 @@ package hellfirepvp.astralsorcery.common.integrations;
 
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import vazkii.botania.api.item.IBlockProvider;
 
 import javax.annotation.Nonnull;
@@ -32,12 +29,13 @@ public class ModIntegrationBotania {
     //null if no provider can provide that, an item (size 1) if it could be requested successfully.
     @Nullable
     public static ItemStack requestFromInventory(EntityPlayer requestingPlayer, ItemStack requestingStack, Block block, int meta, boolean doit) {
-        IItemHandler inv = requestingPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        IInventory inv = requestingPlayer.inventory;
+//        IItemHandler inv = requestingPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         if(inv == null) {
             return null;
         }
         List<ItemStack> providers = new LinkedList<>();
-        for (int i = inv.getSlots() - 1; i >= 0; i--) {
+        for (int i = inv.getSizeInventory() - 1; i >= 0; i--) {
             ItemStack invStack = inv.getStackInSlot(i);
             if (invStack != null && invStack.getItem() != null) {
                 Item item = invStack.getItem();
@@ -56,26 +54,26 @@ public class ModIntegrationBotania {
     }
 
     //-1 = infinite
-    public static int getItemCount(EntityPlayer requestingPlayer, ItemStack requestingStack, IBlockState stateSearch) {
-        Block block = stateSearch.getBlock();
-        int meta;
+    public static int getItemCount(EntityPlayer requestingPlayer, ItemStack requestingStack, Block stateSearch) {
+        int meta = requestingPlayer.worldObj.getBlockMetadata((int) requestingPlayer.posX, (int) requestingPlayer.posY, (int) requestingPlayer.posZ);
         try {
-            meta = block.damageDropped(stateSearch);
+            meta = stateSearch.damageDropped(meta);
         } catch (Exception e) {
             meta = 0;
         }
         ItemStack blockStackStored = ItemUtils.createBlockStack(stateSearch);
-        IItemHandler inv = requestingPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        IInventory inv = requestingPlayer.inventory;
+//        IItemHandler inv = requestingPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         if(inv == null) {
             return 0;
         }
         int amtFound = 0;
-        for (int i = inv.getSlots() - 1; i >= 0; i--) {
+        for (int i = inv.getSizeInventory() - 1; i >= 0; i--) {
             ItemStack invStack = inv.getStackInSlot(i);
             if (invStack != null && invStack.getItem() != null) {
                 Item item = invStack.getItem();
                 if ((item instanceof IBlockProvider)) {
-                    int res = ((IBlockProvider) item).getBlockCount(requestingPlayer, requestingStack, invStack, block, meta);
+                    int res = ((IBlockProvider) item).getBlockCount(requestingPlayer, requestingStack, invStack, stateSearch, meta);
                     if(res == -1) {
                         return -1;
                     } else {
@@ -85,7 +83,8 @@ public class ModIntegrationBotania {
             }
         }
 
-        Collection<ItemStack> stacks = ItemUtils.scanInventoryForMatching(new InvWrapper(requestingPlayer.inventory), blockStackStored, false);
+        Collection<ItemStack> stacks = ItemUtils.scanInventoryForMatching(requestingPlayer.inventory, blockStackStored, false);
+//        Collection<ItemStack> stacks = ItemUtils.scanInventoryForMatching(new InvWrapper(requestingPlayer.inventory), blockStackStored, false);
         for (ItemStack stack : stacks) {
             amtFound += stack.stackSize;
         }

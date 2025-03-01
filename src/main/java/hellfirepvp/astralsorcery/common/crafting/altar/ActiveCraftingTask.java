@@ -8,13 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.crafting.ICraftingProgress;
 import hellfirepvp.astralsorcery.common.crafting.altar.recipes.TraitRecipe;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -64,7 +65,8 @@ public class ActiveCraftingTask {
 
     @Nullable
     public EntityPlayer tryGetCraftingPlayerServer() {
-        return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerCraftingUUID);
+//        return FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getPlayerByUUID(playerCraftingUUID);
+        return null;
     }
 
     //True if the recipe progressed, false if it's stuck
@@ -98,7 +100,7 @@ public class ActiveCraftingTask {
             AstralSorcery.log.info("Recipe with unknown/invalid ID found: " + recipeId);
             return null;
         } else {
-            UUID uuidCraft = compound.getUniqueId("crafterUUID");
+            UUID uuidCraft = NBTHelper.getUUID(compound, "crafterUUID"); //compound.getUniqueId("crafterUUID");
             int tick = compound.getInteger("recipeTick");
             CraftingState state = CraftingState.values()[compound.getInteger("craftingState")];
             ActiveCraftingTask task = new ActiveCraftingTask(recipe, uuidCraft);
@@ -114,7 +116,8 @@ public class ActiveCraftingTask {
         NBTTagCompound compound = new NBTTagCompound();
         compound.setInteger("recipeId", getRecipeToCraft().getUniqueRecipeId());
         compound.setInteger("recipeTick", getTicksCrafting());
-        compound.setUniqueId("crafterUUID", getPlayerCraftingUUID());
+        NBTHelper.setUUID(compound, "crafterUUID", getPlayerCraftingUUID());
+//        compound.setUniqueId("crafterUUID", getPlayerCraftingUUID());
         compound.setInteger("craftingState", getState().ordinal());
         compound.setTag("craftingData", craftingData);
         return compound;

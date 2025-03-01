@@ -21,9 +21,8 @@ import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -125,10 +124,10 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
             TextureHelper.refreshTextureBindState();
             GL11.glColor4f(r, g, b, 1F);
             String translated = I18n.format(unlocTitle).toUpperCase();
-            FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
             fr.drawString(translated, guiLeft + 225, guiTop + 14, Color.DARK_GRAY.getRGB(), true);
             //fRend.drawString(translated, guiLeft + 225, guiTop + 14, zLevel, Color.DARK_GRAY, 0.7F, 0);
-            GlStateManager.color(1F, 1F, 1F, 1F);
+//            GL11.glColor4f(1F, 1F, 1F, 1F);
             GL11.glColor4f(1F, 1F, 1F, 1F);
         }
     }
@@ -208,7 +207,7 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
     }
 
     protected static Rectangle drawConstellationRect(IConstellation display, double offsetX, double offsetY, float zLevel, Point mouse, @Nullable String specTitle) {
-        Rectangle rect = new Rectangle(MathHelper.floor(offsetX), MathHelper.floor(offsetY), width, height);
+        Rectangle rect = new Rectangle(MathHelper.floor_double(offsetX), MathHelper.floor_double(offsetY), width, height);
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glTranslated(offsetX + (width / 2), offsetY + (width / 2), zLevel);
@@ -239,18 +238,18 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
 
         TextureHelper.refreshTextureBindState();
         String trName = specTitle == null ? I18n.format(display.getUnlocalizedName()).toUpperCase() : I18n.format(specTitle).toUpperCase();
-        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-        float fullLength = (width / 2) - (((float) fr.getStringWidth(trName)) / 2F);
-        fr.drawString(trName, fullLength, 75F, 0xBBDDDDDD, true);
+        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+        int fullLength = (width / 2) - ((fr.getStringWidth(trName)) / 2);
+        fr.drawString(trName, fullLength, 75, 0xBBDDDDDD, true);
 
         GL11.glColor4f(1F, 1F, 1F, 1F);
-        GlStateManager.color(1F, 1F, 1F, 1F);
+//        GL11.glColor4f(1F, 1F, 1F, 1F);
         GL11.glPopMatrix();
         return rect;
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if(mouseButton != 0) return;

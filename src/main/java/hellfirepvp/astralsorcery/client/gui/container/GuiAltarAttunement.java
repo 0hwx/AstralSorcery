@@ -60,8 +60,8 @@ public class GuiAltarAttunement extends GuiAltarBase {
             GL11.glTranslated(190, 35, 0);
             GL11.glScaled(2.5, 2.5, 2.5);
 
-            itemRender.renderItemAndEffectIntoGUI(mc.player, out, 0, 0);
-            itemRender.renderItemOverlayIntoGUI(fontRendererObj, out, 0, 0, null);
+            itemRender.renderItemAndEffectIntoGUI(fontRendererObj, mc.renderEngine, out, 0, 0);
+            itemRender.renderItemOverlayIntoGUI(fontRendererObj, mc.renderEngine, out, 0, 0, null);
 
             GL11.glPopMatrix();
             GL11.glPopAttrib();
@@ -85,7 +85,7 @@ public class GuiAltarAttunement extends GuiAltarBase {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         float percFilled;
-        if(containerAltarBase.tileAltar.getMultiblockState()) {
+        if(containerAltarBase.tileAltar.getMultBlock()) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             percFilled = containerAltarBase.tileAltar.getAmbientStarlightPercent();
         } else {

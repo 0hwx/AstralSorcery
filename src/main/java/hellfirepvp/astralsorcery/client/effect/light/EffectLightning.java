@@ -22,10 +22,8 @@ import hellfirepvp.astralsorcery.common.block.network.BlockCollectorCrystalBase;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -95,7 +93,7 @@ public class EffectLightning extends EntityComplexFX {
         double dstLength = destination.clone().subtract(source).length();
         float perc = 1F;
         if(dstLength > optimalLightningLength) {
-            perc = MathHelper.sqrt(dstLength / optimalLightningLength);
+            perc = MathHelper.sqrt_double(dstLength / optimalLightningLength);
         } else if(dstLength < optimalLightningLength) {
             perc = (float) Math.pow(dstLength / optimalLightningLength, 2);
         }
@@ -117,7 +115,7 @@ public class EffectLightning extends EntityComplexFX {
         rootVertices.add(root);
 
         double l = directionVector.length();
-        int iterations = MathHelper.floor(Math.round(Math.sqrt(l)));
+        int iterations = MathHelper.floor_double(Math.round(Math.sqrt(l)));
         for (int i = 0; i < iterations; i++) {
             LinkedList<LightningVertex> newRootVertices = new LinkedList<>();
             for (LightningVertex sourceVertex : rootVertices) {
@@ -161,19 +159,19 @@ public class EffectLightning extends EntityComplexFX {
         Blending.ADDITIVE_ALPHA.apply();
         connection.bind();
 
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer buf = tes.getBuffer();
-        buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer buf = tes.getBuffer();
+//        buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        tess.startDrawingQuads();
         for (EffectLightning fl : new ArrayList<>(toBeRendered)) {
-            fl.renderF(pTicks, buf);
+            fl.renderF(pTicks, tess);
         }
 
-        buf.sortVertexData(
-                (float) TileEntityRendererDispatcher.staticPlayerX,
-                (float) TileEntityRendererDispatcher.staticPlayerY,
-                (float) TileEntityRendererDispatcher.staticPlayerZ);
-        tes.draw();
+//        tess.getVertexState(
+//                (float) TileEntityRendererDispatcher.staticPlayerX,
+//                (float) TileEntityRendererDispatcher.staticPlayerY,
+//                (float) TileEntityRendererDispatcher.staticPlayerZ);
+        tess.draw();
 
         TextureHelper.refreshTextureBindState();
         Blending.DEFAULT.apply();
@@ -185,26 +183,26 @@ public class EffectLightning extends EntityComplexFX {
         GL11.glPopAttrib();
     }
 
-    private void renderF(float partialTicks, VertexBuffer vb) {
+    private void renderF(float partialTicks, Tessellator tess) {
         bufRenderDepth = Math.min(1F, (age + partialTicks) / (buildSpeed * 20F));
-        renderRec(this.root, vb);
+        renderRec(this.root, tess);
     }
 
-    private void renderRec(LightningVertex root, VertexBuffer vb) {
+    private void renderRec(LightningVertex root, Tessellator tess) {
         int allDepth = this.root.followingDepth;
         boolean mayRenderNext = 1F - (((float) root.followingDepth) / ((float) allDepth)) <= bufRenderDepth;
         for (LightningVertex next : root.next) {
-            drawLine(root.offset, next.offset, vb);
-            if(mayRenderNext) renderRec(next, vb);
+            drawLine(root.offset, next.offset, tess);
+            if(mayRenderNext) renderRec(next, tess);
         }
     }
 
-    private void drawLine(Vector3 from, Vector3 to, VertexBuffer vb) {
-        renderCurrentTextureAroundAxis(from, to, Math.toRadians(0F),  0.05F, vb);
-        renderCurrentTextureAroundAxis(from, to, Math.toRadians(90F), 0.05F, vb);
+    private void drawLine(Vector3 from, Vector3 to, Tessellator tess) {
+        renderCurrentTextureAroundAxis(from, to, Math.toRadians(0F),  0.05F, tess);
+        renderCurrentTextureAroundAxis(from, to, Math.toRadians(90F), 0.05F, tess);
     }
 
-    private void renderCurrentTextureAroundAxis(Vector3 from, Vector3 to, double angle, double size, VertexBuffer buf) {
+    private void renderCurrentTextureAroundAxis(Vector3 from, Vector3 to, double angle, double size, Tessellator tess) {
         Vector3 aim = to.clone().subtract(from).normalize();
         Vector3 aimPerp = aim.clone().perpendicular().normalize();
         Vector3 perp = aimPerp.clone().rotate(angle, aim).normalize();
@@ -212,13 +210,18 @@ public class EffectLightning extends EntityComplexFX {
         Vector3 perpTo = perp.multiply(size);
 
         Vector3 vec = from.clone().add(perpFrom.clone().multiply(-1));
-        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(1, 1).color(ovR, ovG, ovB, 1F).endVertex();
+        tess.setColorRGBA_F(ovR, ovG, ovB, 1F);
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), 1, 1);
+//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(1, 1).color(ovR, ovG, ovB, 1F).endVertex();
         vec = from.clone().add(perpFrom);
-        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(1, 0).color(ovR, ovG, ovB, 1F).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), 1, 0);
+//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(1, 0).color(ovR, ovG, ovB, 1F).endVertex();
         vec = to.clone().add(perpTo);
-        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(0, 0).color(ovR, ovG, ovB, 1F).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), 0, 0);
+//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(0, 0).color(ovR, ovG, ovB, 1F).endVertex();
         vec = to.clone().add(perpTo.clone().multiply(-1));
-        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(0, 1).color(ovR, ovG, ovB, 1F).endVertex();
+        tess.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), 0, 1);
+//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(0, 1).color(ovR, ovG, ovB, 1F).endVertex();
     }
 
     @Override

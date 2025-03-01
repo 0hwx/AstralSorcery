@@ -8,6 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.CommonProxy;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
@@ -16,6 +18,7 @@ import hellfirepvp.astralsorcery.common.container.ContainerJournal;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
@@ -25,9 +28,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -46,16 +47,17 @@ public class ItemJournal extends Item {
     public ItemJournal() {
         setMaxStackSize(1);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
+        setUnlocalizedName("ItemJournal");
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand) {
-        if(worldIn.isRemote && !playerIn.isSneaking()) {
-            AstralSorcery.proxy.openGui(CommonProxy.EnumGuiId.JOURNAL, playerIn, worldIn, 0, 0, 0);
-        } else if(!worldIn.isRemote && playerIn.isSneaking() && hand == EnumHand.MAIN_HAND) {
-            AstralSorcery.proxy.openGui(CommonProxy.EnumGuiId.JOURNAL_STORAGE, playerIn, worldIn, 0, 0, 0);
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer playerIn) {
+        if(world.isRemote && !playerIn.isSneaking()) {
+            AstralSorcery.proxy.openGui(CommonProxy.EnumGuiId.JOURNAL, playerIn, world, 0, 0, 0);
+        } else if(!world.isRemote && playerIn.isSneaking()) {
+            AstralSorcery.proxy.openGui(CommonProxy.EnumGuiId.JOURNAL_STORAGE, playerIn, world, 0, 0, 0);
         }
-        return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
+        return stack;
     }
 
     @Nullable
@@ -107,5 +109,13 @@ public class ItemJournal extends Item {
             list.appendTag(new NBTTagString(c.getUnlocalizedName()));
         }
         cmp.setTag("constellations", list);
+    }
+
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerIcons(IIconRegister register)
+    {
+       this.itemIcon = register.registerIcon("astralsorcery:journal");
     }
 }

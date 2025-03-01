@@ -9,12 +9,13 @@
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
 import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ import java.util.List;
  */
 public class PerkCreationBreedables extends ConstellationPerk {
 
-    private static AxisAlignedBB boxSearch = new AxisAlignedBB(0, 0, 0, 0, 0, 0).expand(6, 6, 6);
+    private static AxisAlignedBB boxSearch =  AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0).expand(6, 6, 6);
 
     private static int chanceToAge = 30;
     private static int chanceToBreed = 70;
@@ -39,7 +40,8 @@ public class PerkCreationBreedables extends ConstellationPerk {
     @Override
     public void onPlayerTick(EntityPlayer player, Side side) {
         if(side == Side.SERVER) {
-            List<EntityAnimal> animals = player.getEntityWorld().getEntitiesWithinAABB(EntityAnimal.class, boxSearch.offset(player.getPosition()));
+            BlockPos pos = new BlockPos(player).getPosition();
+            List<EntityAnimal> animals = player.getEntityWorld().getEntitiesWithinAABB(EntityAnimal.class, boxSearch.offset(pos.getX(), pos.getY(), pos.getZ()));
             if(animals.isEmpty()) return;
             EntityAnimal animal = animals.get(rand.nextInt(animals.size()));
             if(!animal.isDead) {
@@ -68,7 +70,7 @@ public class PerkCreationBreedables extends ConstellationPerk {
         chanceToAge = cfg.getInt(getKey() + "ChanceToAge", getConfigurationSection(), 30, 10, 4000, "Sets the chance (Random.nextInt(chance) == 0) to try to see if a random animal near the player will grow into an adult");
         chanceToBreed = cfg.getInt(getKey() + "ChangeToBreed", getConfigurationSection(), 70, 10, 4000, "Sets the chance (Random.nextInt(chance) == 0) to try to see if a random animal near the player will create a child");
         float search = cfg.getFloat(getKey() + "EffectRadius", getConfigurationSection(), 6F, 1F, 40F, "Sets the radius in which this effect tries to find animals");
-        boxSearch = new AxisAlignedBB(0, 0, 0, 0, 0, 0).expandXyz(search);
+        boxSearch = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0).expand(search,search,search);
     }
 
 }

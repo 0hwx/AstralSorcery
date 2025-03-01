@@ -10,13 +10,13 @@ package hellfirepvp.astralsorcery.common.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import cpw.mods.fml.common.eventhandler.Event;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import hellfirepvp.astralsorcery.common.util.data.WorldBlockPos;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.terraingen.SaplingGrowTreeEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,7 +45,7 @@ public class TreeCaptureHelper {
 
     @SubscribeEvent
     public void onTreeGrowth(SaplingGrowTreeEvent event) {
-        WorldBlockPos pos = new WorldBlockPos(event.getWorld(), event.getPos());
+        WorldBlockPos pos = new WorldBlockPos(event.world, new BlockPos(event.x, event.y, event.z));
         if(oneTimeCatches.contains(pos)) {
             oneTimeCatches.remove(pos);
             return;
@@ -125,11 +125,11 @@ public class TreeCaptureHelper {
         private final double watchRadiusSq;
 
         public TreeWatcher(TileEntity te, double watchRadius) {
-            this(te.getWorld(), te.getPos(), watchRadius);
+            this(te.getWorldObj(), new BlockPos(te.xCoord, te.yCoord, te.zCoord), watchRadius);
         }
 
         public TreeWatcher(World world, BlockPos center, double watchRadius) {
-            this(world.provider.getDimension(), center, watchRadius);
+            this(world.provider.dimensionId, center, watchRadius);
         }
 
         public TreeWatcher(int dimId, BlockPos center, double watchRadius) {
@@ -139,7 +139,7 @@ public class TreeCaptureHelper {
         }
 
         public boolean watches(WorldBlockPos pos) {
-            return pos.getWorld().provider.getDimension() == dimId && center.distanceSq(pos) <= watchRadiusSq;
+            return pos.getWorld().provider.dimensionId == dimId && center.distanceSq(pos) <= watchRadiusSq;
         }
     }
 

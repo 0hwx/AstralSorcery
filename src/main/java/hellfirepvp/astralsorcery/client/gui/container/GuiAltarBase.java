@@ -16,8 +16,6 @@ import hellfirepvp.astralsorcery.common.crafting.altar.AbstractAltarRecipe;
 import hellfirepvp.astralsorcery.common.crafting.altar.AltarRecipeRegistry;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.InventoryPlayer;
 
 /**
@@ -85,25 +83,37 @@ public abstract class GuiAltarBase extends GuiInventoryContainerBase {
     }
 
     protected void drawRect(int offsetX, int offsetY, int width, int height, double u, double v, double uLength, double vLength) {
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(offsetX,         offsetY + height, zLevel).tex(u,           v + vLength).endVertex();
-        vb.pos(offsetX + width, offsetY + height, zLevel).tex(u + uLength, v + vLength).endVertex();
-        vb.pos(offsetX + width, offsetY,          zLevel).tex(u + uLength, v          ).endVertex();
-        vb.pos(offsetX,         offsetY,          zLevel).tex(u,           v          ).endVertex();
-        tes.draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(offsetX, offsetY + height, zLevel, u, v + vLength);
+        tess.addVertexWithUV(offsetX + width, offsetY + height, zLevel, u + uLength, v + vLength);
+        tess.addVertexWithUV(offsetX + width, offsetY, zLevel, u + uLength, v);
+        tess.addVertexWithUV(offsetX, offsetY, zLevel, u, v);
+        tess.draw();
+//        VertexBuffer vb = tes.getBuffer();
+//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(offsetX,         offsetY + height, zLevel).tex(u,           v + vLength).endVertex();
+//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(u + uLength, v + vLength).endVertex();
+//        vb.pos(offsetX + width, offsetY,          zLevel).tex(u + uLength, v          ).endVertex();
+//        vb.pos(offsetX,         offsetY,          zLevel).tex(u,           v          ).endVertex();
+//        tes.draw();
     }
 
     protected void drawRect(int offsetX, int offsetY, int width, int height) {
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
-        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
-        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
-        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
-        tes.draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(offsetX, offsetY + height, zLevel, 0, 1);
+        tess.addVertexWithUV(offsetX + width, offsetY + height, zLevel, 1, 1);
+        tess.addVertexWithUV(offsetX + width, offsetY, zLevel, 1, 0);
+        tess.addVertexWithUV(offsetX, offsetY, zLevel, 0, 0);
+        tess.draw();
+//        VertexBuffer vb = tes.getBuffer();
+//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
+//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
+//        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
+//        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
+//        tes.draw();
     }
 
 }

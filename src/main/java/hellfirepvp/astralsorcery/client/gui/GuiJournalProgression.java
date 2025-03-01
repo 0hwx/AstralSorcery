@@ -17,6 +17,7 @@ import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.GameSettings;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -132,7 +133,7 @@ public class GuiJournalProgression extends GuiScreenJournal {
             progressionRenderer.handleZoomIn();
         }
 
-        ScaledResolution res = new ScaledResolution(mc);
+        ScaledResolution res = new ScaledResolution(mc,mc.displayWidth, mc.displayHeight);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor((guiLeft + 27) * res.getScaleFactor(), (guiTop + 27) * res.getScaleFactor(), (guiWidth - 54) * res.getScaleFactor(), (guiHeight - 54) * res.getScaleFactor());
         progressionRenderer.drawProgressionPart(zLevel);
@@ -162,8 +163,8 @@ public class GuiJournalProgression extends GuiScreenJournal {
                 {
                     add(I18n.format("misc.journal.info.1"));
                     add(I18n.format("misc.journal.info.2",
-                            Minecraft.getMinecraft().gameSettings.keyBindForward.getDisplayName(),
-                            Minecraft.getMinecraft().gameSettings.keyBindBack.getDisplayName()));
+                        GameSettings.getKeyDisplayString(mc.gameSettings.keyBindForward.getKeyCode()),
+                        GameSettings.getKeyDisplayString(mc.gameSettings.keyBindBack.getKeyCode())));
                 }
             }, IGuiRenderablePage.GUI_INTERFACE.getStandardFontRenderer());
         }
@@ -181,7 +182,7 @@ public class GuiJournalProgression extends GuiScreenJournal {
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if(mouseButton != 0) return;

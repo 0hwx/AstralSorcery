@@ -22,30 +22,29 @@ import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.tile.network.TileCollectorCrystal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextFormatting;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,46 +57,46 @@ import java.util.Optional;
  */
 public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork implements ISpecialStackDescriptor {
 
-    private static AxisAlignedBB boxCrystal = new AxisAlignedBB(0.3, 0, 0.3, 0.7, 1, 0.7);
+    private static AxisAlignedBB boxCrystal = AxisAlignedBB.getBoundingBox(0.3, 0, 0.3, 0.7, 1, 0.7);
 
-    public BlockCollectorCrystalBase(Material material, MapColor color) {
-        super(material, color);
+    public BlockCollectorCrystalBase(Material material) {
+        super("BlockCollectorCrystal", material);
         setBlockUnbreakable();
         setResistance(200000F);
         setHarvestLevel("pickaxe", 2);
-        setSoundType(SoundType.GLASS);
+//        setSoundType(SoundType.GLASS);
         setLightLevel(0.7F);
         setCreativeTab(RegistryItems.creativeTabAstralSorceryTunedCrystals);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager manager) {
+    public boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
         return true;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager manager) {
+    public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer) {
         return true;
     }
 
+//    @Override
+//    public boolean causesSuffocation() {
+//        return false;
+//    }
+
     @Override
-    public boolean causesSuffocation() {
+    public boolean isNormalCube() {
         return false;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
-
-    @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
         return boxCrystal;
     }
 
-    @Override
+//    @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
         CrystalProperties prop = CrystalProperties.getCrystalProperties(stack);
@@ -109,16 +108,16 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
             IWeakConstellation c = ItemCollectorCrystal.getConstellation(stack);
             if(c != null) {
                 if(EnumGatedKnowledge.COLLECTOR_TYPE.canSee(tier) && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
-                    tooltip.add(TextFormatting.GRAY + I18n.format("crystal.collect.type") + " " + TextFormatting.BLUE + I18n.format(c.getUnlocalizedName()));
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.collect.type") + " " + ChatFormatting.BLUE + I18n.format(c.getUnlocalizedName()));
                 } else if(!missing.get()) {
-                    tooltip.add(TextFormatting.GRAY + I18n.format("progress.missing.knowledge"));
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
                 }
             }
         }
     }
 
     /*@Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
         if(!worldIn.isRemote) {
             TileCollectorCrystal te = MiscUtils.getTileAt(worldIn, pos, TileCollectorCrystal.class);
             if(te != null) {
@@ -132,19 +131,21 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
     }*/
 
     @Override
-    public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
+    public float getBlockHardness(World worldIn, int x, int y, int z) {
+        BlockPos pos = new BlockPos(x, y, z);
         TileCollectorCrystal te = MiscUtils.getTileAt(worldIn, pos, TileCollectorCrystal.class, true);
         if(te != null) {
             if(te.isPlayerMade()) {
                 return 4.0F;
             }
         }
-        return super.getBlockHardness(blockState, worldIn, pos);
+        return super.getBlockHardness(worldIn, pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
         if(placer == null || !(placer instanceof EntityPlayer)) return;
+        BlockPos pos = new BlockPos(x, y, z);
         TileCollectorCrystal te = MiscUtils.getTileAt(worldIn, pos, TileCollectorCrystal.class, true);
         if(te == null) return;
 
@@ -155,17 +156,17 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
     }
 
     @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
         return Lists.newArrayList();
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state) {
+    public boolean hasTileEntity() {
         return true;
     }
 
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state) {
+    public TileEntity createTileEntity(World world, int metadata) {
         return new TileCollectorCrystal();
     }
 
@@ -175,7 +176,8 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
     }
 
     @Override
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
+    public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
+        BlockPos pos = new BlockPos(x, y, z);
         TileCollectorCrystal te = MiscUtils.getTileAt(world, pos, TileCollectorCrystal.class, true);
         if(te != null) {
             if(te.getCrystalProperties() == null || te.getConstellation() == null || te.getType() == null) {
@@ -200,17 +202,18 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube() {
         return false;
     }
 
     @Override
-    public int damageDropped(IBlockState state) {
-        return getMetaFromState(state);
+    public int damageDropped(int state) {
+        return state;
     }
 
     @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
+    public void onBlockHarvested(World worldIn, int x, int y, int z, int meta, EntityPlayer player) {
+        BlockPos pos = new BlockPos(x, y, z);
         TileCollectorCrystal te = MiscUtils.getTileAt(worldIn, pos, TileCollectorCrystal.class, true);
         if(te != null && !worldIn.isRemote) {
             PktParticleEvent event = new PktParticleEvent(PktParticleEvent.ParticleEventType.COLLECTOR_BURST,
@@ -218,7 +221,7 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
             PacketChannel.CHANNEL.sendToAllAround(event, PacketChannel.pointFromPos(worldIn, pos, 32));
             TileCollectorCrystal.breakDamage(worldIn, pos);
 
-            if(te.isPlayerMade() && !player.isCreative()) {
+            if(te.isPlayerMade() && !player.capabilities.isCreativeMode) {
                 ItemStack drop = new ItemStack(te.getType() == CollectorCrystalType.CELESTIAL_CRYSTAL ? BlocksAS.celestialCollectorCrystal : BlocksAS.collectorCrystal);
                 if(te.getCrystalProperties() != null && te.getConstellation() != null) {
                     CrystalProperties.applyCrystalProperties(drop, te.getCrystalProperties());
@@ -228,7 +231,7 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
                 }
             }
         }
-        super.onBlockHarvested(worldIn, pos, state, player);
+        super.onBlockHarvested(worldIn, x, y, z, meta, player);
     }
 
     public static enum CollectorCrystalType {

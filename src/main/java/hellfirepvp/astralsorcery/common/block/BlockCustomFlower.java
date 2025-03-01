@@ -9,36 +9,26 @@
 package hellfirepvp.astralsorcery.common.block;
 
 import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.common.item.base.IItemVariants;
-import hellfirepvp.astralsorcery.common.item.base.IMetaItem;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.EnumPlantType;
-import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
+import net.minecraftforge.common.util.ForgeDirection;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,30 +43,31 @@ import java.util.Random;
  */
 public class BlockCustomFlower extends Block implements BlockCustomName, BlockVariants, IShearable {
 
-    public static final PropertyEnum<FlowerType> FLOWER_TYPE = PropertyEnum.create("flower", FlowerType.class);
-    private static final AxisAlignedBB box = new AxisAlignedBB(1.5D / 16D, 0, 1.5D / 16D, 14.5D / 16D, 13D / 16D, 14.5D / 16D);
+    private IIcon[] icons = new IIcon[FlowerType.values().length];
+    private static final AxisAlignedBB box = AxisAlignedBB.getBoundingBox(1.5D / 16D, 0, 1.5D / 16D, 14.5D / 16D, 13D / 16D, 14.5D / 16D);
     private static final Random rand = new Random();
 
     public BlockCustomFlower() {
-        super(Material.PLANTS);
+        super(Material.plants);
         setLightLevel(0.2F);
-        setSoundType(SoundType.PLANT);
+//        setSoundType(SoundType.PLANT);
+        setBlockName("BlockCustomFlower");
         setTickRandomly(true);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
     }
 
     @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
         return Lists.newArrayList();
     }
 
     @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
-        if(!worldIn.isRemote && !player.isCreative()) {
-            switch (state.getValue(FLOWER_TYPE)) {
-                case GLOW_FLOWER:
-                    int fortune = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, player.getHeldItemMainhand());
-                    int looting = EnchantmentHelper.getEnchantmentLevel(Enchantments.LOOTING, player.getHeldItemMainhand());
+    public void onBlockHarvested(World worldIn, int x, int y, int z, int meta, EntityPlayer player) {
+        if(!worldIn.isRemote && !player.capabilities.isCreativeMode) {
+            switch (meta) {
+                case 0: //GLOW_FLOWER:
+                    int fortune = EnchantmentHelper.getEnchantmentLevel(Enchantment.fortune.effectId, player.getHeldItem());
+                    int looting = EnchantmentHelper.getEnchantmentLevel(Enchantment.looting.effectId, player.getHeldItem());
                     if(looting > fortune) {
                         fortune = looting;
                     }
@@ -85,39 +76,42 @@ public class BlockCustomFlower extends Block implements BlockCustomName, BlockVa
                         size += rand.nextInt(3) + 1;
                     }
                     for (int i = 0; i < size; i++) {
-                        ItemUtils.dropItemNaturally(worldIn, pos.getX() + 0.5, pos.getY() + 0.1, pos.getZ() + 0.5, new ItemStack(Items.GLOWSTONE_DUST));
+                        ItemUtils.dropItemNaturally(worldIn, x + 0.5, y + 0.1, z + 0.5, new ItemStack(Items.glowstone_dust));
                     }
                     break;
             }
         }
-        super.onBlockHarvested(worldIn, pos, state, player);
+        super.onBlockHarvested(worldIn, x, y, z, meta, player);
     }
 
     @Override
-    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+    public boolean canPlaceBlockAt(World worldIn, int x, int y, int z) {
+        BlockPos pos = new BlockPos(x, y, z);
         return canBlockStay(worldIn, pos);
     }
 
-    protected void checkAndDropBlock(World worldIn, BlockPos pos, IBlockState state){
+    protected void checkAndDropBlock(World worldIn, int x, int y, int z){
+        BlockPos pos = new BlockPos(x, y, z);
+        int meta = worldIn.getBlockMetadata(x, y, z);
         if (!this.canBlockStay(worldIn, pos)) {
-            this.dropBlockAsItem(worldIn, pos, state, 0);
-            worldIn.setBlockToAir(pos);
+            this.dropBlockAsItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), meta, 0);
+            worldIn.setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
         }
     }
 
     @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
-        this.checkAndDropBlock(worldIn, pos, state);
+    public void onNeighborBlockChange(World world, int x, int y, int z, Block neighborBlock) {
+        this.checkAndDropBlock(world, x, y, z);
     }
 
     @Override
-    public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random) {
-        this.checkAndDropBlock(worldIn, pos, state);
+    public void updateTick(World worldIn, int x, int y, int z, Random random) {
+        this.checkAndDropBlock(worldIn, x, y, z);
     }
 
     private boolean canBlockStay(World worldIn, BlockPos pos) {
-        IBlockState downState = worldIn.getBlockState(pos.down());
-        return downState.isSideSolid(worldIn, pos, EnumFacing.UP);
+        Block downState = worldIn.getBlock(pos.down().getX(), pos.down().getY(), pos.down().getZ());
+        return downState.isSideSolid(worldIn, pos.getX(), pos.getY(), pos.getZ(), ForgeDirection.UP);
     }
 
     @Override
@@ -126,90 +120,112 @@ public class BlockCustomFlower extends Block implements BlockCustomName, BlockVa
     }
 
     @Override
-    public boolean canSilkHarvest(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
+    public boolean canSilkHarvest(World world, EntityPlayer player, int x, int y, int z, int metadata) {
         return false;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube() {
         return false;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
+    public boolean isNormalCube() {
         return false;
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
         return box;
     }
 
-    @Nullable
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos) {
-        return NULL_AABB;
-    }
+//    @Nullable
+//    @Override
+//    public AxisAlignedBB getCollisionBoundingBox(Block blockState, World worldIn, BlockPos pos) {
+//        return NULL_AABB;
+//    }
+//
+//    @Override
+//    public BlockRenderLayer getBlockLayer() {
+//        return BlockRenderLayer.CUTOUT;
+//    }
+//
+//    @Override
+//    protected BlockStateContainer createBlockState() {
+//        return new BlockStateContainer(this, FLOWER_TYPE);
+//    }
+//
+//    @Override
+//    public Block getStateFromMeta(int meta) {
+//        return getDefaultState().withProperty(FLOWER_TYPE, FlowerType.values()[meta]);
+//    }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
-        return BlockRenderLayer.CUTOUT;
+    public int damageDropped(int meta) {
+        return meta;
     }
 
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, FLOWER_TYPE);
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FLOWER_TYPE, FlowerType.values()[meta]);
-    }
-
-    @Override
-    public int damageDropped(IBlockState state) {
-        return getMetaFromState(state);
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(FLOWER_TYPE).getMeta();
-    }
+//    @Override
+//    public int getMeta(Block state) {
+//        return state.getValue(FLOWER_TYPE).getMeta();
+//    }
 
     @Override
     public String getIdentifierForMeta(int meta) {
-        return getStateFromMeta(meta).getValue(FLOWER_TYPE).getName();
+        return FlowerType.values()[meta].getName();
     }
 
     @Override
-    public List<IBlockState> getValidStates() {
-        List<IBlockState> states = new LinkedList<>();
-        for (FlowerType type : FlowerType.values()) {
-            states.add(getDefaultState().withProperty(FLOWER_TYPE, type));
-        }
+    public List<Block> getValidStates() {
+        List<Block> states = new LinkedList<>();
+//        for (FlowerType type : FlowerType.values()) {
+//            states.add(getDefaultState().withProperty(FLOWER_TYPE, type));
+//        }
         return states;
     }
 
     @Override
-    public String getStateName(IBlockState state) {
-        return state.getValue(FLOWER_TYPE).getName();
+    public String getMetaName(int meta) {
+        return "state.getUnlocalizedName()";
     }
 
     @Override
-    public boolean isShearable(@Nonnull ItemStack item, IBlockAccess world, BlockPos pos) {
+    public int getMeta() {
+        return 0;
+    }
+
+    public IIcon getIcon(int side, int meta)
+    {
+        return icons[meta];
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void registerBlockIcons(IIconRegister reg)
+    {
+        for (FlowerType type : FlowerType.values()) {
+            icons[type.getMeta()] = reg.registerIcon("astralsorcery:" + type.getName());
+        }
+    }
+    @Override
+    public int getRenderType()
+    {
+        return 1;
+    }
+
+    @Override
+    public boolean isShearable(ItemStack item, IBlockAccess world, int x, int y, int z) {
         return true;
     }
 
     @Override
-    public List<ItemStack> onSheared(@Nonnull ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
-        return Lists.newArrayList(ItemUtils.createBlockStack(world.getBlockState(pos)));
+    public ArrayList<ItemStack> onSheared(ItemStack item, IBlockAccess world, int x, int y, int z, int fortune) {
+        return Lists.newArrayList(ItemUtils.createBlockStack(world.getBlock(x, y, z)));
     }
 
-    public static enum FlowerType implements IStringSerializable {
+    public static enum FlowerType {
 
         GLOW_FLOWER;
 
-        @Override
         public String getName() {
             return name().toLowerCase();
         }

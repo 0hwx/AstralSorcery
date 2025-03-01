@@ -8,10 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.registry;
 
+import cpw.mods.fml.common.registry.EntityRegistry;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.entities.*;
 import net.minecraft.entity.Entity;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 /**
  * This class is part of the Astral Sorcery Mod

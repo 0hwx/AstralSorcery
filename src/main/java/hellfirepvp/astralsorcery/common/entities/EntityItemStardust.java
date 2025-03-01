@@ -15,14 +15,17 @@ import hellfirepvp.astralsorcery.common.item.crystal.base.ItemRockCrystalBase;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.EntityUtils;
+import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -35,7 +38,7 @@ import java.util.List;
  */
 public class EntityItemStardust extends EntityItem implements EntityStarlightReacttant {
 
-    private static final AxisAlignedBB boxCraft = new AxisAlignedBB(-0.6, -0.2, -0.6, 0.6, 0.2, 0.6);
+    private static final AxisAlignedBB boxCraft = AxisAlignedBB.getBoundingBox(-0.6, -0.2, -0.6, 0.6, 0.2, 0.6);
 
     public static final int TOTAL_MERGE_TIME = 30 * 20;
     private int inertMergeTick = 0;
@@ -66,7 +69,7 @@ public class EntityItemStardust extends EntityItem implements EntityStarlightRea
     }
 
     private void checkMergeConditions() {
-        if(world.isRemote) {
+        if(worldObj.isRemote) {
             if(canCraft()) {
                 spawnCraftingParticles();
             }
@@ -83,12 +86,13 @@ public class EntityItemStardust extends EntityItem implements EntityStarlightRea
     }
 
     private void buildCelestialCrystals() {
+        BlockPos pos = new BlockPos(this).getPosition();
         PacketChannel.CHANNEL.sendToAllAround(new PktParticleEvent(PktParticleEvent.ParticleEventType.CELESTIAL_CRYSTAL_FORM, posX, posY, posZ),
-                PacketChannel.pointFromPos(world, getPosition(), 64));
+                PacketChannel.pointFromPos(worldObj, pos, 64));
 
-        world.setBlockState(getPosition(), BlocksAS.celestialCrystals.getDefaultState());
+        worldObj.setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.celestialCrystals);
         getEntityItem().stackSize--;
-        List<Entity> foundItems = world.getEntitiesInAABBexcluding(this, boxCraft.offset(posX, posY, posZ).expandXyz(0.1), EntityUtils.selectItemClassInstaceof(ItemRockCrystalBase.class));
+        List<Entity> foundItems = worldObj.getEntitiesWithinAABBExcludingEntity(this, boxCraft.offset(posX, posY, posZ).expand(0.1,0.1,0.1), (IEntitySelector) EntityUtils.selectItemClassInstaceof(ItemRockCrystalBase.class));
         if(foundItems.size() > 0) {
             EntityItem ei = (EntityItem) foundItems.get(0);
             ItemStack stack = ei.getEntityItem();
@@ -122,8 +126,27 @@ public class EntityItemStardust extends EntityItem implements EntityStarlightRea
     private boolean canCraft() {
         if(!isInLiquidStarlight(this)) return false;
 
-        List<Entity> foundItems = world.getEntitiesInAABBexcluding(this, boxCraft.offset(posX, posY, posZ), EntityUtils.selectItemClassInstaceof(ItemRockCrystalBase.class));
+        List<Entity> foundItems = worldObj.getEntitiesWithinAABBExcludingEntity(this, boxCraft.offset(posX, posY, posZ), (IEntitySelector) EntityUtils.selectItemClassInstaceof(ItemRockCrystalBase.class));
         return foundItems.size() > 0;
     }
 
+//    public Vec3 getPosition(float par1)
+//    {
+//        if (par1 == 1.0F)
+//        {
+//            return Vec3.createVectorHelper(this.posX, this.posY + getEyeHeight(), this.posZ);
+//        }
+//        else
+//        {
+//            double d0 = this.prevPosX + (this.posX - this.prevPosX) * (double)par1;
+//            double d1 = this.prevPosY + (this.posY - this.prevPosY) * (double)par1 + getEyeHeight();
+//            double d2 = this.prevPosZ + (this.posZ - this.prevPosZ) * (double)par1;
+//            return Vec3.createVectorHelper(d0, d1, d2);
+//        }
+//    }
+//
+//    public float getEyeHeight()
+//    {
+//        return this.height * 0.85F;
+//    }
 }

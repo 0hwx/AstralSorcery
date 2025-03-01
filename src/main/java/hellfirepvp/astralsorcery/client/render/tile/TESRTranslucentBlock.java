@@ -13,18 +13,15 @@ import hellfirepvp.astralsorcery.client.util.Blending;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
 import hellfirepvp.astralsorcery.common.tile.TileTranslucent;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.init.Biomes;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import org.lwjgl.opengl.GL11;
 
 import java.util.LinkedList;
@@ -37,7 +34,7 @@ import java.util.List;
  * Created by HellFirePvP
  * Date: 17.01.2017 / 03:57
  */
-public class TESRTranslucentBlock extends TileEntitySpecialRenderer<TileTranslucent> {
+public class TESRTranslucentBlock extends TileEntitySpecialRenderer {
 
     protected static final List<TranslucentBlockState> blocks = new LinkedList<>();
     private static int hash = -1;
@@ -48,8 +45,8 @@ public class TESRTranslucentBlock extends TileEntitySpecialRenderer<TileTransluc
         TextureHelper.setActiveTextureToAtlasSprite();
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
-        RenderingUtils.removeStandartTranslationFromTESRMatrix(Minecraft.getMinecraft().getRenderPartialTicks());
-        GlStateManager.color(1F, 1F, 1F,1F);
+        RenderingUtils.removeStandartTranslationFromTESRMatrix(Minecraft.getMinecraft().timer.renderPartialTicks);
+        GL11.glColor4f(1F, 1F, 1F,1F);
 
         if(batchDList == -1) {
             batchBlocks();
@@ -74,18 +71,21 @@ public class TESRTranslucentBlock extends TileEntitySpecialRenderer<TileTransluc
     }
 
     private static void batchBlocks() {
-        IBlockAccess iba = new AirBlockRenderWorld(Biomes.PLAINS, Minecraft.getMinecraft().world.getWorldType());
+        IBlockAccess iba = new AirBlockRenderWorld(BiomeGenBase.plains, Minecraft.getMinecraft().theWorld.getWorldInfo().getTerrainType());
         batchDList = GLAllocation.generateDisplayLists(1);
         GL11.glEnable(GL11.GL_BLEND);
         Blending.ADDITIVEDARK.apply();
         GL11.glNewList(batchDList, GL11.GL_COMPILE);
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+//        VertexBuffer vb = tes.getBuffer();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+        RenderBlocks rb = new RenderBlocks(iba);
         for (TranslucentBlockState tbs : blocks) {
-            Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(tbs.state, tbs.pos, iba, vb);
+            rb.renderBlockAllFaces(tbs.block, tbs.posX, tbs.posY, tbs.posZ);
+//            Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(tbs.state, tbs.pos, iba, vb);
         }
-        tes.draw();
+        tess.draw();
         GL11.glEndList();
         Blending.DEFAULT.apply();
     }
@@ -93,10 +93,10 @@ public class TESRTranslucentBlock extends TileEntitySpecialRenderer<TileTransluc
     private static int hashBlocks() {
         int hash = 80238287;
         for (TranslucentBlockState tbs : blocks) {
-            hash = (hash << 4) ^ (hash >> 28) ^ (tbs.pos.getX() * 5449 % 130651);
-            hash = (hash << 4) ^ (hash >> 28) ^ (tbs.pos.getY() * 5449 % 130651);
-            hash = (hash << 4) ^ (hash >> 28) ^ (tbs.pos.getZ() * 5449 % 130651);
-            hash = (hash << 4) ^ (hash >> 28) ^ (tbs.state.hashCode() * 5449 % 130651);
+            hash = (hash << 4) ^ (hash >> 28) ^ (tbs.posX * 5449 % 130651);
+            hash = (hash << 4) ^ (hash >> 28) ^ (tbs.posY * 5449 % 130651);
+            hash = (hash << 4) ^ (hash >> 28) ^ (tbs.posZ * 5449 % 130651);
+            hash = (hash << 4) ^ (hash >> 28) ^ (tbs.hashCode() * 5449 % 130651);
         }
         return hash % 75327403;
     }
@@ -110,20 +110,25 @@ public class TESRTranslucentBlock extends TileEntitySpecialRenderer<TileTransluc
     }
 
     @Override
-    public void renderTileEntityAt(TileTranslucent te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileTranslucent te = (TileTranslucent) tile;
         if(te.getFakedState() == null) return;
-        IBlockState renderState = te.getFakedState();
-        TESRTranslucentBlock.blocks.add(new TESRTranslucentBlock.TranslucentBlockState(renderState, te.getPos()));
+        Block renderState = te.getFakedState();
+        TESRTranslucentBlock.blocks.add(new TESRTranslucentBlock.TranslucentBlockState(renderState, te.xCoord, te.yCoord, te.zCoord));
     }
 
     public static class TranslucentBlockState {
 
-        public final IBlockState state;
-        public final BlockPos pos;
+        public final Block block;
+        public final int posX;
+        public final int posY;
+        public final int posZ;
 
-        public TranslucentBlockState(IBlockState state, BlockPos pos) {
-            this.state = state;
-            this.pos = pos;
+        public TranslucentBlockState(Block block, int x, int y, int z) {
+            this.block = block;
+            this.posX = x;
+            this.posY = y;
+            this.posZ = z;
         }
 
     }

@@ -8,6 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
+import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.common.CommonProxy;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.TickManager;
@@ -18,6 +19,7 @@ import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktPlayEffect;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.tile.network.TileCrystalLens;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.CropHelper;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
@@ -25,28 +27,23 @@ import hellfirepvp.astralsorcery.common.util.SoundHelper;
 import hellfirepvp.astralsorcery.common.util.data.TickTokenizedMap;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -61,12 +58,13 @@ import java.util.Map;
  * Created by HellFirePvP
  * Date: 29.11.2016 / 12:35
  */
-public class ItemColoredLens extends Item implements ItemDynamicColor {
+public class ItemColoredLens extends Item {
 
     public ItemColoredLens() {
         setMaxStackSize(16);
         setHasSubtypes(true);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
+        setUnlocalizedName("ItemColoredLens");
     }
 
     @Override
@@ -88,9 +86,10 @@ public class ItemColoredLens extends Item implements ItemDynamicColor {
     }
 
     @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
         if(!worldIn.isRemote) {
-            ItemStack inHand = playerIn.getHeldItem(EnumHand.MAIN_HAND);
+            ItemStack inHand = playerIn.getHeldItem();
+            BlockPos pos = new BlockPos(x, y, z);
             ColorType type = null;
             if(inHand != null && inHand.getItem() != null && inHand.getItem() instanceof ItemColoredLens) {
                 int dmg = inHand.getItemDamage();
@@ -102,28 +101,54 @@ public class ItemColoredLens extends Item implements ItemDynamicColor {
                 TileCrystalLens lens = MiscUtils.getTileAt(worldIn, pos, TileCrystalLens.class, true);
                 if(lens != null) {
                     ColorType oldType = lens.setLensColor(type);
-                    if(!playerIn.isCreative()) {
+                    if(!playerIn.capabilities.isCreativeMode) {
                         inHand.stackSize--;
                         if(inHand.stackSize <= 0) {
-                            playerIn.setHeldItem(EnumHand.MAIN_HAND, null);
+                            playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
                         }
                     }
-                    SoundHelper.playSoundAround(Sounds.clipSwitch, worldIn, pos, 0.8F, 1.5F);
+//                    SoundHelper.playSoundAround(Sounds.clipSwitch, worldIn, pos, 0.8F, 1.5F);
                     if(oldType != null) {
                         ItemUtils.dropItem(worldIn, pos.getX() + hitX, pos.getY() + hitY, pos.getZ() + hitZ, oldType.asStack());
                     }
                 }
             }
         }
-        return EnumActionResult.SUCCESS;
+        return false;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
-    public int getColorForItemStack(ItemStack stack, int tintIndex) {
+    public int getColorFromItemStack(ItemStack stack, int tintIndex)
+    {
         int dmg = stack.getItemDamage();
         if(dmg < 0 || dmg >= ColorType.values().length) return 0xFFFFFFFF;
         return ColorType.values()[dmg].colorRGB;
     }
+
+    @Override
+    public String getUnlocalizedName(ItemStack stack) {
+        Item i = stack.getItem();
+        if(i instanceof ItemCraftingComponent) {
+            ColorType type = ColorType.values()[stack.getItemDamage()];
+            return super.getUnlocalizedName(stack) + ".effect" + type.getUnlocalizedName();
+        }
+        return super.getUnlocalizedName(stack);
+    }
+
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerIcons(IIconRegister register)
+    {
+        this.itemIcon = register.registerIcon("astralsorcery:glass_lens_coloured");
+    }
+//    @Override
+//    public int getColorForItemStack(ItemStack stack, int tintIndex) {
+//        int dmg = stack.getItemDamage();
+//        if(dmg < 0 || dmg >= ColorType.values().length) return 0xFFFFFFFF;
+//        return ColorType.values()[dmg].colorRGB;
+//    }
 
     public static enum ColorType {
 
@@ -176,10 +201,10 @@ public class ItemColoredLens extends Item implements ItemDynamicColor {
                     if(itemRand.nextFloat() > percStrength) return;
                     if(entity instanceof EntityItem) {
                         ItemStack current = ((EntityItem) entity).getEntityItem();
-                        ItemStack result = FurnaceRecipes.instance().getSmeltingResult(current);
+                        ItemStack result = FurnaceRecipes.smelting().getSmeltingResult(current);
                         if(result != null && result.getItem() != null) {
                             Vector3 entityPos = new Vector3(entity);
-                            ItemUtils.dropItemNaturally(entity.getEntityWorld(), entityPos.getX(), entityPos.getY(), entityPos.getZ(), ItemUtils.copyStackWithSize(result, 1));
+                            ItemUtils.dropItemNaturally(entity.worldObj, entityPos.getX(), entityPos.getY(), entityPos.getZ(), ItemUtils.copyStackWithSize(result, 1));
                             if(current.stackSize > 1) {
                                 current.stackSize --;
                                 ((EntityItem) entity).setEntityItemStack(current);
@@ -194,7 +219,7 @@ public class ItemColoredLens extends Item implements ItemDynamicColor {
                 case DAMAGE:
                     if(!(entity instanceof EntityLivingBase)) return;
                     if(itemRand.nextFloat() > percStrength) return;
-                    if(entity instanceof EntityPlayer && entity.getServer() != null && entity.getServer().isPVPEnabled()) return;
+                    if(entity instanceof EntityPlayer && MinecraftServer.getServer() != null && MinecraftServer.getServer().isPVPEnabled()) return;
                     entity.attackEntityFrom(CommonProxy.dmgSourceStellar, 6.5F);
                     break;
                 case REGEN:
@@ -212,15 +237,15 @@ public class ItemColoredLens extends Item implements ItemDynamicColor {
             }
         }
 
-        public void onBlockOccupyingBeam(World world, BlockPos at, IBlockState state, float percStrength) {
+        public void onBlockOccupyingBeam(World world, BlockPos at, Block block, float percStrength) {
             switch (this) {
                 case BREAK:
-                    float hardness = state.getBlockHardness(world, at);
+                    float hardness = block.getBlockHardness(world, at.getX(), at.getY(), at.getZ());
                     if(hardness < 0) return;
                     hardness *= 1.5F;
                     addProgress(world, at, hardness, percStrength * 4F);
                     PktPlayEffect pkt = new PktPlayEffect(PktPlayEffect.EffectType.BEAM_BREAK, at);
-                    pkt.data = Block.getStateId(state);
+                    pkt.data = Block.getIdFromBlock(block);
                     PacketChannel.CHANNEL.sendToAllAround(pkt, PacketChannel.pointFromPos(world, at, 16));
                     break;
                 case GROW:
@@ -251,16 +276,16 @@ public class ItemColoredLens extends Item implements ItemDynamicColor {
         }
 
         private void addProgress(World world, BlockPos pos, float expectedHardness, float percStrength) {
-            TickTokenizedMap<BlockPos, BreakEntry> map = breakMap.get(world.provider.getDimension());
+            TickTokenizedMap<BlockPos, BreakEntry> map = breakMap.get(world.provider.dimensionId);
             if(map == null) {
                 map = new TickTokenizedMap<>(TickEvent.Type.SERVER);
                 TickManager.getInstance().register(map);
-                breakMap.put(world.provider.getDimension(), map);
+                breakMap.put(world.provider.dimensionId, map);
             }
 
             BreakEntry breakProgress = map.get(pos);
             if(breakProgress == null) {
-                breakProgress = new BreakEntry(expectedHardness, world, pos, world.getBlockState(pos));
+                breakProgress = new BreakEntry(expectedHardness, world, pos, world.getBlock(pos.getX(), pos.getY(), pos.getZ()));
                 map.put(pos, breakProgress);
             }
 
@@ -270,7 +295,7 @@ public class ItemColoredLens extends Item implements ItemDynamicColor {
 
         @SideOnly(Side.CLIENT)
         public static void blockBreakAnimation(PktPlayEffect pktPlayEffect) {
-            RenderingUtils.playBlockBreakParticles(pktPlayEffect.pos, Block.getStateById(pktPlayEffect.data));
+            RenderingUtils.playBlockBreakParticles(pktPlayEffect.pos, Block.getBlockById(pktPlayEffect.data));
         }
 
     }
@@ -280,11 +305,11 @@ public class ItemColoredLens extends Item implements ItemDynamicColor {
         private float breakProgress;
         private final World world;
         private final BlockPos pos;
-        private final IBlockState expected;
+        private final Block expected;
 
         private int idleTimeout;
 
-        public BreakEntry(@Nonnull Float value, World world, BlockPos at, IBlockState expectedToBreak) {
+        public BreakEntry(@Nonnull Float value, World world, BlockPos at, Block expectedToBreak) {
             this.breakProgress = value;
             this.world = world;
             this.pos = at;
@@ -305,8 +330,9 @@ public class ItemColoredLens extends Item implements ItemDynamicColor {
         public void onTimeout() {
             if(breakProgress > 0) return;
 
-            IBlockState nowAt = world.getBlockState(pos);
-            if(nowAt.getBlock().equals(expected.getBlock()) && nowAt.getBlock().getMetaFromState(nowAt) == expected.getBlock().getMetaFromState(expected)) {
+            Block nowAt = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+            int meta = world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
+            if(nowAt.equals(expected) && nowAt.damageDropped(meta) == expected.damageDropped(meta)) {
                 MiscUtils.breakBlockWithoutPlayer((WorldServer) world, pos);
             }
         }

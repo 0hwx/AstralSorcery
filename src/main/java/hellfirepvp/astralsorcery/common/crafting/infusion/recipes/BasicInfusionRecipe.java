@@ -15,12 +15,12 @@ import hellfirepvp.astralsorcery.client.effect.light.EffectLightbeam;
 import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import hellfirepvp.astralsorcery.common.crafting.infusion.AbstractInfusionRecipe;
 import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.awt.*;
 import java.util.Random;
@@ -59,7 +59,7 @@ public class BasicInfusionRecipe extends AbstractInfusionRecipe {
         }
 
         BlockPos randPos = TileStarlightInfuser.offsetsLiquidStarlight[rand.nextInt(TileStarlightInfuser.offsetsLiquidStarlight.length)];
-        Vector3 from = new Vector3(infuser).add(randPos);
+        Vector3 from = new Vector3(infuser).add(randPos.getX(), randPos.getY(), randPos.getZ());
         from.add(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
         Vector3 dir = new Vector3(infuser).add(0.5, 1.6, 0.5).subtract(from);
         EntityFXFacingParticle p = EffectHelper.genericFlareParticle(from.getX(), from.getY(), from.getZ());

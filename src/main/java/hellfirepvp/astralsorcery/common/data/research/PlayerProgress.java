@@ -21,7 +21,7 @@ import hellfirepvp.astralsorcery.common.network.packet.server.PktSyncKnowledge;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,7 +98,7 @@ public class PlayerProgress {
 
         if (compound.hasKey("tierReached")) {
             int tierOrdinal = compound.getInteger("tierReached");
-            tierReached = ProgressionTier.values()[MathHelper.clamp(tierOrdinal, 0, ProgressionTier.values().length - 1)];
+            tierReached = ProgressionTier.values()[MathHelper.clamp_int(tierOrdinal, 0, ProgressionTier.values().length - 1)];
         }
 
         if (compound.hasKey("research")) {
@@ -248,11 +248,11 @@ public class PlayerProgress {
     }
 
     protected void modifyCharge(double charge) {
-        this.alignmentCharge = MathHelper.clamp(this.alignmentCharge + charge, 0, 5000);
+        this.alignmentCharge = MathHelper.clamp_double(this.alignmentCharge + charge, 0, 5000);
     }
 
     protected void forceCharge(int charge) {
-        this.alignmentCharge = MathHelper.clamp(charge, 0, 5000);
+        this.alignmentCharge = MathHelper.clamp_double(charge, 0, 5000);
     }
 
     protected boolean stepTier() {
@@ -292,7 +292,7 @@ public class PlayerProgress {
         this.knownConstellations = message.knownConstellations;
         this.seenConstellations = message.seenConstellations;
         this.researchProgression = message.researchProgression;
-        this.tierReached = ProgressionTier.values()[MathHelper.clamp(message.progressTier, 0, ProgressionTier.values().length - 1)];
+        this.tierReached = ProgressionTier.values()[MathHelper.clamp_int(message.progressTier, 0, ProgressionTier.values().length - 1)];
         this.attunedConstellation = message.attunedConstellation;
         this.appliedPerks = message.appliedPerks;
         this.alignmentCharge = message.alignmentCharge;

@@ -23,23 +23,21 @@ import hellfirepvp.astralsorcery.common.item.base.IWandInteract;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.Random;
@@ -58,12 +56,13 @@ public class ItemWand extends Item implements ISpecialInteractItem {
     public ItemWand() {
         setMaxDamage(0);
         setMaxStackSize(1);
+        setUnlocalizedName("ItemWand");
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
     }
 
     /*@Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        IBlockState state = worldIn.getBlockState(pos);
+   public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+        Block state = worldIn.getBlockState(pos);
         Block b = state.getBlock();
         if(b instanceof IWandInteract) {
             if(((IWandInteract) b).onInteract(worldIn, pos, playerIn, facing, playerIn.isSneaking())) {
@@ -82,24 +81,25 @@ public class ItemWand extends Item implements ISpecialInteractItem {
 
     @Override
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (!isSelected) isSelected = (entityIn instanceof EntityPlayer) && ((EntityPlayer) entityIn).getHeldItemOffhand() == stack;
+        if (!isSelected) isSelected = (entityIn instanceof EntityPlayer) && ((EntityPlayer) entityIn).getHeldItem() == stack;
         if(!worldIn.isRemote && isSelected && worldIn.getTotalWorldTime() % 20 == 0 && entityIn instanceof EntityPlayerMP) {
             //PlayerProgress progress = ResearchManager.getProgress((EntityPlayer) entityIn);
             //if(progress == null || !EnumGatedKnowledge.WAND_TYPE.canSee(progress.getViewCapability())) return;
 
             RockCrystalBuffer buf = WorldCacheManager.getOrLoadData(worldIn, WorldCacheManager.SaveKey.ROCK_CRYSTAL);
-            ChunkPos pos = new ChunkPos(entityIn.getPosition());
+            BlockPos getPosition = new BlockPos(entityIn).getPosition();;
+            ChunkCoordIntPair pos = new ChunkCoordIntPair(getPosition.chunkX(), getPosition.chunkZ());
             List<BlockPos> posList = buf.collectPositions(pos, 4);
             for (BlockPos rPos : posList) {
-                IBlockState state = worldIn.getBlockState(rPos);
-                if(!(state.getBlock() instanceof BlockCustomOre) || state.getValue(BlockCustomOre.ORE_TYPE) != BlockCustomOre.OreType.ROCK_CRYSTAL) {
+                Block state = worldIn.getBlock(rPos.getX(), rPos.getY(), rPos.getZ());
+                if(!(state instanceof BlockCustomOre)) {// || state.getValue(BlockCustomOre.ORE_TYPE) != BlockCustomOre.OreType.ROCK_CRYSTAL) {
                     buf.removeOre(rPos);
                     continue;
                 }
-                BlockPos p = worldIn.getTopSolidOrLiquidBlock(rPos).up();
+                int top = worldIn.getTopSolidOrLiquidBlock(rPos.getX(),rPos.getZ());
                 double dstr = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(worldIn);
                 if(dstr > 1E-4) {
-                    PktParticleEvent pkt = new PktParticleEvent(PktParticleEvent.ParticleEventType.WAND_CRYSTAL_HIGHLIGHT, p.getX(), p.getY(), p.getZ());
+                    PktParticleEvent pkt = new PktParticleEvent(PktParticleEvent.ParticleEventType.WAND_CRYSTAL_HIGHLIGHT, rPos.getX(), top, rPos.getZ());
                     PacketChannel.CHANNEL.sendTo(pkt, (EntityPlayerMP) entityIn);
                 }
             }
@@ -115,7 +115,7 @@ public class ItemWand extends Item implements ISpecialInteractItem {
         double velX = rand.nextFloat() * 0.01F * (rand.nextBoolean() ? 1 : -1);
         double velY = rand.nextFloat() * 0.3F;
         double velZ = rand.nextFloat() * 0.01F * (rand.nextBoolean() ? 1 : -1);
-        double dstr = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().world);
+        double dstr = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().theWorld);
         for (int i = 0; i < 10; i++) {
             EntityFXFacingParticle particle = EffectHelper.genericFlareParticle(x, y, z);
             particle.setColor(BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL.displayColor);
@@ -132,16 +132,21 @@ public class ItemWand extends Item implements ISpecialInteractItem {
     }
 
     @Override
-    public void onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, EnumFacing side, EnumHand hand, ItemStack stack) {
-        IBlockState state = world.getBlockState(pos);
-        Block b = state.getBlock();
-        if(b instanceof IWandInteract) {
-            ((IWandInteract) b).onInteract(world, pos, entityPlayer, side, entityPlayer.isSneaking());
+    public void onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, int side, ItemStack stack) {
+        Block block = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+        if(block instanceof IWandInteract) {
+            ((IWandInteract) block).onInteract(world, pos, entityPlayer, side, entityPlayer.isSneaking());
             return;
         }
         IWandInteract wandTe = MiscUtils.getTileAt(world, pos, IWandInteract.class, true);
         if(wandTe != null) {
             wandTe.onInteract(world, pos, entityPlayer, side, entityPlayer.isSneaking());
         }
+    }
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerIcons(IIconRegister register)
+    {
+        this.itemIcon = register.registerIcon("astralsorcery:wand");
     }
 }

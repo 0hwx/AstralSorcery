@@ -8,12 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.event.listener;
 
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import hellfirepvp.astralsorcery.common.item.crystal.ItemCelestialCrystal;
 import hellfirepvp.astralsorcery.common.item.crystal.base.ItemRockCrystalBase;
 import hellfirepvp.astralsorcery.common.registry.RegistryAchievements;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -29,9 +30,9 @@ public class EventHandlerAchievements {
         if(!event.isCanceled()) {
             if(event.pickedUp != null && event.pickedUp.getEntityItem() != null &&
                     event.pickedUp.getEntityItem().getItem() instanceof ItemRockCrystalBase) {
-                event.player.addStat(RegistryAchievements.achvRockCrystal);
+                event.player.addStat(RegistryAchievements.achvRockCrystal,1);
                 if(event.pickedUp.getEntityItem().getItem() instanceof ItemCelestialCrystal) {
-                    event.player.addStat(RegistryAchievements.achvCelestialCrystal);
+                    event.player.addStat(RegistryAchievements.achvCelestialCrystal,1);
                 }
             }
         }

@@ -10,14 +10,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.awt.*;
 import java.util.List;
@@ -31,7 +30,7 @@ import java.util.List;
  */
 public class EntityStarburst extends EntityThrowable {
 
-    private static final AxisAlignedBB searchBox = new AxisAlignedBB(-1, -1, -1, 1, 1, 1).expandXyz(17);
+    private static final AxisAlignedBB searchBox = AxisAlignedBB.getBoundingBox(-1, -1, -1, 1, 1, 1).expand(17,17,17);
     private static final double descendingDst = 17.0D;
 
     private int targetId = -1;
@@ -46,20 +45,22 @@ public class EntityStarburst extends EntityThrowable {
 
     public EntityStarburst(World worldIn, EntityLivingBase throwerIn) {
         super(worldIn, throwerIn);
-        setHeadingFromThrower(throwerIn, throwerIn.rotationPitch, throwerIn.rotationYaw, 0.0F, 0.7F, 1.0F);
+        setThrowableHeading(throwerIn.rotationPitch, throwerIn.rotationYaw, 0.0F, 0.7F, 1.0F);
+//        setHeadingFromThrower(throwerIn, throwerIn.rotationPitch, throwerIn.rotationYaw, 0.0F, 0.7F, 1.0F);
     }
 
     @Override
     public void onUpdate() {
         super.onUpdate();
 
-        if (world.isRemote) {
+        if (worldObj.isRemote) {
             playEffects();
         } else {
             if(targetId == -1) {
                 AxisAlignedBB box = searchBox.offset(posX, posY, posZ);
-                List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, box, EntitySelectors.IS_ALIVE);
-                if(!(world instanceof WorldServer) || !world.getMinecraftServer().isPVPEnabled()) {
+                MinecraftServer minecraftserver = MinecraftServer.getServer();
+                List<EntityLivingBase> entities = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, box);
+                if(!(worldObj instanceof WorldServer) || !minecraftserver.isPVPEnabled()) {
                     entities.removeIf(e -> e instanceof EntityPlayer);
                 }
                 if(getThrower() != null) {
@@ -71,7 +72,7 @@ public class EntityStarburst extends EntityThrowable {
                 }
             }
             if(targetId != -1) {
-                Entity e = world.getEntityByID(targetId);
+                Entity e = worldObj.getEntityByID(targetId);
                 if(e == null || e.isDead || !(e instanceof EntityLivingBase)) {
                     targetId = -1;
                 } else {
@@ -172,13 +173,13 @@ public class EntityStarburst extends EntityThrowable {
     }
 
     @Override
-    protected void onImpact(RayTraceResult result) {
-        if (!world.isRemote) {
-            if (result.typeOfHit == RayTraceResult.Type.ENTITY) {
+    protected void onImpact(MovingObjectPosition result) {
+        if (!worldObj.isRemote) {
+            if (result.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                 if (result.entityHit.equals(getThrower())) {
                     return;
                 }
-                CelestialStrike.play(getThrower(), world, new Vector3(result.entityHit), new Vector3(result.entityHit, true));
+                CelestialStrike.play(getThrower(), worldObj, new Vector3(result.entityHit), new Vector3(result.entityHit, true));
             }
             setDead();
         }

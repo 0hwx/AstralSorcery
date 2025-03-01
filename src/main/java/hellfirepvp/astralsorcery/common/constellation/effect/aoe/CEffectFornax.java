@@ -12,14 +12,14 @@ import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -80,7 +80,7 @@ public class CEffectFornax extends CEffectPositionListGen<WorldMeltables.ActiveM
         WorldMeltables.ActiveMeltableEntry entry = getRandomElementByChance(rand);
         if(entry != null) {
             BlockPos bp = entry.getPos();
-            if(MiscUtils.isChunkLoaded(world, new ChunkPos(bp))) {
+            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(bp.chunkX(), bp.chunkZ()))) {
                 if(!entry.isValid(world, true)) {
                     removeElement(entry);
                     changed = true;
@@ -91,7 +91,7 @@ public class CEffectFornax extends CEffectPositionListGen<WorldMeltables.ActiveM
                     MeltInteraction melt = entry.getMeltable(world);
                     if(entry.counter >= (melt.getMeltTickDuration() / meltDurationDivisor)) {
                         if(failChance > 0 && rand.nextFloat() <= failChance) {
-                            world.setBlockToAir(bp);
+                            world.setBlockToAir(bp.getX(), bp.getY(), bp.getZ());
                         } else {
                             melt.placeResultAt(world, bp);
                         }

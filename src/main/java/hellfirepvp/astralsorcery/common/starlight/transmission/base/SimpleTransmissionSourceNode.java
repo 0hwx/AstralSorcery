@@ -14,7 +14,7 @@ import hellfirepvp.astralsorcery.common.starlight.IStarlightSource;
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionSource;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.TransmissionClassRegistry;
-import net.minecraft.util.math.BlockPos;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 import javax.annotation.Nonnull;
 

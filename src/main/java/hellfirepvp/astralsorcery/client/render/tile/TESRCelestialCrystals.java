@@ -9,7 +9,6 @@
 package hellfirepvp.astralsorcery.client.render.tile;
 
 import hellfirepvp.astralsorcery.client.models.obj.OBJModelLibrary;
-import hellfirepvp.astralsorcery.client.util.item.IItemRenderer;
 import hellfirepvp.astralsorcery.client.util.obj.WavefrontObject;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
@@ -19,8 +18,9 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
+import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -30,7 +30,7 @@ import org.lwjgl.opengl.GL11;
  * Created by HellFirePvP
  * Date: 14.09.2016 / 19:45
  */
-public class TESRCelestialCrystals extends TileEntitySpecialRenderer<TileCelestialCrystals> implements IItemRenderer {
+public class TESRCelestialCrystals extends TileEntitySpecialRenderer implements IItemRenderer {
 
     private static int dlC0 = -1, dlC1 = -1, dlC2 = -1, dlC3 = -1, dlC4 = -1;
     private static final BindableResource texCelestialCrystals = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MODELS, "c_crystal_tex");
@@ -38,7 +38,8 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer<TileCelesti
     private static int[] rotMapping = new int[] { 45, 135, 270, 90, 315, 0, 180, 225 };
 
     @Override
-    public void renderTileEntityAt(TileCelestialCrystals te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileCelestialCrystals te = (TileCelestialCrystals) tile;
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
         RenderHelper.disableStandardItemLighting();
@@ -47,10 +48,10 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer<TileCelesti
         GL11.glScalef(size, size, size);
 
         int r = 0x59A51481;
-        BlockPos at = te.getPos();
-        r ^= at.getX();
-        r ^= at.getY();
-        r ^= at.getZ();
+//        BlockPos at = te.getPos();
+        r ^= te.xCoord;
+        r ^= te.yCoord;
+        r ^= te.zCoord;
         r = Math.abs(r);
         r = rotMapping[r % rotMapping.length];
         GL11.glRotated(r, 0, 1, 0);
@@ -115,7 +116,7 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer<TileCelesti
                     break;
             }
             GL11.glNewList(dlSelected, GL11.GL_COMPILE);
-            obj.renderAll(true);
+            obj.renderAll();
             GL11.glEndList();
         }
         GL11.glCallList(dlSelected);
@@ -123,8 +124,34 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer<TileCelesti
         GL11.glPopMatrix();
     }
 
+//    @Override
+//    public void render(ItemStack stack) {
+//        GL11.glPushMatrix();
+//        GL11.glTranslated(0.5, 0.25, 0.5);
+//        GL11.glScalef(0.2F, 0.2F, 0.2F);
+//        GL11.glRotated(-10, 0, 0, 1);
+//        GL11.glRotated( 20, 1, 0, 0);
+//        GL11.glRotated(-70, 0, 1, 0);
+//        GL11.glDisable(GL11.GL_CULL_FACE);
+//        RenderHelper.disableStandardItemLighting();
+//        renderCelestialCrystals(MathHelper.clamp_int(stack.getItemDamage(), 0, 4));
+//        RenderHelper.enableStandardItemLighting();
+//        GL11.glEnable(GL11.GL_CULL_FACE);
+//        GL11.glPopMatrix();
+//    }
+
     @Override
-    public void render(ItemStack stack) {
+    public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+        return true;
+    }
+
+    @Override
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         GL11.glPushMatrix();
         GL11.glTranslated(0.5, 0.25, 0.5);
         GL11.glScalef(0.2F, 0.2F, 0.2F);
@@ -133,10 +160,9 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer<TileCelesti
         GL11.glRotated(-70, 0, 1, 0);
         GL11.glDisable(GL11.GL_CULL_FACE);
         RenderHelper.disableStandardItemLighting();
-        renderCelestialCrystals(MathHelper.clamp(stack.getItemDamage(), 0, 4));
+        renderCelestialCrystals(MathHelper.clamp_int(item.getItemDamage(), 0, 4));
         RenderHelper.enableStandardItemLighting();
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glPopMatrix();
     }
-
 }

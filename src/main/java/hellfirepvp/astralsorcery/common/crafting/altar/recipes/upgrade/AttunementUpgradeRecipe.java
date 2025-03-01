@@ -22,10 +22,10 @@ import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -96,9 +96,9 @@ public class AttunementUpgradeRecipe extends DiscoveryRecipe implements IAltarUp
         super.onCraftClientTick(altar, state, tick, rand);
 
         if(state == ActiveCraftingTask.CraftingState.ACTIVE) {
-            ParticleManager pm = Minecraft.getMinecraft().effectRenderer;
+            EffectRenderer pm = Minecraft.getMinecraft().effectRenderer;
             if(rand.nextInt(6) == 0) {
-                pm.addBlockDestroyEffects(altar.getPos(), BlocksAS.blockMarble.getDefaultState());
+                pm.addBlockDestroyEffects(altar.xCoord, altar.yCoord, altar.zCoord, BlocksAS.blockMarble,0);
             }
         }
     }

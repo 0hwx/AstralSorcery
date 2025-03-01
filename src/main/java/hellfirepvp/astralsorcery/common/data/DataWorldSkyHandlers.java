@@ -8,12 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.data;
 
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -31,7 +32,7 @@ public class DataWorldSkyHandlers extends AbstractData {
     private List<Integer> activeWorldSkyHandlers = new LinkedList<>();
 
     public boolean hasWorldHandler(World world) {
-        return world != null && hasWorldHandler(world.provider.getDimension());
+        return world != null && hasWorldHandler(world.provider.dimensionId);
     }
 
     public boolean hasWorldHandler(int dim) {
@@ -68,7 +69,7 @@ public class DataWorldSkyHandlers extends AbstractData {
 
         NBTTagList dims = compound.getTagList("dims", 3);
         for (int i = 0; i < dims.tagCount(); i++) {
-            this.activeWorldSkyHandlers.add(dims.getIntAt(i));
+            this.activeWorldSkyHandlers.add(NBTHelper.getIntAt(dims, i));
         }
     }
 

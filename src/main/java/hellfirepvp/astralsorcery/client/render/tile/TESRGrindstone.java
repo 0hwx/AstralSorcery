@@ -18,12 +18,13 @@ import hellfirepvp.astralsorcery.common.item.base.IGrindable;
 import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
 import hellfirepvp.astralsorcery.common.util.SwordSharpenHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -33,27 +34,28 @@ import org.lwjgl.opengl.GL11;
  * Created by HellFirePvP
  * Date: 10.11.2016 / 22:30
  */
-public class TESRGrindstone extends TileEntitySpecialRenderer<TileGrindstone> {
+public class TESRGrindstone extends TileEntitySpecialRenderer {
 
     private static final ASgrindingstone modelGrindstone = new ASgrindingstone();
     private static final BindableResource texGrindstone = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MODELS, "base/grindingstone");
 
     @Override
-    public void renderTileEntityAt(TileGrindstone te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileGrindstone te = (TileGrindstone) tile;
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(x + 0.5, y + 1.65, z + 0.5);
-        GlStateManager.rotate(180, 1, 0, 0);
-        GlStateManager.scale(0.067, 0.067, 0.067);
+         GL11.glPushMatrix();
+        GL11.glTranslated(x + 0.5, y + 1.65, z + 0.5);
+        GL11.glRotated(180, 1, 0, 0);
+        GL11.glScaled(0.067, 0.067, 0.067);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.rotate(-30.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(165.0F, 1.0F, 0.0F, 0.0F);
+         GL11.glPushMatrix();
+        GL11.glRotatef(-30.0F, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(165.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.popMatrix();
+        GL11.glPopMatrix();
 
         renderModel(te, 1);
-        GlStateManager.popMatrix();
+        GL11.glPopMatrix();
         GL11.glPopAttrib();
 
         ItemStack grind = te.getGrindingItem();
@@ -61,6 +63,7 @@ public class TESRGrindstone extends TileEntitySpecialRenderer<TileGrindstone> {
             if(grind.getItem() != null) {
                 TextureHelper.refreshTextureBindState();
                 TextureHelper.setActiveTextureToAtlasSprite();
+                Minecraft mc = Minecraft.getMinecraft();
                 if(grind.getItem() instanceof IGrindable) {
                     IGrindable grindable = (IGrindable) grind.getItem();
                     GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -68,7 +71,8 @@ public class TESRGrindstone extends TileEntitySpecialRenderer<TileGrindstone> {
                     GL11.glTranslated(x, y, z);
                     grindable.applyClientGrindstoneTransforms();
                     RenderHelper.enableStandardItemLighting();
-                    Minecraft.getMinecraft().getRenderItem().renderItem(grind, ItemCameraTransforms.TransformType.GROUND);
+                    RenderItem.getInstance().renderItemAndEffectIntoGUI(mc.fontRenderer,mc.renderEngine, grind, 0, 0);
+//                    Minecraft.getMinecraft().getRenderItem().renderItem(grind, ItemCameraTransforms.TransformType.GROUND);
                     RenderHelper.disableStandardItemLighting();
                     GL11.glPopMatrix();
                     GL11.glPopAttrib();
@@ -79,7 +83,8 @@ public class TESRGrindstone extends TileEntitySpecialRenderer<TileGrindstone> {
                     GL11.glTranslated(x, y, z);
                     IGrindable.applyDefaultGrindstoneTransforms();
                     RenderHelper.enableStandardItemLighting();
-                    Minecraft.getMinecraft().getRenderItem().renderItem(grind, ItemCameraTransforms.TransformType.GROUND);
+                    RenderItem.getInstance().renderItemAndEffectIntoGUI(mc.fontRenderer,mc.renderEngine, grind, 0, 0);
+//                    Minecraft.getMinecraft().getRenderItem().renderItem(grind, ItemCameraTransforms.TransformType.GROUND);
                     RenderHelper.disableStandardItemLighting();
                     GL11.glPopMatrix();
                     GL11.glPopAttrib();

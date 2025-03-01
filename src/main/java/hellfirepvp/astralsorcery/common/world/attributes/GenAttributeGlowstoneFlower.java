@@ -11,13 +11,13 @@ package hellfirepvp.astralsorcery.common.world.attributes;
 import com.google.common.collect.Lists;
 import hellfirepvp.astralsorcery.common.block.BlockCustomFlower;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.world.WorldGenAttributeCommon;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Collection;
 import java.util.Random;
@@ -41,13 +41,13 @@ public class GenAttributeGlowstoneFlower extends WorldGenAttributeCommon {
     private boolean isApplicableBiome(World world, BlockPos pos) {
         if(cfgEntry.shouldIgnoreBiomeSpecifications()) return true;
 
-        Biome b = world.getBiome(pos);
-        Collection<BiomeDictionary.Type> types = Lists.newArrayList(BiomeDictionary.getTypesForBiome(b));
-        if(types.isEmpty()) return false;
+//        BiomeGenBase b = world.getBiomeGenForCoords(pos.getX(), pos.getZ());
+//        Collection<BiomeDictionary.Type> types = Lists.newArrayList(BiomeDictionary.getTypesForBiome(b));
+//        if(types.isEmpty()) return false;
         boolean applicable = false;
-        for (BiomeDictionary.Type t : types) {
-            if (cfgEntry.getTypes().contains(t)) applicable = true;
-        }
+//        for (BiomeDictionary.Type t : types) {
+//            if (cfgEntry.getTypes().contains(t)) applicable = true;
+//        }
         return applicable;
     }
 
@@ -58,7 +58,7 @@ public class GenAttributeGlowstoneFlower extends WorldGenAttributeCommon {
 
     @Override
     public void generate(BlockPos pos, World world, Random rand) {
-        world.setBlockState(pos, BlocksAS.customFlower.getDefaultState().withProperty(BlockCustomFlower.FLOWER_TYPE, BlockCustomFlower.FlowerType.GLOW_FLOWER));
+        world.setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.customFlower);//.getDefaultState().withProperty(BlockCustomFlower.FLOWER_TYPE, BlockCustomFlower.FlowerType.GLOW_FLOWER));
         if(!isGeneratingAdditional) {
             isGeneratingAdditional = true;
             try {
@@ -76,7 +76,7 @@ public class GenAttributeGlowstoneFlower extends WorldGenAttributeCommon {
     private BlockPos randomOffset(World world, BlockPos origin, Random random, int offsetRand) {
         int rX = origin.getX() - offsetRand + random.nextInt(offsetRand * 2 + 1);
         int rZ = origin.getZ() - offsetRand + random.nextInt(offsetRand * 2 + 1);
-        int rY = world.getPrecipitationHeight(new BlockPos(rX, 0, rZ)).getY();
+        int rY = world.getPrecipitationHeight(rX, rZ);
         return new BlockPos(rX, rY, rZ);
     }
 
@@ -84,15 +84,15 @@ public class GenAttributeGlowstoneFlower extends WorldGenAttributeCommon {
     public boolean fulfillsSpecificConditions(BlockPos pos, World world, Random random) {
         return isApplicableBiome(world, pos) &&
                 pos.getY() >= cfgEntry.getMinY() && pos.getY() <= cfgEntry.getMaxY() &&
-                world.getBlockState(pos.down()).isSideSolid(world, pos.down(), EnumFacing.UP) &&
-                (ignoreSnowCondition || world.canSnowAt(pos, true));
+                world.getBlock(pos.down().getX(), pos.down().getY(), pos.down().getZ()).isSideSolid(world, pos.down().getX(), pos.down().getY(), pos.down().getZ(), ForgeDirection.UP) &&
+                (ignoreSnowCondition || world.canSnowAtBody(pos.getX(), pos.getY(),pos.getZ(), true));
     }
 
     @Override
     public BlockPos getGenerationPosition(int chX, int chZ, World world, Random rand) {
         int rX = (chX  * 16) + rand.nextInt(16) + 8;
         int rZ = (chZ  * 16) + rand.nextInt(16) + 8;
-        int rY = world.getPrecipitationHeight(new BlockPos(rX, 0, rZ)).getY();
+        int rY = world.getPrecipitationHeight(rX, rZ);
         return new BlockPos(rX, rY, rZ);
     }
 

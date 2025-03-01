@@ -30,6 +30,7 @@ import hellfirepvp.astralsorcery.common.item.ItemColoredLens;
 import hellfirepvp.astralsorcery.common.item.ItemCraftingComponent;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
+import hellfirepvp.astralsorcery.common.util.EnumDyeColor;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.OreDictAlias;
 import net.minecraft.init.Blocks;
@@ -110,7 +111,7 @@ public class RegistryRecipes {
     public static void init() {
         initVanillaRecipes();
 
-        initAltarRecipes();
+//        initAltarRecipes();
 
         initInfusionRecipes();
 
@@ -120,24 +121,24 @@ public class RegistryRecipes {
 
     public static void initInfusionRecipes() {
         registerLowConsumptionInfusion(ItemCraftingComponent.MetaType.RESO_GEM.asStack(), ItemCraftingComponent.MetaType.AQUAMARINE.asStack());
-        registerLowConsumptionInfusion(ItemCraftingComponent.MetaType.GLASS_LENS.asStack(),         new ItemStack(Blocks.GLASS_PANE, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Blocks.CLAY, 1, 0), new ItemStack(Blocks.SAND, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Blocks.GRASS, 1, 0), new ItemStack(Blocks.DIRT, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.ENDER_EYE, 1, 0), new ItemStack(Items.ENDER_PEARL, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.GLOWSTONE_DUST, 1, 0), new ItemStack(Items.GUNPOWDER, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.GUNPOWDER, 1, 0), new ItemStack(Items.REDSTONE, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.DYE, 4, 15), new ItemStack(Items.BONE, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.BLAZE_POWDER, 4, 0), new ItemStack(Items.BLAZE_ROD, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.MAGMA_CREAM, 1, 0), new ItemStack(Items.SLIME_BALL, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.GOLDEN_CARROT, 1, 0), new ItemStack(Items.CARROT, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.SPECKLED_MELON, 1, 0), new ItemStack(Items.MELON, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.IRON_INGOT, 2, 0), new ItemStack(Blocks.IRON_ORE, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.GOLD_INGOT, 2, 0), new ItemStack(Blocks.GOLD_ORE, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Blocks.LAPIS_BLOCK, 1, 0), new ItemStack(Blocks.LAPIS_ORE, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Blocks.REDSTONE_BLOCK, 1, 0), new ItemStack(Blocks.REDSTONE_ORE, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.DIAMOND, 4, 0), new ItemStack(Blocks.DIAMOND_ORE, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Items.EMERALD, 4, 0), new ItemStack(Blocks.EMERALD_ORE, 1, 0));
-        registerLowConsumptionInfusion(new ItemStack(Blocks.ICE, 1, 0), new ItemStack(Blocks.GLASS, 1, 0));
+        registerLowConsumptionInfusion(ItemCraftingComponent.MetaType.GLASS_LENS.asStack(),         new ItemStack(Blocks.glass_pane, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Blocks.clay, 1, 0), new ItemStack(Blocks.sand, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Blocks.grass, 1, 0), new ItemStack(Blocks.dirt, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.ender_eye, 1, 0), new ItemStack(Items.ender_pearl, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.glowstone_dust, 1, 0), new ItemStack(Items.gunpowder, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.gunpowder, 1, 0), new ItemStack(Items.redstone, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.dye, 4, 15), new ItemStack(Items.bone, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.blaze_powder, 4, 0), new ItemStack(Items.blaze_rod, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.magma_cream, 1, 0), new ItemStack(Items.slime_ball, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.golden_carrot, 1, 0), new ItemStack(Items.carrot, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.speckled_melon, 1, 0), new ItemStack(Items.melon, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.iron_ingot, 2, 0), new ItemStack(Blocks.iron_ore, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.gold_ingot, 2, 0), new ItemStack(Blocks.gold_ore, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Blocks.lapis_block, 1, 0), new ItemStack(Blocks.lapis_ore, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Blocks.redstone_block, 1, 0), new ItemStack(Blocks.redstone_ore, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.diamond, 4, 0), new ItemStack(Blocks.diamond_ore, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Items.emerald, 4, 0), new ItemStack(Blocks.emerald_ore, 1, 0));
+        registerLowConsumptionInfusion(new ItemStack(Blocks.ice, 1, 0), new ItemStack(Blocks.glass, 1, 0));
 
         registerInfusionRecipe(new InfusionRecipeChargeTool(ItemsAS.chargedCrystalAxe));
         registerInfusionRecipe(new InfusionRecipeChargeTool(ItemsAS.chargedCrystalPickaxe));
@@ -152,7 +153,11 @@ public class RegistryRecipes {
 
         CraftingManager manager = CraftingManager.getInstance();
 
-        manager.addRecipe(new RecipeChangeWandColor());
+        manager.addRecipe(new ItemStack(Blocks.fence, 2),   " D ",
+            " W ",
+            " D ",
+            'D', new ItemStack(Items.dye, 1, EnumDyeColor.RED.getDyeDamage()),
+            'W', new ItemStack(ItemsAS.illuminationWand));
 
         rLPRAltar = new ShapedRecipe(BlocksAS.blockAltar)
                 .addPart(BlockBlackMarble.BlackMarbleBlockType.RAW.asStack(),
@@ -178,7 +183,7 @@ public class RegistryRecipes {
         rRJournal = new ShapedRecipe(ItemsAS.journal)
                 .addPart(ItemCraftingComponent.MetaType.PARCHMENT.asStack(),
                         ShapedRecipeSlot.UPPER_CENTER)
-                .addPart(Items.BOOK,
+                .addPart(Items.book,
                         ShapedRecipeSlot.CENTER)
                 .addPart(ItemCraftingComponent.MetaType.AQUAMARINE.asStack(),
                         ShapedRecipeSlot.LEFT,
@@ -187,7 +192,7 @@ public class RegistryRecipes {
         rCCParchment = new ShapedRecipe(ItemUtils.copyStackWithSize(ItemCraftingComponent.MetaType.PARCHMENT.asStack(), 4))
                 .addPart(ItemCraftingComponent.MetaType.AQUAMARINE.asStack(),
                         ShapedRecipeSlot.CENTER)
-                .addPart(Items.PAPER,
+                .addPart(Items.paper,
                         ShapedRecipeSlot.UPPER_CENTER,
                         ShapedRecipeSlot.LOWER_CENTER,
                         ShapedRecipeSlot.LEFT,
@@ -195,7 +200,7 @@ public class RegistryRecipes {
 
         rBlackMarbleRaw = new ShapedRecipe(new ItemStack(BlocksAS.blockBlackMarble, 8, BlockBlackMarble.BlackMarbleBlockType.RAW.ordinal()))
                 .addPart(OreDictAlias.BLOCK_MARBLE, ShapedRecipeSlot.values())
-                .addPart(Items.COAL, ShapedRecipeSlot.CENTER);
+                .addPart(Items.coal, ShapedRecipeSlot.CENTER);
 
         rMarbleEngraved = new ShapedRecipe(new ItemStack(BlocksAS.blockMarble, 5, BlockMarble.MarbleBlockType.ENGRAVED.ordinal()))
                 .addPart(OreDictAlias.BLOCK_MARBLE,
@@ -245,19 +250,19 @@ public class RegistryRecipes {
                 .setInput(new ItemStack(BlocksAS.customSandOre, 1, BlockCustomSandOre.OreType.AQUAMARINE.ordinal()))
                 .setExp(1F);
 
-        manager.addRecipe(rLPRAltar.makeLightProximityRecipe());
-        manager.addRecipe(rLPRWand.makeLightProximityRecipe());
-        manager.addRecipe(rRJournal.make());
-        manager.addRecipe(rCCParchment.make());
-
-        manager.addRecipe(rBlackMarbleRaw.make());
-        manager.addRecipe(rMarbleArch.make());
-        manager.addRecipe(rMarblePillar.make());
-        manager.addRecipe(rMarbleRuned.make());
-        manager.addRecipe(rMarbleEngraved.make());
-        manager.addRecipe(rMarbleChiseled.make());
-        manager.addRecipe(rMarbleBricks.make());
-        manager.addRecipe(rMarbleStairs.make());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2), rLPRAltar.makeLightProximityRecipe());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rLPRWand.makeLightProximityRecipe());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rRJournal.make());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rCCParchment.make());
+//
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rBlackMarbleRaw.make());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rMarbleArch.make());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rMarblePillar.make());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rMarbleRuned.make());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rMarbleEngraved.make());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rMarbleChiseled.make());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rMarbleBricks.make());
+//        manager.addRecipe(new ItemStack(Blocks.fence, 2),rMarbleStairs.make());
 
         rSmeltStarmetalOre.register();
         rSmeltAquamarineOre.register();
@@ -490,8 +495,8 @@ public class RegistryRecipes {
                 .addPart(ItemCraftingComponent.MetaType.AQUAMARINE.asStack(),
                         ShapedRecipeSlot.UPPER_CENTER,
                         ShapedRecipeSlot.LOWER_CENTER));
-        rGlassLensFire.setAttItem(Items.BLAZE_POWDER, AttunementRecipe.AttunementAltarSlot.values());
-        rGlassLensFire.setCstItem(Items.BLAZE_POWDER,
+        rGlassLensFire.setAttItem(Items.blaze_powder, AttunementRecipe.AttunementAltarSlot.values());
+        rGlassLensFire.setCstItem(Items.blaze_powder,
                 ConstellationRecipe.ConstellationAtlarSlot.UP_LEFT_LEFT,
                 ConstellationRecipe.ConstellationAtlarSlot.UP_RIGHT_RIGHT,
                 ConstellationRecipe.ConstellationAtlarSlot.DOWN_LEFT_LEFT,
@@ -502,7 +507,7 @@ public class RegistryRecipes {
                         ShapedRecipeSlot.CENTER)
                 .addPart(OreDictAlias.ITEM_DIAMOND,
                         ShapedRecipeSlot.UPPER_CENTER)
-                .addPart(Items.IRON_PICKAXE,
+                .addPart(Items.iron_pickaxe,
                         ShapedRecipeSlot.LOWER_CENTER));
         rGlassLensBreak.setAttItem(ItemCraftingComponent.MetaType.AQUAMARINE.asStack(),
                 AttunementRecipe.AttunementAltarSlot.UPPER_RIGHT,
@@ -514,7 +519,7 @@ public class RegistryRecipes {
         rGlassLensDamage = registerConstellationRecipe(new ShapedRecipe(ItemColoredLens.ColorType.DAMAGE.asStack())
                 .addPart(ItemCraftingComponent.MetaType.GLASS_LENS.asStack(),
                         ShapedRecipeSlot.CENTER)
-                .addPart(Items.FLINT,
+                .addPart(Items.flint,
                         ShapedRecipeSlot.LOWER_LEFT,
                         ShapedRecipeSlot.LOWER_RIGHT)
                 .addPart(OreDictAlias.ITEM_DIAMOND,
@@ -541,14 +546,14 @@ public class RegistryRecipes {
         rGlassLensGrowth.setCstItem(OreDictAlias.ITEM_SUGARCANE,
                 ConstellationRecipe.ConstellationAtlarSlot.UP_UP_RIGHT,
                 ConstellationRecipe.ConstellationAtlarSlot.UP_UP_LEFT);
-        rGlassLensGrowth.setCstItem(Items.WHEAT_SEEDS,
+        rGlassLensGrowth.setCstItem(Items.wheat_seeds,
                 ConstellationRecipe.ConstellationAtlarSlot.DOWN_DOWN_RIGHT,
                 ConstellationRecipe.ConstellationAtlarSlot.DOWN_DOWN_LEFT);
 
         rGlassLensRegeneration = registerConstellationRecipe(new ShapedRecipe(ItemColoredLens.ColorType.REGEN.asStack())
                 .addPart(ItemCraftingComponent.MetaType.GLASS_LENS.asStack(),
                         ShapedRecipeSlot.CENTER)
-                .addPart(Items.GHAST_TEAR,
+                .addPart(Items.ghast_tear,
                         ShapedRecipeSlot.UPPER_CENTER)
                 .addPart(OreDictAlias.ITEM_DIAMOND,
                         ShapedRecipeSlot.LOWER_CENTER));
@@ -559,7 +564,7 @@ public class RegistryRecipes {
         rGlassLensPush = registerConstellationRecipe(new ShapedRecipe(ItemColoredLens.ColorType.PUSH.asStack())
                 .addPart(ItemCraftingComponent.MetaType.GLASS_LENS.asStack(),
                         ShapedRecipeSlot.CENTER)
-                .addPart(Blocks.PISTON,
+                .addPart(Blocks.piston,
                         ShapedRecipeSlot.UPPER_LEFT,
                         ShapedRecipeSlot.UPPER_RIGHT));
         rGlassLensPush.setAttItem(OreDictAlias.ITEM_GLOWSTONE_DUST, AttunementRecipe.AttunementAltarSlot.values());
@@ -644,7 +649,7 @@ public class RegistryRecipes {
                         ShapedRecipeSlot.LEFT,
                         ShapedRecipeSlot.RIGHT,
                         ShapedRecipeSlot.LOWER_CENTER)
-                .addPart(Items.BOOK,
+                .addPart(Items.book,
                         ShapedRecipeSlot.CENTER)
                 .addPart(ItemCraftingComponent.MetaType.PARCHMENT.asStack(),
                         ShapedRecipeSlot.UPPER_CENTER));
@@ -652,7 +657,7 @@ public class RegistryRecipes {
 
         registerDiscoveryRecipe(new ShapedRecipe(new ItemStack(BlocksAS.blockBlackMarble, 8, BlockBlackMarble.BlackMarbleBlockType.RAW.ordinal()))
                 .addPart(OreDictAlias.BLOCK_MARBLE, ShapedRecipeSlot.values())
-                .addPart(Items.COAL, ShapedRecipeSlot.CENTER)).setPassiveStarlightRequirement(20);
+                .addPart(Items.coal, ShapedRecipeSlot.CENTER)).setPassiveStarlightRequirement(20);
 
         registerAltarRecipe(new DiscoveryRecipe(new ShapedRecipe(new ItemStack(BlocksAS.blockMarble, 3, BlockMarble.MarbleBlockType.RUNED.ordinal()))
                 .addPart(OreDictAlias.BLOCK_MARBLE,

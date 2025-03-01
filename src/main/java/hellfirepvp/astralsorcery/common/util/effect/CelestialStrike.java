@@ -18,13 +18,12 @@ import hellfirepvp.astralsorcery.common.util.SkyCollectionHelper;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -42,7 +41,7 @@ public class CelestialStrike {
 
     public static void play(@Nullable EntityLivingBase except, World world, Vector3 position, Vector3 displayPosition) {
         double radius = 16D;
-        List<EntityLivingBase> livingEntities = world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(0, 0, 0, 0, 0, 0).expand(radius, radius / 2, radius).offset(position.toBlockPos()), EntitySelectors.IS_ALIVE);
+        List<EntityLivingBase> livingEntities = world.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0).expand(radius, radius / 2, radius).offset(position.toBlockPos().getX(), position.toBlockPos().getY(), position.toBlockPos().getZ()));
         if(except != null) {
             livingEntities.remove(except);
         }
@@ -51,9 +50,9 @@ public class CelestialStrike {
         dmg += ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(world) * 20F;
         dmg += SkyCollectionHelper.getSkyNoiseDistribution(world, position.toBlockPos()) * 40F;
         for (EntityLivingBase living : livingEntities) {
-            if(!(living instanceof EntityPlayer) || (!((EntityPlayer) living).isSpectator() && !((EntityPlayer) living).isCreative())) {
+            if(!(living instanceof EntityPlayer) || !((EntityPlayer) living).capabilities.isCreativeMode) { //(!((EntityPlayer) living).isSpectator() && !((EntityPlayer) living).isCreative())) {
                 float dstPerc = (float) (new Vector3(living).distance(position) / radius);
-                dstPerc = 1F - MathHelper.clamp(dstPerc, 0F, 1F);
+                dstPerc = 1F - MathHelper.clamp_float(dstPerc, 0F, 1F);
                 float dmgDealt = dstPerc * dmg;
                 if(dmgDealt > 0.5) {
                     living.attackEntityFrom(CommonProxy.dmgSourceStellar, dmgDealt);

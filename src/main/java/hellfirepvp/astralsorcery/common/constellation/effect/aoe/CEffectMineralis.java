@@ -18,18 +18,17 @@ import hellfirepvp.astralsorcery.common.constellation.effect.GenListEntries;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStone;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -51,8 +50,8 @@ public class CEffectMineralis extends CEffectPositionList {
 
     public CEffectMineralis() {
         super(Constellations.mineralis, "mineralis", searchRange, maxCount, (world, pos) -> {
-            IBlockState state = world.getBlockState(pos);
-            return state.getBlock() == Blocks.STONE && state.getValue(BlockStone.VARIANT).equals(BlockStone.EnumType.STONE);
+            Block state = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+            return state == Blocks.stone;// && state.getValue(BlockStone.VARIANT).equals(BlockStone.EnumType.STONE);
         });
     }
 
@@ -82,12 +81,14 @@ public class CEffectMineralis extends CEffectPositionList {
         GenListEntries.SimpleBlockPosEntry entry = getRandomElementByChance(rand);
         if(entry != null) {
             BlockPos sel = entry.getPos();
-            if(MiscUtils.isChunkLoaded(world, new ChunkPos(sel))) {
+            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(sel.chunkX(), sel.chunkZ()))) {
                 if(verifier.isValid(world, sel)) {
                     ItemStack blockStack = OreTypes.getRandomOre(rand);
                     if(rand.nextInt(200_000) == 0) blockStack = new ItemStack(BlocksAS.customOre, 1, BlockCustomOre.OreType.STARMETAL.ordinal());
                     if(blockStack != null) {
-                        world.setBlockState(sel, Block.getBlockFromItem(blockStack.getItem()).getStateFromMeta(blockStack.getItemDamage()));
+                        Block block = Block.getBlockFromItem(blockStack.getItem());
+                        int meta = blockStack.getItemDamage();
+                        world.setBlock(sel.getX(), sel.getY(), sel.getZ(), block, meta, 3);
                     }
                 } else {
                     removeElement(entry);

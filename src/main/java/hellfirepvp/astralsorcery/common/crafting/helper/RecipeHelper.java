@@ -177,11 +177,11 @@ public class RecipeHelper {
             return this.input;
         }
 
-        @Override
-        public ItemStack[] getRemainingItems(InventoryCrafting inv) //getRecipeLeftovers
-        {
-            return ForgeHooks.defaultRecipeGetRemainingItems(inv);
-        }
+//        @Override
+//        public ItemStack[] getRemainingItems(InventoryCrafting inv) //getRecipeLeftovers
+//        {
+//            return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+//        }
     }
 
     public static class ShapedHandleOreRecipe extends ShapedOreRecipe {
@@ -189,16 +189,22 @@ public class RecipeHelper {
         public static final int MAX_CRAFT_GRID_WIDTH = 3;
         public static final int MAX_CRAFT_GRID_HEIGHT = 3;
 
-        public ShapedHandleOreRecipe(Block result, Object... recipe) {
-            this(new ItemStack(result), recipe);
-        }
+        private ItemStack output = null;
+        private Object[] input = null;
+        private int width = 0;
+        private int height = 0;
+        private boolean mirrored = true;
 
-        public ShapedHandleOreRecipe(Item result, Object... recipe) {
-            this(new ItemStack(result), recipe);
-        }
+//        public ShapedHandleOreRecipe(Block result, Object... recipe) {
+//            this(new ItemStack(result), recipe);
+//        }
+//
+//        public ShapedHandleOreRecipe(Item result, Object... recipe) {
+//            this(new ItemStack(result), recipe);
+//        }
 
         public ShapedHandleOreRecipe(ItemStack result, Object... recipe) {
-            super(result.copy(), "R", 'R', new ItemStack(Blocks.STONE)); //Placeholder
+            super(result.copy(), "R", 'R', new ItemStack(Blocks.stone)); //Placeholder
             output = null;
             input = null;
             height = 0;
@@ -405,10 +411,10 @@ public class RecipeHelper {
             return this.input;
         }
 
-        @Override
-        public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-            return ForgeHooks.defaultRecipeGetRemainingItems(inv);
-        }
+//        @Override
+//        public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+//            return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+//        }
 
     }
 

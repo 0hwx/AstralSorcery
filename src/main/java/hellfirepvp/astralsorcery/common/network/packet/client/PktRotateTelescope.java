@@ -10,18 +10,18 @@ package hellfirepvp.astralsorcery.common.network.packet.client;
 
 import hellfirepvp.astralsorcery.client.gui.GuiTelescope;
 import hellfirepvp.astralsorcery.common.tile.TileTelescope;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -77,8 +77,8 @@ public class PktRotateTelescope implements IMessage, IMessageHandler<PktRotateTe
 
     @SideOnly(Side.CLIENT)
     private void applyRotation(PktRotateTelescope pkt) {
-        if(Minecraft.getMinecraft().world.provider.getDimension() == pkt.dimId) {
-            TileTelescope tt = MiscUtils.getTileAt(Minecraft.getMinecraft().world, pkt.pos, TileTelescope.class, true);
+        if(Minecraft.getMinecraft().theWorld.provider.dimensionId == pkt.dimId) {
+            TileTelescope tt = MiscUtils.getTileAt(Minecraft.getMinecraft().theWorld, pkt.pos, TileTelescope.class, true);
             if(tt != null) {
                 tt.setRotation(pkt.isClockwise ? tt.getRotation().nextClockWise() : tt.getRotation().nextCounterClockWise());
             }

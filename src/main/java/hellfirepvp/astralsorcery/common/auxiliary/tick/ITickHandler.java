@@ -8,7 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.auxiliary.tick;
 
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 import java.util.EnumSet;
 

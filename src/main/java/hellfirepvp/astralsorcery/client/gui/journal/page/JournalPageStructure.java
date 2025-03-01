@@ -14,12 +14,10 @@ import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.struct.BlockArray;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.UniversalBucket;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -77,12 +75,12 @@ public class JournalPageStructure implements IJournalPage {
             this.shift = shift;
             List<ItemStack> stacksNeeded = structure.getAsDescriptiveStacks();
             for (ItemStack stack : stacksNeeded) {
-                if(stack.getItem() instanceof UniversalBucket) {
-                    FluidStack f = ((UniversalBucket) stack.getItem()).getFluid(stack);
-                    descriptionStacks.add(new Tuple<>(stack, stack.stackSize + "x " + I18n.format(stack.getUnlocalizedName() + ".name", f.getLocalizedName())));
-                } else {
+//                if(stack.getItem() instanceof UniversalBucket) {
+//                    FluidStack f = ((UniversalBucket) stack.getItem()).getFluid(stack);
+//                    descriptionStacks.add(new Tuple<>(stack, stack.stackSize + "x " + I18n.format(stack.getUnlocalizedName() + ".name", f.getLocalizedName())));
+//                } else {
                     descriptionStacks.add(new Tuple<>(stack, stack.stackSize + "x " + I18n.format(stack.getUnlocalizedName() + ".name")));
-                }
+//                }
             }
         }
 
@@ -128,14 +126,14 @@ public class JournalPageStructure implements IJournalPage {
             fr.drawString(head, 0, 0, 0x00DDDDDD, true);
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             GL11.glPopMatrix();
-            GlStateManager.color(1F, 1F, 1F, 1F);
+            GL11.glColor4f(1F, 1F, 1F, 1F);
         }
 
         private float renderSizeDescription(float offsetX, float offsetY) {
-            Vec3i size = blocks.getSize();
+            Vec3 size = blocks.getSize();
             FontRenderer fr = getStandardFontRenderer();
             float scale = 1.3F;
-            String desc = size.getX() + " - " + size.getY() + " - " + size.getZ();
+            String desc = size.xCoord + " - " + size.yCoord + " - " + size.zCoord;
             float length = fr.getStringWidth(desc) * scale;
             GL11.glPushMatrix();
             GL11.glTranslated(offsetX, offsetY, 0);
@@ -144,7 +142,7 @@ public class JournalPageStructure implements IJournalPage {
             fr.drawString(desc, 0, 0, 0x00DDDDDD, true);
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             GL11.glPopMatrix();
-            GlStateManager.color(1F, 1F, 1F, 1F);
+            GL11.glColor4f(1F, 1F, 1F, 1F);
             return length + 8F;
         }
 

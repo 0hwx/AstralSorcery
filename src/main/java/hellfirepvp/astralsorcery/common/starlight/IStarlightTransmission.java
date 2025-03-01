@@ -9,7 +9,7 @@
 package hellfirepvp.astralsorcery.common.starlight;
 
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
-import net.minecraft.util.math.BlockPos;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;

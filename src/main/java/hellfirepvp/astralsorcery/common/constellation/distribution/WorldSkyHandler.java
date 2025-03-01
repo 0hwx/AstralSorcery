@@ -19,10 +19,10 @@ import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.constellation.MoonPhase;
 import hellfirepvp.astralsorcery.common.data.DataActiveCelestials;
 import hellfirepvp.astralsorcery.common.data.SyncDataHolder;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -184,7 +184,7 @@ public class WorldSkyHandler {
 
         if(!w.isRemote) {
             DataActiveCelestials celestials = SyncDataHolder.getDataServer(SyncDataHolder.DATA_CONSTELLATIONS);
-            celestials.setNewConstellations(w.provider.getDimension(), activeConstellations);
+            celestials.setNewConstellations(w.provider.dimensionId, activeConstellations);
         } else {
             ((ClientConstellationPositionMapping) clientConstellationPositionMapping)
                     .updatePositions(activeConstellations);
@@ -206,9 +206,9 @@ public class WorldSkyHandler {
         for (IConstellationSpecialShowup special : ConstellationRegistry.getSpecialShowupConstellations()) {
             if(special.doesShowUp(this, w, lastRecordedDay)) {
                 activeConstellations.addLast(special);
-                activeDistributions.put(special, MathHelper.clamp(special.getDistribution(this, w, lastRecordedDay, true), 0F, 1F));
+                activeDistributions.put(special, MathHelper.clamp_float(special.getDistribution(this, w, lastRecordedDay, true), 0F, 1F));
             } else {
-                activeDistributions.put(special, MathHelper.clamp(special.getDistribution(this, w, lastRecordedDay, false), 0F, 1F));
+                activeDistributions.put(special, MathHelper.clamp_float(special.getDistribution(this, w, lastRecordedDay, false), 0F, 1F));
             }
         }
     }
@@ -249,7 +249,7 @@ public class WorldSkyHandler {
         LinkedList<IConstellation> out = new LinkedList<>();
         LinkedList<Map.Entry<IConstellation, Float>> entries = new LinkedList<>();
         activeDistributions.entrySet().forEach(entries::add);
-        Collections.sort(entries, (e1, e2) -> MathHelper.floor(e2.getValue() * 1000) - MathHelper.floor(e1.getValue() * 1000));
+        Collections.sort(entries, (e1, e2) -> MathHelper.floor_double(e2.getValue() * 1000) - MathHelper.floor_double(e1.getValue() * 1000));
         entries.forEach((e) -> out.addLast(e.getKey()));
         return out;
     }

@@ -13,14 +13,14 @@ import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.data.config.entry.ConfigEntry;
 import hellfirepvp.astralsorcery.common.tile.TileRitualLink;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -62,7 +62,7 @@ public abstract class ConstellationEffect extends ConfigEntry {
 
     //Once per TE client tick
     @SideOnly(Side.CLIENT)
-    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal,  float percEffectVisibility, boolean extendedEffects) {}
+    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility, boolean extendedEffects) {}
 
     //May be executed multiple times per tick
     //Even if this effect can handle multiple effects per tick, it is still possible that this method is called.
@@ -90,11 +90,11 @@ public abstract class ConstellationEffect extends ConfigEntry {
 
     @Nullable
     public TileRitualPedestal getPedestal(World world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getTileEntity(pos.getX(), pos.getY(), pos.getZ());
         if(te == null) return null;
         if(te instanceof TileRitualLink) {
             TileRitualLink link = (TileRitualLink) te;
-            pos = link.getPos();
+            pos = new BlockPos(link.xCoord, link.yCoord, link.zCoord);
             return MiscUtils.getTileAt(world, pos, TileRitualPedestal.class, false);
         }
         return te instanceof TileRitualPedestal ? (TileRitualPedestal) te : null;

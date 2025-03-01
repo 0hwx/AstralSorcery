@@ -8,19 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.IIcon;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,16 +32,18 @@ import java.util.List;
  */
 public class BlockBlackMarble extends Block implements BlockCustomName, BlockVariants {
 
-    public static PropertyEnum<BlackMarbleBlockType> BLACK_MARBLE_TYPE = PropertyEnum.create("marbletype", BlackMarbleBlockType.class);
+//    public static PropertyEnum<BlackMarbleBlockType> BLACK_MARBLE_TYPE = PropertyEnum.create("marbletype", BlackMarbleBlockType.class);
+    private IIcon[] icons = new IIcon[BlackMarbleBlockType.values().length];
 
     public BlockBlackMarble() {
-        super(Material.ROCK, MapColor.BLACK);
+        super(Material.rock);
         setHardness(1.0F);
         setHarvestLevel("pickaxe", 1);
         setResistance(3.0F);
-        setSoundType(SoundType.STONE);
+//        setSoundType(SoundType.STONE);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
-        setDefaultState(this.blockState.getBaseState().withProperty(BLACK_MARBLE_TYPE, BlackMarbleBlockType.RAW));
+        setBlockName("BlockBlackMarble");
+//        setDefaultState(this.blockState.getBaseState().withProperty(BLACK_MARBLE_TYPE, BlackMarbleBlockType.RAW));
     }
 
     @Override
@@ -54,67 +54,85 @@ public class BlockBlackMarble extends Block implements BlockCustomName, BlockVar
     }
 
     @Override
-    public int damageDropped(IBlockState state) {
-        return getMetaFromState(state);
+    public int damageDropped(int meta) {
+        return meta;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube() {
         return true;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
+    public boolean isNormalCube() {
         return true;
     }
 
     @Override
-    public boolean isFullBlock(IBlockState state) {
+    public boolean func_149730_j() {
         return true;
     }
 
-    @Override
-    public boolean isFullyOpaque(IBlockState state) {
-        return true;
-    }
+//    @Override
+//    public boolean isFullyOpaque() {
+//        return true;
+//    }
 
     @Override
     public String getIdentifierForMeta(int meta) {
-        BlackMarbleBlockType mt = getStateFromMeta(meta).getValue(BLACK_MARBLE_TYPE);
-        return mt == null ? "null" : mt.getName();
+        return BlackMarbleBlockType.values()[meta].getName();
     }
 
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        BlackMarbleBlockType type = state.getValue(BLACK_MARBLE_TYPE);
-        return type == null ? 0 : type.getMeta();
-    }
+//    @Override
+//    public int getMeta(Block state) {
+//        BlackMarbleBlockType type = state.getValue(BLACK_MARBLE_TYPE);
+//        return type == null ? 0 : type.getMeta();
+//    }
+//
+//    @Override
+//    public Block getStateFromMeta(int meta) {
+//        return meta < BlackMarbleBlockType.values().length ? getDefaultState().withProperty(BLACK_MARBLE_TYPE, BlackMarbleBlockType.values()[meta]) : getDefaultState();
+//    }
+//
+//    @Override
+//    protected BlockStateContainer createBlockState() {
+//        return new BlockStateContainer(this, BLACK_MARBLE_TYPE);
+//    }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return meta < BlackMarbleBlockType.values().length ? getDefaultState().withProperty(BLACK_MARBLE_TYPE, BlackMarbleBlockType.values()[meta]) : getDefaultState();
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, BLACK_MARBLE_TYPE);
-    }
-
-    @Override
-    public List<IBlockState> getValidStates() {
-        List<IBlockState> ret = new LinkedList<>();
-        for (BlackMarbleBlockType type : BlackMarbleBlockType.values()) {
-            ret.add(getDefaultState().withProperty(BLACK_MARBLE_TYPE, type));
-        }
+    public List<Block> getValidStates() {
+        List<Block> ret = new LinkedList<>();
+//        for (BlackMarbleBlockType type : BlackMarbleBlockType.values()) {
+//            ret.add(getDefaultState().withProperty(BLACK_MARBLE_TYPE, type));
+//        }
         return ret;
     }
 
     @Override
-    public String getStateName(IBlockState state) {
-        return state.getValue(BLACK_MARBLE_TYPE).getName();
+    public String getMetaName(int meta) {
+        return "state.getUnlocalizedName()";
     }
 
-    public static enum BlackMarbleBlockType implements IStringSerializable {
+    @Override
+    public int getMeta() {
+        return 0;
+    }
+
+
+    public IIcon getIcon(int side, int meta)
+    {
+        return icons[meta];
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void registerBlockIcons(IIconRegister reg)
+    {
+        for (BlackMarbleBlockType type : BlackMarbleBlockType.values()) {
+            icons[type.getMeta()] = reg.registerIcon("astralsorcery:black_marble_" + type.getName());
+        }
+    }
+
+    public static enum BlackMarbleBlockType {
 
         RAW(0);
 
@@ -128,15 +146,14 @@ public class BlockBlackMarble extends Block implements BlockCustomName, BlockVar
             return new ItemStack(BlocksAS.blockBlackMarble, 1, meta);
         }
 
-        public IBlockState asBlock() {
-            return BlocksAS.blockBlackMarble.getStateFromMeta(meta);
+        public Block asBlock() {
+            return BlocksAS.blockBlackMarble;//.getStateFromMeta(meta);
         }
 
         public int getMeta() {
             return meta;
         }
 
-        @Override
         public String getName() {
             return name().toLowerCase();
         }

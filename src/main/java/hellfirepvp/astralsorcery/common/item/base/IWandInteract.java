@@ -8,10 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.item.base;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -22,6 +22,6 @@ import net.minecraft.world.World;
  */
 public interface IWandInteract {
 
-    public void onInteract(World world, BlockPos pos, EntityPlayer player, EnumFacing side, boolean sneak);
+    public void onInteract(World world, BlockPos pos, EntityPlayer player, int side, boolean sneak);
 
 }

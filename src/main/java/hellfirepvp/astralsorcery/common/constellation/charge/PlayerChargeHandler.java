@@ -8,15 +8,16 @@
 
 package hellfirepvp.astralsorcery.common.constellation.charge;
 
+import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
 import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktSyncCharge;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
+import net.minecraft.util.MathHelper;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -44,16 +45,17 @@ public class PlayerChargeHandler implements ITickHandler {
             EntityPlayer pl = (EntityPlayer) context[0];
             float charge = getCharge(pl);
             if(charge < 1F) {
-                if(pl.isCreative()) {
+                if(pl.capabilities.isCreativeMode) {
                     charge = 1F;
                 } else {
                     float chargeGain = 0.01F;
                     float dayMult = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(pl.getEntityWorld());
                     chargeGain *= (0.5F + dayMult * 0.5F);
-                    if(pl.getEntityWorld().canSeeSky(pl.getPosition().up())) {
+                    BlockPos pos = new BlockPos(pl).up().getPosition();//getPosition
+                    if(pl.getEntityWorld().canBlockSeeTheSky(pos.getX(), pos.getY(), pos.getZ())) {
                         chargeGain *= 6F;
                     }
-                    charge = MathHelper.clamp(charge + chargeGain, 0F, 1F);
+                    charge = MathHelper.clamp_float(charge + chargeGain, 0F, 1F);
                 }
                 setCharge(pl, charge);
 
@@ -76,7 +78,7 @@ public class PlayerChargeHandler implements ITickHandler {
     }
 
     public void setCharge(EntityPlayer player, float charge) {
-        chargeMap.put(player, MathHelper.clamp(charge, 0F, 1F));
+        chargeMap.put(player, MathHelper.clamp_float(charge, 0F, 1F));
     }
 
     public boolean hasAtLeast(EntityPlayer player, float toTest) {

@@ -8,7 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.util.data;
 
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+
+import cpw.mods.fml.relauncher.ReflectionHelper;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

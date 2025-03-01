@@ -21,12 +21,9 @@ import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -274,7 +271,7 @@ public class GuiProgressionRenderer {
                 TextureHelper.refreshTextureBindState();
                 GL11.glPushMatrix();
                 GL11.glTranslated(offsetX + ((rX - lX) / 2), offsetY + ((rY - lY) / 3), 0);
-                FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+                FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
                 int width = fr.getStringWidth(name);
                 GL11.glTranslated(-width / 2, 0, 0);
                 GL11.glScaled(1.4, 1.4, 1.4);
@@ -284,7 +281,7 @@ public class GuiProgressionRenderer {
                 int color = 0x5A28FF | (alpha << 24);
                 fr.drawStringWithShadow(name, 0, 0, color);
                 GL11.glPopMatrix();
-                GlStateManager.color(1F, 1F, 1F, 1F); //Resetting.
+//                GL11.glColor4f(1F, 1F, 1F, 1F); //Resetting.
                 GL11.glColor4f(1F, 1F, 1F, 1F);
                 TextureHelper.refreshTextureBindState();
             }
@@ -386,11 +383,11 @@ public class GuiProgressionRenderer {
         double width =  higherPosX - lowerPosX;
         double height = higherPosY - lowerPosY;
 
-        Rectangle r = new Rectangle(MathHelper.floor(offsetX), MathHelper.floor(offsetY), MathHelper.floor(width), MathHelper.floor(height));
+        Rectangle r = new Rectangle(MathHelper.floor_double(offsetX), MathHelper.floor_double(offsetY), MathHelper.floor_double(width), MathHelper.floor_double(height));
         clusterRectMap.put(r, p);
 
-        Tessellator t = Tessellator.getInstance();
-        VertexBuffer vb = t.getBuffer();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = t.getBuffer();
         cluster.cloudTexture.bind();
 
         double scale = sizeHandler.getScalingFactor();
@@ -403,13 +400,18 @@ public class GuiProgressionRenderer {
         GL11.glColor4f(br, br, br, br);
 
         Blending.ADDITIVEDARK.apply();
-
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(0,     height, zLevel).tex(0, 1).endVertex();
-        vb.pos(width, height, zLevel).tex(1, 1).endVertex();
-        vb.pos(width, 0,      zLevel).tex(1, 0).endVertex();
-        vb.pos(0,     0,      zLevel).tex(0, 0).endVertex();
-        t.draw();
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(0,     height, zLevel, 0, 1);
+        tess.addVertexWithUV(width, height, zLevel, 1, 1);
+        tess.addVertexWithUV(width, 0,      zLevel, 1, 0);
+        tess.addVertexWithUV(0,     0,      zLevel, 0, 0);
+        tess.draw();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(0,     height, zLevel).tex(0, 1).endVertex();
+//        vb.pos(width, height, zLevel).tex(1, 1).endVertex();
+//        vb.pos(width, 0,      zLevel).tex(1, 0).endVertex();
+//        vb.pos(0,     0,      zLevel).tex(0, 0).endVertex();
+//        t.draw();
 
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -435,14 +437,20 @@ public class GuiProgressionRenderer {
         tex.bind();
 
         Blending.ADDITIVEDARK.apply();
-
-        VertexBuffer vb = Tessellator.getInstance().getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(realCoordLowerX,                   realCoordLowerY + realRenderHeight, zLevel).tex(0, 1).endVertex();
-        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY + realRenderHeight, zLevel).tex(1, 1).endVertex();
-        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY,                    zLevel).tex(1, 0).endVertex();
-        vb.pos(realCoordLowerX,                   realCoordLowerY,                    zLevel).tex(0, 0).endVertex();
-        Tessellator.getInstance().draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(realCoordLowerX,realCoordLowerY + realRenderHeight, zLevel, 0, 1);
+        tess.addVertexWithUV(realCoordLowerX + realRenderWidth,realCoordLowerY + realRenderHeight, zLevel, 1, 1);
+        tess.addVertexWithUV(realCoordLowerX + realRenderWidth,realCoordLowerY, zLevel, 1, 0);
+        tess.addVertexWithUV(realCoordLowerX,realCoordLowerY, zLevel, 0, 0);
+        tess.draw();
+//        VertexBuffer vb = Tessellator.getInstance().getBuffer();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(realCoordLowerX,                   realCoordLowerY + realRenderHeight, zLevel).tex(0, 1).endVertex();
+//        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY + realRenderHeight, zLevel).tex(1, 1).endVertex();
+//        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY,                    zLevel).tex(1, 0).endVertex();
+//        vb.pos(realCoordLowerX,                   realCoordLowerY,                    zLevel).tex(0, 0).endVertex();
+//        Tessellator.getInstance().draw();
 
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -459,14 +467,20 @@ public class GuiProgressionRenderer {
         float highU = lowU + (((float) renderWidth) / ((float) sizeHandler.getTotalWidth()));
         float lowV = (((float) this.topOffset) - sizeHandler.heightToBorder) / ((float) sizeHandler.getTotalHeight());
         float highV = lowV + (((float) renderHeight) / ((float) sizeHandler.getTotalHeight()));*/
-
-        VertexBuffer vb = Tessellator.getInstance().getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(realCoordLowerX,                   realCoordLowerY + realRenderHeight, zLevel).tex(0, 1).endVertex();
-        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY + realRenderHeight, zLevel).tex(1, 1).endVertex();
-        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY,                    zLevel).tex(1, 0).endVertex();
-        vb.pos(realCoordLowerX,                   realCoordLowerY,                    zLevel).tex(0, 0).endVertex();
-        Tessellator.getInstance().draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(realCoordLowerX,realCoordLowerY + realRenderHeight, zLevel, 0, 1);
+        tess.addVertexWithUV(realCoordLowerX + realRenderWidth,realCoordLowerY + realRenderHeight, zLevel, 1, 1);
+        tess.addVertexWithUV(realCoordLowerX + realRenderWidth,realCoordLowerY, zLevel, 1, 0);
+        tess.addVertexWithUV(realCoordLowerX,realCoordLowerY, zLevel, 0, 0);
+        tess.draw();
+//        VertexBuffer vb = Tessellator.getInstance().getBuffer();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(realCoordLowerX,                   realCoordLowerY + realRenderHeight, zLevel).tex(0, 1).endVertex();
+//        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY + realRenderHeight, zLevel).tex(1, 1).endVertex();
+//        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY,                    zLevel).tex(1, 0).endVertex();
+//        vb.pos(realCoordLowerX,                   realCoordLowerY,                    zLevel).tex(0, 0).endVertex();
+//        Tessellator.getInstance().draw();
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -486,13 +500,20 @@ public class GuiProgressionRenderer {
         double lowV = (scalePosY - sizeHandler.heightToBorder) / th;
         double highV = lowV + (((float) realRenderHeight) / th);
 
-        VertexBuffer vb = Tessellator.getInstance().getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(0,               realRenderHeight, zLevel).tex(lowU,  highV).endVertex();
-        vb.pos(realRenderWidth, realRenderHeight, zLevel).tex(highU, highV).endVertex();
-        vb.pos(realRenderWidth, 0,                zLevel).tex(highU, lowV) .endVertex();
-        vb.pos(0,               0,                zLevel).tex(lowU, lowV) .endVertex();
-        Tessellator.getInstance().draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(0,realRenderHeight, zLevel, lowU,  highV);
+        tess.addVertexWithUV(realRenderWidth, realRenderHeight, zLevel, highU, highV);
+        tess.addVertexWithUV(realRenderWidth, 0,zLevel, highU, lowV);
+        tess.addVertexWithUV(0, 0, zLevel, lowU, lowV);
+        tess.draw();
+//        VertexBuffer vb = Tessellator.getInstance().getBuffer();
+//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(0,               realRenderHeight, zLevel).tex(lowU,  highV).endVertex();
+//        vb.pos(realRenderWidth, realRenderHeight, zLevel).tex(highU, highV).endVertex();
+//        vb.pos(realRenderWidth, 0,                zLevel).tex(highU, lowV) .endVertex();
+//        vb.pos(0,               0,                zLevel).tex(lowU, lowV) .endVertex();
+//        Tessellator.getInstance().draw();
         GL11.glPopMatrix();
         GL11.glColor4f(1F, 1F, 1F, 1F);
     }

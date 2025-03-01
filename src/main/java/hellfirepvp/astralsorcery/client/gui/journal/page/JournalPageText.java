@@ -69,7 +69,7 @@ public class JournalPageText implements IJournalPage {
             GL11.glDisable(GL11.GL_DEPTH_TEST);
             for (int i = 0; i < lines.size(); i++) {
                 String line = lines.get(i);
-                fontRenderer.drawString(line, offsetX, offsetY + (i * 10), 0x00DDDDDD, false);
+                fontRenderer.drawString(line, (int) offsetX, (int) (offsetY + (i * 10)), 0x00DDDDDD, false);
             }
             GL11.glEnable(GL11.GL_DEPTH_TEST);
         }
@@ -86,7 +86,7 @@ public class JournalPageText implements IJournalPage {
 
         @Override
         public FontRenderer getFontRenderer() {
-            return Minecraft.getMinecraft().fontRendererObj;
+            return Minecraft.getMinecraft().fontRenderer;
         }
     }
 

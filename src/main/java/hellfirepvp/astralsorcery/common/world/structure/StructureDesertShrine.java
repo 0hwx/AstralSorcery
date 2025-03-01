@@ -10,9 +10,10 @@ package hellfirepvp.astralsorcery.common.world.structure;
 
 import hellfirepvp.astralsorcery.common.data.world.data.StructureGenBuffer;
 import hellfirepvp.astralsorcery.common.lib.MultiBlockArrays;
-import net.minecraft.util.math.BlockPos;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
+
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
 import java.util.Random;
@@ -51,25 +52,25 @@ public class StructureDesertShrine extends WorldGenAttributeStructure {
     public BlockPos getGenerationPosition(int chX, int chZ, World world, Random rand) {
         int rX = (chX  * 16) + rand.nextInt(16) + 8;
         int rZ = (chZ  * 16) + rand.nextInt(16) + 8;
-        int rY = world.getTopSolidOrLiquidBlock(new BlockPos(rX, 0, rZ)).getY();
+        int rY = world.getTopSolidOrLiquidBlock(rX,rZ);
         return new BlockPos(rX, rY, rZ);
     }
 
     private boolean canSpawnShrineCorner(World world, BlockPos pos) {
-        int dY = world.getTopSolidOrLiquidBlock(pos).getY();
+        int dY = world.getTopSolidOrLiquidBlock(pos.getX(), pos.getZ());
         return dY >= cfgEntry.getMinY() && dY <= cfgEntry.getMaxY() && Math.abs(dY - pos.getY()) <= 4 && isDesertBiome(world, pos);
     }
 
     private boolean isDesertBiome(World world, BlockPos pos) {
         if(cfgEntry.shouldIgnoreBiomeSpecifications()) return true;
 
-        Biome b = world.getBiome(pos);
-        BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(b);
-        if(types == null || types.length == 0) return false;
+//        BiomeGenBase b = world.getBiomeGenForCoords(pos.getX(), pos.getZ());
+//        BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(b);
+//        if(types == null || types.length == 0) return false;
         boolean applicable = false;
-        for (BiomeDictionary.Type t : types) {
-            if (cfgEntry.getTypes().contains(t)) applicable = true;
-        }
+//        for (BiomeDictionary.Type t : types) {
+//            if (cfgEntry.getTypes().contains(t)) applicable = true;
+//        }
         return applicable;
     }
 }

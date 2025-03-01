@@ -8,8 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.util.struct;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
+
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
 import java.util.Map;
@@ -23,10 +24,10 @@ import java.util.Map;
  */
 public class StructureBlockArray extends BlockArray {
 
-    public Map<BlockPos, IBlockState> placeInWorld(World world, BlockPos center, PastPlaceProcessor processor) {
-        Map<BlockPos, IBlockState> result = super.placeInWorld(world, center);
+    public Map<BlockPos, Block> placeInWorld(World world, BlockPos center, PastPlaceProcessor processor) {
+        Map<BlockPos, Block> result = super.placeInWorld(world, center);
         if(processor != null) {
-            for (Map.Entry<BlockPos, IBlockState> entry : result.entrySet())
+            for (Map.Entry<BlockPos, Block> entry : result.entrySet())
                 processor.process(world, entry.getKey(), entry.getValue());
         }
         return result;
@@ -34,7 +35,7 @@ public class StructureBlockArray extends BlockArray {
 
     public static interface PastPlaceProcessor {
 
-        public void process(World world, BlockPos pos, IBlockState currentState);
+        public void process(World world, BlockPos pos, Block currentState);
 
     }
 

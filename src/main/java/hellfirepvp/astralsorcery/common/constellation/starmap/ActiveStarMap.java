@@ -1,5 +1,6 @@
 package hellfirepvp.astralsorcery.common.constellation.starmap;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.constellation.DrawnConstellation;
@@ -15,9 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.Constants;
 
 import java.awt.*;
@@ -118,7 +118,7 @@ public class ActiveStarMap {
         Map<IConstellation, Float> out = new HashMap<>();
         for (Map.Entry<IConstellation, Float> entry : asm.starProportions.entrySet()) {
             float perc = entry.getValue();
-            perc = MathHelper.clamp(perc, 0F, 1F);
+            perc = MathHelper.clamp_float(perc, 0F, 1F);
             if(perc >= 0.75F) {
                 perc = (perc * 3F) - 2.25F;
                 perc *= perc;
@@ -153,14 +153,15 @@ public class ActiveStarMap {
         if (effectMap.isEmpty()) return false;
 
         boolean appliedSomething = false;
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+        Map<Integer, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
 
         lblEnchantments:
         for (Map.Entry<IConstellation, List<ConstellationMapEffectRegistry.EnchantmentMapEffect>> entry : effectMap.entrySet()) {
             for (ConstellationMapEffectRegistry.EnchantmentMapEffect effect : entry.getValue()) {
-                if (enchantments.containsKey(effect.ench)) continue;
-                for (Enchantment existing : enchantments.keySet()) {
-                    if (!existing.canApplyTogether(effect.ench) || !effect.ench.canApplyTogether(existing)) {
+                if (enchantments.containsKey(effect.ench.effectId)) continue;
+                for (Map.Entry<Integer, Integer> existingEntry : enchantments.entrySet()) {
+                    Enchantment existing = Enchantment.enchantmentsList[existingEntry.getKey()];
+                    if (existing != null && (!existing.canApplyTogether(effect.ench) || !effect.ench.canApplyTogether(existing))) {
                         continue lblEnchantments;
                     }
                 }
@@ -168,7 +169,7 @@ public class ActiveStarMap {
                 Float perc = starProportions.get(entry.getKey());
                 if (perc == null) continue;
 
-                float p = MathHelper.clamp(perc, 0F, 1F);
+                float p = MathHelper.clamp_float(perc, 0F, 1F);
                 int lvl = effect.minEnchLevel + Math.round((effect.maxEnchLevel - effect.minEnchLevel) * p);
                 if (stack.getItem() instanceof ItemEnchantedBook) {
                     ((ItemEnchantedBook) stack.getItem()).addEnchantment(stack, new EnchantmentData(effect.ench, lvl));
@@ -191,20 +192,20 @@ public class ActiveStarMap {
             if (me != null) {
                 for (ConstellationMapEffectRegistry.PotionMapEffect effect : me.potionEffects) {
                     float perc = starProportions.get(c);
-                    perc = MathHelper.clamp(perc, 0F, 1F);
+                    perc = MathHelper.clamp_float(perc, 0F, 1F);
                     int amp = effect.minPotionAmplifier + Math.round((effect.maxPotionAmplifier - effect.minPotionAmplifier) * perc);
                     int tDuration = 4 * 1200 + Math.round(rand.nextFloat() * 2 * 1200);
-                    applicableEffects.add(new PotionEffect(effect.potion, tDuration, amp, false, true));
+                    applicableEffects.add(new PotionEffect(effect.potion.getId(), tDuration, amp, false));
                 }
             }
         }
         if (rand.nextInt(30) == 0) {
-            applicableEffects.add(new PotionEffect(RegistryPotions.potionCheatDeath, 2 * 1200 + Math.round(rand.nextFloat() * 6 * 1200), 0, false, true));
+            applicableEffects.add(new PotionEffect(RegistryPotions.potionCheatDeath.getId(), 2 * 1200 + Math.round(rand.nextFloat() * 6 * 1200), 0, false));
         }
-        stack.setStackDisplayName(TextFormatting.RESET + "Stardew"); //Big RIP. 1.10.2 has no dynamic translateable name integration here.
+        stack.setStackDisplayName(ChatFormatting.RESET + "Stardew"); //Big RIP. 1.10.2 has no dynamic translateable name integration here.
         //stack.setTranslatableName("potion.as.crafted.name");
         Collections.shuffle(applicableEffects);
-        PotionUtils.appendEffects(stack, applicableEffects);
+        appendEffects(stack, applicableEffects);
     }
 
     public Collection<IConstellation> getConstellations() {
@@ -279,4 +280,25 @@ public class ActiveStarMap {
         return map;
     }
 
+    public static ItemStack appendEffects(ItemStack itemIn, Collection<PotionEffect> effects)
+    {
+        if (effects.isEmpty())
+        {
+            return itemIn;
+        }
+        else
+        {
+            NBTTagCompound nbttagcompound = (NBTTagCompound) Objects.firstNonNull(itemIn.getTagCompound(), new NBTTagCompound());
+            NBTTagList nbttaglist = nbttagcompound.getTagList("CustomPotionEffects", 9);
+
+            for (PotionEffect potioneffect : effects)
+            {
+                nbttaglist.appendTag(potioneffect.writeCustomPotionEffectToNBT(new NBTTagCompound()));
+            }
+
+            nbttagcompound.setTag("CustomPotionEffects", nbttaglist);
+            itemIn.setTagCompound(nbttagcompound);
+            return itemIn;
+        }
+    }
 }

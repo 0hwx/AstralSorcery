@@ -19,6 +19,7 @@ import hellfirepvp.astralsorcery.common.constellation.distribution.Constellation
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
@@ -27,13 +28,11 @@ import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -74,7 +73,7 @@ public class EntityFlare extends EntityFlying {
         if(world.isRemote) return;
         if(Config.ambientFlareChance <= 0) return;
         float nightPerc = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(world);
-        if(world.rand.nextInt(Config.ambientFlareChance) == 0 && world.isAirBlock(at.toBlockPos()) && world.rand.nextFloat() < nightPerc) {
+        if(world.rand.nextInt(Config.ambientFlareChance) == 0 && world.isAirBlock((int) at.getX(),(int) at.getY(),(int) at.getZ()) && world.rand.nextFloat() < nightPerc) {
             world.spawnEntityInWorld(new EntityFlare(world, at.getX(), at.getY(), at.getZ()).setAmbient(true));
         }
     }
@@ -82,7 +81,7 @@ public class EntityFlare extends EntityFlying {
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1D);
+        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(1D);
     }
 
     @Override
@@ -91,15 +90,15 @@ public class EntityFlare extends EntityFlying {
     }
 
     @Override
-    protected void initEntityAI() {
-        super.initEntityAI();
+    protected void updateAITasks() {
+        super.updateAITasks();
     }
 
     @Override
     public void onUpdate() {
         super.onUpdate();
 
-        if(world.isRemote) {
+        if(worldObj.isRemote) {
             if(texSprite == null) {
                 setupSprite();
             }
@@ -112,21 +111,23 @@ public class EntityFlare extends EntityFlying {
             if(!isDead) {
 
                 if(Config.flareKillsBats && entityAge % 70 == 0 && rand.nextBoolean()) {
-                    Entity closest = world.findNearestEntityWithinAABB(EntityBat.class, getEntityBoundingBox().expandXyz(10), this);
+                    Entity closest = worldObj.findNearestEntityWithinAABB(EntityBat.class, boundingBox.expand(10,10,10), this);
                     if(closest != null && closest instanceof EntityBat && ((EntityBat) closest).getHealth() > 0 && !closest.isDead) {
                         closest.attackEntityFrom(CommonProxy.dmgSourceStellar, 40F);
                         PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.FLARE_PROC, new Vector3(posX, posY + this.height / 2, posZ));
-                        PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(world, getPosition(), 16));
-                        AstralSorcery.proxy.fireLightning(world, new Vector3(this), new Vector3(closest), new Color(0, 0, 216));
+                        BlockPos getPosition = new BlockPos(this).getPosition();
+                        PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(worldObj, getPosition, 16));
+                        AstralSorcery.proxy.fireLightning(worldObj, new Vector3(this), new Vector3(closest), new Color(0, 0, 216));
                     }
                 }
 
                 if(isAmbient) {
-                    if((moveTarget == null || getDistanceSq(moveTarget) < 5D) && rand.nextInt(260) == 0) {
-                        moveTarget = getPosition().add(-strollRange / 2, -strollRange / 2, -strollRange / 2).add(rand.nextInt(strollRange), rand.nextInt(strollRange), rand.nextInt(strollRange));
+                    if((moveTarget == null || getDistanceSq(moveTarget.getX(), moveTarget.getY(), moveTarget.getZ()) < 5D) && rand.nextInt(260) == 0) {
+                        BlockPos getPosition = new BlockPos(this).getPosition().add(-strollRange / 2, -strollRange / 2, -strollRange / 2).add(rand.nextInt(strollRange), rand.nextInt(strollRange), rand.nextInt(strollRange));
+                        moveTarget = getPosition;
                     }
 
-                    if(moveTarget != null && (moveTarget.getY() <= 1 || !world.isAirBlock(moveTarget) || getDistanceSq(moveTarget) < 5D)) {
+                    if(moveTarget != null && (moveTarget.getY() <= 1 || !worldObj.isAirBlock(moveTarget.getX(), moveTarget.getY(), moveTarget.getZ()) || getDistanceSq(moveTarget.getX(), moveTarget.getY(), moveTarget.getZ()) < 5D)) {
                         moveTarget = null;
                     }
                 } else if(getAttackTarget() != null) {
@@ -137,8 +138,7 @@ public class EntityFlare extends EntityFlying {
                     } else {
                         moveTarget = new Vector3(getAttackTarget()).toBlockPos();
                     }
-
-                    if(moveTarget != null && (moveTarget.getY() <= 1 || getDistanceSq(moveTarget) < 3D)) {
+                    if(moveTarget != null && (moveTarget.getY() <= 1 || getDistanceSq(moveTarget.getX(), moveTarget.getY(), moveTarget.getZ()) < 3D)) {
                         moveTarget = null;
                     }
                 }
@@ -146,8 +146,9 @@ public class EntityFlare extends EntityFlying {
                 if(getAttackTarget() != null && !getAttackTarget().isDead && getAttackTarget().getDistanceToEntity(this) < 10 && rand.nextInt(40) == 0) {
                     getAttackTarget().attackEntityFrom(CommonProxy.dmgSourceStellar, 4F);
                     PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.FLARE_PROC, new Vector3(posX, posY + this.height / 2, posZ));
-                    PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(world, getPosition(), 16));
-                    AstralSorcery.proxy.fireLightning(world, new Vector3(this), new Vector3(getAttackTarget()), new Color(0, 0, 216));
+                    BlockPos getPosition = new BlockPos(this).getPosition();
+                    PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(worldObj, getPosition, 16));
+                    AstralSorcery.proxy.fireLightning(worldObj, new Vector3(this), new Vector3(getAttackTarget()), new Color(0, 0, 216));
                 }
 
                 if(moveTarget != null) {
@@ -171,8 +172,8 @@ public class EntityFlare extends EntityFlying {
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return super.getRenderBoundingBox();
+    public AxisAlignedBB getBoundingBox() {
+        return super.getBoundingBox();
     }
 
     @Override
@@ -183,13 +184,13 @@ public class EntityFlare extends EntityFlying {
 
     @Nullable
     @Override
-    protected SoundEvent getHurtSound() {
+    protected String getHurtSound() {
         return null;
     }
 
     @Nullable
     @Override
-    protected SoundEvent getDeathSound() {
+    protected String getDeathSound() {
         return null;
     }
 
@@ -197,7 +198,7 @@ public class EntityFlare extends EntityFlying {
     protected void onDeathUpdate() {
         setDead();
 
-        if(world.isRemote) {
+        if(worldObj.isRemote) {
             deathEffectsEnd();
         }
     }

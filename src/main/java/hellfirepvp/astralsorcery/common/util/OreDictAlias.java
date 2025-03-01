@@ -8,7 +8,6 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-import net.minecraft.item.EnumDyeColor;
 
 /**
  * This class is part of the Astral Sorcery Mod

@@ -9,19 +9,19 @@
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
 import hellfirepvp.astralsorcery.common.tile.TileAttunementAltar;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -86,11 +86,11 @@ public class PktAttunementAltarState implements IMessage, IMessageHandler<PktAtt
 
     @SideOnly(Side.CLIENT)
     private PktAttunementAltarState recClient(PktAttunementAltarState message) {
-        if(Minecraft.getMinecraft().world != null &&
-                Minecraft.getMinecraft().world.provider.getDimension() == message.worldId &&
-                Minecraft.getMinecraft().player != null &&
-                Minecraft.getMinecraft().player.getEntityId() == message.entityId) {
-            TileAttunementAltar ta = MiscUtils.getTileAt(Minecraft.getMinecraft().world, message.at, TileAttunementAltar.class, true);
+        if(Minecraft.getMinecraft().theWorld != null &&
+                Minecraft.getMinecraft().theWorld.provider.dimensionId == message.worldId &&
+                Minecraft.getMinecraft().thePlayer != null &&
+                Minecraft.getMinecraft().thePlayer.getEntityId() == message.entityId) {
+            TileAttunementAltar ta = MiscUtils.getTileAt(Minecraft.getMinecraft().theWorld, message.at, TileAttunementAltar.class, true);
             if (ta != null) {
                 if(ta.tryStartCameraFlight()) {
                     return new PktAttunementAltarState(true, message.worldId, message.at);

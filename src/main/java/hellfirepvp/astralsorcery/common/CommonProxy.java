@@ -9,6 +9,9 @@
 package hellfirepvp.astralsorcery.common;
 
 import com.mojang.authlib.GameProfile;
+import cpw.mods.fml.common.network.IGuiHandler;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.auxiliary.link.LinkHandler;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.TickManager;
@@ -57,17 +60,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.awt.*;
@@ -108,7 +105,7 @@ public class CommonProxy implements IGuiHandler {
         RegistryBlocks.init();
         RegistryItems.init();
         RegistryEntities.init();
-        RegistryStructures.init();
+//        RegistryStructures.init();
         RegistryPotions.init();
 
         //Transmission registry
@@ -121,7 +118,7 @@ public class CommonProxy implements IGuiHandler {
         RegistryRecipes.init();
         RegistryResearch.init();
 
-        LootTableUtil.initLootTable();
+//        LootTableUtil.initLootTable();
         ConstellationEffectRegistry.init();
 
         registerOreDictEntries();
@@ -273,7 +270,7 @@ public class CommonProxy implements IGuiHandler {
             case ALTAR_TRAIT:
                 return new ContainerAltarTrait(player.inventory, (TileAltar) t);
             case JOURNAL_STORAGE: {
-                ItemStack held = player.getHeldItem(EnumHand.MAIN_HAND);
+                ItemStack held = player.getHeldItem();
                 if(held != null) {
                     if(held.getItem() != null && held.getItem() instanceof ItemJournal) {
                         return new ContainerJournal(player.inventory, held, player.inventory.currentItem);

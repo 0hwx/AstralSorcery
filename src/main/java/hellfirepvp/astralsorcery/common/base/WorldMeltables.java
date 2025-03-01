@@ -9,15 +9,15 @@
 package hellfirepvp.astralsorcery.common.base;
 
 import hellfirepvp.astralsorcery.common.constellation.effect.GenListEntries;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.BlockStateCheck;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -32,34 +32,34 @@ import javax.annotation.Nullable;
  */
 public enum WorldMeltables implements MeltInteraction {
 
-    COBBLE(     new BlockStateCheck.Block(Blocks.COBBLESTONE),     Blocks.FLOWING_LAVA.getDefaultState(),  180),
-    STONE(      new BlockStateCheck.Block(Blocks.STONE),           Blocks.FLOWING_LAVA.getDefaultState(),  100),
-    OBSIDIAN(   new BlockStateCheck.Block(Blocks.OBSIDIAN),        Blocks.FLOWING_LAVA.getDefaultState(),  75),
-    NETHERRACK( new BlockStateCheck.Block(Blocks.NETHERRACK),      Blocks.FLOWING_LAVA.getDefaultState(),  40),
-    NETHERBRICK(new BlockStateCheck.Block(Blocks.NETHER_BRICK),    Blocks.FLOWING_LAVA.getDefaultState(),  60),
-    MAGMA(      new BlockStateCheck.Block(Blocks.MAGMA),           Blocks.FLOWING_LAVA.getDefaultState(),  1),
-    ICE(        new BlockStateCheck.Block(Blocks.ICE),             Blocks.FLOWING_WATER.getDefaultState(), 1),
-    FROSTED_ICE(new BlockStateCheck.Block(Blocks.FROSTED_ICE),     Blocks.FLOWING_WATER.getDefaultState(), 1),
-    PACKED_ICE( new BlockStateCheck.Block(Blocks.PACKED_ICE),      Blocks.FLOWING_WATER.getDefaultState(), 2);
+    COBBLE(     new BlockStateCheck.Blockes(Blocks.cobblestone),     Blocks.flowing_lava,  180),
+    STONE(      new BlockStateCheck.Blockes(Blocks.stone),           Blocks.flowing_lava,  100),
+    OBSIDIAN(   new BlockStateCheck.Blockes(Blocks.obsidian),        Blocks.flowing_lava,  75),
+    NETHERRACK( new BlockStateCheck.Blockes(Blocks.netherrack),      Blocks.flowing_lava,  40),
+    NETHERBRICK(new BlockStateCheck.Blockes(Blocks.nether_brick),    Blocks.flowing_lava,  60),
+//    MAGMA(      new BlockStateCheck.Blockes(Blocks.MAGMA),           Blocks.FLOWING_LAVA.getDefaultState(),  1),
+    ICE(        new BlockStateCheck.Blockes(Blocks.ice),             Blocks.flowing_water, 1),;
+//    FROSTED_ICE(new BlockStateCheck.Blockes(Blocks.FROSTED_ICE),     Blocks.FLOWING_WATER.getDefaultState(), 1),
+//    PACKED_ICE( new BlockStateCheck.Blockes(Blocks.PACKED_ICE),      Blocks.FLOWING_WATER.getDefaultState(), 2);
 
     private final BlockStateCheck meltableCheck;
-    private final IBlockState meltResult;
+    private final Block meltResult;
     private final int meltDuration;
 
-    private WorldMeltables(BlockStateCheck meltableCheck, IBlockState meltResult, int meltDuration) {
+    private WorldMeltables(BlockStateCheck meltableCheck, Block meltResult, int meltDuration) {
         this.meltableCheck = meltableCheck;
         this.meltResult = meltResult;
         this.meltDuration = meltDuration;
     }
 
     @Override
-    public boolean isMeltable(World world, BlockPos pos, IBlockState worldState) {
+    public boolean isMeltable(World world, BlockPos pos, Block worldState) {
         return meltableCheck.isStateValid(world, pos, worldState);
     }
 
     @Override
     @Nullable
-    public IBlockState getMeltResultState() {
+    public Block getMeltResultState() {
         return meltResult;
     }
 
@@ -76,14 +76,14 @@ public enum WorldMeltables implements MeltInteraction {
 
     @Nullable
     public static MeltInteraction getMeltable(World world, BlockPos pos) {
-        IBlockState state = world.getBlockState(pos);
+        Block state = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
         for (WorldMeltables melt : values()) {
             if(melt.isMeltable(world, pos, state))
                 return melt;
         }
         ItemStack stack = ItemUtils.createBlockStack(state);
         if(stack != null && stack.getItem() != null) {
-            ItemStack out = FurnaceRecipes.instance().getSmeltingResult(stack);
+            ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(stack);
             if(out != null && out.getItem() != null) {
                 return new FurnaceRecipeInteraction(state, out);
             }
@@ -98,7 +98,7 @@ public enum WorldMeltables implements MeltInteraction {
         }
 
         public boolean isValid(World world, boolean forceLoad) {
-            if(!forceLoad && !MiscUtils.isChunkLoaded(world, new ChunkPos(getPos()))) return true;
+            if(!forceLoad && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(getPos().chunkX(), getPos().chunkZ()))) return true;
             return getMeltable(world) != null;
         }
 
@@ -113,19 +113,19 @@ public enum WorldMeltables implements MeltInteraction {
         private final ItemStack out;
         private final BlockStateCheck.Meta matchInState;
 
-        public FurnaceRecipeInteraction(IBlockState inState, ItemStack outStack) {
-            this.matchInState = new BlockStateCheck.Meta(inState.getBlock(), inState.getBlock().getMetaFromState(inState));
+        public FurnaceRecipeInteraction(Block inState, ItemStack outStack) {
+            this.matchInState = new BlockStateCheck.Meta(inState, inState.damageDropped(outStack.getItemDamage()));
             this.out = outStack;
         }
 
         @Override
-        public boolean isMeltable(World world, BlockPos pos, IBlockState state) {
+        public boolean isMeltable(World world, BlockPos pos, Block state) {
             return matchInState.isStateValid(world, pos, state);
         }
 
         @Nullable
         @Override
-        public IBlockState getMeltResultState() {
+        public Block getMeltResultState() {
             return ItemUtils.createBlockState(out);
         }
 

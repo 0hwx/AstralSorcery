@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
-import net.minecraft.block.state.IBlockState;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -20,6 +20,6 @@ import net.minecraft.world.World;
  */
 public interface IVariantTileProvider {
 
-    public TileEntity provideTileEntity(World world, IBlockState state);
+    public TileEntity provideTileEntity(World world, int metadata);
 
 }

@@ -23,15 +23,15 @@ import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissio
 import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionSource;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.SourceClassRegistry;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.TransmissionClassRegistry;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -53,11 +53,11 @@ import java.util.Map;
  */
 public class LightNetworkBuffer extends CachedWorldData {
 
-    private Map<ChunkPos, ChunkNetworkData> chunkSortedData = new HashMap<>();
+    private Map<ChunkCoordIntPair, ChunkNetworkData> chunkSortedData = new HashMap<>();
     private Map<BlockPos, IIndependentStarlightSource> starlightSources = new HashMap<>();
     private Collection<Tuple<BlockPos, IIndependentStarlightSource>> cachedSourceTuples = null;
 
-    private List<ChunkPos> queueRemoval = new LinkedList<>();
+    private List<ChunkCoordIntPair> queueRemoval = new LinkedList<>();
 
     public LightNetworkBuffer() {
         super(WorldCacheManager.SaveKey.LIGHT_NETWORK);
@@ -77,11 +77,11 @@ public class LightNetworkBuffer extends CachedWorldData {
         while (iterator.hasNext()) {
             Map.Entry<BlockPos, IIndependentStarlightSource> entry = iterator.next();
             BlockPos pos = entry.getKey();
-            ChunkPos chPos = new ChunkPos(pos);
+            ChunkCoordIntPair chPos = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
             IIndependentStarlightSource source = entry.getValue();
 
             if (MiscUtils.isChunkLoaded(world, chPos)) {
-                TileEntity te = world.getTileEntity(pos); //Safe to do now.
+                TileEntity te = world.getTileEntity(pos.getX(), pos.getY(), pos.getZ()); //Safe to do now.
                 if (te != null) {
                     if (te instanceof IStarlightSource) {
                         if(((IStarlightSource) te).needToUpdateStarlightSource()) {
@@ -94,10 +94,11 @@ public class LightNetworkBuffer extends CachedWorldData {
                     } else {
                         AstralSorcery.log.warn("Cached source at " + pos + " but didn't find the TileEntity!");
                         AstralSorcery.log.warn("Purging cache entry and removing erroneous block!");
-                        IBlockState there = world.getBlockState(pos);
-                        AstralSorcery.log.warn("Block that gets purged: " + there.getBlock().getUnlocalizedName() + " with meta " + there.getBlock().getMetaFromState(there));
+                        Block there = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+                        int meta = world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
+                        AstralSorcery.log.warn("Block that gets purged: " + there.getUnlocalizedName() + " with meta " + meta);
                         iterator.remove();
-                        world.setBlockToAir(pos);
+                        world.setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
                         ChunkNetworkData data = getChunkData(chPos);
                         if(data != null) {
                             data.removeSourceTile(pos);
@@ -115,13 +116,13 @@ public class LightNetworkBuffer extends CachedWorldData {
     public void onLoad(World world) {
 
         if(Config.performNetworkIntegrityCheck) {
-            AstralSorcery.log.info("[LightNetworkIntegrityCheck] Performing StarlightNetwork integrity check for world " + world.provider.getDimension());
+            AstralSorcery.log.info("[LightNetworkIntegrityCheck] Performing StarlightNetwork integrity check for world " + world.provider.dimensionId);
             List<IPrismTransmissionNode> invalidRemoval = new LinkedList<>();
 
             for (ChunkNetworkData data : chunkSortedData.values()) {
                 for (ChunkSectionNetworkData secData : data.sections.values()) {
                     for (IPrismTransmissionNode node : secData.getAllTransmissionNodes()) {
-                        TileEntity te = world.getTileEntity(node.getPos());
+                        TileEntity te = world.getTileEntity(node.getPos().getX(), node.getPos().getY(), node.getPos().getZ());
                         if(te == null || !(te instanceof IStarlightTransmission)) {
                             invalidRemoval.add(node);
                             continue;
@@ -162,7 +163,7 @@ public class LightNetworkBuffer extends CachedWorldData {
     }
 
     private void cleanupQueuedChunks() {
-        for (ChunkPos pos : queueRemoval) {
+        for (ChunkCoordIntPair pos : queueRemoval) {
             ChunkNetworkData data = getChunkData(pos);
             if(data != null && data.isEmpty()) {
                 chunkSortedData.remove(pos);
@@ -172,17 +173,17 @@ public class LightNetworkBuffer extends CachedWorldData {
     }
 
     @Nullable
-    private ChunkNetworkData getChunkData(ChunkPos pos) {
+    private ChunkNetworkData getChunkData(ChunkCoordIntPair pos) {
         return chunkSortedData.get(pos);
     }
 
     @Nullable
     public ChunkSectionNetworkData getSectionData(BlockPos pos) {
-        return getSectionData(new ChunkPos(pos), (pos.getY() & 255) >> 4);
+        return getSectionData(new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ()), (pos.getY() & 255) >> 4);
     }
 
     @Nullable
-    public ChunkSectionNetworkData getSectionData(ChunkPos chPos, int yLevel) {
+    public ChunkSectionNetworkData getSectionData(ChunkCoordIntPair chPos, int yLevel) {
         ChunkNetworkData data = chunkSortedData.get(chPos);
         if(data == null) return null;
         return data.getSection(yLevel);
@@ -204,7 +205,7 @@ public class LightNetworkBuffer extends CachedWorldData {
         return cachedSourceTuples;
     }
 
-    public void createNewChunkData(@Nonnull ChunkPos pos) {
+    public void createNewChunkData(@Nonnull ChunkCoordIntPair pos) {
         chunkSortedData.put(pos, new ChunkNetworkData());
     }
 
@@ -220,7 +221,7 @@ public class LightNetworkBuffer extends CachedWorldData {
                 NBTTagCompound posTag = list.getCompoundTagAt(i);
                 int chX = posTag.getInteger("chX");
                 int chZ = posTag.getInteger("chZ");
-                ChunkPos pos = new ChunkPos(chX, chZ);
+                ChunkCoordIntPair pos = new ChunkCoordIntPair(chX, chZ);
                 ChunkNetworkData data = ChunkNetworkData.loadFromNBT(posTag.getTagList("netData", 10));
                 chunkSortedData.put(pos, data);
             }
@@ -264,7 +265,7 @@ public class LightNetworkBuffer extends CachedWorldData {
         cleanupQueuedChunks();
 
         NBTTagList list = new NBTTagList();
-        for (ChunkPos pos : chunkSortedData.keySet()) {
+        for (ChunkCoordIntPair pos : chunkSortedData.keySet()) {
             ChunkNetworkData data = chunkSortedData.get(pos);
             NBTTagCompound posTag = new NBTTagCompound();
             posTag.setInteger("chX", pos.chunkXPos);
@@ -298,7 +299,7 @@ public class LightNetworkBuffer extends CachedWorldData {
 
     //Network changing
     public void addSource(IStarlightSource source, BlockPos pos) {
-        ChunkPos chPos = new ChunkPos(pos);
+        ChunkCoordIntPair chPos = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         ChunkNetworkData data = getChunkData(chPos);
         if(data == null) {
             createNewChunkData(chPos);
@@ -329,7 +330,7 @@ public class LightNetworkBuffer extends CachedWorldData {
     }
 
     public void addTransmission(IStarlightTransmission transmission, BlockPos pos) {
-        ChunkPos chPos = new ChunkPos(pos);
+        ChunkCoordIntPair chPos = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         ChunkNetworkData data = getChunkData(chPos);
         if(data == null) {
             createNewChunkData(chPos);
@@ -341,7 +342,7 @@ public class LightNetworkBuffer extends CachedWorldData {
     }
 
     public void removeSource(BlockPos pos) {
-        ChunkPos chPos = new ChunkPos(pos);
+        ChunkCoordIntPair chPos = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         ChunkNetworkData data = getChunkData(chPos);
         if(data == null) return; //Uuuuhm. what happened here.
         data.removeSourceTile(pos);
@@ -358,7 +359,7 @@ public class LightNetworkBuffer extends CachedWorldData {
     }
 
     public void removeTransmission(BlockPos pos) {
-        ChunkPos chPos = new ChunkPos(pos);
+        ChunkCoordIntPair chPos = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         ChunkNetworkData data = getChunkData(chPos);
         if(data == null) return; //Not that i'm sad, it's just... uhm..
         data.removeTransmissionTile(pos);
@@ -367,7 +368,7 @@ public class LightNetworkBuffer extends CachedWorldData {
         markDirty();
     }
 
-    private void checkIntegrity(ChunkPos chPos) {
+    private void checkIntegrity(ChunkCoordIntPair chPos) {
         ChunkNetworkData data = getChunkData(chPos);
         if(data == null) return;
 

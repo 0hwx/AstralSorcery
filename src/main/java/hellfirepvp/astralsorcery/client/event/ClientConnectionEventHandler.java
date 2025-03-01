@@ -8,6 +8,8 @@
 
 package hellfirepvp.astralsorcery.client.event;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.gui.GuiJournalProgression;
@@ -30,9 +32,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.ChatAllowedCharacters;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.minecraft.util.MathHelper;
 
 import java.util.HashMap;
 
@@ -71,8 +71,8 @@ public class ClientConnectionEventHandler {
     @SubscribeEvent
     public void onJoin(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         AstralSorcery.proxy.scheduleClientside(() -> {
-            NetworkManager nm = event.getManager();
-            String addr = nm.getRemoteAddress().toString();
+            NetworkManager nm = event.manager;
+            String addr = nm.getSocketAddress().toString();
             if (nm.isLocalChannel()) {
                 IntegratedServer is = Minecraft.getMinecraft().getIntegratedServer();
                 if(is != null) {
@@ -81,7 +81,7 @@ public class ClientConnectionEventHandler {
             } else {
                 int id = addr.indexOf('\\');
                 if(id != -1) {
-                    addr = addr.substring(0, MathHelper.clamp(id, 1, addr.length()));
+                    addr = addr.substring(0, MathHelper.clamp_int(id, 1, addr.length()));
                 }
             }
             addr = sanitizeFileName(addr);
@@ -93,7 +93,12 @@ public class ClientConnectionEventHandler {
         addr = addr.trim();
         addr = addr.replace(' ', '_');
         addr = addr.toLowerCase();
-        for (char c0 : ChatAllowedCharacters.ILLEGAL_FILE_CHARACTERS) {
+        char[] achar = ChatAllowedCharacters.allowedCharacters;
+        int i = achar.length;
+
+        for (int j = 0; j < i; ++j)
+        {
+            char c0 = achar[j];
             addr = addr.replace(c0, '_');
         }
         return addr;

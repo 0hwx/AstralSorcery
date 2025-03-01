@@ -8,11 +8,13 @@
 
 package hellfirepvp.astralsorcery.client.render.entity;
 
+import hellfirepvp.astralsorcery.common.entities.EntityFlare;
 import hellfirepvp.astralsorcery.common.entities.EntityIlluminationSpark;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
+
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -21,27 +23,17 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
  * Created by HellFirePvP
  * Date: 08.04.2017 / 00:28
  */
-public class RenderEntityIlluminationSpark extends Render<EntityIlluminationSpark> {
+public class RenderEntityIlluminationSpark extends Render {
 
-    public RenderEntityIlluminationSpark(RenderManager renderManager) {
-        super(renderManager);
+    @Override
+    public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        this.doRender((EntityIlluminationSpark)entity, x, y, z, entityYaw, partialTicks);
     }
 
     @Override
-    public void doRender(EntityIlluminationSpark entity, double x, double y, double z, float entityYaw, float partialTicks) {}
-
-    @Override
-    protected ResourceLocation getEntityTexture(EntityIlluminationSpark entity) {
-        return null;
+    protected ResourceLocation getEntityTexture(Entity entity) {
+        return this.getEntityTexture((EntityIlluminationSpark)entity);
     }
 
-    public static class Factory implements IRenderFactory<EntityIlluminationSpark> {
-
-        @Override
-        public Render<EntityIlluminationSpark> createRenderFor(RenderManager manager) {
-            return new RenderEntityIlluminationSpark(manager);
-        }
-
-    }
 
 }

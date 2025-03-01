@@ -11,7 +11,7 @@ package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -37,7 +37,7 @@ public class PerkTravelWaterMovement extends ConstellationPerk {
                 player.motionZ *= swimSpeedMultiplier;
                 addAlignmentCharge(player, 0.01);
             }
-            if(player.isInLava()) {
+            if(player.handleLavaMovement()) { //isInLava
                 player.motionX *= 1.4F * swimSpeedMultiplier;
                 player.motionY *= 1.2F * swimSpeedMultiplier;
                 player.motionZ *= 1.4F * swimSpeedMultiplier;

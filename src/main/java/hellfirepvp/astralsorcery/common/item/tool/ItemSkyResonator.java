@@ -10,12 +10,13 @@ package hellfirepvp.astralsorcery.common.item.tool;
 
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.util.SkyCollectionHelper;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.Optional;
 
@@ -31,7 +32,13 @@ public class ItemSkyResonator extends Item {
     public ItemSkyResonator() {
         setMaxDamage(0);
         setMaxStackSize(1);
+        setUnlocalizedName("ItemSkyResonator");
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
     }
-
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerIcons(IIconRegister register)
+    {
+        this.itemIcon = register.registerIcon("astralsorcery:skyRes");
+    }
 }

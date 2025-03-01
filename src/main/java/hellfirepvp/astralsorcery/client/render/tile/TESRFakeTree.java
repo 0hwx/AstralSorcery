@@ -9,8 +9,10 @@
 package hellfirepvp.astralsorcery.client.render.tile;
 
 import hellfirepvp.astralsorcery.common.tile.TileFakeTree;
-import net.minecraft.block.state.IBlockState;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.tileentity.TileEntity;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -19,13 +21,14 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
  * Created by HellFirePvP
  * Date: 11.11.2016 / 21:13
  */
-public class TESRFakeTree extends TileEntitySpecialRenderer<TileFakeTree> {
+public class TESRFakeTree extends TileEntitySpecialRenderer {
 
     @Override
-    public void renderTileEntityAt(TileFakeTree te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileFakeTree te = (TileFakeTree) tile;
         if(te.getFakedState() == null) return;
-        IBlockState renderState = te.getFakedState();
-        TESRTranslucentBlock.blocks.add(new TESRTranslucentBlock.TranslucentBlockState(renderState, te.getPos()));
+        Block renderState = te.getFakedState();
+        TESRTranslucentBlock.blocks.add(new TESRTranslucentBlock.TranslucentBlockState(renderState, te.xCoord, te.yCoord, te.zCoord));
     }
 
 }

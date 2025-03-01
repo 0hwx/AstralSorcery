@@ -11,10 +11,10 @@ package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.tile.TileIlluminator;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,13 +35,13 @@ public class PerkTravelPlaceLight extends ConstellationPerk {
     public void onPlayerTick(EntityPlayer player, Side side) {
         if(side == Side.SERVER) {
             if(rand.nextInt(chanceToSpawnLight) == 0) {
-                BlockPos pos = player.getPosition().add(
+                BlockPos pos = new BlockPos(player).getPosition().add(
                         rand.nextInt(4) - 2,
                         rand.nextInt(4) - 2,
                         rand.nextInt(4) - 2);
-                if(TileIlluminator.illuminatorCheck.isStateValid(player.getEntityWorld(), pos, player.getEntityWorld().getBlockState(pos))) {
+                if(TileIlluminator.illuminatorCheck.isStateValid(player.getEntityWorld(), pos, player.getEntityWorld().getBlock(pos.getX(), pos.getY(), pos.getZ()))) {
                     addAlignmentCharge(player, 2);
-                    player.getEntityWorld().setBlockState(pos, BlocksAS.blockVolatileLight.getDefaultState());
+                    player.getEntityWorld().setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.blockVolatileLight);
                 }
             }
         }

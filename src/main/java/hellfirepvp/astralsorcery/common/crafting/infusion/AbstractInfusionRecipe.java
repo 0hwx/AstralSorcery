@@ -13,8 +13,8 @@ import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -114,7 +114,7 @@ public abstract class AbstractInfusionRecipe {
 
     public boolean matches(TileStarlightInfuser infuser) {
         if(this instanceof IGatedRecipe) {
-            if(infuser.getWorld().isRemote) {
+            if(infuser.getWorldObj().isRemote) {
                 if(!((IGatedRecipe) this).hasProgressionClient()) return false;
             }
         }

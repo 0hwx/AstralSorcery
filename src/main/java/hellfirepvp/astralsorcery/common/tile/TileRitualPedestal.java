@@ -32,21 +32,22 @@ import hellfirepvp.astralsorcery.common.starlight.transmission.NodeConnection;
 import hellfirepvp.astralsorcery.common.starlight.transmission.base.SimpleTransmissionReceiver;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.TransmissionClassRegistry;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.CrystalCalculations;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.RaytraceAssist;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -84,22 +85,22 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
     private UUID ownerUUID = null;
 
     public TileRitualPedestal() {
-        super(1, EnumFacing.UP);
+        super(1, ForgeDirection.UP);
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
-        if(!world.isRemote) {
+        if(!worldObj.isRemote) {
             if((ticksExisted & 15) == 0) {
-                updateSkyState(world.canSeeSky(getPos()));
+                updateSkyState(worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord));
 
                 updateLinkTile();
             }
 
             if((ticksExisted & 31) == 0) {
-                updateMultiblockState();
+                updateMultBlock();
             }
 
             if(dirty) {
@@ -107,10 +108,10 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
                 TransmissionReceiverRitualPedestal recNode = getUpdateCache();
                 if(recNode != null) {
                     recNode.updateSkyState(doesSeeSky);
-                    recNode.updateMultiblockState(hasMultiblock);
-                    recNode.updateLink(world, ritualLink);
+                    recNode.updateMultBlock(hasMultiblock);
+                    recNode.updateLink(worldObj, ritualLink);
 
-                    recNode.markDirty(world);
+                    recNode.markDirty(worldObj);
                 }
                 markForUpdate();
             }
@@ -126,8 +127,8 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
             }
         }
 
-        if(world.isRemote && working) {
-            float alphaDaytime = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(world);
+        if(worldObj.isRemote && working) {
+            float alphaDaytime = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(worldObj);
             alphaDaytime *= 0.8F;
             boolean isDay = alphaDaytime <= 1E-4;
 
@@ -155,7 +156,7 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
                 if(EffectHandler.STATIC_EFFECT_RAND.nextInt(chance * 2) == 0) {
                     Vector3 from = new Vector3(this).add(0.5, 0.1, 0.5);
                     MiscUtils.applyRandomOffset(from, EffectHandler.STATIC_EFFECT_RAND, 2F);
-                    from.setY(getPos().getY() - 0.6 + 1 * EffectHandler.STATIC_EFFECT_RAND.nextFloat() * (EffectHandler.STATIC_EFFECT_RAND.nextBoolean() ? 1 : -1));
+                    from.setY(yCoord - 0.6 + 1 * EffectHandler.STATIC_EFFECT_RAND.nextFloat() * (EffectHandler.STATIC_EFFECT_RAND.nextBoolean() ? 1 : -1));
                     EffectLightbeam lightbeam = EffectHandler.getInstance().lightbeam(from.clone().addY(5 + EffectHandler.STATIC_EFFECT_RAND.nextInt(3)), from, 1.3F);
                     lightbeam.setAlphaMultiplier(alphaDaytime);
                     lightbeam.setMaxAge(64);
@@ -168,18 +169,18 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
                 if(ch != null) {
                     ConstellationEffect ce = ConstellationEffectRegistry.clientRenderInstance(ch);
                     if(ce != null) {
-                        BlockPos to = getPos();
+                        BlockPos to = new BlockPos(xCoord, yCoord, zCoord);
                         if(ritualLink != null) {
-                            ce.playClientEffect(world, ritualLink, this, percRunning, shouldDoAdditionalEffects());
+                            ce.playClientEffect(worldObj, ritualLink, this, percRunning, shouldDoAdditionalEffects());
                         }
-                        ce.playClientEffect(world, getPos(), this, percRunning, shouldDoAdditionalEffects());
+                        ce.playClientEffect(worldObj, to, this, percRunning, shouldDoAdditionalEffects());
                     }
                 }
             }
             for (BlockPos expMirror : offsetMirrorPositions) {
                 if(ticksExisted % 32 == 0) {
                     Vector3 source = new Vector3(this).add(0.5, 0.75, 0.5);
-                    Vector3 to = new Vector3(this).add(expMirror).add(0.5, 0.5, 0.5);
+                    Vector3 to = new Vector3(this).add(expMirror.getX(), expMirror.getY(), expMirror.getZ()).add(0.5, 0.5, 0.5);
                     EffectHandler.getInstance().lightbeam(to, source, 0.8);
                     if(ritualLink != null) {
                         source = new Vector3(this).add(0.5, 5.5, 0.5);
@@ -193,8 +194,8 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
 
     private void updateLinkTile() {
         boolean hasLink = ritualLink != null;
-        BlockPos link = getPos().add(0, 5, 0);
-        TileRitualLink linkTile = MiscUtils.getTileAt(world, link, TileRitualLink.class, true);
+        BlockPos link = new BlockPos(xCoord, yCoord, zCoord).add(0, 5, 0);
+        TileRitualLink linkTile = MiscUtils.getTileAt(worldObj, link, TileRitualLink.class, true);
         boolean hasLinkNow;
         if(linkTile != null) {
             this.ritualLink = linkTile.getLinkedTo();
@@ -217,8 +218,8 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
         return hasMultiblock;
     }
 
-    private void updateMultiblockState() {
-        boolean found = MultiBlockArrays.patternRitualPedestal.matches(world, getPos());
+    private void updateMultBlock() {
+        boolean found = MultiBlockArrays.patternRitualPedestal.matches(worldObj, new BlockPos(xCoord, yCoord, zCoord));
         boolean update = hasMultiblock != found;
         this.hasMultiblock = found;
         if(update) {
@@ -261,7 +262,7 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
             cachePedestal = tryGetNode();
         }
         if(cachePedestal != null) {
-            if(!cachePedestal.getPos().equals(getPos())) {
+            if(!cachePedestal.getPos().equals(new BlockPos(xCoord, yCoord, zCoord))) {
                 cachePedestal = null;
             }
         }
@@ -277,17 +278,17 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
         }
     }
 
-    @Override
-    public void onLoad() {
-        if(!world.isRemote) {
-            TransmissionReceiverRitualPedestal ped = getUpdateCache();
-            if(ped != null) {
-                offsetMirrorPositions.clear();
-                offsetMirrorPositions.addAll(ped.offsetMirrors.keySet());
-                flagDirty();
-            }
-        }
-    }
+//    @Override
+//    public void onLoad() {
+//        if(!worldObj.isRemote) {
+//            TransmissionReceiverRitualPedestal ped = getUpdateCache();
+//            if(ped != null) {
+//                offsetMirrorPositions.clear();
+//                offsetMirrorPositions.addAll(ped.offsetMirrors.keySet());
+//                flagDirty();
+//            }
+//        }
+//    }
 
     @SideOnly(Side.CLIENT)
     public TextureSpritePlane getHaloEffectSprite() {
@@ -306,7 +307,7 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
 
     @Override
     protected void onInventoryChanged(int slotChanged) {
-        if(!world.isRemote) {
+        if(!worldObj.isRemote) {
             ItemStack in = getInventoryHandler().getStackInSlot(0);
             if(in != null && in.getItem() != null &&
                     in.getItem() instanceof ItemTunedCrystalBase) {
@@ -315,18 +316,18 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
                 IMinorConstellation trait = ItemTunedCrystalBase.getTrait(in);
                 TransmissionReceiverRitualPedestal recNode = getUpdateCache();
                 if(recNode != null) {
-                    recNode.updateCrystalProperties(world, properties, tuned, trait);
+                    recNode.updateCrystalProperties(worldObj, properties, tuned, trait);
                 } else {
                     AstralSorcery.log.warn("[AstralSorcery] Updated inventory and tried to update pedestal state.");
-                    AstralSorcery.log.warn("[AstralSorcery] Tried to find receiver node at dimId=" + world.provider.getDimension() + " pos=" + getPos() + " - couldn't find it.");
+                    AstralSorcery.log.warn("[AstralSorcery] Tried to find receiver node at dimId=" + worldObj.provider.dimensionId + " pos=" + new BlockPos(xCoord, yCoord, zCoord) + " - couldn't find it.");
                 }
             } else {
                 TransmissionReceiverRitualPedestal recNode = getUpdateCache();
                 if(recNode != null) {
-                    recNode.updateCrystalProperties(world, null, null, null);
+                    recNode.updateCrystalProperties(worldObj, null, null, null);
                 } else {
                     AstralSorcery.log.warn("[AstralSorcery] Updated inventory and tried to update pedestal state.");
-                    AstralSorcery.log.warn("[AstralSorcery] Tried to find receiver node at dimId=" + world.provider.getDimension() + " pos=" + getPos() + " - couldn't find it.");
+                    AstralSorcery.log.warn("[AstralSorcery] Tried to find receiver node at dimId=" + worldObj.provider.dimensionId + " pos=" + new BlockPos(xCoord, yCoord, zCoord) + " - couldn't find it.");
                 }
             }
             markForUpdate();
@@ -345,7 +346,8 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
 
         this.working = compound.getBoolean("working");
         if(compound.hasKey("ownerMost")) {
-            this.ownerUUID = compound.getUniqueId("owner");
+            this.ownerUUID = NBTHelper.getUUID(compound, "ownerMost");
+//            this.ownerUUID = compound.getUniqueId("owner");
         } else {
             this.ownerUUID = UUID.randomUUID();
         }
@@ -371,7 +373,8 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
 
         compound.setBoolean("working", working);
         if(ownerUUID != null) {
-            compound.setUniqueId("owner", ownerUUID);
+            NBTHelper.setUUID(compound, "ownerMost", ownerUUID);
+//            compound.setUniqueId("owner", ownerUUID);
         }
         compound.setBoolean("hasMultiblock", hasMultiblock);
         compound.setBoolean("seesSky", doesSeeSky);
@@ -420,7 +423,7 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
     @Nullable
     public EntityPlayer getOwningPlayerInWorld(World world) {
         UUID uuid = getOwnerUUID();
-        return uuid == null ? null : world.getPlayerEntityByUUID(uuid);
+        return uuid == null ? null : world.func_152378_a(uuid);
     }
 
     public static class TransmissionReceiverRitualPedestal extends SimpleTransmissionReceiver {
@@ -486,7 +489,7 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
                 if(ce == null) {
                     ce = channeling.getRitualEffect();
                     /*if(channeling.equals(Constellations.ara)) {
-                        tw = new TreeCaptureHelper.TreeWatcher(world.provider.getDimension(), getPos(), CEffectAra.treeRange);
+                        tw = new TreeCaptureHelper.TreeWatcher(world.provider.dimensionId, getPos(), CEffectAra.treeRange);
                         if(CEffectAra.enabled) {
                             TreeCaptureHelper.offerWeakWatcher(tw);
                             ((CEffectAra) ce).refTreeWatcher = new WeakReference<>(tw);
@@ -568,7 +571,7 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
             double maxDrain = 7D;
             maxDrain /= CrystalCalculations.getMaxRitualReduction(properties);
             maxDrain /= Math.max(1, getCollectedBackmirrors() - 1);
-            int executeTimes = MathHelper.floor(collectionChannelBuffer / maxDrain);
+            int executeTimes = MathHelper.floor_double(collectionChannelBuffer / maxDrain);
             boolean consumeCompletely = executeTimes == 0;
 
             if(ce != null && !consumeCompletely && ce.mayExecuteMultipleTrait()) {
@@ -603,7 +606,7 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
             double maxDrain = 7D;
             maxDrain /= CrystalCalculations.getMaxRitualReduction(properties);
             maxDrain /= Math.max(1, getCollectedBackmirrors() - 1);
-            int executeTimes = MathHelper.floor(collectionChannelBuffer / maxDrain);
+            int executeTimes = MathHelper.floor_double(collectionChannelBuffer / maxDrain);
             boolean consumeCompletely = executeTimes == 0;
 
             if(ce != null && !consumeCompletely && ce.mayExecuteMultipleMain()) {
@@ -845,7 +848,7 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
             this.doesSeeSky = doesSeeSky;
         }
 
-        public void updateMultiblockState(boolean hasMultiblock) {
+        public void updateMultBlock(boolean hasMultiblock) {
             this.hasMultiblock = hasMultiblock;
         }
 

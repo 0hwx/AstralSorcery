@@ -85,8 +85,8 @@ public class ShapelessRecipe extends AbstractCacheableRecipe {
 
     @Override
     public void register() {
-        CraftingManager.getInstance().addRecipe(make());
-    }
+        CraftingManager.getInstance().addRecipe(null,make());
+    } //todo check this
 
     @Override
     public AccessibleRecipeAdapater make() {

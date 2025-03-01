@@ -16,15 +16,12 @@ import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -61,12 +58,13 @@ public interface IGuiRenderablePage {
         float zIR = ri.zLevel;
         ri.zLevel = zLevel;
         RenderHelper.enableGUIStandardItemLighting();
-
-        ri.renderItemAndEffectIntoGUI(Minecraft.getMinecraft().player, stack, offsetX, offsetY);
-        ri.renderItemOverlayIntoGUI  (fontRenderer,                       stack, offsetX, offsetY, null);
+        Minecraft mc = Minecraft.getMinecraft();
+        ri.renderItemAndEffectIntoGUI(fontRenderer,mc.renderEngine, stack, offsetX, offsetY);
+        ri.renderItemOverlayIntoGUI  (fontRenderer,mc.renderEngine, stack, offsetX, offsetY, null);
 
         RenderHelper.disableStandardItemLighting();
-        GlStateManager.enableAlpha(); //Because Mc item rendering..
+//        GL11.glEnable(GL11.GL_ALPHA_TEST); //Because Mc item rendering..
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
         ri.zLevel = zIR;
         TextureHelper.refreshTextureBindState();
         TextureHelper.setActiveTextureToAtlasSprite();
@@ -86,8 +84,8 @@ public interface IGuiRenderablePage {
         wh = widthHeightBase - (widthHeightBase / 6F) * (MathHelper.sin((float) Math.toRadians(((tick + 45F) * 4) % 360F)) + 1F);
         drawInfoStarSingle(offsetX, offsetY, zLevel, wh, Math.toRadians(deg));
 
-        return new Rectangle(MathHelper.floor(offsetX - widthHeightBase / 2F), MathHelper.floor(offsetY - widthHeightBase / 2F),
-                MathHelper.floor(widthHeightBase), MathHelper.floor(widthHeightBase));
+        return new Rectangle(MathHelper.floor_double(offsetX - widthHeightBase / 2F), MathHelper.floor_double(offsetY - widthHeightBase / 2F),
+                MathHelper.floor_double(widthHeightBase), MathHelper.floor_double(widthHeightBase));
     }
 
     default public void drawInfoStarSingle(float offsetX, float offsetY, float zLevel, float widthHeight, double deg) {
@@ -100,14 +98,20 @@ public interface IGuiRenderablePage {
         Vector3 uv11   = new Vector3( widthHeight / 2D,  widthHeight / 2D, 0).rotate(deg, Vector3.RotAxis.Z_AXIS);
         Vector3 uv10   = new Vector3( widthHeight / 2D, -widthHeight / 2D, 0).rotate(deg, Vector3.RotAxis.Z_AXIS);
 
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(offsetX + uv01.getX(),   offsetY + uv01.getY(),   zLevel).tex(0, 1).endVertex();
-        vb.pos(offsetX + uv11.getX(),   offsetY + uv11.getY(),   zLevel).tex(1, 1).endVertex();
-        vb.pos(offsetX + uv10.getX(),   offsetY + uv10.getY(),   zLevel).tex(1, 0).endVertex();
-        vb.pos(offsetX + offset.getX(), offsetY + offset.getY(), zLevel).tex(0, 0).endVertex();
-        tes.draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(offsetX + uv01.getX(),   offsetY + uv01.getY(),   zLevel, 0, 1);
+        tess.addVertexWithUV(offsetX + uv11.getX(),   offsetY + uv11.getY(),   zLevel, 1, 1);
+        tess.addVertexWithUV(offsetX + uv10.getX(),   offsetY + uv10.getY(),   zLevel, 1, 0);
+        tess.addVertexWithUV(offsetX + offset.getX(), offsetY + offset.getY(), zLevel, 0, 0);
+        tess.draw();
+//        VertexBuffer vb = tes.getBuffer();
+//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(offsetX + uv01.getX(),   offsetY + uv01.getY(),   zLevel).tex(0, 1).endVertex();
+//        vb.pos(offsetX + uv11.getX(),   offsetY + uv11.getY(),   zLevel).tex(1, 1).endVertex();
+//        vb.pos(offsetX + uv10.getX(),   offsetY + uv10.getY(),   zLevel).tex(1, 0).endVertex();
+//        vb.pos(offsetX + offset.getX(), offsetY + offset.getY(), zLevel).tex(0, 0).endVertex();
+//        tes.draw();
 
         TextureHelper.refreshTextureBindState();
         TextureHelper.setActiveTextureToAtlasSprite();
@@ -116,33 +120,45 @@ public interface IGuiRenderablePage {
     }
 
     default public void drawRect(double offsetX, double offsetY, double width, double height, double zLevel) {
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
-        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
-        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
-        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
-        tes.draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(offsetX, offsetY + height, zLevel, 0, 1);
+        tess.addVertexWithUV(offsetX + width, offsetY + height, zLevel, 1, 1);
+        tess.addVertexWithUV(offsetX + width, offsetY, zLevel, 1, 0);
+        tess.addVertexWithUV(offsetX, offsetY, zLevel, 0, 0);
+        tess.draw();
+//        VertexBuffer vb = tes.getBuffer();
+//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
+//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
+//        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
+//        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
+//        tes.draw();
     }
 
     default public void drawRectPart(double offsetX, double offsetY, double width, double height, double zLevel, double u, double v, double uLength, double vLength) {
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-        vb.pos(offsetX,         offsetY + height, zLevel).tex(u,           v + vLength).endVertex();
-        vb.pos(offsetX + width, offsetY + height, zLevel).tex(u + uLength, v + vLength).endVertex();
-        vb.pos(offsetX + width, offsetY,          zLevel).tex(u + uLength, v)          .endVertex();
-        vb.pos(offsetX,         offsetY,          zLevel).tex(u,           v)          .endVertex();
-        tes.draw();
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(offsetX, offsetY + height, zLevel, u, v + vLength);
+        tess.addVertexWithUV(offsetX + width, offsetY + height, zLevel, u + uLength, v + vLength);
+        tess.addVertexWithUV(offsetX + width, offsetY, zLevel, u + uLength, v);
+        tess.addVertexWithUV(offsetX, offsetY, zLevel, u, v);
+        tess.draw();
+//        VertexBuffer vb = tes.getBuffer();
+//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+//        vb.pos(offsetX,         offsetY + height, zLevel).tex(u,           v + vLength).endVertex();
+//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(u + uLength, v + vLength).endVertex();
+//        vb.pos(offsetX + width, offsetY,          zLevel).tex(u + uLength, v)          .endVertex();
+//        vb.pos(offsetX,         offsetY,          zLevel).tex(u,           v)          .endVertex();
+//        tes.draw();
     }
 
     default public RenderItem getRenderItem() {
-        return Minecraft.getMinecraft().getRenderItem();
+        return RenderItem.getInstance();
     }
 
     default public FontRenderer getStandardFontRenderer() {
-        return Minecraft.getMinecraft().fontRendererObj;
+        return Minecraft.getMinecraft().fontRenderer;
     }
 
     default public FontRenderer getStandardGalFontRenderer() {

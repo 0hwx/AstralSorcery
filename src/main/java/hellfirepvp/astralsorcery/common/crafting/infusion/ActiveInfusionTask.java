@@ -8,9 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.crafting.infusion;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -39,7 +39,8 @@ public class ActiveInfusionTask {
 
     @Nullable
     public EntityPlayer tryGetCraftingPlayerServer() {
-        return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerCraftingUUID);
+//        return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerCraftingUUID);
+        return null;
     }
 
     public void tick(TileStarlightInfuser infuser) {

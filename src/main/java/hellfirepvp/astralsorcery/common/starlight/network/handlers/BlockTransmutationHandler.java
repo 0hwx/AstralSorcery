@@ -18,11 +18,11 @@ import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.starlight.network.StarlightNetworkRegistry;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -42,8 +42,8 @@ public class BlockTransmutationHandler implements StarlightNetworkRegistry.IStar
     private static Map<BlockPos, ActiveTransmutation> runningTransmutations = new HashMap<>();
 
     @Override
-    public boolean isApplicable(World world, BlockPos pos, IBlockState state) {
-        return LightOreTransmutations.searchForTransmutation(state) != null;
+    public boolean isApplicable(World world, BlockPos pos, Block block) {
+        return LightOreTransmutations.searchForTransmutation(block) != null;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class BlockTransmutationHandler implements StarlightNetworkRegistry.IStar
         long ms = System.currentTimeMillis();
 
         if(!runningTransmutations.containsKey(pos)) {
-            IBlockState tryStateIn = world.getBlockState(pos);
+            Block tryStateIn = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
             LightOreTransmutations.Transmutation tr = LightOreTransmutations.searchForTransmutation(tryStateIn);
             if(tr != null) {
                 ActiveTransmutation atr = new ActiveTransmutation();
@@ -75,7 +75,7 @@ public class BlockTransmutationHandler implements StarlightNetworkRegistry.IStar
         if(node.accCharge >= node.runningTransmutation.cost) {
             runningTransmutations.remove(pos);
 
-            world.setBlockState(pos, node.runningTransmutation.output);
+            world.setBlock(pos.getX(), pos.getY(), pos.getZ(), node.runningTransmutation.output);
         }
 
     }

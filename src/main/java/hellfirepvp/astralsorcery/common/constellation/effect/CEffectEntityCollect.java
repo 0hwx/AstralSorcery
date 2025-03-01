@@ -11,9 +11,10 @@ package hellfirepvp.astralsorcery.common.constellation.effect;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
 
@@ -33,7 +34,7 @@ public abstract class CEffectEntityCollect<T extends Entity> extends Constellati
     protected double range;
     public static boolean enabled = true;
 
-    private static AxisAlignedBB baseBoundingBox = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+    private static AxisAlignedBB baseBoundingBox = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1);
 
     public CEffectEntityCollect(IWeakConstellation constellation, String cfgName, double defaultRange, Class<T> entityClass, Predicate<T> filter) {
         super(constellation, cfgName);
@@ -44,7 +45,7 @@ public abstract class CEffectEntityCollect<T extends Entity> extends Constellati
 
     public List<T> collectEntities(World world, BlockPos pos) {
         if(!enabled) return Lists.newArrayList();
-        return world.getEntitiesWithinAABB(classToSearch, baseBoundingBox.offset(pos), searchFilter);
+        return world.selectEntitiesWithinAABB(classToSearch, baseBoundingBox.offset(pos.getX(), pos.getY(), pos.getZ()), (IEntitySelector) searchFilter);
     }
 
     @Override
@@ -52,7 +53,7 @@ public abstract class CEffectEntityCollect<T extends Entity> extends Constellati
         range = cfg.getFloat(getKey() + "Range", getConfigurationSection(), (float) range, 2, 64, "Defines the range in which the ritual will try to find entities");
         enabled = cfg.getBoolean(getKey() + "Enabled", getConfigurationSection(), true, "Set to false to disable this ConstellationEffect.");
 
-        baseBoundingBox = new AxisAlignedBB(0, 0, 0, 1, 1, 1).expand(range, range, range);
+        baseBoundingBox = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(range, range, range);
     }
 
 }

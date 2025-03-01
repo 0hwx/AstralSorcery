@@ -14,7 +14,6 @@ import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.tile.network.TileCollectorCrystal;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.awt.*;
@@ -31,18 +30,22 @@ public class OrbitalEffectCollector implements OrbitalEffectController.OrbitPers
 
     private static final Random rand = new Random();
 
-    private final BlockPos thisPos;
+    private final int thisPosX;
+    private final int thisPosY;
+    private final int thisPosZ;
     private final int dim;
 
     public OrbitalEffectCollector(TileCollectorCrystal tile) {
-        this.thisPos = tile.getPos();
-        this.dim = tile.getWorld().provider.getDimension();
+        this.thisPosX = tile.xCoord;
+        this.thisPosY = tile.yCoord;
+        this.thisPosZ = tile.zCoord;
+        this.dim = tile.getWorldObj().provider.dimensionId;
     }
 
     @Override
     public boolean canPersist(OrbitalEffectController controller) {
-        World w = Minecraft.getMinecraft().world;
-        return w.provider.getDimension() == dim && w.getBlockState(thisPos).getBlock().equals(BlocksAS.blockIlluminator);
+        World w = Minecraft.getMinecraft().theWorld;
+        return w.provider.dimensionId == dim && w.getBlock(thisPosX, thisPosY, thisPosZ).equals(BlocksAS.blockIlluminator);
     }
 
     @Override

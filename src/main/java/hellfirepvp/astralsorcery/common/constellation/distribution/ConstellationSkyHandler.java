@@ -8,15 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.constellation.distribution;
 
+import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
 import hellfirepvp.astralsorcery.common.data.DataWorldSkyHandlers;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.client.PktRequestSeed;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -56,10 +56,10 @@ public class ConstellationSkyHandler implements ITickHandler {
         if(type == TickEvent.Type.WORLD) {
             World w = (World) context[0];
             if(!w.isRemote) {
-                WorldSkyHandler handle = worldHandlersServer.get(w.provider.getDimension());
+                WorldSkyHandler handle = worldHandlersServer.get(w.provider.dimensionId);
                 if(handle == null) {
                     handle = new WorldSkyHandler(w.getSeed());
-                    worldHandlersServer.put(w.provider.getDimension(), handle);
+                    worldHandlersServer.put(w.provider.dimensionId, handle);
                 }
                 handle.tick(w);
             }
@@ -70,11 +70,11 @@ public class ConstellationSkyHandler implements ITickHandler {
 
     @SideOnly(Side.CLIENT)
     private void handleClientTick() {
-        World w = Minecraft.getMinecraft().world;
+        World w = Minecraft.getMinecraft().theWorld;
         if(w != null) {
-            WorldSkyHandler handle = worldHandlersClient.get(w.provider.getDimension());
+            WorldSkyHandler handle = worldHandlersClient.get(w.provider.dimensionId);
             if(handle == null) {
-                int dim = w.provider.getDimension();
+                int dim = w.provider.dimensionId;
                 long seed;
                 if(cacheSeedLookup.containsKey(dim)) {
                     seed = cacheSeedLookup.get(dim);
@@ -98,7 +98,7 @@ public class ConstellationSkyHandler implements ITickHandler {
 
     @SideOnly(Side.CLIENT)
     public Optional<Long> getSeedIfPresent(World world) {
-        return getSeedIfPresent(world.provider.getDimension());
+        return getSeedIfPresent(world.provider.dimensionId);
     }
 
     @SideOnly(Side.CLIENT)
@@ -136,7 +136,7 @@ public class ConstellationSkyHandler implements ITickHandler {
         } else {
             handlerMap = worldHandlersServer;
         }
-        return handlerMap.get(world.provider.getDimension());
+        return handlerMap.get(world.provider.dimensionId);
     }
 
     public void clientClearCache() {
@@ -146,9 +146,9 @@ public class ConstellationSkyHandler implements ITickHandler {
     }
 
     public void informWorldUnload(World world) {
-        worldHandlersServer.remove(world.provider.getDimension());
-        worldHandlersClient.remove(world.provider.getDimension());
-        cacheSeedLookup    .remove(world.provider.getDimension());
+        worldHandlersServer.remove(world.provider.dimensionId);
+        worldHandlersClient.remove(world.provider.dimensionId);
+        cacheSeedLookup    .remove(world.provider.dimensionId);
     }
 
     @Override

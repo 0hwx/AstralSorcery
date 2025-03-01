@@ -26,7 +26,7 @@ public class TextureHelper {
     public static ResourceLocation texFontRenderer = new ResourceLocation("textures/font/ascii.png");
 
     public static ResourceLocation getBlockAtlasTexture() {
-        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+        return TextureMap.locationBlocksTexture;
     }
 
     public static void refreshTextureBindState() {

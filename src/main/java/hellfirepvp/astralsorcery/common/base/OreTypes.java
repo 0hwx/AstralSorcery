@@ -115,9 +115,9 @@ public class OreTypes {
             List<ItemStack> ores = OreDictionary.getOres(key);
 
             for (ItemStack stack : ores) {
-                if(stack == null || stack.getItem() == null || Block.getBlockFromItem(stack.getItem()) == Blocks.AIR) continue;
+                if(stack == null || stack.getItem() == null || Block.getBlockFromItem(stack.getItem()) == Blocks.air) continue;
                 Item i = stack.getItem();
-                String regModid = i.getRegistryName().getResourceDomain();
+                String regModid = i.getUnlocalizedName(); // todo check
                 if(Config.modidOreGenBlacklist.contains(regModid)) continue;
 
                 String className = i.getClass().getName();

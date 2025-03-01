@@ -8,8 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.tile.base;
 
+import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ITickable;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -23,7 +23,7 @@ public abstract class TileEntityTick extends TileEntitySynchronized implements I
     protected int ticksExisted = 0;
 
     @Override
-    public void update() {
+    public void tick() {
         if(ticksExisted == 0) {
             onFirstTick();
         }
@@ -40,7 +40,7 @@ public abstract class TileEntityTick extends TileEntitySynchronized implements I
     @Override
     public void readCustomNBT(NBTTagCompound compound) {
         super.readCustomNBT(compound);
-        
+
         ticksExisted = compound.getInteger("ticksExisted");
     }
 

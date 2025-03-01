@@ -16,14 +16,16 @@ import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.item.crystal.ItemCelestialCrystal;
 import hellfirepvp.astralsorcery.common.item.crystal.ItemTunedCelestialCrystal;
 import hellfirepvp.astralsorcery.common.item.crystal.base.ItemRockCrystalBase;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.EntityUtils;
+import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -36,7 +38,7 @@ import java.util.List;
  */
 public class EntityCrystal extends EntityItemHighlighted implements EntityStarlightReacttant {
 
-    private static final AxisAlignedBB boxCraft = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+    private static final AxisAlignedBB boxCraft = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1);
 
     public static final int TOTAL_MERGE_TIME = 100 * 20;
     private int inertMergeTick = 0;
@@ -71,7 +73,7 @@ public class EntityCrystal extends EntityItemHighlighted implements EntityStarli
     }
 
     private void checkIncreaseConditions() {
-        if(world.isRemote) {
+        if(worldObj.isRemote) {
             if(canCraft()) {
                 spawnCraftingParticles();
             }
@@ -91,8 +93,9 @@ public class EntityCrystal extends EntityItemHighlighted implements EntityStarli
     }
 
     private void increaseSize() {
-        world.setBlockToAir(getPosition());
-        List<Entity> foundItems = world.getEntitiesInAABBexcluding(this, boxCraft.offset(posX, posY, posZ).expandXyz(0.1), EntityUtils.selectItemClassInstaceof(ItemRockCrystalBase.class));
+        BlockPos pos = new BlockPos(this).getPosition();
+        worldObj.setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
+        List<Entity> foundItems = worldObj.getEntitiesWithinAABBExcludingEntity(this, boxCraft.offset(posX, posY, posZ).expand(0.1,0.1,0.1), (IEntitySelector) EntityUtils.selectItemClassInstaceof(ItemRockCrystalBase.class)); //todo check this
         if(foundItems.size() <= 0) {
             ItemStack stack = getEntityItem();
             CrystalProperties prop = CrystalProperties.getCrystalProperties(stack);
@@ -121,8 +124,8 @@ public class EntityCrystal extends EntityItemHighlighted implements EntityStarli
 
     private boolean canCraft() {
         if(!isInLiquidStarlight(this)) return false;
-
-        List<Entity> foundEntities = world.getEntitiesInAABBexcluding(this, boxCraft.offset(getPosition()), EntityUtils.selectEntities(Entity.class));
+        BlockPos pos = new BlockPos(this).getPosition();
+        List<Entity> foundEntities = worldObj.getEntitiesWithinAABBExcludingEntity(this, boxCraft.offset(pos.getX(), pos.getY(), pos.getZ()), (IEntitySelector) EntityUtils.selectEntities(Entity.class));
         return foundEntities.size() <= 0;
     }
 

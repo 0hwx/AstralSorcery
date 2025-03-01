@@ -13,16 +13,14 @@ import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,8 +72,8 @@ public class RaytraceAssist {
 
     public void setCollectEntities(double additionalCollectRadius) {
         this.collectEntities = true;
-        this.collectBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-        this.collectBox = this.collectBox.expandXyz(additionalCollectRadius);
+        this.collectBox = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0);
+        this.collectBox = this.collectBox.expand(additionalCollectRadius,additionalCollectRadius,additionalCollectRadius);
     }
 
     public boolean isClear(World world) {
@@ -96,9 +94,9 @@ public class RaytraceAssist {
                 }
             }
 
-            if(MiscUtils.isChunkLoaded(world, new ChunkPos(at))) {
-                if(!isStartEnd(at) && !world.isAirBlock(at)) {
-                    IBlockState state = world.getBlockState(at);
+            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(at.chunkX(), at.chunkZ()))) {
+                if(!isStartEnd(at) && !world.isAirBlock(at.getX(), at.getY(), at.getZ())) {
+                    int state = world.getBlockMetadata(at.getX(), at.getY(), at.getZ());
                     if(!isAllowed(state)) {
                         hit = at;
                         return false;
@@ -112,7 +110,7 @@ public class RaytraceAssist {
             if(rtr != null && rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
                 BlockPos hit = rtr.getBlockPos();
                 if(!isStartEnd(hit)) {
-                    IBlockState state = world.getBlockState(hit);
+                    Block state = world.getBlockState(hit);
                     if(!isAllowed(state)) {
                         return false;
                     }
@@ -139,12 +137,11 @@ public class RaytraceAssist {
         return entities;
     }
 
-    private boolean isAllowed(IBlockState state) {
-        Block b = state.getBlock();
-        List<Integer> accepted = passable.get(b);
+    private boolean isAllowed(int meta) {
+        List<Integer> accepted = passable.get(meta);
         if(accepted != null) {
             if(accepted.size() == 1 && accepted.get(0) == -1) return true;
-            if(accepted.contains(b.getMetaFromState(state))) return true;
+            if(accepted.contains(meta)) return true;
         }
         return false;
     }
@@ -164,10 +161,10 @@ public class RaytraceAssist {
     }
 
     static {
-        addPassable(Blocks.GLASS);
-        addPassable(Blocks.GLASS_PANE);
-        addPassable(Blocks.STAINED_GLASS);
-        addPassable(Blocks.STAINED_GLASS_PANE);
+        addPassable(Blocks.glass);
+        addPassable(Blocks.glass);
+        addPassable(Blocks.stained_glass);
+        addPassable(Blocks.stained_glass_pane);
     }
 
     @SideOnly(Side.CLIENT)

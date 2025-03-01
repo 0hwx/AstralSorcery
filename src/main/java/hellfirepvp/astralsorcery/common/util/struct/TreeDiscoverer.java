@@ -1,15 +1,14 @@
 package hellfirepvp.astralsorcery.common.util.struct;
 
 import hellfirepvp.astralsorcery.common.base.TreeTypes;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.BlockStateCheck;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,7 +48,7 @@ public class TreeDiscoverer {
         while (!offsetPositions.isEmpty()) {
             BlockPos offset = offsetPositions.pop();
 
-            IBlockState atState = world.getBlockState(offset);
+            Block atState = world.getBlock(offset.getX(), offset.getY(), offset.getZ());
             boolean successful = false;
             Tuple<BlockStateCheck, BlockStateCheck> atChecks = null;
             if (logCheck == null || leafCheck == null) {
@@ -87,7 +86,7 @@ public class TreeDiscoverer {
                         }
                     }
                 } else {
-                    for (EnumFacing face : EnumFacing.VALUES) {
+                    for (ForgeDirection face : ForgeDirection.values()) {
                         BlockPos newPos = offset.offset(face);
                         if((xzLimitSq == -1 || flatDistanceSq(newPos, origin) <= xzLimitSq) && !out.hasBlockAt(newPos)) {
                             offsetPositions.push(newPos);
@@ -99,7 +98,7 @@ public class TreeDiscoverer {
         return new Tuple<>(logCheck, leafCheck);
     }
 
-    private static double flatDistanceSq(Vec3i from, Vec3i to) {
+    private static double flatDistanceSq(BlockPos from, BlockPos to) {
         double xDiff = (double) from.getX() - to.getX();
         double zDiff = (double) from.getZ() - to.getZ();
         return xDiff * xDiff + zDiff * zDiff;
@@ -115,16 +114,16 @@ public class TreeDiscoverer {
             logCheck = t.getLogCheck();
             leafCheck = t.getLeavesCheck();
         } else {
-            IBlockState at = world.getBlockState(pos);
-            if (at.getBlock() instanceof BlockLog) {
-                logCheck = new BlockStateCheck.Block(at.getBlock());
-            } else if (at.getBlock().isWood(world, pos)) {
-                logCheck = new BlockStateCheck.Block(at.getBlock());
+            Block at = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+            if (at instanceof BlockLog) {
+                logCheck = new BlockStateCheck.Blockes(at);
+            } else if (at.isWood(world, pos.getX(), pos.getY(), pos.getZ())) {
+                logCheck = new BlockStateCheck.Blockes(at);
             }
-            if (at.getBlock() instanceof BlockLeaves) {
-                leafCheck = new BlockStateCheck.Block(at.getBlock());
-            } else if (at.getBlock().isLeaves(at, world, pos)) {
-                leafCheck = new BlockStateCheck.Block(at.getBlock());
+            if (at instanceof BlockLeaves) {
+                leafCheck = new BlockStateCheck.Blockes(at);
+            } else if (at.isLeaves(world, pos.getX(), pos.getY(), pos.getZ())) {
+                leafCheck = new BlockStateCheck.Blockes(at);
             }
         }
         return new Tuple<>(logCheck, leafCheck);

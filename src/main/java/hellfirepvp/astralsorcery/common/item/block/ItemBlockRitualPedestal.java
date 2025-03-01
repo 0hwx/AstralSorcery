@@ -9,6 +9,7 @@
 package hellfirepvp.astralsorcery.common.item.block;
 
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 
 /**
@@ -20,7 +21,7 @@ import net.minecraft.item.ItemBlock;
  */
 public class ItemBlockRitualPedestal extends ItemBlock {
 
-    public ItemBlockRitualPedestal() {
+    public ItemBlockRitualPedestal(Block block) {
         super(BlocksAS.ritualPedestal);
     }
 

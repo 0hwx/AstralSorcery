@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.client.IItemRenderer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,11 +32,26 @@ public class ItemRendererFilteredTESR implements IItemRenderer {
         renderMap.put(stackMeta, new TEISRProperties(tesr, renderTile));
     }
 
+//    @Override
+//    public void render(ItemStack stack) {
+//
+//    }
+
     @Override
-    public void render(ItemStack stack) {
-        if(renderMap.containsKey(stack.getItemDamage())) {
-            TEISRProperties prop = renderMap.get(stack.getItemDamage());
-            prop.tesr.renderTileEntityAt(prop.renderTile, 0, 0, 0, Minecraft.getMinecraft().getRenderPartialTicks(), 0);
+    public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+        return true;
+    }
+
+    @Override
+    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+        return true;
+    }
+
+    @Override
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+        if(renderMap.containsKey(item.getItemDamage())) {
+            TEISRProperties prop = renderMap.get(item.getItemDamage());
+            prop.tesr.renderTileEntityAt(prop.renderTile, 0, 0, 0, Minecraft.getMinecraft().timer.renderPartialTicks);
         }
     }
 

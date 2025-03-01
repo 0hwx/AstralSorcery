@@ -21,11 +21,7 @@ import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.data.OreDictUniqueStackList;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockModelShapes;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResource;
@@ -35,9 +31,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.client.model.IModel;
 
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -81,8 +76,8 @@ public class ItemColorizationHelper implements IResourceManagerReloadListener {
     }
 
     private static int getMeta(ItemStack stack) {
-        if(stack.getItem() instanceof ItemBlock) {
-            return stack.getMetadata();
+        if(stack.getItem() instanceof ItemBlock item) {
+            return item.getMetadata(stack.getItemDamage());
         }
         return stack.getItemDamage();
     }
@@ -136,9 +131,9 @@ public class ItemColorizationHelper implements IResourceManagerReloadListener {
             int r = (int) ((dominantColor[0] - 1) * ((float) (overlay >> 16 & 255)) / 255F);
             int g = (int) ((dominantColor[1] - 1) * ((float) (overlay >>  8 & 255)) / 255F);
             int b = (int) ((dominantColor[2] - 1) * ((float) (overlay >>  0 & 255)) / 255F);
-            r = MathHelper.clamp(r, 0, 255);
-            g = MathHelper.clamp(g, 0, 255);
-            b = MathHelper.clamp(b, 0, 255);
+            r = MathHelper.clamp_int(r, 0, 255);
+            g = MathHelper.clamp_int(g, 0, 255);
+            b = MathHelper.clamp_int(b, 0, 255);
             return new Color(r, g, b);
         } catch (Exception exc) {
             AstralSorcery.log.error("Item Colorization Helper: Ignoring non-resolvable image " + tas.getIconName());
@@ -165,29 +160,31 @@ public class ItemColorizationHelper implements IResourceManagerReloadListener {
     private int getOverlayColor(ItemStack stack) {
         if(stack == null || stack.getItem() == null) return -1;
         if(stack.getItem() instanceof ItemBlock) {
-            IBlockState state = ItemUtils.createBlockState(stack);
-            if(state == null) return -1;
-            return Minecraft.getMinecraft().getBlockColors().colorMultiplier(state, null, null, 0);
+            Block block = Block.getBlockFromItem(stack.getItem());
+//            Block state = ItemUtils.createBlockState(stack);
+//            if(state == null) return -1;
+            return block.getBlockColor();
         } else {
-            return Minecraft.getMinecraft().getItemColors().getColorFromItemstack(stack, 0);
+            return stack.getItem().getColorFromItemStack(stack, 0);  // Get color for the item
         }
     }
 
     @Nullable
     private TextureAtlasSprite getTexture(ItemStack stack) {
         if(stack == null || stack.getItem() == null) return null;
-        IBakedModel model = MeshRegisterHelper.getIMM().getItemModel(stack);
-        if(model == MeshRegisterHelper.getIMM().getModelManager().getMissingModel()) {
-            return null;
-        }
+//        IBakedModel model = MeshRegisterHelper.getIMM().getItemModel(stack);
+//        if(model == MeshRegisterHelper.getIMM().getModelManager().getMissingModel()) {
+//            return null;
+//        }
         if(stack.getItem() instanceof ItemBlock) {
-            IBlockState state = ItemUtils.createBlockState(stack);
-            if(state == null) return null;
-            TextureAtlasSprite tas = MeshRegisterHelper.getBMShapes().getTexture(state);
-            if(tas == Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite()) return null;
+            Block block = Block.getBlockFromItem(stack.getItem());
+            if(block == null) return null;
+            TextureAtlasSprite tas = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(block.getTextureName());
+            if(tas == Minecraft.getMinecraft().getTextureMapBlocks().missingImage) return null;
             return tas;
         } else {
-            return MeshRegisterHelper.getIMM().getItemModel(stack).getParticleTexture();
+            return null;
+//            return MeshRegisterHelper.getIMM().renderItemAndEffectIntoGUI(stack).getParticleTexture();
         }
     }
 

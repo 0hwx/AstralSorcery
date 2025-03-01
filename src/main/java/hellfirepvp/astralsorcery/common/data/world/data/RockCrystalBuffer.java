@@ -10,11 +10,11 @@ package hellfirepvp.astralsorcery.common.data.world.data;
 
 import hellfirepvp.astralsorcery.common.data.world.CachedWorldData;
 import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class RockCrystalBuffer extends CachedWorldData {
 
-    private Map<ChunkPos, List<BlockPos>> crystalPositions = new HashMap<>();
+    private Map<ChunkCoordIntPair, List<BlockPos>> crystalPositions = new HashMap<>();
     private static final Object lock = new Object();
 
     public RockCrystalBuffer() {
@@ -41,11 +41,11 @@ public class RockCrystalBuffer extends CachedWorldData {
     @Override
     public void updateTick(World world) {}
 
-    public List<BlockPos> collectPositions(ChunkPos center, int rad) {
+    public List<BlockPos> collectPositions(ChunkCoordIntPair center, int rad) {
         List<BlockPos> out = new LinkedList<>();
         for (int xx = -rad; xx <= rad; xx++) {
             for (int zz = -rad; zz <= rad; zz++) {
-                ChunkPos other = new ChunkPos(center.chunkXPos + xx, center.chunkZPos + zz);
+                ChunkCoordIntPair other = new ChunkCoordIntPair(center.chunkXPos + xx, center.chunkZPos + zz);
                 List<BlockPos> saved = crystalPositions.get(other);
                 if(saved != null) {
                     out.addAll(saved);
@@ -56,7 +56,7 @@ public class RockCrystalBuffer extends CachedWorldData {
     }
 
     public void addOre(BlockPos pos) {
-        ChunkPos ch = new ChunkPos(pos);
+        ChunkCoordIntPair ch = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         synchronized (lock) {
             if(!crystalPositions.containsKey(ch)) {
                 crystalPositions.put(ch, new LinkedList<>());
@@ -68,7 +68,7 @@ public class RockCrystalBuffer extends CachedWorldData {
     }
 
     public void removeOre(BlockPos pos) {
-        ChunkPos ch = new ChunkPos(pos);
+        ChunkCoordIntPair ch = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         if(!crystalPositions.containsKey(ch)) return;
         boolean removed;
         synchronized (lock) {
@@ -90,14 +90,14 @@ public class RockCrystalBuffer extends CachedWorldData {
             crystalPositions.clear();
         }
 
-        Map<ChunkPos, List<BlockPos>> work = new HashMap<>();
+        Map<ChunkCoordIntPair, List<BlockPos>> work = new HashMap<>();
         if(nbt.hasKey("crystalList")) {
             NBTTagList list = nbt.getTagList("crystalList", 10);
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound chList = list.getCompoundTagAt(i);
                 int chX = chList.getInteger("chX");
                 int chZ = chList.getInteger("chZ");
-                ChunkPos pos = new ChunkPos(chX, chZ);
+                ChunkCoordIntPair pos = new ChunkCoordIntPair(chX, chZ);
                 List<BlockPos> positions = new LinkedList<>();
                 NBTTagList entries = chList.getTagList("crystals", 10);
                 for (int j = 0; j < entries.tagCount(); j++) {
@@ -117,7 +117,7 @@ public class RockCrystalBuffer extends CachedWorldData {
     public void writeToNBT(NBTTagCompound nbt) {
         NBTTagList listCrystals = new NBTTagList();
         synchronized (lock) {
-            for (ChunkPos pos : crystalPositions.keySet()) {
+            for (ChunkCoordIntPair pos : crystalPositions.keySet()) {
                 NBTTagCompound comp = new NBTTagCompound();
                 comp.setInteger("chX", pos.chunkXPos);
                 comp.setInteger("chZ", pos.chunkZPos);

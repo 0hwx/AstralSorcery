@@ -41,7 +41,7 @@ public class PerkDefensiveCheatDeath extends ConstellationPerk {
                 dmgIn >= thresholdApplyPerkDamage) {
             if(!isCooldownActiveForPlayer(hurt)) {
                 setCooldownActiveForPlayer(hurt, cooldownPotionApplication);
-                hurt.addPotionEffect(new PotionEffect(RegistryPotions.potionCheatDeath, potionDuration, potionAmplifier, true, false));
+                hurt.addPotionEffect(new PotionEffect(RegistryPotions.potionCheatDeath.getId(), potionDuration, potionAmplifier, true));
             }
         }
         return dmgIn;

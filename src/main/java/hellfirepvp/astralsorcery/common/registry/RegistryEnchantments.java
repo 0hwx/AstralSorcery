@@ -5,8 +5,7 @@ import hellfirepvp.astralsorcery.common.enchantment.EnchantmentNightVision;
 import hellfirepvp.astralsorcery.common.enchantment.EnchantmentPlayerWornTick;
 import hellfirepvp.astralsorcery.common.enchantment.EnchantmentScorchingHeat;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,8 +29,8 @@ public class RegistryEnchantments {
     }
 
     private static <T extends Enchantment> T register(T e) {
-        e.setRegistryName(new ResourceLocation(AstralSorcery.MODID, e.getName()));
-        GameRegistry.register(e);
+        e.setName(AstralSorcery.MODID + ":" + e.getName());
+        MinecraftForge.EVENT_BUS.register(e);
         if (e instanceof EnchantmentPlayerWornTick) {
             wearableTickEnchantments.add((EnchantmentPlayerWornTick) e);
         }

@@ -9,6 +9,7 @@
 package hellfirepvp.astralsorcery.common.data.research;
 
 import com.google.common.io.Files;
+import cpw.mods.fml.common.FMLCommonHandler;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.event.ClientRenderEventHandler;
 import hellfirepvp.astralsorcery.common.block.network.BlockAltar;
@@ -25,6 +26,8 @@ import hellfirepvp.astralsorcery.common.network.packet.server.PktSyncKnowledge;
 import hellfirepvp.astralsorcery.common.registry.RegistryAchievements;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.PlayerUtil;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -33,14 +36,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -111,7 +113,7 @@ public class ResearchManager {
             loadPlayerKnowledge(uuid);
         }
         if (playerProgressServer.get(uuid) == null) {
-            AstralSorcery.log.warn("Failed to load AstralSocery Progress data for " + p.getName());
+            AstralSorcery.log.warn("Failed to load AstralSocery Progress data for " + p.getDisplayName());
             AstralSorcery.log.warn("Erroneous file: " + uuid.toString() + ".astral");
             return;
         }
@@ -188,7 +190,7 @@ public class ResearchManager {
             progress.discoverConstellation(c.getUnlocalizedName());
         }
 
-        player.addStat(RegistryAchievements.achvDiscoverConstellation);
+        player.addStat(RegistryAchievements.achvDiscoverConstellation,1);
 
         pushProgressToClientUnsafe(player);
         savePlayerKnowledge(player);
@@ -201,7 +203,7 @@ public class ResearchManager {
 
         progress.discoverConstellation(c.getUnlocalizedName());
 
-        player.addStat(RegistryAchievements.achvDiscoverConstellation);
+        player.addStat(RegistryAchievements.achvDiscoverConstellation,1);
 
         pushProgressToClientUnsafe(player);
         savePlayerKnowledge(player);
@@ -251,7 +253,7 @@ public class ResearchManager {
         progress.forceCharge(0);
         progress.setAttunedConstellation(constellation);
 
-        player.addStat(RegistryAchievements.achvPlayerAttunement);
+        player.addStat(RegistryAchievements.achvPlayerAttunement,1);
 
         pushProgressToClientUnsafe(player);
         savePlayerKnowledge(player);
@@ -515,9 +517,10 @@ public class ResearchManager {
 
     public static void informCraftingInfusionCompletion(TileStarlightInfuser infuser, ActiveInfusionTask recipe) {
         EntityPlayer crafter = recipe.tryGetCraftingPlayerServer();
+        BlockPos pos = new BlockPos(infuser.xCoord, infuser.yCoord, infuser.zCoord);
         if(crafter == null) {
             AstralSorcery.log.warn("Infusion finished, player that initialized crafting could not be found!");
-            AstralSorcery.log.warn("Affected tile: " + infuser.getPos() + " in dim " + infuser.getWorld().provider.getDimension());
+            AstralSorcery.log.warn("Affected tile: " + pos + " in dim " + infuser.getWorldObj().provider.dimensionId);
             return;
         }
 
@@ -529,9 +532,10 @@ public class ResearchManager {
 
     public static void informCraftingAltarCompletion(TileAltar altar, ActiveCraftingTask recipeToCraft) {
         EntityPlayer crafter = recipeToCraft.tryGetCraftingPlayerServer();
+        BlockPos pos = new BlockPos(altar.xCoord, altar.yCoord, altar.zCoord);
         if(crafter == null) {
             AstralSorcery.log.warn("Crafting finished, player that initialized crafting could not be found!");
-            AstralSorcery.log.warn("Affected tile: " + altar.getPos() + " in dim " + altar.getWorld().provider.getDimension());
+            AstralSorcery.log.warn("Affected tile: " + pos + " in dim " + altar.getWorldObj().provider.dimensionId);
             return;
         }
 
@@ -544,7 +548,7 @@ public class ResearchManager {
     private static void informCraft(EntityPlayer crafter, ItemStack crafted, Item itemCrafted, @Nullable Block iBlock) {
 
         if(itemCrafted instanceof ItemHandTelescope) {
-            crafter.addStat(RegistryAchievements.achvBuildHandTelescope);
+            crafter.addStat(RegistryAchievements.achvBuildHandTelescope,1);
         }
         if(iBlock != null) {
             if(iBlock instanceof BlockAltar) {
@@ -575,15 +579,15 @@ public class ResearchManager {
     private static void informPlayersAboutProgressionLoss(UUID pUUID) {
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         if(server != null) {
-            EntityPlayerMP player = server.getPlayerList().getPlayerByUUID(pUUID);
+            EntityPlayerMP player = PlayerUtil.getPlayerByUUID(pUUID);
             if(player != null) {
-                player.addChatMessage(new TextComponentString("AstralSorcery: Your progression could not be loaded and can't be recovered from backup. Please contact an administrator to lookup what went wrong and/or potentially recover your data from a backup.").setStyle(new Style().setColor(TextFormatting.RED)));
+                player.addChatMessage(new ChatComponentText("AstralSorcery: Your progression could not be loaded and can't be recovered from backup. Please contact an administrator to lookup what went wrong and/or potentially recover your data from a backup.").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)));
             }
-            String resolvedName = player != null ? player.getName() : pUUID.toString() + " (Not online)";
-            for (String opName : server.getPlayerList().getOppedPlayerNames()) {
-                EntityPlayer pl = server.getPlayerList().getPlayerByUsername(opName);
+            String resolvedName = player != null ? player.getDisplayName() : pUUID.toString() + " (Not online)";
+            for (String opName : server.getConfigurationManager().func_152606_n()) {
+                EntityPlayer pl = server.getConfigurationManager().func_152612_a(opName);
                 if(pl != null) {
-                    pl.addChatMessage(new TextComponentString("AstralSorcery: The progression of " + resolvedName + " could not be loaded and can't be recovered from backup. Error files might be created from the unloadable progression files, check the console for additional information!").setStyle(new Style().setColor(TextFormatting.RED)));
+                    pl.addChatMessage(new ChatComponentText("AstralSorcery: The progression of " + resolvedName + " could not be loaded and can't be recovered from backup. Error files might be created from the unloadable progression files, check the console for additional information!").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)));
                 }
             }
         }

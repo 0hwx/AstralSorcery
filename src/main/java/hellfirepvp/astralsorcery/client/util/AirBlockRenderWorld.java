@@ -8,14 +8,16 @@
 
 package hellfirepvp.astralsorcery.client.util;
 
-import net.minecraft.block.state.IBlockState;
+
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.util.ForgeDirection;
+
 
 import javax.annotation.Nullable;
 
@@ -28,52 +30,75 @@ import javax.annotation.Nullable;
  */
 public class AirBlockRenderWorld implements IBlockAccess {
 
-    private final Biome globalBiome;
+    private final BiomeGenBase globalBiome;
     private final WorldType globalType;
 
-    public AirBlockRenderWorld(Biome globalBiome, WorldType globalType) {
+    public AirBlockRenderWorld(BiomeGenBase globalBiome, WorldType globalType) {
         this.globalBiome = globalBiome;
         this.globalType = globalType;
     }
 
+    @Override
+    public Block getBlock(int x, int y, int z) {
+        return null;
+    }
+
     @Nullable
     @Override
-    public TileEntity getTileEntity(BlockPos pos) {
+    public TileEntity getTileEntity(int x, int y, int z) {
         return null;
     }
 
     @Override
-    public int getCombinedLight(BlockPos pos, int lightValue) {
+    public int getLightBrightnessForSkyBlocks(int x, int y, int z, int lightValue) {
         return 0;
     }
 
-    @Override
-    public IBlockState getBlockState(BlockPos pos) {
-        return Blocks.AIR.getDefaultState();
-    }
+//    @Override
+//    public int getCombinedLight(BlockPos pos, int lightValue) {
+//        return 0;
+//    }
 
     @Override
-    public boolean isAirBlock(BlockPos pos) {
+    public int getBlockMetadata(int x, int y, int z) {
+        return 0;
+    }
+//    public  Block getBlockState(BlockPos pos) {
+//        return Blocks.AIR.getDefaultState();
+//    }
+
+    @Override
+    public boolean isAirBlock(int x, int y, int z) {
         return true;
     }
 
     @Override
-    public Biome getBiome(BlockPos pos) {
+    public BiomeGenBase getBiomeGenForCoords(int x, int z) {
         return globalBiome;
     }
 
     @Override
-    public int getStrongPower(BlockPos pos, EnumFacing direction) {
+    public int getHeight() {
         return 0;
     }
 
     @Override
-    public WorldType getWorldType() {
-        return globalType;
+    public boolean extendedLevelsInChunkCache() {
+        return false;
     }
 
     @Override
-    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
+    public int isBlockProvidingPowerTo(int x, int y, int z, int directionIn) {
+        return 0;
+    }
+
+//    @Override
+//    public WorldType getWorldType() {
+//        return globalType;
+//    }
+
+    @Override
+    public boolean isSideSolid(int x, int y, int z, ForgeDirection side, boolean _default) {
         return _default;
     }
 

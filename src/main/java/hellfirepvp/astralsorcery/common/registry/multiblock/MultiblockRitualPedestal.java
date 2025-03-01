@@ -11,11 +11,8 @@ package hellfirepvp.astralsorcery.common.registry.multiblock;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 
-import static hellfirepvp.astralsorcery.common.block.BlockMarble.MARBLE_TYPE;
-import static hellfirepvp.astralsorcery.common.block.BlockMarble.MarbleBlockType;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,12 +30,12 @@ public class MultiblockRitualPedestal extends PatternBlockArray {
     private void load() {
         Block marble = BlocksAS.blockMarble;
 
-        addBlock(0, 0, 0, BlocksAS.ritualPedestal.getDefaultState());
+        addBlock(0, 0, 0, BlocksAS.ritualPedestal);
 
-        IBlockState mch = marble.getDefaultState().withProperty(MARBLE_TYPE, MarbleBlockType.CHISELED);
-        IBlockState mbr = marble.getDefaultState().withProperty(MARBLE_TYPE, MarbleBlockType.BRICKS);
-        IBlockState mrw = marble.getDefaultState().withProperty(MARBLE_TYPE, MarbleBlockType.RAW);
-        IBlockState mar = marble.getDefaultState().withProperty(MARBLE_TYPE, MarbleBlockType.ARCH);
+        Block mch = marble;//.getDefaultState().withProperty(MARBLE_TYPE, MarbleBlockType.CHISELED);
+        Block mbr = marble;//.getDefaultState().withProperty(MARBLE_TYPE, MarbleBlockType.BRICKS);
+        Block mrw = marble;//.getDefaultState().withProperty(MARBLE_TYPE, MarbleBlockType.RAW);
+        Block mar = marble;//.getDefaultState().withProperty(MARBLE_TYPE, MarbleBlockType.ARCH);
 
         addBlock(0, -1, 0, mch);
 
@@ -113,11 +110,11 @@ public class MultiblockRitualPedestal extends PatternBlockArray {
         addBlock( 2, -1, -3, mar);
         addBlock(-2, -1, -3, mar);
 
-        addBlockCube(Blocks.AIR.getDefaultState(), -2, 0, -2, 2, 2, 2);
-        addBlockCube(Blocks.AIR.getDefaultState(), -3, 0, -1, 3, 2, 1);
-        addBlockCube(Blocks.AIR.getDefaultState(), -1, 0, -3, 1, 2, 3);
+        addBlockCube(Blocks.air, -2, 0, -2, 2, 2, 2);
+        addBlockCube(Blocks.air, -3, 0, -1, 3, 2, 1);
+        addBlockCube(Blocks.air, -1, 0, -3, 1, 2, 3);
 
-        addBlock(0, 0, 0, BlocksAS.ritualPedestal.getDefaultState());
+        addBlock(0, 0, 0, BlocksAS.ritualPedestal);
     }
 
 }

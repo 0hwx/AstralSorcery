@@ -1,9 +1,9 @@
 package hellfirepvp.astralsorcery.common.base;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
  */
 public interface MeltInteraction {
 
-    public boolean isMeltable(World world, BlockPos pos, IBlockState state);
+    public boolean isMeltable(World world, BlockPos pos, Block state);
 
     default public int getMeltTickDuration() {
         return 100; //Def. Furance duration halved
@@ -26,17 +26,17 @@ public interface MeltInteraction {
     //Result can be a blockstate and/or an itemstack.
     //The BlockState result, if present, takes precedence.
     @Nullable
-    public IBlockState getMeltResultState();
+    public Block getMeltResultState();
 
     @Nullable
     public ItemStack getMeltResultStack();
 
     default public void placeResultAt(World world, BlockPos pos) {
-        IBlockState result = getMeltResultState();
+        Block result = getMeltResultState();
         if(result != null) {
-            world.setBlockState(pos, result, 3);
+            world.setBlock(pos.getX(), pos.getY(), pos.getZ(), result, 3,1);// todo check this
         } else {
-            world.setBlockToAir(pos);
+            world.setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
             ItemStack resultStack = getMeltResultStack();
             if(resultStack != null && resultStack.getItem() != null) {
                 ItemUtils.dropItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, resultStack);

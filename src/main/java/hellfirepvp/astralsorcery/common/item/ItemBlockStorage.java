@@ -8,17 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
 
 import javax.annotation.Nullable;
 
@@ -32,24 +32,25 @@ import javax.annotation.Nullable;
 public abstract class ItemBlockStorage extends Item {
 
     public static void tryStoreBlock(ItemStack storeIn, World w, BlockPos pos) {
-        if(w.getTileEntity(pos) != null) return;
-        IBlockState stateToStore = w.getBlockState(pos);
-        if(Item.getItemFromBlock(stateToStore.getBlock()) == null) return; //Can't charge the player anyway.
-        if(stateToStore.getBlockHardness(w, pos) == -1) return;
+        if(w.getTileEntity(pos.getX(), pos.getY(), pos.getZ()) != null) return;
+        Block stateToStore = w.getBlock(pos.getX(), pos.getY(), pos.getZ());
+        int meta = w.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
+        if(Item.getItemFromBlock(stateToStore) == null) return; //Can't charge the player anyway.
+        if(stateToStore.getBlockHardness(w, pos.getX(), pos.getY(), pos.getZ()) == -1) return;
         NBTTagCompound cmp = NBTHelper.getPersistentData(storeIn);
-        cmp.setString("storedBlock", stateToStore.getBlock().getRegistryName().toString());
-        cmp.setInteger("storedMeta", stateToStore.getBlock().damageDropped(stateToStore));
+        cmp.setString("storedBlock", stateToStore.getUnlocalizedName());
+        cmp.setInteger("storedMeta", stateToStore.damageDropped(meta));
     }
 
     @Nullable
     public static ItemStack getStoredStateAsStack(ItemStack stack) {
-        IBlockState stored = getStoredState(stack);
+        Block stored = getStoredState(stack, stack.getItemDamage());
         if(stored == null) return null; //Guarantees also that the block has an itemblock.
         return ItemUtils.createBlockStack(stored);
     }
 
     @Nullable
-    public static IBlockState getStoredState(ItemStack stack) {
+    public static Block getStoredState(ItemStack stack,int meta) {
         NBTTagCompound persistentTag = NBTHelper.getPersistentData(stack);
         ResourceLocation blockRes;
         if(persistentTag.hasKey("storedBlock")) {
@@ -57,16 +58,19 @@ public abstract class ItemBlockStorage extends Item {
         } else {
             blockRes = new ResourceLocation("air");
         }
-        Block b = ForgeRegistries.BLOCKS.getValue(blockRes);
-        if(b == null) return null;
-        if(Item.getItemFromBlock(b) == null) return null; //Can't charge the user properly anyway...
+        Block block = GameRegistry.findBlock("astralsorcery", blockRes.toString());
+//        Block b = ForgeRegistries.BLOCKS.getValue(blockRes);
+        if(block == null) return null;
+        if(Item.getItemFromBlock(block) == null) return null; //Can't charge the user properly anyway...
 
         boolean hasMeta = persistentTag.hasKey("storedMeta");
-        int meta = persistentTag.getInteger("storedMeta");
+        meta = persistentTag.getInteger("storedMeta");
         if(hasMeta) {
-            return b.getStateFromMeta(meta);
-        } else {
-            return b.getDefaultState();
+            meta = block.damageDropped(meta);
         }
+//        else {
+//            meta = block.damageDropped(0);
+//        }
+        return block;
     }
 }

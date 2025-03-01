@@ -15,10 +15,10 @@ import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.tile.TileAttunementAltar;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -28,13 +28,14 @@ import org.lwjgl.opengl.GL11;
  * Created by HellFirePvP
  * Date: 06.12.2016 / 22:03
  */
-public class TESRAttunementAltar extends TileEntitySpecialRenderer<TileAttunementAltar> {
+public class TESRAttunementAltar extends TileEntitySpecialRenderer {
 
     private static final ASaltarAT modelAttunementAltar = new ASaltarAT();
     private static final BindableResource texModelAttunementAltar = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MODELS, "base/altarattunement");
 
     @Override
-    public void renderTileEntityAt(TileAttunementAltar te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        TileAttunementAltar te = (TileAttunementAltar) tile;
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
 
@@ -42,10 +43,10 @@ public class TESRAttunementAltar extends TileEntitySpecialRenderer<TileAttunemen
         GL11.glScaled(0.0625, 0.0625, 0.0625);
         GL11.glRotated(180, 1, 0, 0);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.rotate(165.0F, 1.0F, 0.0F, 0.0F);
+         GL11.glPushMatrix();
+        GL11.glRotatef(165.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.popMatrix();
+        GL11.glPopMatrix();
 
         texModelAttunementAltar.bind();
         modelAttunementAltar.renderBase();

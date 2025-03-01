@@ -10,7 +10,7 @@ package hellfirepvp.astralsorcery.common.starlight.transmission;
 
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.starlight.WorldNetworkHandler;
-import net.minecraft.util.math.BlockPos;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.LinkedList;

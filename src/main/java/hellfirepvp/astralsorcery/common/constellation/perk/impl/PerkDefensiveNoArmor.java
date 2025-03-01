@@ -13,7 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -34,7 +34,7 @@ public class PerkDefensiveNoArmor extends ConstellationPerk {
     @Override
     public float onEntityHurt(EntityPlayer hurt, DamageSource source, float dmgIn) {
         int eq = 0;
-        for (ItemStack stack : hurt.getArmorInventoryList()) {
+        for (ItemStack stack : hurt.getLastActiveItems()) {
             if(stack != null) {
                 eq++;
             }
@@ -51,7 +51,7 @@ public class PerkDefensiveNoArmor extends ConstellationPerk {
         if(side == Side.SERVER) {
             if(player.ticksExisted % 20 != 0) return;
             int eq = 0;
-            for (ItemStack stack : player.getArmorInventoryList()) {
+            for (ItemStack stack : player.getLastActiveItems()) {
                 if(stack != null) {
                     eq++;
                 }

@@ -8,7 +8,6 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 
@@ -22,7 +21,7 @@ import net.minecraft.block.material.Material;
 public class MaterialAirish extends Material {
 
     public MaterialAirish() {
-        super(MapColor.AIR);
+        super(MapColor.airColor);
         setNoPushMobility();
         setReplaceable();
         setImmovableMobility();
@@ -33,8 +32,8 @@ public class MaterialAirish extends Material {
         return false;
     }
 
-    @Override
-    public EnumPushReaction getMobilityFlag() {
-        return EnumPushReaction.IGNORE;
-    }
+//    @Override
+//    public EnumPushReaction getMobilityFlag() {
+//        return EnumPushReaction.IGNORE;
+//    }
 }

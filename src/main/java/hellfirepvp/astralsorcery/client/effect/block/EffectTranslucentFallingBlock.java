@@ -1,19 +1,16 @@
 package hellfirepvp.astralsorcery.client.effect.block;
 
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
-import hellfirepvp.astralsorcery.client.util.AirBlockRenderWorld;
 import hellfirepvp.astralsorcery.client.util.Blending;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.init.Biomes;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.biome.BiomeGenBase;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -25,7 +22,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class EffectTranslucentFallingBlock extends EntityComplexFX {
 
-    private final IBlockState blockState;
+    private final Block blockState;
 
     private MotionController<EffectTranslucentFallingBlock> motionController = (fx, v) -> v;
     private PositionController<EffectTranslucentFallingBlock> positionController = (fx, v, m) -> v.add(m);
@@ -42,7 +39,7 @@ public class EffectTranslucentFallingBlock extends EntityComplexFX {
     private float scale = 1F;
     private boolean disableDepth = false;
 
-    public EffectTranslucentFallingBlock(IBlockState blockState) {
+    public EffectTranslucentFallingBlock(Block blockState) {
         this.blockState = blockState;
     }
 
@@ -200,11 +197,11 @@ public class EffectTranslucentFallingBlock extends EntityComplexFX {
         GL11.glRotated(rotation.getZ(), 0, 0, 1);
         GL11.glTranslated(-0.5, -0.5, -0.5);
 
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
-        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-        IBlockAccess world = new AirBlockRenderWorld(Biomes.PLAINS, Minecraft.getMinecraft().world.getWorldType());
-        Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(this.blockState, BlockPos.ORIGIN, world, vb);
+        Tessellator tes = Tessellator.instance;
+        tes.startDrawingQuads();
+//        IBlockAccess world = new AirBlockRenderWorld(BiomeGenBase.plains, Minecraft.getMinecraft().theWorld.getWorldInfo().getTerrainType());
+        RenderBlocks renderBlocks = new RenderBlocks();
+//        Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(this.blockState, BlockPos.ORIGIN, world, vb); // todo fix
         tes.draw();
 
         GL11.glEnable(GL11.GL_CULL_FACE);

@@ -10,7 +10,7 @@ package hellfirepvp.astralsorcery.common.container;
 
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraftforge.items.SlotItemHandler;
+import net.minecraft.inventory.Slot;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -29,17 +29,17 @@ public class ContainerAltarConstellation extends ContainerAltarAttunement {
     void bindAltarInventory() {
         super.bindAltarInventory();
 
-        addSlotToContainer(new SlotItemHandler(invHandler, 13, 102,  11));
-        addSlotToContainer(new SlotItemHandler(invHandler, 14, 138,  11));
+        addSlotToContainer(new Slot(invHandler, 13, 102,  11));
+        addSlotToContainer(new Slot(invHandler, 14, 138,  11));
 
-        addSlotToContainer(new SlotItemHandler(invHandler, 15,  84,  29));
-        addSlotToContainer(new SlotItemHandler(invHandler, 16, 156,  29));
+        addSlotToContainer(new Slot(invHandler, 15,  84,  29));
+        addSlotToContainer(new Slot(invHandler, 16, 156,  29));
 
-        addSlotToContainer(new SlotItemHandler(invHandler, 17, 84,   65));
-        addSlotToContainer(new SlotItemHandler(invHandler, 18, 156,  65));
+        addSlotToContainer(new Slot(invHandler, 17, 84,   65));
+        addSlotToContainer(new Slot(invHandler, 18, 156,  65));
 
-        addSlotToContainer(new SlotItemHandler(invHandler, 19, 102,  83));
-        addSlotToContainer(new SlotItemHandler(invHandler, 20, 138,  83));
+        addSlotToContainer(new Slot(invHandler, 19, 102,  83));
+        addSlotToContainer(new Slot(invHandler, 20, 138,  83));
     }
 
 }

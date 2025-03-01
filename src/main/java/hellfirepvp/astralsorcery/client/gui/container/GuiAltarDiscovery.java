@@ -60,8 +60,8 @@ public class GuiAltarDiscovery extends GuiAltarBase {
             GL11.glTranslated(130, 20, 0);
             GL11.glScaled(1.7, 1.7, 1.7);
 
-            itemRender.renderItemAndEffectIntoGUI(mc.player, out, 0, 0);
-            itemRender.renderItemOverlayIntoGUI(fontRendererObj, out, 0, 0, null);
+            itemRender.renderItemAndEffectIntoGUI(fontRendererObj, mc.renderEngine, out, 0, 0);
+            itemRender.renderItemOverlayIntoGUI(fontRendererObj, mc.renderEngine, out, 0, 0, null);
 
             GL11.glPopMatrix();
             GL11.glPopAttrib();
@@ -88,7 +88,7 @@ public class GuiAltarDiscovery extends GuiAltarBase {
         drawRect(guiLeft + 6, guiTop + 69, 165, 10);
 
         float percFilled;
-        if(containerAltarBase.tileAltar.getMultiblockState()) {
+        if(containerAltarBase.tileAltar.getMultBlock()) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             percFilled = containerAltarBase.tileAltar.getAmbientStarlightPercent();
         } else {

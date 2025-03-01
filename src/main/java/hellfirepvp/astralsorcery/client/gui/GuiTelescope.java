@@ -36,20 +36,16 @@ import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.client.PktDiscoverConstellation;
 import hellfirepvp.astralsorcery.common.network.packet.client.PktRotateTelescope;
 import hellfirepvp.astralsorcery.common.tile.TileTelescope;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -88,9 +84,9 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     private void setupConstellations() {
-        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(guiOwner.getWorld());
+        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(guiOwner.getWorldObj());
         int lastTracked = handle == null ? 5 : handle.lastRecordedDay;
-        Random r = new Random(guiOwner.getWorld().getSeed() * 31 + lastTracked * 31);
+        Random r = new Random(guiOwner.getWorldObj().getSeed() * 31 + lastTracked * 31);
 
         currentInformation = new SkyConstellationDistribution();
 
@@ -204,10 +200,10 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     private void drawCellsWithEffects(float partialTicks) {
-        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(guiOwner.getWorld());
+        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(guiOwner.getWorldObj());
         int lastTracked = handle == null ? 5 : handle.lastRecordedDay;
-        Random r = new Random(guiOwner.getWorld().getSeed() * 31 + lastTracked * 31 + rotation.ordinal());
-        World world = Minecraft.getMinecraft().world;
+        Random r = new Random(guiOwner.getWorldObj().getSeed() * 31 + lastTracked * 31 + rotation.ordinal());
+        World world = Minecraft.getMinecraft().theWorld;
         boolean canSeeSky = canTelescopeSeeSky(world);
 
         /*if(handle != null) {
@@ -249,10 +245,10 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
             RenderAstralSkybox.TEX_STAR_1.bind();
             float starSize = 2.5F;
             for (int i = 0; i < 72 + r.nextInt(144); i++) {
-                float innerOffsetX = starSize + r.nextInt(MathHelper.floor(guiWidth  - starSize));
-                float innerOffsetY = starSize + r.nextInt(MathHelper.floor(guiHeight - starSize));
+                float innerOffsetX = starSize + r.nextInt(MathHelper.floor_float(guiWidth  - starSize));
+                float innerOffsetY = starSize + r.nextInt(MathHelper.floor_float(guiHeight - starSize));
                 float brightness = 0.3F + (RenderConstellation.stdFlicker(ClientScheduler.getClientTick(), partialTicks, 10 + r.nextInt(20))) * 0.6F;
-                brightness *= Minecraft.getMinecraft().world.getStarBrightness(1.0F) * 2;
+                brightness *= Minecraft.getMinecraft().theWorld.getStarBrightness(1.0F) * 2;
                 GL11.glColor4f(brightness, brightness, brightness, brightness);
                 drawRectDetailed(guiLeft + innerOffsetX - starSize, guiTop + innerOffsetY - starSize, starSize * 2, starSize * 2);
                 GL11.glColor4f(1, 1, 1, 1);
@@ -340,8 +336,8 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     private void drawLine(Point start, Point end, RenderConstellation.BrightnessFunction func, float linebreadth, boolean applyFunc) {
-        Tessellator tes = Tessellator.getInstance();
-        VertexBuffer vb = tes.getBuffer();
+        Tessellator tess = Tessellator.instance;
+//        VertexBuffer vb = tes.getBuffer();
 
         float brightness;
         if (applyFunc) {
@@ -349,12 +345,13 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
         } else {
             brightness = 1F;
         }
-        float starBr = Minecraft.getMinecraft().world.getStarBrightness(1.0F);
+        float starBr = Minecraft.getMinecraft().theWorld.getStarBrightness(1.0F);
         if (starBr <= 0.0F) {
             return;
         }
         brightness *= (starBr * 2);
-        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        tess.startDrawingQuads();
+//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
         GL11.glColor4f(brightness, brightness, brightness, brightness < 0 ? 0 : brightness);
 
         Vector3 fromStar = new Vector3(guiLeft + start.getX(), guiTop + start.getY(), zLevel);
@@ -371,15 +368,16 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
             int v = ((i + 2) & 2) >> 1;
 
             Vector3 pos = vec00.clone().add(dir.clone().multiply(u)).add(vecV.clone().multiply(v));
-            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
+            tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), u, v);
+//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
         }
 
-        tes.draw();
+        tess.draw();
     }
     private void drawGridBackground(float partialTicks, boolean canSeeSky) {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         Blending.PREALPHA.apply();
-        World renderWorld = Minecraft.getMinecraft().world;
+        World renderWorld = Minecraft.getMinecraft().theWorld;
         int rgbFrom, rgbTo;
         if (canSeeSky) {
             float starBr = renderWorld.getStarBrightness(partialTicks) * 2;
@@ -397,9 +395,9 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     private boolean canTelescopeSeeSky(World renderWorld) {
-        BlockPos pos = guiOwner.getPos();
+        BlockPos pos = new BlockPos(guiOwner.xCoord, guiOwner.yCoord, guiOwner.zCoord);
         /*int height = 1;
-        IBlockState up = renderWorld.getBlockState(pos.up());
+        Block up = renderWorld.getBlockState(pos.up());
         if(up.getBlock().equals(BlocksAS.blockStructural) && up.getValue(BlockStructural.BLOCK_TYPE).equals(BlockStructural.BlockType.TELESCOPE_STRUCT)) {
             height += 1;
         }*/
@@ -407,12 +405,12 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
         for (int xx = -1; xx <= 1; xx++) {
             for (int zz = -1; zz <= 1; zz++) {
                 BlockPos other = pos.add(xx, 0, zz);
-                if (!renderWorld.canSeeSky(other)) {
+                if (!renderWorld.canBlockSeeTheSky(other.getX(), other.getY(), other.getZ())) {
                     return false;
                 }
             }
         }
-        return renderWorld.canSeeSky(pos.up());
+        return renderWorld.canBlockSeeTheSky(pos.up().getX(), pos.up().getY(), pos.up().getZ());
     }
 
     private static final float THRESHOLD_TO_START = 0.8F;
@@ -504,9 +502,9 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-
+        BlockPos pos = new BlockPos(guiOwner.xCoord, guiOwner.yCoord, guiOwner.zCoord);
         if (mouseButton == 0) {
             tryStartDrawing(mouseX, mouseY);
         }
@@ -519,12 +517,12 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
 
         Point p = new Point(mouseX, mouseY);
         if(rectArrowCW != null && rectArrowCW.contains(p)) {
-            PktRotateTelescope pkt = new PktRotateTelescope(true, guiOwner.getWorld().provider.getDimension(), guiOwner.getPos());
+            PktRotateTelescope pkt = new PktRotateTelescope(true, guiOwner.getWorldObj().provider.dimensionId, pos);
             PacketChannel.CHANNEL.sendToServer(pkt);
             return;
         }
         if(rectArrowCCW != null && rectArrowCCW.contains(p)) {
-            PktRotateTelescope pkt = new PktRotateTelescope(false, guiOwner.getWorld().provider.getDimension(), guiOwner.getPos());
+            PktRotateTelescope pkt = new PktRotateTelescope(false, guiOwner.getWorldObj().provider.dimensionId, pos);
             PacketChannel.CHANNEL.sendToServer(pkt);
         }
 
@@ -544,7 +542,7 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+    protected void mouseMovedOrUp(int mouseX, int mouseY, int mouseButton) {
         if (mouseButton == 0) {
             informRelease(mouseX, mouseY);
         }
@@ -587,7 +585,7 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     private boolean canStartDrawing() {
-        return Minecraft.getMinecraft().world.getStarBrightness(1.0F) >= 0.35F;
+        return Minecraft.getMinecraft().theWorld.getStarBrightness(1.0F) >= 0.35F;
     }
 
     private void clearLines() {

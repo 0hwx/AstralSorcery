@@ -16,17 +16,17 @@ import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingSprite;
 import hellfirepvp.astralsorcery.client.util.SpriteLibrary;
 import hellfirepvp.astralsorcery.common.auxiliary.link.ILinkableTile;
 import hellfirepvp.astralsorcery.common.tile.base.TileEntityTick;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -45,15 +45,15 @@ public class TileRitualLink extends TileEntityTick implements ILinkableTile {
     private BlockPos linkedTo = null;
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
-        if(world.isRemote) {
+        if(worldObj.isRemote) {
             playClientEffects();
         } else {
             if(linkedTo != null) {
-                if(MiscUtils.isChunkLoaded(world, new ChunkPos(linkedTo))) {
-                    TileRitualLink link = MiscUtils.getTileAt(world, linkedTo, TileRitualLink.class, true);
+                if(MiscUtils.isChunkLoaded(worldObj, new ChunkCoordIntPair(linkedTo.chunkX(), linkedTo.chunkZ()))) {
+                    TileRitualLink link = MiscUtils.getTileAt(worldObj, linkedTo, TileRitualLink.class, true);
                     if(link == null) {
                         linkedTo = null;
                         markForUpdate();
@@ -65,7 +65,7 @@ public class TileRitualLink extends TileEntityTick implements ILinkableTile {
 
     @SideOnly(Side.CLIENT)
     private void playClientEffects() {
-        if(this.linkedTo != null && Minecraft.getMinecraft().player.getDistanceSq(getPos()) < 1024) { //32 Squared
+        if(this.linkedTo != null && Minecraft.getMinecraft().thePlayer.getDistanceSq(xCoord, yCoord, zCoord) < 1024) { //32 Squared
             if(ticksExisted % 4 == 0) {
                 Collection<Vector3> positions = MiscUtils.getCirclePositions(
                         new Vector3(this).add(0.5, 0.5, 0.5),
@@ -123,12 +123,12 @@ public class TileRitualLink extends TileEntityTick implements ILinkableTile {
 
     @Override
     public World getLinkWorld() {
-        return getWorld();
+        return getWorldObj();
     }
 
     @Override
     public BlockPos getLinkPos() {
-        return getPos();
+        return new BlockPos(xCoord, yCoord, zCoord);
     }
 
     @Nullable
@@ -142,7 +142,7 @@ public class TileRitualLink extends TileEntityTick implements ILinkableTile {
         this.linkedTo = other;
         TileRitualLink otherLink = MiscUtils.getTileAt(player.getEntityWorld(), other, TileRitualLink.class, true);
         if(otherLink != null) {
-            otherLink.linkedTo = getPos();
+            otherLink.linkedTo = new BlockPos(xCoord, yCoord, zCoord);
             otherLink.markForUpdate();
         }
 
@@ -152,14 +152,14 @@ public class TileRitualLink extends TileEntityTick implements ILinkableTile {
     @Override
     public boolean tryLink(EntityPlayer player, BlockPos other) {
         TileRitualLink otherLink = MiscUtils.getTileAt(player.getEntityWorld(), other, TileRitualLink.class, true);
-        return otherLink != null && otherLink.linkedTo == null && !other.equals(getPos());
+        return otherLink != null && otherLink.linkedTo == null && !other.equals(new BlockPos(xCoord, yCoord, zCoord));
     }
 
     @Override
     public boolean tryUnlink(EntityPlayer player, BlockPos other) {
         TileRitualLink otherLink = MiscUtils.getTileAt(player.getEntityWorld(), other, TileRitualLink.class, true);
         if(otherLink == null || otherLink.linkedTo == null) return false;
-        if(otherLink.linkedTo.equals(getPos())) {
+        if(otherLink.linkedTo.equals(new BlockPos(xCoord, yCoord, zCoord))) {
             this.linkedTo = null;
             otherLink.linkedTo = null;
             otherLink.markForUpdate();

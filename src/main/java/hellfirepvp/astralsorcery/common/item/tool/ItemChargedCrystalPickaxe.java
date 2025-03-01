@@ -7,26 +7,21 @@ import hellfirepvp.astralsorcery.client.effect.block.EffectTranslucentFallingBlo
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktOreScan;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.struct.BlockArray;
 import hellfirepvp.astralsorcery.common.util.struct.OreDiscoverer;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,30 +39,33 @@ public class ItemChargedCrystalPickaxe extends ItemCrystalPickaxe implements Cha
 
     private static int idx = 0;
 
+    public ItemChargedCrystalPickaxe() {
+        setUnlocalizedName("ItemChargedCrystalPickaxe");
+    }
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand) {
-        if (hand == EnumHand.MAIN_HAND && scanForOres(worldIn, playerIn)) {
-            return ActionResult.newResult(EnumActionResult.SUCCESS, itemStackIn);
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer playerIn) {
+        if (scanForOres(world, playerIn)) {
+            return stack;
         }
-        return ActionResult.newResult(EnumActionResult.PASS, itemStackIn);
+        return stack;
     }
 
     @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (hand == EnumHand.MAIN_HAND && scanForOres(worldIn, playerIn)) {
-            return EnumActionResult.SUCCESS;
+   public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+        if (scanForOres(worldIn, playerIn)) {
+            return true;
         }
-        return EnumActionResult.PASS;
+        return false;
     }
 
     private boolean scanForOres(World world, EntityPlayer player) {
         if (!world.isRemote && player instanceof EntityPlayerMP && !MiscUtils.isPlayerFakeMP((EntityPlayerMP) player)) {
-            if (!player.getCooldownTracker().hasCooldown(ItemsAS.chargedCrystalPickaxe)) {
+//            if (!player.getCooldownTracker().hasCooldown(ItemsAS.chargedCrystalPickaxe)) {
                 Thread tr = new Thread(() -> {
                     BlockArray foundOres = OreDiscoverer.startSearch(world, new Vector3(player), 14);
                     if (!foundOres.isEmpty()) {
                         List<BlockPos> positions = new LinkedList<>();
-                        BlockPos plPos = player.getPosition();
+                        BlockPos plPos = new BlockPos(player).getPosition();
                         for (BlockPos pos : foundOres.getPattern().keySet()) {
                             if(pos.distanceSq(plPos) < 350) {
                                 positions.add(pos);
@@ -80,11 +78,11 @@ public class ItemChargedCrystalPickaxe extends ItemCrystalPickaxe implements Cha
                 tr.setName("Ore Scan " + idx);
                 idx++;
                 tr.start();
-                if(!ChargedCrystalToolBase.tryRevertMainHand(player, player.getHeldItemMainhand())) {
-                    player.getCooldownTracker().setCooldown(ItemsAS.chargedCrystalPickaxe, 150);
-                }
+//                if(!ChargedCrystalToolBase.tryRevertMainHand(player, player.getHeldItem())) {
+//                    player.getCooldownTracker().setCooldown(ItemsAS.chargedCrystalPickaxe, 150);
+//                }
                 return true;
-            }
+//            }
         }
         return false;
     }
@@ -94,7 +92,7 @@ public class ItemChargedCrystalPickaxe extends ItemCrystalPickaxe implements Cha
         for (BlockPos at : positions) {
             Vector3 atPos = new Vector3(at).add(0.5, 0.5, 0.5);
             atPos.add(itemRand.nextFloat() - itemRand.nextFloat(), itemRand.nextFloat() - itemRand.nextFloat(), itemRand.nextFloat() - itemRand.nextFloat());
-            IBlockState state = Minecraft.getMinecraft().world.getBlockState(at);
+            Block state = Minecraft.getMinecraft().theWorld.getBlock(at.getX(), at.getY(), at.getZ());
             EffectTranslucentFallingBlock bl = EffectHandler.getInstance().translucentFallingBlock(atPos, state);
             bl.setDisableDepth(true).setScaleFunction(new EntityComplexFX.ScaleFunction.Shrink<>());
             bl.setMotion(0, 0.03, 0).setAlphaFunction(EntityComplexFX.AlphaFunction.PYRAMID);
@@ -110,4 +108,10 @@ public class ItemChargedCrystalPickaxe extends ItemCrystalPickaxe implements Cha
         return ItemsAS.crystalPickaxe;
     }
 
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerIcons(IIconRegister register)
+    {
+        this.itemIcon = register.registerIcon("astralsorcery:crystal_pickaxe_s");
+    }
 }

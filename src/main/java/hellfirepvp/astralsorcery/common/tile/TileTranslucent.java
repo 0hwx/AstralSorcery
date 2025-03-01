@@ -10,7 +10,6 @@ package hellfirepvp.astralsorcery.common.tile;
 
 import hellfirepvp.astralsorcery.common.tile.base.TileEntitySynchronized;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -23,13 +22,14 @@ import net.minecraft.nbt.NBTTagCompound;
  */
 public class TileTranslucent extends TileEntitySynchronized {
 
-    private IBlockState fakedState = Blocks.AIR.getDefaultState();
+    private Block fakedState = Blocks.air;
+    private int metadata = 0;
 
-    public IBlockState getFakedState() {
+    public Block getFakedState() {
         return fakedState;
     }
 
-    public void setFakedState(IBlockState fakedState) {
+    public void setFakedState(Block fakedState) {
         this.fakedState = fakedState;
         markForUpdate();
     }
@@ -42,7 +42,7 @@ public class TileTranslucent extends TileEntitySynchronized {
             int data = compound.getInteger("Data");
             Block b = Block.getBlockFromName(compound.getString("Block"));
             if(b != null) {
-                fakedState = b.getStateFromMeta(data);
+                metadata = b.damageDropped(data);
             }
         }
     }
@@ -53,8 +53,8 @@ public class TileTranslucent extends TileEntitySynchronized {
         super.writeCustomNBT(compound);
 
         if(fakedState != null) {
-            compound.setString("Block", Block.REGISTRY.getNameForObject(fakedState.getBlock()).toString());
-            compound.setInteger("Data", fakedState.getBlock().getMetaFromState(fakedState));
+            compound.setString("Block", Block.blockRegistry.getNameForObject(fakedState).toString());
+            compound.setInteger("Data", metadata);
         }
     }
 

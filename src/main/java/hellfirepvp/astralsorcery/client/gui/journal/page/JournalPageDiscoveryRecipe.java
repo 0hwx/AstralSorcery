@@ -9,6 +9,8 @@
 package hellfirepvp.astralsorcery.client.gui.journal.page;
 
 import com.google.common.collect.Lists;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import cpw.mods.fml.relauncher.Side;
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.util.Blending;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
@@ -31,8 +33,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -81,7 +81,7 @@ public class JournalPageDiscoveryRecipe implements IJournalPage {
             for (Rectangle r : thisFrameStackFrames.keySet()) {
                 if(r.contains(mouseX, mouseZ)) {
                     ItemStack stack = thisFrameStackFrames.get(r);
-                    RegistryBookLookups.LookupInfo lookup = RegistryBookLookups.tryGetPage(Minecraft.getMinecraft().player, Side.CLIENT, stack);
+                    RegistryBookLookups.LookupInfo lookup = RegistryBookLookups.tryGetPage(Minecraft.getMinecraft().thePlayer, Side.CLIENT, stack);
                     if(lookup != null) {
                         RegistryBookLookups.openLookupJournalPage(lookup);
                     }
@@ -172,11 +172,11 @@ public class JournalPageDiscoveryRecipe implements IJournalPage {
                 if(rect.contains(mouseX, mouseY)) {
                     ItemStack stack = thisFrameStackFrames.get(rect);
                     try {
-                        tooltip.addAll(stack.getTooltip(Minecraft.getMinecraft().player, Minecraft.getMinecraft().gameSettings.advancedItemTooltips));
+                        tooltip.addAll(stack.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips));
                     } catch (Throwable tr) {
-                        tooltip.add(TextFormatting.RED + "<Error upon trying to get this item's tooltip>");
+                        tooltip.add(ChatFormatting.RED + "<Error upon trying to get this item's tooltip>");
                     }
-                    RegistryBookLookups.LookupInfo lookup = RegistryBookLookups.tryGetPage(Minecraft.getMinecraft().player, Side.CLIENT, stack);
+                    RegistryBookLookups.LookupInfo lookup = RegistryBookLookups.tryGetPage(Minecraft.getMinecraft().thePlayer, Side.CLIENT, stack);
                     if(lookup != null) {
                         tooltip.add("");
                         tooltip.add(I18n.format("misc.craftInformation"));

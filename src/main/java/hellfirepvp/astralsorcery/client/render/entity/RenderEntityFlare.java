@@ -11,8 +11,8 @@ package hellfirepvp.astralsorcery.client.render.entity;
 import hellfirepvp.astralsorcery.common.entities.EntityFlare;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -21,27 +21,16 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
  * Created by HellFirePvP
  * Date: 07.02.2017 / 12:21
  */
-public class RenderEntityFlare extends Render<EntityFlare> {
+public class RenderEntityFlare extends Render {
 
-    public RenderEntityFlare(RenderManager renderManager) {
-        super(renderManager);
+    @Override
+    public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        this.doRender((EntityFlare)entity, x, y, z, entityYaw, partialTicks);
     }
 
     @Override
-    public void doRender(EntityFlare entity, double x, double y, double z, float entityYaw, float partialTicks) {}
-
-    @Override
-    protected ResourceLocation getEntityTexture(EntityFlare entity) {
-        return null;
+    protected ResourceLocation getEntityTexture(Entity entity) {
+        return this.getEntityTexture((EntityFlare)entity);
     }
 
-
-    public static class Factory implements IRenderFactory<EntityFlare> {
-
-        @Override
-        public Render<? super EntityFlare> createRenderFor(RenderManager manager) {
-            return new RenderEntityFlare(manager);
-        }
-
-    }
 }

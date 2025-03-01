@@ -12,19 +12,15 @@ import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalSword;
 import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalToolBase;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.IParticleFactory;
-import net.minecraft.client.particle.ParticleDigging;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,7 +36,8 @@ import java.util.Random;
 public class InfusionRecipeChargeTool extends BasicInfusionRecipe {
 
     public InfusionRecipeChargeTool(@Nonnull ChargedCrystalToolBase output) {
-        super(new ItemStack((Item) output), new ItemHandle(new ItemStack(output.getInertVariant())));
+        super(new ItemStack((Item) output), new ItemHandle(new ItemStack(Items.cake)));
+//        super(new ItemStack((Item) output), new ItemHandle(new ItemStack(output.getInertVariant())));
         setConsumeMultiple();
         setLiquidStarlightConsumptionChance(1F);
     }
@@ -87,7 +84,7 @@ public class InfusionRecipeChargeTool extends BasicInfusionRecipe {
     public void onCraftClientTick(TileStarlightInfuser infuser, long tick, Random rand) {
         super.onCraftClientTick(infuser, tick, rand);
 
-        BlockPos at = infuser.getPos();
+        BlockPos at = new BlockPos(infuser.xCoord, infuser.yCoord, infuser.zCoord);
         EffectHelper.genericFlareParticle(at.getX() + 0.5, at.getY() + 0.85, at.getZ() + 0.5)
                 .motion(rand.nextFloat() * 0.1 - rand.nextFloat() * 0.1,
                         rand.nextFloat() * 0.4,
@@ -96,7 +93,8 @@ public class InfusionRecipeChargeTool extends BasicInfusionRecipe {
 
         for (int i = 0; i < 3; i++) {
             at = TileStarlightInfuser.offsetsLiquidStarlight[rand.nextInt(TileStarlightInfuser.offsetsLiquidStarlight.length)];
-            at = at.add(infuser.getPos());
+            BlockPos pos = new BlockPos(infuser.xCoord, infuser.yCoord, infuser.zCoord);
+            at = at.add(pos);
             EffectHelper.genericFlareParticle(at.getX() + 0.5, at.getY() + 0.85, at.getZ() + 0.5)
                     .motion(rand.nextFloat() * 0.1 - rand.nextFloat() * 0.1,
                             rand.nextFloat() * 0.4,
@@ -105,7 +103,8 @@ public class InfusionRecipeChargeTool extends BasicInfusionRecipe {
         }
         if(rand.nextInt(3) == 0) {
             at = TileStarlightInfuser.offsetsLiquidStarlight[rand.nextInt(TileStarlightInfuser.offsetsLiquidStarlight.length)];
-            at = at.add(infuser.getPos());
+            BlockPos pos = new BlockPos(infuser.xCoord, infuser.yCoord, infuser.zCoord);
+            at = at.add(pos);
             Vector3 from = new Vector3(at).add(0.5, 0, 0.5);
             MiscUtils.applyRandomOffset(from, rand, 0.4F);
             EffectLightbeam lightbeam = EffectHandler.getInstance().lightbeam(from.clone().addY(4 + rand.nextInt(2)), from, 1);

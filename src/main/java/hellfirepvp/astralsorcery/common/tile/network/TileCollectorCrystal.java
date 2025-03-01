@@ -29,13 +29,13 @@ import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionSour
 import hellfirepvp.astralsorcery.common.starlight.transmission.base.SimpleTransmissionSourceNode;
 import hellfirepvp.astralsorcery.common.starlight.transmission.base.crystal.IndependentCrystalSource;
 import hellfirepvp.astralsorcery.common.tile.base.TileSourceBase;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,19 +73,20 @@ public class TileCollectorCrystal extends TileSourceBase {
     private Object[] orbitals = new Object[4];
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
-        if(!world.isRemote) {
+        if(!worldObj.isRemote) {
+            BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
             if(ticksExisted > 4 && associatedType == null) {
-                getWorld().setBlockToAir(getPos());
+                getWorldObj().setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
             }
             if(isEnhanced() && getTicksExisted() % 10 == 0) {
                 checkAdjacentBlocks();
             }
             if(type == BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL && getTicksExisted() % 40 == 0) {
                 boolean match = usedCrystalProperties != null && usedCrystalProperties.getSize() > 400 &&
-                        MultiBlockArrays.patternCollectorEnhancement.matches(world, pos);
+                        MultiBlockArrays.patternCollectorEnhancement.matches(worldObj, pos);
                 if (match != enhanced) {
                     setEnhanced(match);
                 }
@@ -98,13 +99,14 @@ public class TileCollectorCrystal extends TileSourceBase {
     }
 
     private void checkAdjacentBlocks() {
+        BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
         for (int xx = -1; xx <= 1; xx++) {
             for (int yy = -1; yy <= 1; yy++) {
                 for (int zz = -1; zz <= 1; zz++) {
                     if(xx == 0 && yy == 0 && zz == 0) continue;
 
-                    BlockPos other = getPos().add(xx, yy, zz);
-                    if(!getWorld().isAirBlock(other)) {
+                    BlockPos other = pos.add(xx, yy, zz);
+                    if(!getWorldObj().isAirBlock(other.getX(), other.getY(), other.getZ())) {
                         setEnhanced(false);
                         return;
                     }
@@ -117,9 +119,9 @@ public class TileCollectorCrystal extends TileSourceBase {
     private void playEnhancedEffects() {
         if(Minecraft.isFancyGraphicsEnabled()) {
             EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    getPos().getX() + 0.5,
-                    getPos().getY() + 0.5,
-                    getPos().getZ() + 0.5);
+                    xCoord + 0.5,
+                    xCoord + 0.5,
+                    xCoord + 0.5);
             p.motion((rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1),
                      (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1),
                      (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1));
@@ -143,7 +145,7 @@ public class TileCollectorCrystal extends TileSourceBase {
             }
         }
 
-        BlockPos randomPos = offsetsLiquidStarlight[rand.nextInt(offsetsLiquidStarlight.length)].add(pos);
+        BlockPos randomPos = offsetsLiquidStarlight[rand.nextInt(offsetsLiquidStarlight.length)].add(xCoord, yCoord, zCoord);
         Vector3 from = new Vector3(randomPos).add(rand.nextFloat(), 0.8, rand.nextFloat());
         Vector3 to = new Vector3(this).add(0.5, 0.5, 0.5);
         Vector3 mov = to.clone().subtract(from).normalize().multiply(0.1);
@@ -165,7 +167,7 @@ public class TileCollectorCrystal extends TileSourceBase {
         p.setColor(c);
 
         if(usedCrystalProperties != null && (usedCrystalProperties.getPurity() > 90 || usedCrystalProperties.getCollectiveCapability() > 90) && rand.nextInt(100) == 0) {
-            AstralSorcery.proxy.fireLightning(world, to, from, c);
+            AstralSorcery.proxy.fireLightning(worldObj, to, from, c);
         }
     }
 
@@ -192,10 +194,11 @@ public class TileCollectorCrystal extends TileSourceBase {
     }
 
     public void setEnhanced(boolean enhanced) {
-        if(!world.isRemote && type == BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL) {
+        if(!worldObj.isRemote && type == BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL) {
             this.enhanced = enhanced;
-            WorldNetworkHandler handle = WorldNetworkHandler.getNetworkHandler(world);
-            IIndependentStarlightSource source = handle.getSourceAt(getPos());
+            BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
+            WorldNetworkHandler handle = WorldNetworkHandler.getNetworkHandler(worldObj);
+            IIndependentStarlightSource source = handle.getSourceAt(pos);
             if(source != null && source instanceof IndependentCrystalSource) {
                 ((IndependentCrystalSource) source).setEnhanced(enhanced);
                 handle.markDirty();

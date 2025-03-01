@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.common.item;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -16,6 +16,6 @@ import javax.annotation.Nonnull;
 public interface ISpecialStackDescriptor {
 
     @Nonnull
-    public ItemStack getDecriptor(IBlockState state);
+    public ItemStack getDecriptor(Block state);
 
 }

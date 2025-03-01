@@ -10,18 +10,12 @@ package hellfirepvp.astralsorcery.common.block;
 
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -34,10 +28,10 @@ import java.util.List;
  */
 public class BlockOpaqueCosmeticRock extends Block implements BlockCustomName {
 
-    public static PropertyEnum<BlockType> BLOCK_TYPE = PropertyEnum.create("blocktype", BlockType.class);
+    public static final AxisAlignedBB FULL_BLOCK_AABB = AxisAlignedBB.getBoundingBox(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
 
     public BlockOpaqueCosmeticRock() {
-        super(Material.ROCK, MapColor.IRON);
+        super(Material.rock);
         setHardness(2.0F);
         setHarvestLevel("pickaxe", 3);
         setResistance(20.0F);
@@ -45,7 +39,7 @@ public class BlockOpaqueCosmeticRock extends Block implements BlockCustomName {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
         return FULL_BLOCK_AABB;
     }
 
@@ -56,33 +50,33 @@ public class BlockOpaqueCosmeticRock extends Block implements BlockCustomName {
         }
     }
 
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return meta < BlockType.values().length ? getDefaultState().withProperty(BLOCK_TYPE, BlockType.values()[meta]) : getDefaultState();
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        BlockType type = state.getValue(BLOCK_TYPE);
-        return type == null ? 0 : type.ordinal();
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, BLOCK_TYPE);
-    }
+//    @Override
+//    public Block getStateFromMeta(int meta) {
+//        return meta < BlockType.values().length ? getDefaultState().withProperty(BLOCK_TYPE, BlockType.values()[meta]) : getDefaultState();
+//    }
+//
+//    @Override
+//    public int getMeta(Block state) {
+//        BlockType type = state.getValue(BLOCK_TYPE);
+//        return type == null ? 0 : type.ordinal();
+//    }
+//
+//    @Override
+//    protected BlockStateContainer createBlockState() {
+//        return new BlockStateContainer(this, BLOCK_TYPE);
+//    }
 
     @Override
     public String getIdentifierForMeta(int meta) {
-        BlockType mt = getStateFromMeta(meta).getValue(BLOCK_TYPE);
+        BlockType mt = meta < BlockOpaqueCosmeticRock.BlockType.values().length ? BlockOpaqueCosmeticRock.BlockType.values()[meta] : null;
         return mt == null ? "null" : mt.getName();
     }
 
-    public static enum BlockType implements IStringSerializable {
+    public static enum BlockType {
 
         NONE;
 
-        @Override
+
         public String getName() {
             return name().toLowerCase();
         }

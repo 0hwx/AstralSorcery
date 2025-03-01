@@ -8,11 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.starlight.network;
 
-import net.minecraft.util.math.ChunkPos;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,26 +34,26 @@ public class TransmissionChunkTracker {
 
     @SubscribeEvent
     public void onChLoad(ChunkEvent.Load event) {
-        TransmissionWorldHandler handle = StarlightTransmissionHandler.getInstance().getWorldHandler(event.getWorld());
+        TransmissionWorldHandler handle = StarlightTransmissionHandler.getInstance().getWorldHandler(event.world);
         if(handle != null) {
             Chunk ch = event.getChunk();
-            handle.informChunkLoad(new ChunkPos(ch.xPosition, ch.zPosition));
+            handle.informChunkLoad(new ChunkCoordIntPair(ch.xPosition, ch.zPosition));
         }
     }
 
     @SubscribeEvent
     public void onChUnload(ChunkEvent.Unload event) {
-        TransmissionWorldHandler handle = StarlightTransmissionHandler.getInstance().getWorldHandler(event.getWorld());
+        TransmissionWorldHandler handle = StarlightTransmissionHandler.getInstance().getWorldHandler(event.world);
         if(handle != null) {
             Chunk ch = event.getChunk();
-            handle.informChunkUnload(new ChunkPos(ch.xPosition, ch.zPosition));
+            handle.informChunkUnload(new ChunkCoordIntPair(ch.xPosition, ch.zPosition));
         }
     }
 
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
-        StarlightTransmissionHandler.getInstance().informWorldUnload(event.getWorld());
-        StarlightUpdateHandler.getInstance().informWorldUnload(event.getWorld());
+        StarlightTransmissionHandler.getInstance().informWorldUnload(event.world);
+        StarlightUpdateHandler.getInstance().informWorldUnload(event.world);
     }
 
 }

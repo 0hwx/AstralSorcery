@@ -9,6 +9,7 @@
 package hellfirepvp.astralsorcery.common.lib;
 
 import hellfirepvp.astralsorcery.common.util.SoundUtils;
+import net.minecraft.util.ResourceLocation;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -19,10 +20,10 @@ import hellfirepvp.astralsorcery.common.util.SoundUtils;
  */
 public class Sounds {
 
-    public static SoundUtils.CategorizedSoundEvent clipSwitch;
-    public static SoundUtils.CategorizedSoundEvent craftFinish;
-    public static SoundUtils.CategorizedSoundEvent attunement;
-    public static SoundUtils.CategorizedSoundEvent bookClose;
-    public static SoundUtils.CategorizedSoundEvent bookFlip;
+    public static ResourceLocation clipSwitch;
+    public static ResourceLocation craftFinish;
+    public static ResourceLocation attunement;
+    public static ResourceLocation bookClose;
+    public static ResourceLocation bookFlip;
 
 }
