@@ -25,6 +25,8 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -43,7 +45,7 @@ public class TESRGrindstone extends TileEntitySpecialRenderer {
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
         TileGrindstone te = (TileGrindstone) tile;
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-         GL11.glPushMatrix();
+        GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 1.65, z + 0.5);
         GL11.glRotated(180, 1, 0, 0);
         GL11.glScaled(0.067, 0.067, 0.067);
@@ -53,7 +55,6 @@ public class TESRGrindstone extends TileEntitySpecialRenderer {
         GL11.glRotatef(165.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
         GL11.glPopMatrix();
-
         renderModel(te, 1);
         GL11.glPopMatrix();
         GL11.glPopAttrib();
@@ -99,5 +100,4 @@ public class TESRGrindstone extends TileEntitySpecialRenderer {
         double newDeg = (((double) te.tickWheelAnimation)     / (20D) * 360) % 360;
         modelGrindstone.render(null, (float) RenderingUtils.interpolate(oldDeg, newDeg, partialTicks), 0, 0, 0, 0, 1);
     }
-
 }

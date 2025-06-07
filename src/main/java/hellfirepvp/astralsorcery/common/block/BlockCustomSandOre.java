@@ -44,11 +44,11 @@ public class BlockCustomSandOre extends BlockFalling implements BlockCustomName,
 
     public BlockCustomSandOre() {
         super(Material.sand);
+        setBlockName("BlockCustomSandOre");
         setHardness(0.5F);
 //        setSoundType(SoundType.SAND);
         setHarvestLevel("shovel", 1);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
-        setBlockName("BlockCustomSandOre");
     }
 
     @Override

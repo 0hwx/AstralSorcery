@@ -97,24 +97,24 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
     }
 
 //    @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
-        CrystalProperties prop = CrystalProperties.getCrystalProperties(stack);
-        BlockCollectorCrystalBase.CollectorCrystalType type = ItemCollectorCrystal.getType(stack);
-        Optional<Boolean> missing = CrystalProperties.addPropertyTooltip(prop, tooltip, type == CollectorCrystalType.CELESTIAL_CRYSTAL ? CrystalProperties.MAX_SIZE_CELESTIAL : CrystalProperties.MAX_SIZE_ROCK);
-
-        if(missing.isPresent()) {
-            ProgressionTier tier = ResearchManager.clientProgress.getTierReached();
-            IWeakConstellation c = ItemCollectorCrystal.getConstellation(stack);
-            if(c != null) {
-                if(EnumGatedKnowledge.COLLECTOR_TYPE.canSee(tier) && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
-                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.collect.type") + " " + ChatFormatting.BLUE + I18n.format(c.getUnlocalizedName()));
-                } else if(!missing.get()) {
-                    tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
-                }
-            }
-        }
-    }
+//    @SideOnly(Side.CLIENT)
+//    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
+//        CrystalProperties prop = CrystalProperties.getCrystalProperties(stack);
+//        BlockCollectorCrystalBase.CollectorCrystalType type = ItemCollectorCrystal.getType(stack);
+//        Optional<Boolean> missing = CrystalProperties.addPropertyTooltip(prop, tooltip, type == CollectorCrystalType.CELESTIAL_CRYSTAL ? CrystalProperties.MAX_SIZE_CELESTIAL : CrystalProperties.MAX_SIZE_ROCK);
+//
+//        if(missing.isPresent()) {
+//            ProgressionTier tier = ResearchManager.clientProgress.getTierReached();
+//            IWeakConstellation c = ItemCollectorCrystal.getConstellation(stack);
+//            if(c != null) {
+//                if(EnumGatedKnowledge.COLLECTOR_TYPE.canSee(tier) && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
+//                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.collect.type") + " " + ChatFormatting.BLUE + I18n.format(c.getUnlocalizedName()));
+//                } else if(!missing.get()) {
+//                    tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
+//                }
+//            }
+//        }
+//    }
 
     /*@Override
     public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {

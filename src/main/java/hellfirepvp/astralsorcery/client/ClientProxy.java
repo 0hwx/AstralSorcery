@@ -10,6 +10,7 @@ package hellfirepvp.astralsorcery.client;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
@@ -141,6 +142,7 @@ public class ClientProxy extends CommonProxy {
         super.init();
 
         MinecraftForge.EVENT_BUS.register(new ClientRenderEventHandler());
+        FMLCommonHandler.instance().bus().register(new ClientRenderEventHandler());
         MinecraftForge.EVENT_BUS.register(new ClientConnectionEventHandler());
         MinecraftForge.EVENT_BUS.register(EffectHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(new ClientGatewayHandler());

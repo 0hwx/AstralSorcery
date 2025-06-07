@@ -70,13 +70,13 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
         super(2);
 
         IMajorConstellation attuned = ResearchManager.clientProgress.getAttunedConstellation();
-        if (attuned != null) {
-            ConstellationPerkMap map = attuned.getPerkMap();
-            if (map != null) {
-                this.mapToDisplay = map;
-                this.attunedConstellation = attuned;
-            }
-        }
+//        if (attuned != null) {
+//            ConstellationPerkMap map = attuned.getPerkMap();
+//            if (map != null) {
+//                this.mapToDisplay = map;
+//                this.attunedConstellation = attuned;
+//            }
+//        }
     }
 
     @Override

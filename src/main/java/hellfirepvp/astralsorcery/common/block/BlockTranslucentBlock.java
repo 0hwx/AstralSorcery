@@ -50,6 +50,7 @@ public class BlockTranslucentBlock extends BlockContainer {
 
     public BlockTranslucentBlock() {
         super(Material.air); //Material.BARRIER -> (new Material(MapColor.airColor).setRequiresTool().setImmovableMobility());
+        setBlockName("BlockTranslucentBlock");
         setBlockUnbreakable();
         setResistance(6000001.0F);
         setLightLevel(0.6F);

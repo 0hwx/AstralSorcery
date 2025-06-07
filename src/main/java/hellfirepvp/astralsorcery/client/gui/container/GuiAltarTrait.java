@@ -109,7 +109,7 @@ public class GuiAltarTrait extends GuiAltarBase {
         TextureHelper.refreshTextureBindState();
 
         IConstellation c = containerAltarBase.tileAltar.getFocusedConstellation();
-        if(c != null && containerAltarBase.tileAltar.getMultBlock() && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
+        if(c != null && containerAltarBase.tileAltar.getMultiblockState() && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
             rand.setSeed(0x61FF25A5B7C24109L);
 
             GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -151,7 +151,7 @@ public class GuiAltarTrait extends GuiAltarBase {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         float percFilled;
-        if(containerAltarBase.tileAltar.getMultBlock()) {
+        if(containerAltarBase.tileAltar.getMultiblockState()) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             percFilled = containerAltarBase.tileAltar.getAmbientStarlightPercent();
         } else {

@@ -27,7 +27,6 @@ import hellfirepvp.astralsorcery.common.data.DataWorldSkyHandlers;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import hellfirepvp.astralsorcery.common.data.server.ServerData;
 import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
 import hellfirepvp.astralsorcery.common.data.world.data.RockCrystalBuffer;
 import hellfirepvp.astralsorcery.common.event.BlockModifyEvent;
@@ -63,6 +62,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -79,6 +79,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerOpenContainerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -107,22 +108,22 @@ public class EventHandlerServer {
     public static TimeoutListContainer<EntityPlayer, Integer> perkCooldowns = new TimeoutListContainer<EntityPlayer, Integer>(new ConstellationPerks.PerkTimeoutHandler(), TickEvent.Type.SERVER);
     public static TimeoutList<EntityPlayer> invulnerabilityCooldown = new TimeoutList<>(null, TickEvent.Type.SERVER);
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onLoad(WorldEvent.Load event) {
-        World w = event.world;
-        int id = w.provider.dimensionId;
-        if(!w.isRemote && !isDataInitialized) {
-            //This is kinda an early point in server startup, when it loads the overworld.
-            //Since the FML Server start events are either too early or too late, we do it here.
-            ServerData.reloadDataFromSaveHandler(w.getSaveHandler());
-            isDataInitialized = true;
-        }
-        if(DataWorldSkyHandlers.hasWorldHandler(id, w.isRemote ? Side.CLIENT : Side.SERVER) && !Config.weakSkyRendersWhitelist.contains(w.provider.dimensionId)) {
-            AstralSorcery.log.info("[AstralSorcery] Found worldProvider in Dimension " + id + " : " + w.provider.getClass().getName());
-//            w.provider = new WorldProviderBrightnessInj(w, w.provider);
-            AstralSorcery.log.info("[AstralSorcery] Injected WorldProvider into dimension " + id + " (chaining old provider.)");
-        }
-    }
+//    @SubscribeEvent(priority = EventPriority.LOWEST)
+//    public void onLoad(WorldEvent.Load event) {
+//        World w = event.world;
+//        int id = w.provider.dimensionId;
+//        if(!w.isRemote && !isDataInitialized) {
+//            //This is kinda an early point in server startup, when it loads the overworld.
+//            //Since the FML Server start events are either too early or too late, we do it here.
+////            ServerData.reloadDataFromSaveHandler(w.getSaveHandler());
+//            isDataInitialized = true;
+//        }
+//        if(DataWorldSkyHandlers.hasWorldHandler(id, w.isRemote ? Side.CLIENT : Side.SERVER) && !Config.weakSkyRendersWhitelist.contains(w.provider.dimensionId)) {
+//            AstralSorcery.log.info("[AstralSorcery] Found worldProvider in Dimension " + id + " : " + w.provider.getClass().getName());
+////            w.provider = new WorldProviderBrightnessInj(w, w.provider);
+//            AstralSorcery.log.info("[AstralSorcery] Injected WorldProvider into dimension " + id + " (chaining old provider.)");
+//        }
+//    }
 
     @SubscribeEvent
     public void onUnload(WorldEvent.Unload event) {
@@ -227,6 +228,13 @@ public class EventHandlerServer {
             }
         }
     }
+
+//    @SubscribeEvent
+//    public void onContainerOpen(PlayerOpenContainerEvent event) {
+//        if(event.getContainer() instanceof ContainerWorkbench && !event.getEntityPlayer().world.isRemote && event.getEntityPlayer() instanceof EntityPlayerMP) {
+//            PacketChannel.CHANNEL.sendTo(new PktCraftingTableFix(((ContainerWorkbench) event.getContainer()).pos), (EntityPlayerMP) event.getEntityPlayer());
+//        }
+//    }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onDeath(LivingDeathEvent event) {

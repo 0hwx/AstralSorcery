@@ -84,28 +84,28 @@ public class PktUnlockPerk implements IMessage, IMessageHandler<PktUnlockPerk, P
         if(ctx.side == Side.SERVER) {
             EntityPlayer pl = ctx.getServerHandler().playerEntity;
             if(pl != null) {
-                if(message.perk != null && message.owningConstellation != null) {
-                    ConstellationPerkMap map = message.owningConstellation.getPerkMap();
-                    if(map != null) {
-                        PlayerProgress prog = ResearchManager.getProgress(pl, ctx.side);
-                        if(prog != null) {
-                            Map<ConstellationPerk, Integer> appliedPerks = prog.getAppliedPerks();
-                            if(!appliedPerks.containsKey(message.perk.getSingleInstance())) {
-                                boolean canUnlock = prog.hasFreeAlignmentLevel();
-                                for (ConstellationPerkMap.Dependency d : map.getPerkDependencies()) {
-                                    if(d.to.equals(message.perk)) {
-                                        if(!appliedPerks.containsKey(d.from.getSingleInstance())) {
-                                            canUnlock = false;
-                                        }
-                                    }
-                                }
-                                if(canUnlock && ResearchManager.applyPerk(pl, message.perk)) {
-                                    return new PktUnlockPerk(true, message.perk);
-                                }
-                            }
-                        }
-                    }
-                }
+//                if(message.perk != null && message.owningConstellation != null) {
+//                    ConstellationPerkMap map = message.owningConstellation.getPerkMap();
+//                    if(map != null) {
+//                        PlayerProgress prog = ResearchManager.getProgress(pl, ctx.side);
+//                        if(prog != null) {
+//                            Map<ConstellationPerk, Integer> appliedPerks = prog.getAppliedPerks();
+//                            if(!appliedPerks.containsKey(message.perk.getSingleInstance())) {
+//                                boolean canUnlock = prog.hasFreeAlignmentLevel();
+//                                for (ConstellationPerkMap.Dependency d : map.getPerkDependencies()) {
+//                                    if(d.to.equals(message.perk)) {
+//                                        if(!appliedPerks.containsKey(d.from.getSingleInstance())) {
+//                                            canUnlock = false;
+//                                        }
+//                                    }
+//                                }
+//                                if(canUnlock && ResearchManager.applyPerk(pl, message.perk)) {
+//                                    return new PktUnlockPerk(true, message.perk);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
             }
         } else {
             recUnlockResultClient(message);

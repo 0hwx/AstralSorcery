@@ -53,12 +53,12 @@ public class BlockCustomOre extends Block implements BlockCustomName, BlockVaria
 
     public BlockCustomOre() {
         super(Material.rock);
+        setBlockName("BlockCustomOre");
         setHardness(3.0F);
         setResistance(25.0F);
 //        setHarvestLevel("pickaxe", 3);
         setStepSound(soundTypeStone);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
-        setBlockName("BlockCustomOre");
         for (OreType type : OreType.values()) {
             this.setHarvestLevel("pickaxe", type.getHarvestLevel(), type.getMeta());
         }

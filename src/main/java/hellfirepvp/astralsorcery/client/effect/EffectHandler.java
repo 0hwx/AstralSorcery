@@ -14,7 +14,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.effect.block.EffectTranslucentFallingBlock;
 import hellfirepvp.astralsorcery.client.effect.compound.CompoundObjectEffect;
-import hellfirepvp.astralsorcery.client.effect.controller.OrbitalEffectController;
+import hellfirepvp.astralsorcery.client.effect.controller.orbital.OrbitalEffectController;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.client.effect.light.EffectLightbeam;
 import hellfirepvp.astralsorcery.client.effect.light.EffectLightning;
@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static org.lwjgl.opengl.GL11.GL_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 
 /**

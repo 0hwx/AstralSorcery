@@ -26,7 +26,8 @@ public class BlockCelestialGateway extends BlockContainer {
 
     public BlockCelestialGateway() {
         super(Material.rock);
-//        setSoundType(SoundType.STONE);
+        setBlockName("BlockCelestialGateway");
+        setStepSound(soundTypeStone);
         setHardness(4F);
         setResistance(40F);
         setHarvestLevel("pickaxe", 2);

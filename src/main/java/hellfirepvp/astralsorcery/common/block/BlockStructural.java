@@ -48,8 +48,8 @@ public class BlockStructural extends BlockContainer implements BlockCustomName {
 
     public BlockStructural() {
         super(Material.air);
-        setBlockUnbreakable();
         setBlockName("BlockStructural");
+        setBlockUnbreakable();
 //        setSoundType(SoundType.GLASS);
     }
 

@@ -237,7 +237,7 @@ public class ItemExchangeWand extends ItemBlockStorage implements ItemHandRender
         }
 
         Block stored = getStoredState(stack,stack.getItemDamage());
-        int storedMeta = stored.damageDropped(stack.getItemDamage());
+        int storedMeta = stack.getItemDamage();
         ItemStack consumeStack = getStoredStateAsStack(stack);
         if(stored == null || stored.equals(Blocks.air) || consumeStack == null) return false;
         Block atOrigin = world.getBlock(origin.getX(), origin.getY(), origin.getZ());

@@ -10,8 +10,7 @@ package hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.tweaks;
 
 import hellfirepvp.astralsorcery.common.integrations.ModIntegrationCrafttweaker;
 import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.BaseTweaker;
-import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network.OreTypeAdd;
-import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network.OreTypeRemove;
+
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -22,19 +21,19 @@ import stanhebben.zenscript.annotations.ZenMethod;
  * Created by HellFirePvP
  * Date: 27.02.2017 / 04:26
  */
-@ZenClass("mods.astralsorcery.RitualMineralis")
-public class RitualMineralis extends BaseTweaker {
-
-    protected static final String name = "AstralSorcery Ritual Mineralis";
-
-    @ZenMethod
-    public static void addOre(String oreDictOreName, double weight) {
-        ModIntegrationCrafttweaker.recipeModifications.add(new OreTypeAdd(oreDictOreName, weight));
-    }
-
-    @ZenMethod
-    public static void removeOre(String oreDictOreName) {
-        ModIntegrationCrafttweaker.recipeModifications.add(new OreTypeRemove(oreDictOreName));
-    }
-
-}
+//@ZenClass("mods.astralsorcery.RitualMineralis")
+//public class RitualMineralis extends BaseTweaker {
+//
+//    protected static final String name = "AstralSorcery Ritual Mineralis";
+//
+//    @ZenMethod
+//    public static void addOre(String oreDictOreName, double weight) {
+//        ModIntegrationCrafttweaker.recipeModifications.add(new OreTypeAdd(oreDictOreName, weight));
+//    }
+//
+//    @ZenMethod
+//    public static void removeOre(String oreDictOreName) {
+//        ModIntegrationCrafttweaker.recipeModifications.add(new OreTypeRemove(oreDictOreName));
+//    }
+//
+//}

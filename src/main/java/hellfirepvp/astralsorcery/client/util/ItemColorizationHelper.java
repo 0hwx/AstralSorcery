@@ -161,8 +161,8 @@ public class ItemColorizationHelper implements IResourceManagerReloadListener {
         if(stack == null || stack.getItem() == null) return -1;
         if(stack.getItem() instanceof ItemBlock) {
             Block block = Block.getBlockFromItem(stack.getItem());
-//            Block state = ItemUtils.createBlockState(stack);
-//            if(state == null) return -1;
+            Block state = ItemUtils.createBlockState(stack);
+            if(state == null) return -1;
             return block.getBlockColor();
         } else {
             return stack.getItem().getColorFromItemStack(stack, 0);  // Get color for the item
@@ -170,7 +170,8 @@ public class ItemColorizationHelper implements IResourceManagerReloadListener {
     }
 
     @Nullable
-    private TextureAtlasSprite getTexture(ItemStack stack) {
+    private TextureAtlasSprite getTexture(ItemStack stack) { // todo fix this
+        Minecraft mc = Minecraft.getMinecraft();
         if(stack == null || stack.getItem() == null) return null;
 //        IBakedModel model = MeshRegisterHelper.getIMM().getItemModel(stack);
 //        if(model == MeshRegisterHelper.getIMM().getModelManager().getMissingModel()) {
@@ -184,7 +185,7 @@ public class ItemColorizationHelper implements IResourceManagerReloadListener {
             return tas;
         } else {
             return null;
-//            return MeshRegisterHelper.getIMM().renderItemAndEffectIntoGUI(stack).getParticleTexture();
+//            return MeshRegisterHelper.getIMM().renderItemAndEffectIntoGUI(mc.fontRenderer,mc.renderEngine,stack,0,0).g();
         }
     }
 

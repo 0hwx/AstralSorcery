@@ -89,7 +89,7 @@ public class CraftingAccessManager {
         //Loading default configurations how it'd be without Minetweaker
         InfusionRecipeRegistry.loadFromFallback();
         AltarRecipeRegistry.loadFromFallback();
-        OreTypes.loadFromFallback();
+//        OreTypes.loadFromFallback();
         LightOreTransmutations.loadFromFallback();
         WellLiquefaction.loadFromFallback();
     }

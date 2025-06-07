@@ -35,8 +35,9 @@ public class BlockWorldIlluminator extends BlockContainer {
 
     public BlockWorldIlluminator() {
         super(Material.rock);
+        setBlockName("BlockWorldIlluminator");
         setHardness(3.0F);
-//        setSoundType(SoundType.STONE);
+setStepSound(soundTypeStone);
         setResistance(25.0F);
         setLightLevel(0.4F);
         setHarvestLevel("pickaxe", 2);

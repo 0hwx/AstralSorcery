@@ -1,5 +1,5 @@
 /*******************************************************************************
- * HellFirePvP / Astral Sorcery 2017
+ * HellFirePvP / Astral Sorcery 2018
  *
  * This project is licensed under GNU GENERAL PUBLIC LICENSE Version 3.
  * The source code is available on github: https://github.com/HellFirePvP/AstralSorcery
@@ -8,6 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect.aoe;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.base.OreTypes;
@@ -19,6 +21,8 @@ import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ILocatable;
+import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStone;
@@ -27,8 +31,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -48,8 +50,8 @@ public class CEffectMineralis extends CEffectPositionList {
     public static int searchRange = 14;
     public static int maxCount = 2;
 
-    public CEffectMineralis() {
-        super(Constellations.mineralis, "mineralis", searchRange, maxCount, (world, pos) -> {
+    public CEffectMineralis(@Nullable ILocatable origin) {
+        super(origin, Constellations.mineralis, "mineralis", searchRange, maxCount, (world, pos) -> {
             Block state = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
             return state == Blocks.stone;// && state.getValue(BlockStone.VARIANT).equals(BlockStone.EnumType.STONE);
         });
@@ -60,9 +62,9 @@ public class CEffectMineralis extends CEffectPositionList {
     public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility, boolean extendedEffects) {
         if(rand.nextBoolean()) {
             EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    pos.getX() + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5,
-                    pos.getY() + rand.nextFloat() * 2 + 0.5,
-                    pos.getZ() + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5);
+                pos.getX() + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5,
+                pos.getY() + rand.nextFloat() * 2 + 0.5,
+                pos.getZ() + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5);
             p.motion(0, 0, 0).gravity(-0.01);
             p.scale(0.45F).setColor(new Color(188, 188, 188)).setMaxAge(55);
         }
@@ -83,12 +85,13 @@ public class CEffectMineralis extends CEffectPositionList {
             BlockPos sel = entry.getPos();
             if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(sel.chunkX(), sel.chunkZ()))) {
                 if(verifier.isValid(world, sel)) {
-                    ItemStack blockStack = OreTypes.getRandomOre(rand);
+                    ItemStack blockStack = OreTypes.RITUAL_MINERALIS.getRandomOre(rand);
                     if(rand.nextInt(200_000) == 0) blockStack = new ItemStack(BlocksAS.customOre, 1, BlockCustomOre.OreType.STARMETAL.ordinal());
                     if(blockStack != null) {
-                        Block block = Block.getBlockFromItem(blockStack.getItem());
-                        int meta = blockStack.getItemDamage();
-                        world.setBlock(sel.getX(), sel.getY(), sel.getZ(), block, meta, 3);
+                        Block state = ItemUtils.createBlockState(blockStack);
+                        if(state != null) {
+                            world.setBlock(sel.getX(), sel.getY(), sel.getZ(), state);
+                        }
                     }
                 } else {
                     removeElement(entry);

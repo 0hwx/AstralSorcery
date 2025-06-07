@@ -62,7 +62,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Random;
-import java.util.UUID;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -406,7 +405,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         return experience;
     }
 
-    public boolean getMultBlock() {
+    public boolean getMultiblockState() {
         return mbState;
     }
 

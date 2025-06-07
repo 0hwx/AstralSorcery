@@ -46,6 +46,7 @@ public class BlockMapDrawingTable extends BlockContainer {
 
     public BlockMapDrawingTable() {
         super(Material.rock);
+        setBlockName("BlockMapDrawingTable");
         setHardness(2F);
 //        setSoundType(SoundType.WOOD);
         setResistance(15F);

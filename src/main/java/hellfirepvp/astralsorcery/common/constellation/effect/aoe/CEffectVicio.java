@@ -15,6 +15,7 @@ import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffect
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ILocatable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -44,10 +45,9 @@ public class CEffectVicio extends ConstellationEffect {
     public static int potionAmplifierSpeed = 1;
     public static int potionAmplifierJump = 1;
 
-    public CEffectVicio() {
-        super(Constellations.vicio, "vicio");
+    public CEffectVicio(@Nullable ILocatable origin) {
+        super(origin, Constellations.vicio, "vicio");
     }
-
     @Override
     @SideOnly(Side.CLIENT)
     public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility, boolean extendedEffects) {

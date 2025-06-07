@@ -234,7 +234,7 @@ public class GuiProgressionClusterRenderer {
                 GL11.glColor4f(renderLoopBrFactor, renderLoopBrFactor, renderLoopBrFactor, renderLoopBrFactor);
                 float oldZ = ri.zLevel;
                 ri.zLevel = zLevel - 5;
-                ri.renderItemIntoGUI(Minecraft.getMinecraft().fontRenderer, Minecraft.getMinecraft().renderEngine, node.getRenderItemStack(ClientScheduler.getClientTick()), 0, 0);
+                ri.renderItemIntoGUI(Minecraft.getMinecraft().fontRenderer, Minecraft.getMinecraft().renderEngine, node.getRenderItemStack(), 0, 0);
                 ri.zLevel = oldZ;
                 GL11.glColor4f(1F, 1F, 1F, 1F);
                 GL11.glPopMatrix();

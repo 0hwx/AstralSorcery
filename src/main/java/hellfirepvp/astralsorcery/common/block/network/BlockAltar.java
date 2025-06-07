@@ -63,7 +63,7 @@ public class BlockAltar extends BlockStarlightNetwork implements BlockCustomName
     public BlockAltar() {
         super("BlockAltar", Material.rock);
         setHardness(3.0F);
-//        setSoundType(SoundType.STONE);
+setStepSound(soundTypeStone);
         setResistance(25.0F);
         setHarvestLevel("pickaxe", 2);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);

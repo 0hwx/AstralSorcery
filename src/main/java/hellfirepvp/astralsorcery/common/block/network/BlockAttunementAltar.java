@@ -40,9 +40,9 @@ public class BlockAttunementAltar extends BlockContainer {
 
     public BlockAttunementAltar() {
         super(Material.rock);
-        setHardness(3.0F);
         setBlockName("BlockAttunementAltar");
-//        setSoundType(SoundType.STONE);
+        setHardness(3.0F);
+setStepSound(soundTypeStone);
         setResistance(25.0F);
         setLightLevel(0.8F);
         setHarvestLevel("pickaxe", 2);

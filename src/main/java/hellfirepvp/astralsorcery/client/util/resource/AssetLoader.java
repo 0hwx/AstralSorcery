@@ -9,10 +9,10 @@
 package hellfirepvp.astralsorcery.client.util.resource;
 
 import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.client.util.obj.WavefrontObject;
 import net.minecraft.util.ResourceLocation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.client.model.obj.WavefrontObject;
 
 /**
  * This class is part of the Astral Sorcery Mod

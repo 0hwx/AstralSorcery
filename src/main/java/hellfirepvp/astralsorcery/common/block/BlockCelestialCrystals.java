@@ -63,11 +63,12 @@ public class BlockCelestialCrystals extends BlockContainer implements IBlockStar
     public static final int STAGE = 4;  // Maximum stage value (from 0 to 4)
     public BlockCelestialCrystals() {
         super(Material.rock);
+        setBlockName("BlockCelestialCrystals");
         setHardness(2.0F);
         setHarvestLevel("pickaxe", 2);
         setResistance(30.0F);
         setLightLevel(0.4F);
-//        setSoundType(SoundType.STONE);
+setStepSound(soundTypeStone);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
 //        setDefaultState(this.blockState.getBaseState().withProperty(STAGE, 0));
     }

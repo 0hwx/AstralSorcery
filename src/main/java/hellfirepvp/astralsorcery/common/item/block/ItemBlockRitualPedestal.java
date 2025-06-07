@@ -22,7 +22,7 @@ import net.minecraft.item.ItemBlock;
 public class ItemBlockRitualPedestal extends ItemBlock {
 
     public ItemBlockRitualPedestal(Block block) {
-        super(BlocksAS.ritualPedestal);
+        super(block);
     }
 
     /*public static void setBeaconType(ItemStack stack, boolean isPlayerBeacon) {

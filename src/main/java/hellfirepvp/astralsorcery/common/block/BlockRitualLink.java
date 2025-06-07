@@ -34,6 +34,7 @@ public class BlockRitualLink extends BlockContainer {
 
     public BlockRitualLink() {
         super(Material.rock);
+        setBlockName("BlockRitualLink");
         setHardness(3.0F);
 //        setSoundType(SoundType.GLASS);
         setResistance(25.0F);

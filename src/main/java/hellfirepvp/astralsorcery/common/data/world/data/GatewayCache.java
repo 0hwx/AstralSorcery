@@ -99,4 +99,19 @@ public class GatewayCache extends CachedWorldData {
     @Override
     public void updateTick(World world) {}
 
+    public static class GatewayNode extends BlockPos {
+
+        public final String display;
+
+        public GatewayNode(BlockPos pos, String display) {
+            super(pos.getX(), pos.getY(), pos.getZ());
+            this.display = display;
+        }
+
+        @Override
+        public boolean equals(Object pos) {
+            return super.equals(pos);
+        }
+    }
+
 }

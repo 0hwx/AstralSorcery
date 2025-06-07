@@ -32,6 +32,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public class ItemJournal extends Item {
 
     @Nullable
     public static ContainerJournal getContainer(InventoryPlayer playerInv, ItemStack stack, int journalIndex) {
-        if(stack == null || stack.getItem() == null || !(stack.getItem() instanceof ItemJournal)) return null;
+        if(stack == null || !(stack.getItem() instanceof ItemJournal)) return null;
         return new ContainerJournal(playerInv, stack, journalIndex);
     }
 
@@ -99,6 +100,8 @@ public class ItemJournal extends Item {
                 out.add(c);
             }
         }
+        out.sort(Comparator.comparing(IConstellation::getSimpleName));
+
         return out;
     }
 

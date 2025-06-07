@@ -9,14 +9,15 @@
 package hellfirepvp.astralsorcery.common.constellation.effect.aoe;
 
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
-import hellfirepvp.astralsorcery.client.effect.controller.OrbitalEffectController;
-import hellfirepvp.astralsorcery.client.effect.controller.OrbitalPropertiesRitualArmara;
+import hellfirepvp.astralsorcery.client.effect.controller.orbital.OrbitalEffectController;
+import hellfirepvp.astralsorcery.client.effect.controller.orbital.OrbitalPropertiesRitualArmara;
 import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
 import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffect;
 import hellfirepvp.astralsorcery.common.event.listener.EventHandlerServer;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ILocatable;
 import hellfirepvp.astralsorcery.common.util.data.TickTokenizedMap;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.data.WorldBlockPos;
@@ -53,10 +54,9 @@ public class CEffectArmara extends ConstellationEffect {
     private int rememberedTimeout = 0;
     public static int potionAmplifier = 0;
 
-    public CEffectArmara() {
-        super(Constellations.armara, "armara");
+    public CEffectArmara(@Nullable ILocatable origin) {
+        super(origin, Constellations.armara, "armara");
     }
-
     @Override
     @SideOnly(Side.CLIENT)
     public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility, boolean extendedEffects) {

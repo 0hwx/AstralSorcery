@@ -90,76 +90,51 @@ public class RegistryItems {
 
     public static void init() {
         registerItems();
-
-        registerBlockItems();
     }
 
     //"Normal" items
     private static void registerItems() {
-        GameRegistry.registerItem(new ItemCraftingComponent(), "crafting_component");
-        GameRegistry.registerItem(new ItemConstellationPaper(), "constellation_paper");
+        craftingComponent = registerItem(new ItemCraftingComponent());
+        constellationPaper = registerItem(new ItemConstellationPaper());
 
-        GameRegistry.registerItem(new ItemInfusedGlass(), "infused_glass");
+        infusedGlass = registerItem(new ItemInfusedGlass());
 
-        GameRegistry.registerItem(new ItemRockCrystalSimple(), "rock_crystal");
-        GameRegistry.registerItem(new ItemTunedRockCrystal(), "tuned_rock_crystal");
-
-
-        GameRegistry.registerItem(new ItemCelestialCrystal(), "celestial_crystal");
-        GameRegistry.registerItem(new ItemTunedCelestialCrystal(), "tuned_celestial_crystal");
+        rockCrystal =registerItem(new ItemRockCrystalSimple());
+        tunedRockCrystal = registerItem(new ItemTunedRockCrystal());
 
 
-        GameRegistry.registerItem(new ItemJournal(), "journal");
+        celestialCrystal = registerItem(new ItemCelestialCrystal());
+        tunedCelestialCrystal = registerItem(new ItemTunedCelestialCrystal());
 
 
-        GameRegistry.registerItem(new ItemHandTelescope(), "hand_telescope");
+        journal = registerItem(new ItemJournal());
 
 
-        GameRegistry.registerItem(new ItemLinkingTool(),"linkingTool");
-        GameRegistry.registerItem(new ItemWand(),"wand");
-        GameRegistry.registerItem(new ItemIlluminationWand(),"illuminationWand");
-        GameRegistry.registerItem(new ItemColoredLens(),"colored_lens");
-        GameRegistry.registerItem(new ItemSkyResonator(),"skyResonator");
-        GameRegistry.registerItem(new ItemShiftingStar(), "shifting_star");
+        handTelescope = registerItem(new ItemHandTelescope());
+
+
+        linkingTool = registerItem(new ItemLinkingTool());
+        wand = registerItem(new ItemWand());
+        illuminationWand = registerItem(new ItemIlluminationWand());
+        coloredLens = registerItem(new ItemColoredLens());
+        skyResonator = registerItem(new ItemSkyResonator());
+        shiftingStar = registerItem(new ItemShiftingStar());
         //roseBranchBow = registerItem(new ItemRoseBranchBow());
 
-        GameRegistry.registerItem(new ItemArchitectWand(),"architectWand");
-        GameRegistry.registerItem(new ItemExchangeWand(),"exchangeWand");
-        GameRegistry.registerItem(new ItemIlluminationPowder(),"illuminationPowder");
+        architectWand = registerItem(new ItemArchitectWand());
+        exchangeWand = registerItem(new ItemExchangeWand());
+        illuminationPowder = registerItem(new ItemIlluminationPowder());
 
-        GameRegistry.registerItem(new ItemCrystalPickaxe(),"crystalPickaxe");
-        GameRegistry.registerItem(new ItemCrystalShovel(),"crystalShovel");
-        GameRegistry.registerItem(new ItemCrystalAxe(),"crystalAxe");
-        GameRegistry.registerItem(new ItemCrystalSword(),"crystalSword");
-        GameRegistry.registerItem(new ItemChargedCrystalAxe(),"chargedCrystalAxe");
-        GameRegistry.registerItem(new ItemChargedCrystalSword(),"chargedCrystalSword");
-        GameRegistry.registerItem(new ItemChargedCrystalPickaxe(),"chargedCrystalPickaxe");
-        GameRegistry.registerItem(new ItemChargedCrystalShovel(),"chargedCrystalShovel");
+        crystalPickaxe = registerItem(new ItemCrystalPickaxe());
+        crystalShovel = registerItem(new ItemCrystalShovel());
+        crystalAxe = registerItem(new ItemCrystalAxe());
+        crystalSword = registerItem(new ItemCrystalSword());
+        chargedCrystalAxe = registerItem(new ItemChargedCrystalAxe());
+        chargedCrystalSword = registerItem(new ItemChargedCrystalSword());
+        chargedCrystalPickaxe = registerItem(new ItemChargedCrystalPickaxe());
+        chargedCrystalShovel = registerItem(new ItemChargedCrystalShovel());
     }
 
-    //Items associated to blocks/itemblocks
-    private static void registerBlockItems() {
-//        RegistryBlocks.defaultItemBlocksToRegister.forEach(RegistryItems::registerDefaultItemBlock);
-//        RegistryBlocks.customNameItemBlocksToRegister.forEach(RegistryItems::registerCustomNameItemBlock);
-
-//        registerItem(new ItemBlockRitualPedestal());
-//        registerItem(new ItemBlockAltar());
-
-//        registerItem(new ItemCollectorCrystal(BlocksAS.collectorCrystal));
-//        registerItem(new ItemCollectorCrystal(BlocksAS.celestialCollectorCrystal));
-    }
-
-    private static <T extends Block> void registerCustomNameItemBlock(T block) {
-//        registerItem(new ItemBlockCustomName(block), block.getClass().getSimpleName());
-    }
-
-//    private static <T extends Block> void registerDefaultItemBlock(T block) {
-//        registerDefaultItemBlock(block, block.getClass().getSimpleName());
-//    }
-
-//    private static <T extends Block> void registerDefaultItemBlock(T block, String name) {
-//        registerItem(new ItemBlock(block), name);
-//    }
 
     private static <T extends Item> T registerItem(T item, String name) {
         item.setUnlocalizedName(name);
@@ -167,13 +142,13 @@ public class RegistryItems {
         return item;
     }
 
-//    private static <T extends Item> T registerItem(T item) {
-//        String simpleName = item.getClass().getSimpleName();
-//        if (item instanceof ItemBlock) {
-//            simpleName = ((ItemBlock) item).getClass().getSimpleName();
-//        }
-//        return registerItem(item, simpleName);
-//    }
+    private static <T extends Item> T registerItem(T item) {
+        String simpleName = item.getClass().getSimpleName();
+        if (item instanceof ItemBlock) {
+            simpleName = ((ItemBlock) item).getClass().getSimpleName();
+        }
+        return registerItem(item, simpleName);
+    }
 
     /*private static <T extends IForgeRegistryEntry> T registerItem(String modId, T item) {
         return registerItem(modId, item, item.getClass().getSimpleName());
@@ -197,7 +172,7 @@ public class RegistryItems {
     }*/
 
     private static <T extends Item> void register(T item, String name) {
-//        GameRegistry.registerItem(item,name);
+        GameRegistry.registerItem(item,name);
         if (item instanceof Item) {
             registerItemInformations((Item) item, name);
             if(item instanceof ItemDynamicColor) {

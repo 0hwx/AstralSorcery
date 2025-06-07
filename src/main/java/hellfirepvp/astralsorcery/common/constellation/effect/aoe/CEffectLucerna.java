@@ -9,14 +9,15 @@
 package hellfirepvp.astralsorcery.common.constellation.effect.aoe;
 
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
-import hellfirepvp.astralsorcery.client.effect.controller.OrbitalEffectController;
-import hellfirepvp.astralsorcery.client.effect.controller.OrbitalEffectLucerna;
+import hellfirepvp.astralsorcery.client.effect.controller.orbital.OrbitalEffectController;
+import hellfirepvp.astralsorcery.client.effect.controller.orbital.OrbitalEffectLucerna;
 import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
 import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffect;
 import hellfirepvp.astralsorcery.common.event.listener.EventHandlerServer;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ILocatable;
 import hellfirepvp.astralsorcery.common.util.data.TickTokenizedMap;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.data.WorldBlockPos;
@@ -43,8 +44,8 @@ public class CEffectLucerna extends ConstellationEffect {
 
     private int rememberedTimeout = 0;
 
-    public CEffectLucerna() {
-        super(Constellations.lucerna, "lucerna");
+    public CEffectLucerna(@Nullable ILocatable origin) {
+        super(origin, Constellations.lucerna, "lucerna");
     }
 
     @Override

@@ -226,7 +226,7 @@ public class RegistryConstellations {
         horologium = new ConstellationBase.WeakSpecial("horologium") {
             @Override
             public boolean doesShowUp(WorldSkyHandler handle, World world, long day) {
-                return isDayOfSolarEclipse(day);
+                return isDayOfSolarEclipse(world.getSeed(), day);
             }
 
             @Override

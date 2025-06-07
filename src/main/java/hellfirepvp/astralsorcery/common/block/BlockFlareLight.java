@@ -48,10 +48,10 @@ public static final AxisAlignedBB FULL_BLOCK_AABB = AxisAlignedBB.getBoundingBox
 
     public BlockFlareLight() {
         super(RegistryItems.materialTransparentReplaceable);
+        setBlockName("BlockFlareLight");
         setLightLevel(1F);
         setBlockUnbreakable();
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
-        setBlockName("BlockFlareLight");
 //        setDefaultState(this.blockState.getBaseState().withProperty(COLOR, EnumDyeColor.YELLOW));
     }
 

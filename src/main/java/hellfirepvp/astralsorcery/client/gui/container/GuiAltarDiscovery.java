@@ -88,7 +88,7 @@ public class GuiAltarDiscovery extends GuiAltarBase {
         drawRect(guiLeft + 6, guiTop + 69, 165, 10);
 
         float percFilled;
-        if(containerAltarBase.tileAltar.getMultBlock()) {
+        if(containerAltarBase.tileAltar.getMultiblockState()) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             percFilled = containerAltarBase.tileAltar.getAmbientStarlightPercent();
         } else {

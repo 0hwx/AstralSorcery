@@ -49,9 +49,10 @@ public class BlockCustomFlower extends Block implements BlockCustomName, BlockVa
 
     public BlockCustomFlower() {
         super(Material.plants);
-        setLightLevel(0.2F);
-//        setSoundType(SoundType.PLANT);
         setBlockName("BlockCustomFlower");
+        setLightLevel(0.2F);
+        setStepSound(soundTypeGrass);
+//        setSoundType(SoundType.PLANT);
         setTickRandomly(true);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
     }

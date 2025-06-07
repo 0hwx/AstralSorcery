@@ -41,7 +41,7 @@ public class BlockStarlightInfuser extends BlockStarlightNetwork{
         setHardness(1.0F);
         setResistance(10.0F);
         setHarvestLevel("pickaxe", 1);
-//        setSoundType(SoundType.STONE);
+setStepSound(soundTypeStone);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
         setBlockTextureName("astralsorcery:starlightinfuser");
     }

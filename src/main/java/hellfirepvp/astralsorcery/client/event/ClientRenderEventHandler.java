@@ -26,7 +26,6 @@ import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.client.util.SpriteLibrary;
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
 import hellfirepvp.astralsorcery.client.util.camera.ClientCameraManager;
-import hellfirepvp.astralsorcery.client.util.obj.WavefrontObject;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
@@ -63,6 +62,7 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.model.obj.WavefrontObject;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -102,17 +102,12 @@ public class ClientRenderEventHandler {
     @SideOnly(Side.CLIENT)
     public void onRender(RenderWorldLastEvent event) {
         World world = Minecraft.getMinecraft().theWorld;
-        if (((DataWorldSkyHandlers) SyncDataHolder.getDataClient(SyncDataHolder.DATA_SKY_HANDLERS)).hasWorldHandler(world)
-                && world.provider.dimensionId != Config.dimensionIdSkyRift) {
+        if(Config.constellationSkyDimWhitelist.contains(world.provider.dimensionId)) {
             if (!(world.provider.getSkyRenderer() instanceof RenderSkybox)) {
                 world.provider.setSkyRenderer(new RenderSkybox(world, world.provider.getSkyRenderer()));
             }
         }
-        if (world.provider.dimensionId == Config.dimensionIdSkyRift) {
-            if (!(world.provider.getSkyRenderer() instanceof RenderRiftSkybox)) {
-                world.provider.setSkyRenderer(new RenderRiftSkybox());
-            }
-        }
+
 
         playHandAndHudRenders(Minecraft.getMinecraft().thePlayer.getHeldItem(), event.partialTicks);
 //        playHandAndHudRenders(Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.OFF_HAND), EnumHand.OFF_HAND, event.getPartialTicks());
@@ -197,6 +192,22 @@ public class ClientRenderEventHandler {
                 }
             }
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void tickTimeFreezeEffects() {
+        World w = Minecraft.getMinecraft().theWorld;
+//        if(w != null && w.provider != null) {
+//            List<TimeStopEffectHelper> effects =
+//                ((DataTimeFreezeEffects) SyncDataHolder.getData(Side.CLIENT, SyncDataHolder.DATA_TIME_FREEZE_EFFECTS))
+//                    .client_getTimeStopEffects(w);
+//
+//            if(effects != null) {
+//                for (TimeStopEffectHelper helper : effects) {
+//                    helper.playClientTickEffect();
+//                }
+//            }
+//        }
     }
 
     @SideOnly(Side.CLIENT)

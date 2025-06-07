@@ -10,6 +10,7 @@ package hellfirepvp.astralsorcery.client.models.base;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
 
 /**
  * astralsorcery_altarat2 - wiiv
@@ -78,19 +79,19 @@ public class ASaltarAT extends ModelBase {
         this.subhovering1.render(1F);
     }
 
-    /*@Override
+    @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float scale) {
         this.base.render(scale);
         this.subhovering1.render(scale);
-        this.subhovering2.render(f5);
-        this.subhovering4.render(f5);
-        this.subhovering1.render(f5);
-        this.subhovering3.render(f5);
-        this.subhovering6.render(f5);
-        this.subhovering8.render(f5);
-        this.subhovering7.render(f5);
-        this.subhovering5.render(f5);
-    }*/
+//        this.subhovering2.render(f5);
+//        this.subhovering4.render(f5);
+        this.subhovering1.render(f);
+//        this.subhovering3.render(f5);
+//        this.subhovering6.render(f5);
+//        this.subhovering8.render(f5);
+//        this.subhovering7.render(f5);
+//        this.subhovering5.render(f5);
+    }
 
     public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
         modelRenderer.rotateAngleX = x;

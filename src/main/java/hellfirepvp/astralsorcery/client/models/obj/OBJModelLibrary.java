@@ -8,8 +8,9 @@
 
 package hellfirepvp.astralsorcery.client.models.obj;
 
-import hellfirepvp.astralsorcery.client.util.obj.WavefrontObject;
+
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
+import net.minecraftforge.client.model.obj.WavefrontObject;
 
 /**
  * This class is part of the Astral Sorcery Mod

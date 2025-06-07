@@ -40,7 +40,7 @@ public class RenderConstellation {
 //        VertexBuffer vb = tessellator.getBuffer();
 
         Vector3 renderOffset = renderPos.offset;
-        Color rC = c.getRenderColor();
+        Color rC = c.getConstellationColor();
 
         //Now we build from the exact UV vectors a 31x31 grid and render the stars & connections.
         Vector3 dirU = renderPos.incU.clone().subtract(renderOffset).divide(31);
@@ -229,7 +229,7 @@ public class RenderConstellation {
     }*/
 
     public static Map<StarLocation, Rectangle> renderConstellationIntoGUI(IConstellation c, int offsetX, int offsetY, float zLevel, int width, int height, double linebreadth, BrightnessFunction func, boolean isKnown, boolean applyStarBrightness) {
-        return renderConstellationIntoGUI(c.getRenderColor(), c, offsetX, offsetY, zLevel, width, height, linebreadth, func, isKnown, applyStarBrightness);
+        return renderConstellationIntoGUI(c.getConstellationColor(), c, offsetX, offsetY, zLevel, width, height, linebreadth, func, isKnown, applyStarBrightness);
     }
 
     public static Map<StarLocation, Rectangle> renderConstellationIntoGUI(Color col, IConstellation c, int offsetX, int offsetY, float zLevel, int width, int height, double linebreadth, BrightnessFunction func, boolean isKnown, boolean applyStarBrightness) {

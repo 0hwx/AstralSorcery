@@ -85,7 +85,7 @@ public class GuiAltarAttunement extends GuiAltarBase {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         float percFilled;
-        if(containerAltarBase.tileAltar.getMultBlock()) {
+        if(containerAltarBase.tileAltar.getMultiblockState()) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             percFilled = containerAltarBase.tileAltar.getAmbientStarlightPercent();
         } else {

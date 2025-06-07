@@ -14,6 +14,7 @@ import hellfirepvp.astralsorcery.common.constellation.IConstellation;
 import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
 import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffect;
 import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffectRegistry;
+import hellfirepvp.astralsorcery.common.util.ILocatable;
 
 
 import java.util.function.Function;
@@ -33,7 +34,7 @@ public class APIRegistryEvent {
         /**
          * This does NOT include config generation.
          */
-        public void registerEffect(IMajorConstellation c, Function<Void, ConstellationEffect> effectInstanceProvider) {
+        public void registerEffect(IMajorConstellation c, Function<ILocatable, ConstellationEffect> effectInstanceProvider) {
             ConstellationEffectRegistry.registerFromAPI(c, effectInstanceProvider);
         }
 

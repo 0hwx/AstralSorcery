@@ -21,13 +21,4 @@ import javax.annotation.Nullable;
  * Date: 16.11.2016 / 23:08
  */
 public interface IMajorConstellation extends IWeakConstellation {
-
-    @Nullable
-    public ConstellationPerkMap getPerkMap();
-
-    @Override
-    default boolean canDiscover(PlayerProgress progress) {
-        return true;
-    }
-
 }

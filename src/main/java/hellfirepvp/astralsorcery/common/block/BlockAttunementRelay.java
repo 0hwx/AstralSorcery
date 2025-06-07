@@ -48,6 +48,7 @@ public class BlockAttunementRelay extends BlockContainer {
 
     public BlockAttunementRelay() {
         super(Material.glass);
+        setBlockName("BlockAttunementRelay");
         setHardness(0.5F);
         setHarvestLevel("pickaxe", 0);
         setResistance(1.0F);

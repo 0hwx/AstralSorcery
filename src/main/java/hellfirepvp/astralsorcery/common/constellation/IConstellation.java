@@ -1,5 +1,5 @@
 /*******************************************************************************
- * HellFirePvP / Astral Sorcery 2017
+ * HellFirePvP / Astral Sorcery 2018
  *
  * This project is licensed under GNU GENERAL PUBLIC LICENSE Version 3.
  * The source code is available on github: https://github.com/HellFirePvP/AstralSorcery
@@ -10,6 +10,7 @@ package hellfirepvp.astralsorcery.common.constellation;
 
 import hellfirepvp.astralsorcery.common.constellation.star.StarConnection;
 import hellfirepvp.astralsorcery.common.constellation.star.StarLocation;
+import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -46,6 +47,8 @@ public interface IConstellation {
 
     public String getUnlocalizedName();
 
+    public String getSimpleName();
+
     default public String getUnlocalizedInfo() {
         return getUnlocalizedName() + ".info";
     }
@@ -54,7 +57,13 @@ public interface IConstellation {
         return "constellationName";
     }
 
-    default public Color getRenderColor() {
+    public List<ItemHandle> getConstellationSignatureItems();
+
+    public IConstellation addSignatureItem(ItemHandle item);
+
+    public Color getConstellationColor();
+
+    default public Color getTierRenderColor() {
         if(this instanceof IMinorConstellation) {
             return minor;
         }
@@ -63,6 +72,7 @@ public interface IConstellation {
         }
         return weak;
     }
+
 
     default public boolean canDiscover(PlayerProgress progress) {
         return true;

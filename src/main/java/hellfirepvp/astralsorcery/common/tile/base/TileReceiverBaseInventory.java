@@ -125,9 +125,11 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
 
         private final TileReceiverBaseInventory tile;
 
+        private ItemStack[] inventory;
+
         public ItemHandlerTile(TileReceiverBaseInventory inv) {
 //            super(inv.inventorySize);
-            super();
+            this.inventory = new ItemStack[inv.inventorySize];
             this.tile = inv;
         }
 
@@ -151,17 +153,30 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
 
         @Override
         public int getSizeInventory() {
-            return 1;
+            return inventory.length;
         }
 
         @Override
         public ItemStack getStackInSlot(int slotIn) {
-            return null;
+            return inventory[slotIn];
         }
 
         @Override
-        public ItemStack decrStackSize(int index, int count) {
-            return null;
+        public ItemStack decrStackSize(int slot, int count) {
+            if (inventory[slot] != null) {
+                if (inventory[slot].stackSize <= count) {
+                    ItemStack stack = inventory[slot];
+                    inventory[slot] = null;
+                    return stack;
+                }
+                ItemStack split = inventory[slot].splitStack(count);
+                if (inventory[slot].stackSize == 0) {
+                    inventory[slot] = null;
+                }
+                return split;
+            } else {
+                return null;
+            }
         }
 
         @Override
@@ -171,7 +186,10 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
 
         @Override
         public void setInventorySlotContents(int index, ItemStack stack) {
-
+            inventory[index] = stack;
+            if (stack != null && stack.stackSize > getInventoryStackLimit()) {
+                stack.stackSize = getInventoryStackLimit();
+            }
         }
 
         @Override
@@ -186,7 +204,7 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
 
         @Override
         public int getInventoryStackLimit() {
-            return 0;
+            return 64;
         }
 
         @Override
@@ -196,7 +214,7 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
 
         @Override
         public boolean isUseableByPlayer(EntityPlayer player) {
-            return false;
+            return true;
         }
 
         @Override
@@ -211,7 +229,7 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
 
         @Override
         public boolean isItemValidForSlot(int index, ItemStack stack) {
-            return false;
+            return true;
         }
     }
 }

@@ -10,6 +10,7 @@ package hellfirepvp.astralsorcery.common.constellation.effect;
 
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ILocatable;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 import net.minecraft.nbt.NBTTagCompound;
@@ -37,8 +38,8 @@ public abstract class CEffectPositionListGen<T extends CEffectPositionListGen.CE
     protected final Verifier verifier;
     private List<T> elements = new ArrayList<>();
 
-    public CEffectPositionListGen(IWeakConstellation constellation, String cfgName, int searchRange, int maxCount, Verifier verifier, Function<BlockPos, T> emptyElementProvider) {
-        super(constellation, cfgName);
+    public CEffectPositionListGen(@Nullable ILocatable origin, IWeakConstellation constellation, String cfgName, int searchRange, int maxCount, Verifier verifier, Function<BlockPos, T> emptyElementProvider) {
+        super(origin, constellation, cfgName);
         this.elementProvider = emptyElementProvider;
         this.searchRange = searchRange;
         this.maxCount = maxCount;

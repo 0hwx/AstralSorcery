@@ -90,8 +90,18 @@ public class CommonProxy implements IGuiHandler {
         worldGenerator.pushConfigEntries();
         ConstellationEffectRegistry.addDynamicConfigEntries();
         ConstellationPerks.addDynamicConfigEntries();
+//        CapeEffectRegistry.addDynamicConfigEntries();
         Config.addDynamicEntry(TileTreeBeacon.ConfigEntryTreeBeacon.instance);
+//        Config.addDynamicEntry(TileOreGenerator.ConfigEntryMultiOre.instance);
+//        Config.addDynamicEntry(TileChalice.ConfigEntryChalice.instance);
         Config.addDynamicEntry(ConstellationPerkLevelManager.getLevelConfigurations());
+    }
+
+    public void registerConfigDataRegistries() {
+        Config.addDataRegistry(OreTypes.RITUAL_MINERALIS);
+        Config.addDataRegistry(OreTypes.AEVITAS_ORE_PERK);
+        Config.addDataRegistry(OreTypes.TREASURE_SHRINE_GEN);
+//        Config.addDataRegistry(FluidRarityRegistry.INSTANCE);
     }
 
     public void preInit() {
@@ -171,7 +181,7 @@ public class CommonProxy implements IGuiHandler {
 
         SyncDataHolder.initialize();
         TileAccelerationBlacklist.init();
-        OreTypes.init();
+//        OreTypes.init();
         LightOreTransmutations.init();
         HerdableAnimal.init();
         WellLiquefaction.init();

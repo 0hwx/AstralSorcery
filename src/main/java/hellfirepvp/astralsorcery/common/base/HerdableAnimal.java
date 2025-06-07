@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.base;
 
-import hellfirepvp.astralsorcery.common.CommonProxy;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityCow;
@@ -17,11 +17,8 @@ import net.minecraft.entity.passive.EntityMooshroom;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntitySquid;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -44,7 +41,9 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
     public static <T extends EntityLivingBase> HerdableAnimal<T> getHerdable(T entity) {
         return registryHerdable.get(entity.getClass());
     }
-
+    static HerdableAnimal getHerdable(Entity entity) {
+        return registryHerdable.get(entity.getClass());
+    }
     public static void init() {
         register(new Cow());
         register(new Chicken());
@@ -60,6 +59,8 @@ public interface HerdableAnimal<T extends EntityLivingBase> {
     public static void register(HerdableAnimal herd) {
         registryHerdable.put(herd.getEntityClass(), herd);
     }
+
+
 
     public Class<T> getEntityClass();
 

@@ -200,7 +200,7 @@ public class ItemConstellationPaper extends Item implements ItemHighlighted {
     @Override
     public Color getHightlightColor(ItemStack stack) {
         IConstellation c = getConstellation(stack);
-        return c == null ? Color.GRAY : c.getRenderColor();
+        return c == null ? Color.GRAY : c.getConstellationColor();
     }
 
     public static IConstellation getConstellation(ItemStack stack) {

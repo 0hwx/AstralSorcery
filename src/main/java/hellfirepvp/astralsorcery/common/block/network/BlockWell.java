@@ -51,7 +51,7 @@ public class BlockWell extends BlockStarlightNetwork {
     public BlockWell() {
         super("BlockWell", Material.rock);
         setHardness(3.0F);
-//        setSoundType(SoundType.STONE);
+setStepSound(soundTypeStone);
         setResistance(25.0F);
         setHarvestLevel("pickaxe", 2);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);

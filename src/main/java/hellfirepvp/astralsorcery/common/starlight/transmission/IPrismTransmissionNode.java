@@ -13,6 +13,7 @@ import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.starlight.WorldNetworkHandler;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.TransmissionClassRegistry;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ILocatable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -25,7 +26,7 @@ import java.util.List;
  * Created by HellFirePvP
  * Date: 03.08.2016 / 10:45
  */
-public interface IPrismTransmissionNode {
+public interface IPrismTransmissionNode extends ILocatable {
 
     //Get the exact position of this Node
     public BlockPos getPos();

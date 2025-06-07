@@ -8,18 +8,30 @@
 
 package hellfirepvp.astralsorcery.common.item.block;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.block.network.BlockCollectorCrystalBase;
 import hellfirepvp.astralsorcery.common.constellation.IConstellation;
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
+import hellfirepvp.astralsorcery.common.data.research.EnumGatedKnowledge;
+import hellfirepvp.astralsorcery.common.data.research.ProgressionTier;
+import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.entities.EntityItemHighlighted;
 import hellfirepvp.astralsorcery.common.item.base.ItemHighlighted;
+import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 import net.minecraft.block.Block;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -78,4 +90,23 @@ public class ItemCollectorCrystal extends ItemBlockCustomName implements ItemHig
         return (IWeakConstellation) IConstellation.readFromNBT(NBTHelper.getPersistentData(stack));
     }
 
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
+        CrystalProperties prop = CrystalProperties.getCrystalProperties(stack);
+        BlockCollectorCrystalBase.CollectorCrystalType type = ItemCollectorCrystal.getType(stack);
+        Optional<Boolean> missing = CrystalProperties.addPropertyTooltip(prop, tooltip, type == BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL ? CrystalProperties.MAX_SIZE_CELESTIAL : CrystalProperties.MAX_SIZE_ROCK);
+
+        if(missing.isPresent()) {
+            ProgressionTier tier = ResearchManager.clientProgress.getTierReached();
+            IWeakConstellation c = ItemCollectorCrystal.getConstellation(stack);
+            if(c != null) {
+                if(EnumGatedKnowledge.COLLECTOR_TYPE.canSee(tier) && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.collect.type") + " " + ChatFormatting.BLUE + I18n.format(c.getUnlocalizedName()));
+                } else if(!missing.get()) {
+                    tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
+                }
+            }
+        }
+    }
 }

@@ -58,11 +58,11 @@ public class BlockMachine extends BlockContainer implements BlockCustomName {
 
     public BlockMachine() {
         super(Material.rock); //Material.BARRIER -> (new Material(MapColor.airColor).setRequiresTool().setImmovableMobility());
+        setBlockName("BlockMachine");
         setHardness(3.0F);
-//        setSoundType(SoundType.STONE);
+setStepSound(soundTypeStone);
         setResistance(25.0F);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
-        setBlockName("BlockMachine");
     }
 
     @Override

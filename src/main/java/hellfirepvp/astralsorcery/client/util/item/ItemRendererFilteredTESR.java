@@ -51,7 +51,7 @@ public class ItemRendererFilteredTESR implements IItemRenderer {
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         if(renderMap.containsKey(item.getItemDamage())) {
             TEISRProperties prop = renderMap.get(item.getItemDamage());
-            prop.tesr.renderTileEntityAt(prop.renderTile, 0, 0, 0, Minecraft.getMinecraft().timer.renderPartialTicks);
+            prop.tesr.renderTileEntityAt(prop.renderTile, 0, 0, 0, 0);
         }
     }
 

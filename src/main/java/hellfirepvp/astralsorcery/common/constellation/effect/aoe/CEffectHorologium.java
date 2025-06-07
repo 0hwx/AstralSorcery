@@ -1,5 +1,5 @@
 /*******************************************************************************
- * HellFirePvP / Astral Sorcery 2017
+ * HellFirePvP / Astral Sorcery 2018
  *
  * This project is licensed under GNU GENERAL PUBLIC LICENSE Version 3.
  * The source code is available on github: https://github.com/HellFirePvP/AstralSorcery
@@ -8,6 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect.aoe;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
@@ -18,7 +20,9 @@ import hellfirepvp.astralsorcery.common.constellation.effect.GenListEntries;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
+import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ILocatable;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.renderer.texture.ITickable;
@@ -26,8 +30,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -50,8 +53,8 @@ public class CEffectHorologium extends CEffectPositionList {
     public static int searchRange = 8;
     public static int maxCount = 30;
 
-    public CEffectHorologium() {
-        super(Constellations.horologium, "horologium", searchRange, maxCount, (world, pos) -> TileAccelerationBlacklist.canAccelerate(world.getTileEntity(pos.getX(), pos.getY(), pos.getZ())));
+    public CEffectHorologium(@Nullable ILocatable origin) {
+        super(origin, Constellations.horologium, "horologium", searchRange, maxCount, (world, pos) -> TileAccelerationBlacklist.canAccelerate(world.getTileEntity(pos.getX(), pos.getY(), pos.getZ())));
     }
 
     @Override
@@ -84,8 +87,8 @@ public class CEffectHorologium extends CEffectPositionList {
                     } catch (Exception exc) {
                         TileAccelerationBlacklist.errored(te.getClass());
                         removeElement(entry);
-                        AstralSorcery.log.warn("Couldn't accelerate TileEntity " + te.getClass().getName() + " properly.");
-                        AstralSorcery.log.warn("Temporarily blacklisting that class. Consider adding that to the blacklist if it persists?");
+                        AstralSorcery.log.warn("[AstralSorcery] Couldn't accelerate TileEntity " + te.getClass().getName() + " properly.");
+                        AstralSorcery.log.warn("[AstralSorcery] Temporarily blacklisting that class. Consider adding that to the blacklist if it persists?");
                         exc.printStackTrace();
                     }
                 } else {
@@ -109,12 +112,12 @@ public class CEffectHorologium extends CEffectPositionList {
     public static void playParticles(PktParticleEvent event) {
         Vector3 at = event.getVec();
         EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                at.getX() + 0.5,
-                at.getY() + 0.5,
-                at.getZ() + 0.5);
+            at.getX() + 0.5,
+            at.getY() + 0.5,
+            at.getZ() + 0.5);
         p.motion((rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1),
-                (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1),
-                (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1));
+            (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1),
+            (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1));
         p.scale(0.25F).setColor(Color.CYAN.brighter());
     }
 

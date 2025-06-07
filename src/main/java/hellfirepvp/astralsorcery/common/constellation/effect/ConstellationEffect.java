@@ -1,5 +1,5 @@
 /*******************************************************************************
- * HellFirePvP / Astral Sorcery 2017
+ * HellFirePvP / Astral Sorcery 2018
  *
  * This project is licensed under GNU GENERAL PUBLIC LICENSE Version 3.
  * The source code is available on github: https://github.com/HellFirePvP/AstralSorcery
@@ -8,19 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.data.config.entry.ConfigEntry;
 import hellfirepvp.astralsorcery.common.tile.TileRitualLink;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ILocatable;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -38,8 +40,12 @@ public abstract class ConstellationEffect extends ConfigEntry {
 
     private final IWeakConstellation constellation;
 
-    public ConstellationEffect(IWeakConstellation constellation, String cfgName) {
+    //Always null on client.
+    protected final ILocatable origin;
+
+    public ConstellationEffect(@Nullable ILocatable origin, IWeakConstellation constellation, String cfgName) {
         super(Section.RITUAL_EFFECTS, cfgName);
+        this.origin = origin;
         this.constellation = constellation;
     }
 
@@ -62,7 +68,7 @@ public abstract class ConstellationEffect extends ConfigEntry {
 
     //Once per TE client tick
     @SideOnly(Side.CLIENT)
-    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility, boolean extendedEffects) {}
+    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal,  float percEffectVisibility, boolean extendedEffects) {}
 
     //May be executed multiple times per tick
     //Even if this effect can handle multiple effects per tick, it is still possible that this method is called.

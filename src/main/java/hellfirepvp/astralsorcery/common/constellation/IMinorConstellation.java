@@ -24,9 +24,4 @@ public interface IMinorConstellation extends IConstellation {
 
     public List<MoonPhase> getShowupMoonPhases();
 
-    @Override
-    default boolean canDiscover(PlayerProgress progress) {
-        return progress.getTierReached().isThisLaterOrEqual(ProgressionTier.TRAIT_CRAFT) && progress.getAttunedConstellation() != null;
-    }
-
 }

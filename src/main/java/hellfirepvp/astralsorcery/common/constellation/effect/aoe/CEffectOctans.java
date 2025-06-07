@@ -17,6 +17,7 @@ import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ILocatable;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
@@ -53,8 +54,8 @@ public class CEffectOctans extends CEffectPositionListGen<GenListEntries.Counter
     public static int minFishTickTime = 1000;
     public static int maxFishTickTime = 5000;
 
-    public CEffectOctans() {
-        super(Constellations.octans, "octans", searchRange, maxFishingGrounds, (world, pos) -> {
+    public CEffectOctans(@Nullable ILocatable origin) {
+        super(origin, Constellations.octans, "octans", searchRange, maxFishingGrounds, (world, pos) -> {
             Block at = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
             int meta = world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
             return at instanceof BlockLiquid && at.getMaterial().equals(Material.water) && meta == 0 && world.isAirBlock(pos.up().getX(), pos.up().getY(), pos.up().getZ());

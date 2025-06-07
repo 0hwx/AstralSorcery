@@ -80,13 +80,13 @@ public abstract class GuiScreenJournal extends GuiWHScreen {
 
         IMajorConstellation attuned = ResearchManager.clientProgress.getAttunedConstellation();
         //attuned = Constellations.discidia;
-        if(attuned != null) {
-            ConstellationPerkMap map = attuned.getPerkMap();
-            if(map != null) {
-                offsetY = guiTop + 60;
-                rectPerkMapBookmark = drawBookmark(offsetX, offsetY, bookmarkWidth, bookmarkHeight, bookmarkWidth + (bookmarkIndex == 2 ? 0 : 5), zLevel, "gui.journal.bm.perks.name", 0xDDDDDDDD, mousePoint);
-            }
-        }
+//        if(attuned != null) {
+//            ConstellationPerkMap map = attuned.getPerkMap();
+//            if(map != null) {
+//                offsetY = guiTop + 60;
+//                rectPerkMapBookmark = drawBookmark(offsetX, offsetY, bookmarkWidth, bookmarkHeight, bookmarkWidth + (bookmarkIndex == 2 ? 0 : 5), zLevel, "gui.journal.bm.perks.name", 0xDDDDDDDD, mousePoint);
+//            }
+//        }
 
         GL11.glPopMatrix();
     }

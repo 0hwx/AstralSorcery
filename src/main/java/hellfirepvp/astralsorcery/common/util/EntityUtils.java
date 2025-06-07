@@ -1,5 +1,5 @@
 /*******************************************************************************
- * HellFirePvP / Astral Sorcery 2017
+ * HellFirePvP / Astral Sorcery 2018
  *
  * This project is licensed under GNU GENERAL PUBLIC LICENSE Version 3.
  * The source code is available on github: https://github.com/HellFirePvP/AstralSorcery
@@ -9,11 +9,17 @@
 package hellfirepvp.astralsorcery.common.util;
 
 import com.google.common.base.Predicate;
+import cpw.mods.fml.common.eventhandler.Event;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -28,6 +34,29 @@ import java.util.function.Function;
  */
 public class EntityUtils {
 
+    public static boolean canEntitySpawnHere(World world, BlockPos at, ResourceLocation entityKey, boolean respectConditions) {
+        Entity entity = EntityList.createEntityByName(entityKey.toString(), world);
+        if(entity == null) {
+            return false;
+        }
+        entity.setLocationAndAngles(at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, world.rand.nextFloat() * 360.0F, 0.0F);
+        if(respectConditions) {
+            if(entity instanceof EntityLiving) {
+                Event.Result canSpawn = ForgeEventFactory.canEntitySpawn((EntityLiving) entity, world, at.getX() + 0.5F, at.getY() + 0.5F, at.getZ() + 0.5F);
+                if (canSpawn != Event.Result.ALLOW && (canSpawn != Event.Result.DEFAULT || (!((EntityLiving) entity).getCanSpawnHere()))) {// || !((EntityLiving) entity).isNotColliding()))) {
+                    return false;
+                }
+            }
+        }
+        return doesEntityHaveSpace(world, entity);
+    }
+
+    public static boolean doesEntityHaveSpace(World world, Entity entity) {
+        return !world.isAnyLiquid(entity.getBoundingBox())
+            && world.getCollidingBoundingBoxes(entity, entity.getBoundingBox()).isEmpty()
+            && world.checkNoEntityCollision(entity.getBoundingBox(), entity);
+    }
+
     public static void applyVortexMotion(Function<Void, Vector3> getPositionFunction, Function<Vector3, Object> addMotionFunction, Vector3 to, double vortexRange, double multiplier) {
         Vector3 pos = getPositionFunction.apply(null);
         double diffX = (to.getX() - pos.getX()) / vortexRange;
@@ -38,7 +67,7 @@ public class EntityUtils {
             double dstFactorSq = (1.0D - dist) * (1.0D - dist);
             Vector3 toAdd = new Vector3();
             toAdd.setX(diffX / dist * dstFactorSq * 0.15D * multiplier);
-            toAdd.setY(diffY / dist * dstFactorSq * 0.25D * multiplier);
+            toAdd.setY(diffY / dist * dstFactorSq * 0.15D * multiplier);
             toAdd.setZ(diffZ / dist * dstFactorSq * 0.15D * multiplier);
             addMotionFunction.apply(toAdd);
         }
@@ -65,7 +94,7 @@ public class EntityUtils {
                 if(entity == null || entity.isDead) return false;
                 if(!(entity instanceof EntityItem)) return false;
                 ItemStack i = ((EntityItem) entity).getEntityItem();
-                if(i == null || i.getItem() == null) return false;
+                if(i == null) return false;
                 return itemClass.isAssignableFrom(i.getItem().getClass());
             }
         };
@@ -78,7 +107,7 @@ public class EntityUtils {
                 if(entity == null || entity.isDead) return false;
                 if(!(entity instanceof EntityItem)) return false;
                 ItemStack i = ((EntityItem) entity).getEntityItem();
-                if(i == null || i.getItem() == null) return false;
+                if(i == null ) return false;
                 return i.getItem().equals(item);
             }
         };
@@ -89,7 +118,7 @@ public class EntityUtils {
             if(entity == null || entity.isDead) return false;
             if(!(entity instanceof EntityItem)) return false;
             ItemStack i = ((EntityItem) entity).getEntityItem();
-            if(i == null || i.getItem() == null) return false;
+            if(i == null ) return false;
             return acceptor.apply(i);
         };
     }
