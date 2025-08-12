@@ -30,9 +30,24 @@ import hellfirepvp.astralsorcery.common.network.packet.server.PktSyncConfig;
  * Created by HellFirePvP
  * Date: 07.05.2016 / 01:14
  */
+
 public class Config {
 
     // TODO remember to do a configurable itemSword-classname blacklist for sharpening.
+
+    public static class Categories {
+
+        public static final String general = "general";
+        public static final String entities = "entities";
+        public static final String recipes = "recipes";
+        public static final String tools = "tools";
+        public static final String crafting = "crafting";
+        public static final String lightnetwork = "lightnetwork";
+        public static final String rendering = "rendering";
+        public static final String worldgen = "worldgen";
+        public static final String retrogen = "retrogen";
+        public static final String debug = "debug";
+    }
 
     private static Configuration latestConfig;
     public static List<PktSyncConfig.SyncTuple> savedSyncTuples = new LinkedList<>();
@@ -111,6 +126,8 @@ public class Config {
     public static List<Integer> worldGenDimWhitelist = Lists.newArrayList();
     public static boolean performNetworkIntegrityCheck = false;
 
+    public static boolean debugMode;
+
     private static List<ConfigEntry> dynamicConfigEntries = new LinkedList<>();
     private static List<ConfigDataAdapter<?>> dataAdapters = new LinkedList<>();
 
@@ -186,91 +203,91 @@ public class Config {
     private static void loadData() {
         giveJournalFirst = latestConfig.getBoolean(
             "giveJournalAtFirstJoin",
-            "general",
+            Categories.general,
             true,
             "If set to 'true', the player will receive an AstralSorcery Journal if he joins the server for the first time.");
         doesMobSpawnDenyDenyEverything = latestConfig.getBoolean(
             "doesMobSpawnDenyAllTypes",
-            "general",
+            Categories.general,
             false,
             "If set to 'true' anything that prevents mobspawning by this mod, will also prevent EVERY natural mobspawning of any mobtype. When set to 'false' it'll only stop monsters from spawning.");
         swordSharpMultiplier = latestConfig.getFloat(
             "swordSharpenedMultiplier",
-            "general",
+            Categories.general,
             0.1F,
             0.0F,
             10000.0F,
             "Defines how much the 'sharpened' modifier increases the damage of the sword if applied. Config value is in percent.");
         rockCrystalOreSilkTouchHarvestable = latestConfig.getBoolean(
             "isRockCrystalOreSilkHarvestable",
-            "general",
+            Categories.general,
             rockCrystalOreSilkTouchHarvestable,
             "If this is set to true, Rock-Crystal-Ore may be silk-touch harvested by a player.");
         String[] dimWhitelist = latestConfig.getStringList(
             "skySupportedDimensions",
-            "general",
+            Categories.general,
             new String[] { "0" },
             "Whitelist of dimension ID's that will have special sky rendering");
         String[] weakSkyRenders = latestConfig.getStringList(
             "weakSkyRenders",
-            "general",
+            Categories.general,
             new String[] {},
             "IF a dimensionId is listed in 'skySupportedDimensions' you can add it here to keep its sky render, but AS will try to render only constellations on top of its existing sky render.");
         String[] oreModidBlacklist = latestConfig.getStringList(
             "oreGenBlacklist",
-            "general",
+            Categories.general,
             new String[] { "techreborn" },
             "List any number of modid's here and the aevitas perk & mineralis ritual will not spawn ores that originate from any of the mods listed here.");
         modidOreGenBlacklist = Lists.newArrayList(oreModidBlacklist);
 
         ambientFlareChance = latestConfig.getInt(
             "EntityFlare.ambientspawn",
-            "entities",
+            Categories.entities,
             20,
             0,
             200_000,
             "Defines how common ***ambient*** flares are. the lower the more common. 0 = ambient ones don't appear/disabled.");
         flareKillsBats = latestConfig.getBoolean(
             "EntityFlare.killbats",
-            "entities",
+            Categories.entities,
             true,
             "If this is set to true, occasionally, a spawned flare will (attempt to) kill bats close to it.");
 
         lightProximityAltarRecipe = latestConfig.getBoolean(
             "LightProximity-Altar",
-            "recipes",
+            Categories.recipes,
             lightProximityAltarRecipe,
             "If this is set to false, the luminous crafting table recipe that'd require 'light shining at a crafting table' is disabled.");
         lightProximityResonatingWandRecipe = latestConfig.getBoolean(
             "LightProximity-ResonatingWand",
-            "recipes",
+            Categories.recipes,
             lightProximityResonatingWandRecipe,
             "If this is set to false, the resonating wand recipe that'd require 'light shining at a crafting table' is disabled.");
 
         illuminationWandUseCost = latestConfig.getFloat(
             "wandCost_illumination",
-            "tools",
+            Categories.tools,
             0.5F,
             0.0F,
             1.0F,
             "Sets the quick-charge cost for one usage of the illumination wand");
         architectWandUseCost = latestConfig.getFloat(
             "wandCost_architect",
-            "tools",
+            Categories.tools,
             0.03F,
             0.0F,
             1.0F,
             "Sets the quick-charge cost for one usage of the architect wand");
         exchangeWandUseCost = latestConfig.getFloat(
             "wandCost_exchange",
-            "tools",
+            Categories.tools,
             0.002F,
             0.0F,
             1.0F,
             "Sets the quick-charge cost for one usage of the exchange wand");
         grappleWandUseCost = latestConfig.getFloat(
             "wandCost_grapple",
-            "tools",
+            Categories.tools,
             grappleWandUseCost,
             0.0F,
             1.0F,
@@ -278,7 +295,7 @@ public class Config {
 
         exchangeWandMaxHardness = latestConfig.getFloat(
             "exchange_wand_max_hardness",
-            "tools",
+            Categories.tools,
             -1,
             -1,
             50000,
@@ -286,7 +303,7 @@ public class Config {
 
         capeChaosResistance = latestConfig.getFloat(
             "cape_chaosresistance",
-            "tools",
+            Categories.tools,
             capeChaosResistance,
             0.0F,
             1.0F,
@@ -294,19 +311,19 @@ public class Config {
 
         shouldChargedToolsRevert = latestConfig.getBoolean(
             "chargedCrystalToolsRevert",
-            "tools",
+            Categories.tools,
             shouldChargedToolsRevert,
             "If this is set to true, charged crystals tools can revert back to their inert state.");
         revertStart = latestConfig.getInt(
             "chargedCrystalToolsRevertStart",
-            "tools",
+            Categories.tools,
             revertStart,
             0,
             Integer.MAX_VALUE - 1,
             "Defines the minimum uses a user at least gets before it's trying to revert to an inert crystal tool.");
         revertChance = latestConfig.getInt(
             "chargedCrystalToolsRevertChance",
-            "tools",
+            Categories.tools,
             revertChance,
             1,
             Integer.MAX_VALUE,
@@ -314,21 +331,21 @@ public class Config {
 
         evorsioEffectChance = latestConfig.getFloat(
             "evorsioAttunedWandEffectChance",
-            "tools",
+            Categories.tools,
             evorsioEffectChance,
             0F,
             1F,
             "Defines the chance per mined block that the effect for holding an evorsio attuned resonating wand will fire.");
         discidiaStackCap = latestConfig.getInt(
             "discidiaDamageStackCap",
-            "tools",
+            Categories.tools,
             discidiaStackCap,
             1,
             200,
             "Defines the amount of stacks you have to get against the same mob until you reach 100% of the damage multiplier.");
         discidiaStackMultiplier = latestConfig.getFloat(
             "discidiaDamageStackMultipler",
-            "tools",
+            Categories.tools,
             discidiaStackMultiplier,
             0F,
             200F,
@@ -336,53 +353,53 @@ public class Config {
 
         craftingLiqCrystalGrowth = latestConfig.getBoolean(
             "liquidStarlightCrystalGrowth",
-            "crafting",
+            Categories.crafting,
             true,
             "Set this to false to disable Rock/Celestial Crystal growing in liquid starlight.");
         craftingLiqCelestialCrystalForm = latestConfig.getBoolean(
             "liquidStarlightCelestialCrystalCluster",
-            "crafting",
+            Categories.crafting,
             true,
             "Set this to false to disable crystal + stardust -> Celestial Crystal cluster forming");
         craftingLiqCrystalToolGrowth = latestConfig.getBoolean(
             "liquidStarlightCrystalToolGrowth",
-            "crafting",
+            Categories.crafting,
             craftingLiqCrystalToolGrowth,
             "Set this to false to disable Crystal Tool growth in liquid starlight");
         canCrystalGrowthYieldDuplicates = latestConfig.getBoolean(
             "canCrystalGrowthYieldDuplicates",
-            "crafting",
+            Categories.crafting,
             canCrystalGrowthYieldDuplicates,
             "Set this to false to disable the chance to get a 2nd crystal when growing a max-sized one in liquid starlight.");
 
         liquidStarlightAquamarine = latestConfig.getBoolean(
             "liquidStarlightAquamarine",
-            "crafting",
+            Categories.crafting,
             liquidStarlightAquamarine,
             "Set this to false to disable that liquid starlight + lava occasionally/rarely produces aquamarine shale instead of sand.");
         liquidStarlightSand = latestConfig.getBoolean(
             "liquidStarlightSand",
-            "crafting",
+            Categories.crafting,
             liquidStarlightSand,
             "Set this to false to disable that liquid starlight + lava produces sand.");
         liquidStarlightIce = latestConfig.getBoolean(
             "liquidStarlightIce",
-            "crafting",
+            Categories.crafting,
             liquidStarlightIce,
             "Set this to false to disable that liquid starlight + water produces ice.");
 
         latestConfig.addCustomCategoryComment(
-            "lightnetwork",
+            Categories.lightnetwork,
             "Maintenance options for the Starlight network. Use the integrity check when you did a bigger rollback or MC-Edited stuff out of the world. Note that it will only affect worlds that get loaded. So if you edited out something on, for example, dimension -76, be sure to go into that dimension with the maintenance options enabled to properly perform maintenance there.");
         performNetworkIntegrityCheck = latestConfig.getBoolean(
             "performNetworkIntegrityCheck",
-            "lightnetwork",
+            Categories.lightnetwork,
             false,
             "NOTE: ONLY run this once and set it to false again afterwards, nothing will be gained by setting this to true permanently, just longer loading times. When set to true and the server started, this will perform an integrity check over all nodes of the starlight network whenever a world gets loaded, removing invalid ones in the process. This might, depending on network sizes, take a while. It'll leave a message in the console when it's done. After this check has been run, you might need to tear down and rebuild your starlight network in case something doesn't work anymore.");
 
         maxEffectRenderDistance = latestConfig.getInt(
             "maxEffectRenderDistance",
-            "rendering",
+            Categories.rendering,
             64,
             1,
             512,
@@ -390,12 +407,12 @@ public class Config {
         maxEffectRenderDistanceSq = maxEffectRenderDistance * maxEffectRenderDistance;
         clientPreloadTextures = latestConfig.getBoolean(
             "preloadTextures",
-            "rendering",
+            Categories.rendering,
             true,
             "If set to 'true' the mod will preload most of the bigger textures during postInit. This provides a more fluent gameplay experience (as it doesn't need to load the textures when they're first needed), but increases loadtime.");
         particleAmount = latestConfig.getInt(
             "particleAmount",
-            "rendering",
+            Categories.rendering,
             2,
             0,
             2,
@@ -403,62 +420,69 @@ public class Config {
 
         spawnRockCrystalOres = latestConfig.getBoolean(
             "rockCrystalsEnabled",
-            "worldgen",
+            Categories.worldgen,
             true,
             "Set this to false to disable rock crystal oregen entirely.");
         crystalDensity = latestConfig.getInt(
             "crystalDensity",
-            "worldgen",
+            Categories.worldgen,
             15,
             0,
             40,
             "Defines how frequently rock-crystals will spawn underground. The lower the number, the more frequent crystals will spawn. (onWorldGen: random.nextInt(crystalDensity) == 0 -> gen 1 ore in that chunk)");
         marbleAmount = latestConfig.getInt(
             "generateMarbleAmount",
-            "worldgen",
+            Categories.worldgen,
             4,
             0,
             32,
             "Defines how many marble veins are generated per chunk. 0 = disabled");
-        marbleVeinSize = latestConfig
-            .getInt("generateMarbleVeinSize", "worldgen", 20, 1, 32, "Defines how big generated marble veins are.");
+        marbleVeinSize = latestConfig.getInt(
+            "generateMarbleVeinSize",
+            Categories.worldgen,
+            20,
+            1,
+            32,
+            "Defines how big generated marble veins are.");
         aquamarineAmount = latestConfig.getInt(
             "generateAquamarineAmount",
-            "worldgen",
+            Categories.worldgen,
             64,
             0,
             2048,
             "Defines how many aquamarine ores it'll attempt to generate in per chunk. 0 = disabled");
         constellationPaperRarity = latestConfig.getInt(
             "constellationPaperRarity",
-            "worldgen",
+            Categories.worldgen,
             10,
             1,
             128,
             "Defines the rarity of the constellation paper item in loot chests.");
         constellationPaperQuality = latestConfig.getInt(
             "constellationPaperQuality",
-            "worldgen",
+            Categories.worldgen,
             2,
             1,
             128,
             "Defines the quality of the constellation paper item in loot chests.");
         respectIdealDistances = latestConfig.getBoolean(
             "respectIdealStructureDistances",
-            "worldgen",
+            Categories.worldgen,
             respectIdealDistances,
             "If this is set to true, the world generator will try and spawn structures more evenly distributed by their 'ideal' distance set in their config entries. WARNING: might add additional worldgen time.");
         String[] dimGenWhitelist = latestConfig.getStringList(
             "worldGenWhitelist",
-            "worldgen",
+            Categories.worldgen,
             new String[] { "0" },
             "the Astral Sorcery-specific worldgen will only run in Dimension ID's listed here.");
 
         enableRetroGen = latestConfig.getBoolean(
             "enableRetroGen",
-            "retrogen",
+            Categories.retrogen,
             false,
             "WARNING: Setting this to true, will check on every chunk load if the chunk has been generated depending on the current AstralSorcery version. If the chunk was then generated with an older version, the mod will try and do the worldgen that's needed from the last recorded version to the current version. DO NOT ENABLE THIS FEATURE UNLESS SPECIFICALLY REQUIRED. It might/will slow down chunk loading.");
+
+        debugMode = latestConfig.getBoolean("debugMode", Categories.debug, false, "Enable debug mode.");
 
         fillWhitelistIDs(dimWhitelist);
         fillWeakSkyRenders(weakSkyRenders);
@@ -517,4 +541,7 @@ public class Config {
         Collections.sort(constellationSkyDimWhitelist);
     }
 
+    public static Configuration getRawConfig() {
+        return latestConfig;
+    }
 }

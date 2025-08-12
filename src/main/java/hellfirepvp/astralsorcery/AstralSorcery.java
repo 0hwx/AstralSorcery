@@ -8,6 +8,8 @@
 
 package hellfirepvp.astralsorcery;
 
+import java.io.File;
+
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -42,17 +44,19 @@ import hellfirepvp.astralsorcery.common.event.ClientInitializedEvent;
 @Mod(
     modid = AstralSorcery.MODID,
     name = AstralSorcery.NAME,
-    version = AstralSorcery.VERSION,
-    acceptedMinecraftVersions = "[1.7.10]")
+    version = Tags.VERSION,
+    acceptedMinecraftVersions = "[1.7.10]",
+    guiFactory = "hellfirepvp.astralsorcery.client.gui.GuiFactory")
 public class AstralSorcery {
 
     public static final String MODID = "astralsorcery";
     public static final String NAME = "Astral Sorcery";
-    public static final String VERSION = "1.4.2";
     public static final String CLIENT_PROXY = "hellfirepvp.astralsorcery.client.ClientProxy";
     public static final String COMMON_PROXY = "hellfirepvp.astralsorcery.common.CommonProxy";
 
     private static boolean devEnvChache = false;
+    public static File confFile;
+    public static boolean DEBUG_MODE;
 
     @Mod.Instance(MODID)
     public static AstralSorcery instance;
@@ -64,12 +68,16 @@ public class AstralSorcery {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        event.getModMetadata().version = VERSION;
+        event.getModMetadata().version = Tags.VERSION;
         devEnvChache = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+
+        DEBUG_MODE = System.getenv("MCMODDING_DEBUG_MODE") != null;
+        AstralSorcery.log.info("Debug mode: {}", DEBUG_MODE);
 
         proxy.preLoadConfigEntries();
 
-        Config.load(event.getSuggestedConfigurationFile());
+        confFile = event.getSuggestedConfigurationFile();
+        Config.load(confFile);
 
         proxy.registerConfigDataRegistries();
         Config.loadDataRegistries(event.getModConfigurationDirectory());
@@ -118,7 +126,10 @@ public class AstralSorcery {
         return devEnvChache;
     }
 
-    // static {
-    // FluidRegistry.enableUniversalBucket();
-    // }
+    /* We need this helper function, because log.debug is not printed in the Minecraft console. */
+    public static void debug(String message) {
+        if (DEBUG_MODE || Config.debugMode) {
+            log.info("DEBUG: {}", message);
+        }
+    }
 }
