@@ -40,4 +40,6 @@ dependencies {
 
     compileOnly('curse.maven:minetweaker3-224029:2255759')
 
+    /* Fixes the mod menu being broken ingame, allows for quick config testing */
+    runtimeOnlyNonPublishable(rfg.deobf("curse.maven:endercore-231868:4671288"))
 }
