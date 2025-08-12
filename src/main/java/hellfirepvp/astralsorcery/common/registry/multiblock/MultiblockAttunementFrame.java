@@ -94,8 +94,8 @@ public class MultiblockAttunementFrame extends PatternBlockArray {
     }
 
     @Override
-    public Map<BlockPos, Block> placeInWorld(World world, BlockPos center) {
-        Map<BlockPos, Block> placed = super.placeInWorld(world, center);
+    public Map<BlockPos, BlockInformation> placeInWorld(World world, BlockPos center) {
+        Map<BlockPos, BlockInformation> placed = super.placeInWorld(world, center);
         world.setBlockToAir(center.getX(), center.getY() + 1, center.getZ());
         BlockPos up = center.offset(ForgeDirection.UP, 1);
         world.setBlockToAir(up.getX(), up.getY(), up.getZ());

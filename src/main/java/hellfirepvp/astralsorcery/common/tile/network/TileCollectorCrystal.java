@@ -67,8 +67,8 @@ public class TileCollectorCrystal extends TileSourceBase {
     private Object[] orbitals = new Object[4];
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (!worldObj.isRemote) {
             BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);

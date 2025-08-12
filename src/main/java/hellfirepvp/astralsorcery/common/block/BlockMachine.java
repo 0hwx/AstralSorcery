@@ -13,7 +13,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,6 +32,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.common.CommonProxy;
+import hellfirepvp.astralsorcery.common.block.material.BlockMachineMaterial;
 import hellfirepvp.astralsorcery.common.item.base.IGrindable;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
@@ -54,11 +55,11 @@ public class BlockMachine extends BlockContainer implements BlockCustomName {
 
     private static final Random rand = new Random();
 
-    // public static PropertyEnum<MachineType> MACHINE_TYPE = PropertyEnum.create("machine", MachineType.class);
+    // PropertyEnum doesn't exist in 1.7.10 - we use metadata values directly instead
 
     public BlockMachine() {
-        super(Material.rock); // Material.BARRIER -> (new
-                              // Material(MapColor.airColor).setRequiresTool().setImmovableMobility());
+        super(new BlockMachineMaterial(MapColor.airColor));
+        // Material.BARRIER -> (new Material(MapColor.airColor).setRequiresTool().setImmovableMobility());
         setBlockName("BlockMachine");
         setHardness(3.0F);
         setStepSound(soundTypeStone);
@@ -105,16 +106,16 @@ public class BlockMachine extends BlockContainer implements BlockCustomName {
     // return super.getSoundType(state, world, pos, entity);
     // }
 
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
-        int meta = worldIn.getBlockMetadata(x, y, z);
-        MachineType type = MachineType.values()[meta];
-        switch (type) {
-            case TELESCOPE:
-                return AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 2, 1);
-        }
-        return super.getCollisionBoundingBoxFromPool(worldIn, x, y, z);
-    }
+    // @Override
+    // public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
+    // int meta = worldIn.getBlockMetadata(x, y, z);
+    // MachineType type = MachineType.values()[meta];
+    // switch (type) {
+    // case TELESCOPE:
+    // return AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 2, 1);
+    // }
+    // return super.getCollisionBoundingBoxFromPool(worldIn, x, y, z);
+    // }
 
     @SideOnly(Side.CLIENT)
     @Override
@@ -148,8 +149,10 @@ public class BlockMachine extends BlockContainer implements BlockCustomName {
     }
 
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return null;
+    public TileEntity createNewTileEntity(World world, int meta) {
+        MachineType type = MachineType.values()[meta];
+        if (type == null) return null;
+        return type.provideTileEntity(world, type.getMeta());
     }
 
     @Override

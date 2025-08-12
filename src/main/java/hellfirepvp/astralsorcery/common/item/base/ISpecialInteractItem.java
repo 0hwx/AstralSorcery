@@ -25,6 +25,6 @@ public interface ISpecialInteractItem {
 
     public boolean needsSpecialHandling(World world, BlockPos at, EntityPlayer player, ItemStack stack);
 
-    public void onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, int side, ItemStack stack);
+    public boolean onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, int side, ItemStack stack);
 
 }

@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
 import com.google.common.collect.Lists;
@@ -27,20 +26,21 @@ import com.google.common.collect.Lists;
  */
 public interface BlockStateCheck {
 
-    public boolean isStateValid(World world, BlockPos pos, Block state);
+    public boolean isStateValid(World world, int x, int y, int z, net.minecraft.block.Block block);
 
-    public static class Blockes implements BlockStateCheck {
+    public static class Block implements BlockStateCheck {
 
         private final List<net.minecraft.block.Block> toCheck;
 
-        public Blockes(net.minecraft.block.Block... toCheck) {
+        public Block(net.minecraft.block.Block... toCheck) {
             this.toCheck = Lists.newArrayList(toCheck);
         }
 
         @Override
-        public boolean isStateValid(World world, BlockPos pos, Block block) {
-            return toCheck.contains(pos.getBlock(world));
+        public boolean isStateValid(World world, int x, int y, int z, net.minecraft.block.Block block) {
+            return toCheck.contains(world.getBlock(x, y, z));
         }
+
     }
 
     public static class Meta implements BlockStateCheck {
@@ -62,9 +62,9 @@ public interface BlockStateCheck {
         }
 
         @Override
-        public boolean isStateValid(World world, BlockPos pos, Block state) {
-            return state.equals(block) && pos.getMetadata(world) == toCheck; // state.getBlock().getMeta(state) ==
-                                                                             // toCheck;
+        public boolean isStateValid(World world, int x, int y, int z, net.minecraft.block.Block block) {
+            return world.getBlock(x, y, z)
+                .equals(block) && world.getBlockMetadata(x, y, z) == toCheck;
         }
     }
 
@@ -104,8 +104,9 @@ public interface BlockStateCheck {
         }
 
         @Override
-        public boolean isStateValid(World world, BlockPos pos, Block block) {
-            return block.equals(block) && passableMetadataValues.contains(pos.getMetadata(world));
+        public boolean isStateValid(World world, int x, int y, int z, net.minecraft.block.Block block) {
+            return world.getBlock(x, y, z)
+                .equals(block) && passableMetadataValues.contains(world.getBlockMetadata(x, y, z));
         }
     }
 

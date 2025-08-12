@@ -50,7 +50,9 @@ public class PerkCreationStoneEnrichment extends ConstellationPerk {
                         rand.nextInt(enrichmentRadius * 2) - enrichmentRadius);
                 if (stoneCheck.isStateValid(
                     player.getEntityWorld(),
-                    pos,
+                    pos.getX(),
+                    pos.getY(),
+                    pos.getZ(),
                     player.getEntityWorld()
                         .getBlock(pos.getX(), pos.getY(), pos.getZ()))) {
                     ItemStack blockStack = OreTypes.AEVITAS_ORE_PERK.getRandomOre(rand);
@@ -102,8 +104,8 @@ public class PerkCreationStoneEnrichment extends ConstellationPerk {
     private static class CleanStoneCheck implements BlockStateCheck {
 
         @Override
-        public boolean isStateValid(World world, BlockPos pos, Block state) {
-            return state == Blocks.stone;// && state.getValue(BlockStone.VARIANT).equals(BlockStone.EnumType.STONE);
+        public boolean isStateValid(World world, int x, int y, int z, net.minecraft.block.Block block) {
+            return block == Blocks.stone;// && state.getValue(BlockStone.VARIANT).equals(BlockStone.EnumType.STONE);
         }
 
     }

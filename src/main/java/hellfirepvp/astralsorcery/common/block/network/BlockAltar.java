@@ -147,8 +147,8 @@ public class BlockAltar extends BlockStarlightNetwork implements BlockCustomName
      */
 
     @Override
-    public boolean hasTileEntity() {
-        return true;// state.getValue(ALTAR_TYPE) != null;
+    public boolean hasTileEntity(int metadata) {
+        return true;
     }
 
     @Override
@@ -179,7 +179,7 @@ public class BlockAltar extends BlockStarlightNetwork implements BlockCustomName
         BlockPos pos = new BlockPos(x, y, z);
         Thread searchThread = new Thread(() -> {
             BlockArray relaysAndAltars = BlockDiscoverer
-                .searchForBlocksAround(world, pos, 16, new BlockStateCheck.Blockes(BlocksAS.attunementRelay));
+                .searchForBlocksAround(world, pos, 16, new BlockStateCheck.Block(BlocksAS.attunementRelay));
             for (Map.Entry<BlockPos, BlockArray.BlockInformation> entry : relaysAndAltars.getPattern()
                 .entrySet()) {
                 BlockAttunementRelay.startSearchRelayLinkThreadAt(world, entry.getKey(), false);
@@ -189,43 +189,49 @@ public class BlockAltar extends BlockStarlightNetwork implements BlockCustomName
         searchThread.start();
     }
 
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
-        /*
-         * TileAltar ta = MiscUtils.getTileAt(source, pos, TileAltar.class, true);
-         * if(ta != null) {
-         * TileAltar.AltarLevel al = ta.getAltarLevel();
-         * switch (al) {
-         * case DISCOVERY:
-         * return boxDiscovery;
-         * case ATTENUATION:
-         * return boxAttenuation;
-         * case CONSTELLATION_CRAFT:
-         * return boxConstellation;
-         * case TRAIT_CRAFT:
-         * break;
-         * case ENDGAME:
-         * break;
-         * }
-         * }
-         */
-        // AltarType type = state.getValue(ALTAR_TYPE);
-        // if(type != null) {
-        // AxisAlignedBB box = type.getBox();
-        // if(box != null) {
-        // return box;
-        // }
-        // }
-        return FULL_BLOCK_AABB;
-    }
+    // @Override
+    // public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
+    // /*
+    // * TileAltar ta = MiscUtils.getTileAt(source, pos, TileAltar.class, true);
+    // * if(ta != null) {
+    // * TileAltar.AltarLevel al = ta.getAltarLevel();
+    // * switch (al) {
+    // * case DISCOVERY:
+    // * return boxDiscovery;
+    // * case ATTENUATION:
+    // * return boxAttenuation;
+    // * case CONSTELLATION_CRAFT:
+    // * return boxConstellation;
+    // * case TRAIT_CRAFT:
+    // * break;
+    // * case ENDGAME:
+    // * break;
+    // * }
+    // * }
+    // */
+    // // AltarType type = state.getValue(ALTAR_TYPE);
+    // // if(type != null) {
+    // // AxisAlignedBB box = type.getBox();
+    // // if(box != null) {
+    // // return box;
+    // // }
+    // // }
+    // return FULL_BLOCK_AABB;
+    // }
+
+    // @Override
+    // public TileEntity createTileEntity(World world, int metadata) {
+    // AltarType type = AltarType.values()[metadata];
+    // if (type == null) return null;
+    // return type.provideTileEntity(world, metadata);
+    // }
 
     @Override
-    public TileEntity createTileEntity(World world, int metadata) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         AltarType type = AltarType.values()[metadata];
         if (type == null) return null;
         return type.provideTileEntity(world, metadata);
     }
-
     // @Override
     // public Block getStateFromMeta(int meta) {
     // return meta < AltarType.values().length ? getDefaultState().withProperty(ALTAR_TYPE, AltarType.values()[meta]) :
@@ -310,6 +316,12 @@ public class BlockAltar extends BlockStarlightNetwork implements BlockCustomName
     // return getStateFromMeta(meta);
     // }
 
+    // @Override
+
+    public int getRenderType() {
+        return RenderingRegistry.getNextAvailableRenderId();
+    }
+
     @Override
     public boolean isNormalCube() {
         return false;
@@ -325,10 +337,10 @@ public class BlockAltar extends BlockStarlightNetwork implements BlockCustomName
         return meta;
     }
 
-    @Override
-    public int getRenderType() {
-        return RenderingRegistry.getNextAvailableRenderId();
-    }
+    // @Override
+    // public int getRenderType() {
+    // return RenderingRegistry.getNextAvailableRenderId();
+    // }
 
     @Override
     public String getIdentifierForMeta(int meta) {
@@ -353,11 +365,6 @@ public class BlockAltar extends BlockStarlightNetwork implements BlockCustomName
     // public int getMeta() {
     // return 0;
     // }
-
-    @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return null;
-    }
 
     public static enum AltarType implements IVariantTileProvider {
 

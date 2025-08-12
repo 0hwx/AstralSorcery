@@ -10,6 +10,7 @@ package hellfirepvp.astralsorcery.common.util.struct;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -36,19 +37,37 @@ public class PatternBlockArray extends BlockArray {
         for (Map.Entry<BlockPos, BlockInformation> entry : pattern.entrySet()) {
             BlockInformation info = entry.getValue();
             BlockPos at = center.add(entry.getKey());
-            Block state = world.getBlock(at.getX(), at.getY(), at.getZ());
-            if (!info.matcher.isStateValid(world, at, state)) {
+            Block block = world.getBlock(at.getX(), at.getY(), at.getZ());
+            if (!info.matcher.isStateValid(world, at.getX(), at.getY(), at.getZ(), block)) {
                 return false;
             }
             if (matcherMap.containsKey(entry.getKey())) {
                 TileEntity te = world.getTileEntity(at.getX(), at.getY(), at.getZ());
                 TileEntityMatcher matcher = matcherMap.get(entry.getKey());
-                if (matcher.isApplicable(te) && !matcher.matches(world, entry.getKey(), te)) {
+                if (!matcher.isApplicable(te) || !matcher.matches(world, at, te)) {
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    public Optional<Boolean> matchSingleBlock(World world, BlockPos center, BlockPos offset) {
+        if (!pattern.containsKey(offset)) return Optional.empty();
+        BlockInformation info = pattern.get(offset);
+        BlockPos at = center.add(offset);
+        Block block = world.getBlock(at.getX(), at.getY(), at.getZ());
+        if (!info.matcher.isStateValid(world, at.getX(), at.getY(), at.getZ(), block)) {
+            return Optional.of(false);
+        }
+        if (matcherMap.containsKey(offset)) {
+            TileEntity te = world.getTileEntity(at.getX(), at.getY(), at.getZ());
+            TileEntityMatcher matcher = matcherMap.get(offset);
+            if (!matcher.isApplicable(te) || !matcher.matches(world, at, te)) {
+                return Optional.of(false);
+            }
+        }
+        return Optional.of(true);
     }
 
     public static interface TileEntityMatcher {

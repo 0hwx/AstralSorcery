@@ -95,16 +95,19 @@ public class RegistryBlocks {
     }
 
     private static void registerFluids() {
-        FluidLiquidStarlight f = new FluidLiquidStarlight();
-        FluidRegistry.registerFluid(f);
-        fluidLiquidStarlight = FluidRegistry.getFluid(f.getName());
-        blockLiquidStarlight = new FluidBlockLiquidStarlight();
-        // GameRegistry.register(blockLiquidStarlight.setUnlocalizedName(blockLiquidStarlight.getClass().getSimpleName()).setRegistryName(blockLiquidStarlight.getClass().getSimpleName()));
-        fluidLiquidStarlight.setBlock(blockLiquidStarlight);
-
-        // FluidRegistry.addBucketForFluid(BlocksAS.fluidLiquidStarlight);
-        // ItemsAS.itemBucketLiquidStarlight =
-        // UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluidLiquidStarlight);
+        FluidLiquidStarlight starlight = new FluidLiquidStarlight();
+        FluidRegistry.registerFluid(starlight);
+        fluidLiquidStarlight = FluidRegistry.getFluid(starlight.getName());
+        if (fluidLiquidStarlight.getBlock() == null) {
+            FluidBlockLiquidStarlight fluidClassic = new FluidBlockLiquidStarlight();
+            fluidLiquidStarlight.setBlock(fluidClassic)
+                .setIcons(fluidClassic.starlightLiquidStill, fluidClassic.starlightLiquidFlow);
+            GameRegistry.registerBlock(fluidClassic, ItemBlock.class, fluidClassic.getUnlocalizedName());
+        } else {
+            fluidLiquidStarlight.getBlock();
+        }
+        // Bucket registration should be handled in RegistryItems.init() instead
+        // ItemsAS.itemBucketLiquidStarlight will be registered there
     }
 
     // Blocks
@@ -184,7 +187,7 @@ public class RegistryBlocks {
     }
 
     // Tiles
-    private static void registerTileEntities() {
+    public static void registerTileEntities() {
         registerTile(TileAltar.class);
         registerTile(TileRitualPedestal.class);
         registerTile(TileCollectorCrystal.class);
@@ -248,12 +251,12 @@ public class RegistryBlocks {
     // }
     // }
 
-    private static void registerTile(Class<? extends TileEntity> tile, String name) {
-        GameRegistry.registerTileEntity(tile, name);
-    }
-
     private static void registerTile(Class<? extends TileEntity> tile) {
         registerTile(tile, tile.getSimpleName());
+    }
+
+    private static void registerTile(Class<? extends TileEntity> tile, String name) {
+        GameRegistry.registerTileEntity(tile, name);
     }
 
 }

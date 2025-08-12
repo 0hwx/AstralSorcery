@@ -13,6 +13,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
@@ -46,27 +47,21 @@ public abstract class TileEntitySynchronized extends TileEntity {
 
     public void writeNetNBT(NBTTagCompound compound) {}
 
-    // @Override
-    // public final SPacketUpdateTileEntity getUpdatePacket() {
-    // NBTTagCompound compound = new NBTTagCompound();
-    // super.writeToNBT(compound);
-    // writeCustomNBT(compound);
-    // writeNetNBT(compound);
-    // return new SPacketUpdateTileEntity(getPos(), 255, compound);
-    // }
-    //
-    // @Override
-    // public NBTTagCompound getUpdateTag() {
-    // NBTTagCompound compound = new NBTTagCompound();
-    // super.writeToNBT(compound);
-    // writeCustomNBT(compound);
-    // return compound;
-    // }
     @Override
-    public void onDataPacket(NetworkManager manager, S35PacketUpdateTileEntity packet) {
-        super.onDataPacket(manager, packet);
-        readCustomNBT(packet.func_148857_g());
-        readNetNBT(packet.func_148857_g());
+    public Packet getDescriptionPacket() {
+        NBTTagCompound nbttagcompound = new NBTTagCompound();
+        super.writeToNBT(nbttagcompound);
+        writeCustomNBT(nbttagcompound);
+        writeNetNBT(nbttagcompound);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, nbttagcompound);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+        super.onDataPacket(net, pkt);
+        readFromNBT(pkt.func_148857_g());
+        readCustomNBT(pkt.func_148857_g());
+        readNetNBT(pkt.func_148857_g());
     }
 
     public void markForUpdate() {

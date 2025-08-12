@@ -35,8 +35,8 @@ import hellfirepvp.astralsorcery.common.util.data.Vector3;
 public class TileCrystalPrismLens extends TileCrystalLens {
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (worldObj.isRemote && getLinkedPositions().size() > 0) {
             playPrismEffects();

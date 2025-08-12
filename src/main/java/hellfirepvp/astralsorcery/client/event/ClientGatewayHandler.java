@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -41,6 +42,12 @@ public class ClientGatewayHandler {
 
     private static int screenshotCooldown = 0;
     private static WorldBlockPos lastScreenshotPos = null;
+
+    public static void init() {
+        FMLCommonHandler.instance()
+            .bus()
+            .register(new ClientGatewayHandler());
+    }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)

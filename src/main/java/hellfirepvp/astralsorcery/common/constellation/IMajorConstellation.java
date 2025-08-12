@@ -8,6 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.constellation;
 
+import javax.annotation.Nullable;
+
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerkMap;
+import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
+
 /**
  * This class is part of the Astral Sorcery Mod
  * The complete source code for this mod can be found on github.
@@ -16,4 +21,12 @@ package hellfirepvp.astralsorcery.common.constellation;
  * Date: 16.11.2016 / 23:08
  */
 public interface IMajorConstellation extends IWeakConstellation {
+
+    @Nullable
+    public ConstellationPerkMap getPerkMap();
+
+    @Override
+    default boolean canDiscover(PlayerProgress progress) {
+        return true;
+    }
 }

@@ -16,6 +16,7 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.MathHelper;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 import hellfirepvp.astralsorcery.AstralSorcery;
@@ -45,6 +46,12 @@ import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
  * Date: 02.08.2016 / 13:05
  */
 public class ClientConnectionEventHandler {
+
+    public static void init() {
+        FMLCommonHandler.instance()
+            .bus()
+            .register(new ClientConnectionEventHandler());
+    }
 
     // Used to cleanup stuff on clientside to make the client functional to switch servers at any time.
     @SubscribeEvent

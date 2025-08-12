@@ -10,10 +10,8 @@ public enum Mixins implements IMixins {
     // spotless:off
     Vanilla(new MixinBuilder()
         .setPhase(Phase.EARLY)
-        .addCommonMixins(
-            /*"minecraft.ContainerHorseInventoryMixin"*/)
         .addClientMixins(
-            /*"minecraft.CreativeSlotMixin"*/)),
+            "minecraft.MixinMinecraft_Example")),
 
     ;
     // spotless:on

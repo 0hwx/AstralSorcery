@@ -32,6 +32,7 @@ import io.netty.buffer.ByteBuf;
 public class PktCraftingTableFix implements IMessage, IMessageHandler<PktCraftingTableFix, IMessage> {
 
     private BlockPos at;
+    private int x, y, z;
 
     public PktCraftingTableFix() {}
 
@@ -39,13 +40,26 @@ public class PktCraftingTableFix implements IMessage, IMessageHandler<PktCraftin
         this.at = at;
     }
 
+    public PktCraftingTableFix(int x, int y, int z) {
+        this.at = new BlockPos(x, y, z);
+        // this.x = x;
+        // this.y = y;
+        // this.z = z;
+    }
+
     @Override
     public void fromBytes(ByteBuf buf) {
+        // this.x = buf.readInt();
+        // this.y = buf.readInt();
+        // this.z = buf.readInt();
         at = BlockPos.fromLong(buf.readLong());
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
+        // buf.writeInt(x);
+        // buf.writeInt(y);
+        // buf.writeInt(z);
         buf.writeLong(at.toLong());
     }
 

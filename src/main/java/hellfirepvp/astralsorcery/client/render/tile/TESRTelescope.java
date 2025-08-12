@@ -9,8 +9,6 @@
 package hellfirepvp.astralsorcery.client.render.tile;
 
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
@@ -27,22 +25,21 @@ import hellfirepvp.astralsorcery.common.tile.TileTelescope;
  * Created by HellFirePvP
  * Date: 10.11.2016 / 22:29
  */
-public class TESRTelescope extends TileEntitySpecialRenderer {
+public class TESRTelescope extends AstralTileRenderer<TileTelescope> {
 
     private static final AStelescope modelTelescope = new AStelescope();
     private static final BindableResource texTelescope = AssetLibrary
         .loadTexture(AssetLoader.TextureLocation.MODELS, "base/telescope");
 
     @Override
-    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
-        TileTelescope te = (TileTelescope) tile;
+    public void renderAstralTileEntityAt(TileTelescope tile, double x, double y, double z, float partialTicks) {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 1.28, z + 0.5);
         GL11.glRotatef(180, 1, 0, 0);
         GL11.glRotatef(180, 0, 1, 0);
         GL11.glRotatef(
-            te.getRotation()
+            tile.getRotation()
                 .ordinal() * 45,
             0,
             1,
@@ -51,7 +48,7 @@ public class TESRTelescope extends TileEntitySpecialRenderer {
 
         GL11.glPushMatrix();
         GL11.glRotatef(
-            (te.getRotation()
+            (tile.getRotation()
                 .ordinal()) * 45 + 152.0F,
             0.0F,
             1.0F,
@@ -60,12 +57,12 @@ public class TESRTelescope extends TileEntitySpecialRenderer {
         RenderHelper.enableStandardItemLighting();
         GL11.glPopMatrix();
 
-        renderModel(te, 1);
+        renderModel(1);
         GL11.glPopMatrix();
         GL11.glPopAttrib();
     }
 
-    private void renderModel(TileTelescope te, float partialTicks) {
+    private void renderModel(float partialTicks) {
         texTelescope.bind();
         // GlStateManager.disableCull();
         GL11.glDisable(GL11.GL_CULL_FACE);

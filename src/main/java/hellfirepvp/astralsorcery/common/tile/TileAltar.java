@@ -105,8 +105,8 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if ((ticksExisted & 15) == 0) {
             updateSkyState(worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord));

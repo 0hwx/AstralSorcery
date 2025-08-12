@@ -40,7 +40,9 @@ public class PerkTravelPlaceLight extends ConstellationPerk {
                     .add(rand.nextInt(4) - 2, rand.nextInt(4) - 2, rand.nextInt(4) - 2);
                 if (TileIlluminator.illuminatorCheck.isStateValid(
                     player.getEntityWorld(),
-                    pos,
+                    pos.getX(),
+                    pos.getY(),
+                    pos.getZ(),
                     player.getEntityWorld()
                         .getBlock(pos.getX(), pos.getY(), pos.getZ()))) {
                     addAlignmentCharge(player, 2);

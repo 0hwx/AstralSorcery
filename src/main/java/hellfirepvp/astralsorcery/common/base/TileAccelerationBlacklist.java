@@ -13,7 +13,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.tileentity.TileEntity;
 
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
@@ -39,7 +38,7 @@ public class TileAccelerationBlacklist {
 
     public static boolean canAccelerate(@Nullable TileEntity te) {
         if (te == null) return false; // Nothing there.
-        if (!(te instanceof ITickable)) return false; // Uh nope.
+        if (!te.canUpdate()) return false; // No update, no acceleration.
 
         Class<?> tClass = te.getClass();
         String className = tClass.getName();

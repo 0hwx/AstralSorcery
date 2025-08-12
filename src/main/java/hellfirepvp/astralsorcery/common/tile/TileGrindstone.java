@@ -11,7 +11,6 @@ package hellfirepvp.astralsorcery.common.tile;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -30,7 +29,7 @@ import hellfirepvp.astralsorcery.common.util.MiscUtils;
  * Created by HellFirePvP
  * Date: 10.11.2016 / 22:28
  */
-public class TileGrindstone extends TileEntitySynchronized implements ITickable {
+public class TileGrindstone extends TileEntitySynchronized {
 
     public static final int TICKS_WHEEL_ROTATION = 20;
 
@@ -39,7 +38,7 @@ public class TileGrindstone extends TileEntitySynchronized implements ITickable 
     private boolean repeat = false; // Used for repeat after effect went off..~
 
     @Override
-    public void tick() {
+    public void updateEntity() {
         if (worldObj.isRemote) {
             if (tickWheelAnimation > 0) {
                 prevTickWheelAnimation = tickWheelAnimation;

@@ -13,6 +13,7 @@ import java.util.List;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -26,6 +27,10 @@ import hellfirepvp.astralsorcery.common.util.SwordSharpenHelper;
  * Date: 04.11.2016 / 23:42
  */
 public class EventHandlerMisc {
+
+    public static void init() {
+        MinecraftForge.EVENT_BUS.register(new EventHandlerMisc());
+    }
 
     @SubscribeEvent
     public void onToolTip(ItemTooltipEvent event) {

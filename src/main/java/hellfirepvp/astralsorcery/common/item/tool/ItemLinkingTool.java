@@ -58,7 +58,7 @@ public class ItemLinkingTool extends Item implements LinkHandler.IItemLinkingToo
     }
 
     @Override
-    public void onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, int side, ItemStack stack) {
+    public boolean onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, int side, ItemStack stack) {
         if (!world.isRemote) {
             LinkHandler.RightClickResult result = LinkHandler
                 .onRightClick(entityPlayer, world, pos, entityPlayer.isSneaking());
@@ -66,6 +66,7 @@ public class ItemLinkingTool extends Item implements LinkHandler.IItemLinkingToo
         } else {
             entityPlayer.swingItem();
         }
+        return true;
     }
 
     @SideOnly(Side.CLIENT)

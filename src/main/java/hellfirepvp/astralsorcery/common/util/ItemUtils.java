@@ -76,11 +76,17 @@ public class ItemUtils {
     }
 
     @Nullable
+    public static ItemStack createBlockStack(Block block, int meta) {
+        Item i = Item.getItemFromBlock(block);
+        if (i == null) return null;
+        return new ItemStack(i, 1, meta);
+    }
+
+    @Nullable
     public static ItemStack createBlockStack(Block block) {
         Item i = Item.getItemFromBlock(block);
         if (i == null) return null;
-        int meta = block.damageDropped(0);// todo check this
-        return new ItemStack(i, 1, meta);
+        return new ItemStack(i, 1, 0);
     }
 
     @Nullable

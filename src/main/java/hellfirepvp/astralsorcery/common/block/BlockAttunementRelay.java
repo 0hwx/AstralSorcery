@@ -113,8 +113,8 @@ public class BlockAttunementRelay extends BlockContainer {
                 world,
                 pos,
                 16,
-                (world1, pos1, state1) -> state1.equals(BlocksAS.blockAltar)
-                    || state1.equals(BlocksAS.attunementRelay));
+                (world1, x, y, z, block) -> block.equals(BlocksAS.blockAltar)
+                    || block.equals(BlocksAS.attunementRelay));
             relaysAndAltars.getPattern()
                 .remove(pos);
             for (Map.Entry<BlockPos, BlockArray.BlockInformation> entry : relaysAndAltars.getPattern()
@@ -205,10 +205,10 @@ public class BlockAttunementRelay extends BlockContainer {
         return true;
     }
 
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
-        return box;
-    }
+    // @Override
+    // public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
+    // return box;
+    // }
 
     @Override
     public boolean isOpaqueCube() {

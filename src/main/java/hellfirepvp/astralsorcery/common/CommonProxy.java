@@ -78,6 +78,7 @@ import hellfirepvp.astralsorcery.common.registry.RegistryPotions;
 import hellfirepvp.astralsorcery.common.registry.RegistryRecipes;
 import hellfirepvp.astralsorcery.common.registry.RegistryResearch;
 import hellfirepvp.astralsorcery.common.registry.RegistrySounds;
+import hellfirepvp.astralsorcery.common.registry.RegistryStructures;
 import hellfirepvp.astralsorcery.common.starlight.network.StarlightNetworkRegistry;
 import hellfirepvp.astralsorcery.common.starlight.network.StarlightTransmissionHandler;
 import hellfirepvp.astralsorcery.common.starlight.network.StarlightUpdateHandler;
@@ -90,7 +91,6 @@ import hellfirepvp.astralsorcery.common.tile.TileTelescope;
 import hellfirepvp.astralsorcery.common.tile.TileTreeBeacon;
 import hellfirepvp.astralsorcery.common.util.BlockDropCaptureAssist;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.LootTableUtil;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.OreDictAlias;
 import hellfirepvp.astralsorcery.common.util.TreeCaptureHelper;
@@ -134,6 +134,10 @@ public class CommonProxy implements IGuiHandler {
         // Config.addDataRegistry(FluidRarityRegistry.INSTANCE);
     }
 
+    public void registerTileRenderers() {
+
+    }
+
     public void preInit() {
         RegistryItems.setupDefaults();
 
@@ -145,7 +149,7 @@ public class CommonProxy implements IGuiHandler {
         RegistryBlocks.init();
         RegistryItems.init();
         RegistryEntities.init();
-        // RegistryStructures.init();
+        RegistryStructures.init();
         RegistryPotions.init();
 
         // Transmission registry
@@ -164,13 +168,6 @@ public class CommonProxy implements IGuiHandler {
         registerOreDictEntries();
         RegistryAchievements.init();
         RegistryPerks.init();
-
-        registerCapabilities();
-    }
-
-    private void registerCapabilities() {
-        // CapabilityManager.INSTANCE.register(IPlayerCapabilityPerks.class, new IPlayerCapabilityPerks.Storage(),
-        // IPlayerCapabilityPerks.Impl.class);
     }
 
     private void registerOreDictEntries() {
@@ -188,19 +185,16 @@ public class CommonProxy implements IGuiHandler {
         NetworkRegistry.INSTANCE.registerGuiHandler(AstralSorcery.instance, this);
 
         MinecraftForge.TERRAIN_GEN_BUS.register(TreeCaptureHelper.eventInstance);
-
-        MinecraftForge.EVENT_BUS.register(new EventHandlerNetwork());
-        EventHandlerServer eventHandlerServer = new EventHandlerServer();
-        MinecraftForge.EVENT_BUS.register(eventHandlerServer);
+        EventHandlerNetwork.init();
+        EventHandlerServer.init();
+        EventHandlerAchievements.init();
+        EventHandlerMisc.init();
+        TransmissionChunkTracker.init();
+        TickManager.init();
         FMLCommonHandler.instance()
             .bus()
-            .register(eventHandlerServer);
-        MinecraftForge.EVENT_BUS.register(new EventHandlerAchievements());
-        MinecraftForge.EVENT_BUS.register(new EventHandlerMisc());
-        MinecraftForge.EVENT_BUS.register(TransmissionChunkTracker.getInstance());
-        MinecraftForge.EVENT_BUS.register(TickManager.getInstance());
-        MinecraftForge.EVENT_BUS.register(StarlightTransmissionHandler.getInstance());
-        MinecraftForge.EVENT_BUS.register(new LootTableUtil());
+            .register(StarlightTransmissionHandler.getInstance());
+        // MinecraftForge.EVENT_BUS.register(new LootTableUtil());
         MinecraftForge.EVENT_BUS.register(BlockDropCaptureAssist.instance);
         MinecraftForge.EVENT_BUS.register(ChunkVersionController.instance);
         MinecraftForge.EVENT_BUS.register(CelestialGatewaySystem.instance);

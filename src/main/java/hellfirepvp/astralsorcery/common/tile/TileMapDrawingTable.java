@@ -51,8 +51,8 @@ public class TileMapDrawingTable extends TileSkybound {
     protected void onFirstTick() {}
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (worldObj.isRemote) {
             playWorkEffects();

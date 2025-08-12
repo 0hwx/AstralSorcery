@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 
 import com.google.common.collect.Lists;
 
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
@@ -84,10 +85,10 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
         return false;
     }
 
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
-        return boxCrystal;
-    }
+    // @Override
+    // public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
+    // return boxCrystal;
+    // }
 
     // @Override
     // @SideOnly(Side.CLIENT)
@@ -160,7 +161,7 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
     }
 
     @Override
-    public boolean hasTileEntity() {
+    public boolean hasTileEntity(int metadata) {
         return true;
     }
 
@@ -171,7 +172,7 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return null;
+        return new TileCollectorCrystal();
     }
 
     @Override
@@ -201,13 +202,18 @@ public abstract class BlockCollectorCrystalBase extends BlockStarlightNetwork im
     }
 
     @Override
+    public int getRenderType() {
+        return RenderingRegistry.getNextAvailableRenderId();
+    }
+
+    @Override
     public boolean isOpaqueCube() {
         return false;
     }
 
     @Override
-    public int damageDropped(int state) {
-        return state;
+    public int damageDropped(int meta) {
+        return meta;
     }
 
     @Override

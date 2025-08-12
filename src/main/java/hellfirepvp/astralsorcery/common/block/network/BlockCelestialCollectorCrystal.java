@@ -52,7 +52,7 @@ public class BlockCelestialCollectorCrystal extends BlockCollectorCrystalBase {
 
     @Nonnull
     @Override
-    public ItemStack getDecriptor(Block block) {
+    public ItemStack getDecriptor(Block block, int meta) {
         ItemStack stack = new ItemStack(BlocksAS.collectorCrystal);
         ItemCollectorCrystal.setType(stack, CollectorCrystalType.CELESTIAL_CRYSTAL);
         return stack;

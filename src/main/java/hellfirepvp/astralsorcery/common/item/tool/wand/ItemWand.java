@@ -6,7 +6,7 @@
  * For further details, see the License file there.
  ******************************************************************************/
 
-package hellfirepvp.astralsorcery.common.item.tool;
+package hellfirepvp.astralsorcery.common.item.tool.wand;
 
 import java.util.List;
 import java.util.Random;
@@ -149,16 +149,18 @@ public class ItemWand extends Item implements ISpecialInteractItem {
     }
 
     @Override
-    public void onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, int side, ItemStack stack) {
+    public boolean onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, int side, ItemStack stack) {
         Block block = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
         if (block instanceof IWandInteract) {
             ((IWandInteract) block).onInteract(world, pos, entityPlayer, side, entityPlayer.isSneaking());
-            return;
+            return true;
         }
         IWandInteract wandTe = MiscUtils.getTileAt(world, pos, IWandInteract.class, true);
         if (wandTe != null) {
             wandTe.onInteract(world, pos, entityPlayer, side, entityPlayer.isSneaking());
+            return true;
         }
+        return false;
     }
 
     @SideOnly(Side.CLIENT)

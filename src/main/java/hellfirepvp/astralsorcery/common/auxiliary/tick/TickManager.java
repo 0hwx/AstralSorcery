@@ -15,6 +15,7 @@ import java.util.Map;
 
 import net.minecraftforge.common.MinecraftForge;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.common.event.ClientInitializedEvent;
@@ -41,6 +42,12 @@ public class TickManager {
 
     public static TickManager getInstance() {
         return instance;
+    }
+
+    public static void init() {
+        FMLCommonHandler.instance()
+            .bus()
+            .register(getInstance());
     }
 
     public void register(ITickHandler handler) {

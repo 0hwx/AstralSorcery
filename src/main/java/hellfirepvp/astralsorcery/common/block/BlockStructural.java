@@ -95,18 +95,18 @@ public class BlockStructural extends BlockContainer implements BlockCustomName {
         return true;
     }
 
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
-        int meta = worldIn.getBlockMetadata(x, y, z);
-        BlockType type = BlockType.values()[meta];
-        switch (type) {
-            case TELESCOPE_STRUCT:
-                return AxisAlignedBB.getBoundingBox(0, -1, 0, 1, 1, 1);
-            // case ATTUNEMENT_ALTAR_STRUCT:
-            // return new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-        }
-        return FULL_BLOCK_AABB;
-    }
+    // @Override
+    // public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
+    // int meta = worldIn.getBlockMetadata(x, y, z);
+    // BlockType type = BlockType.values()[meta];
+    // switch (type) {
+    // case TELESCOPE_STRUCT:
+    // return AxisAlignedBB.getBoundingBox(0, -1, 0, 1, 1, 1);
+    // // case ATTUNEMENT_ALTAR_STRUCT:
+    // // return new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+    // }
+    // return FULL_BLOCK_AABB;
+    // }
 
     @Override
     public void getSubBlocks(Item item, CreativeTabs tab, List list) {

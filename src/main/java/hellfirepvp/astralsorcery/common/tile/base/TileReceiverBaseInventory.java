@@ -79,14 +79,14 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
         super.readCustomNBT(compound);
 
         this.handle = createNewItemHandler();
-        // this.handle.deserializeNBT(compound.getCompoundTag("inventory"));
+        this.handle.deserializeNBT(compound.getCompoundTag("inventory"));
     }
 
     @Override
     public void writeCustomNBT(NBTTagCompound compound) {
         super.writeCustomNBT(compound);
 
-        // compound.setTag("inventory", this.handle.serializeNBT());
+        compound.setTag("inventory", this.handle.serializeNBT());
     }
 
     public int getInventorySize() {
@@ -105,16 +105,9 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
         public void setInventorySlotContents(int slot, ItemStack stack) {
             if (canInsertItem(slot, stack, getStackInSlot(slot))) {
                 super.setInventorySlotContents(slot, stack);
+                onContentsChanged(slot);
             }
         }
-        //
-        // @Override
-        // public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        // if(!canInsertItem(slot, stack, getStackInSlot(slot))) {
-        // return stack;
-        // }
-        // return super.insertItem(slot, stack, simulate);
-        // }
 
         public boolean canInsertItem(int slot, ItemStack toAdd, @Nullable ItemStack existing) {
             return true;
@@ -125,28 +118,25 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
     public static class ItemHandlerTile implements IInventory {
 
         private final TileReceiverBaseInventory tile;
-
         private ItemStack[] inventory;
 
         public ItemHandlerTile(TileReceiverBaseInventory inv) {
-            // super(inv.inventorySize);
             this.inventory = new ItemStack[inv.inventorySize];
             this.tile = inv;
         }
 
-        // @Override
-        // public void onContentsChanged(int slot) {
-        // tile.onInventoryChanged(slot);
-        // tile.markForUpdate();
-        // }
-        //
-        // public void clearInventory() {
-        // for (int i = 0; i < getSlots(); i++) {
-        // setStackInSlot(i, null);
-        // onContentsChanged(i);
-        // }
-        // }
-        //
+        public void onContentsChanged(int slot) {
+            tile.onInventoryChanged(slot);
+            tile.markForUpdate();
+        }
+
+        public void clearInventory() {
+            for (int i = 0; i < getSizeInventory(); i++) {
+                setInventorySlotContents(i, null);
+                onContentsChanged(i);
+            }
+        }
+
         // @Override
         // public int getStackLimit(int slot, ItemStack stack) {
         // return super.getStackLimit(slot, stack);
@@ -191,6 +181,7 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
             if (stack != null && stack.stackSize > getInventoryStackLimit()) {
                 stack.stackSize = getInventoryStackLimit();
             }
+            onContentsChanged(index);
         }
 
         @Override
@@ -210,7 +201,7 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
 
         @Override
         public void markDirty() {
-
+            tile.markForUpdate();
         }
 
         @Override
@@ -231,6 +222,29 @@ public abstract class TileReceiverBaseInventory extends TileReceiverBase {
         @Override
         public boolean isItemValidForSlot(int index, ItemStack stack) {
             return true;
+        }
+
+        // NBT serialization methods for 1.7.10
+        public NBTTagCompound serializeNBT() {
+            NBTTagCompound nbt = new NBTTagCompound();
+            for (int i = 0; i < inventory.length; i++) {
+                if (inventory[i] != null) {
+                    NBTTagCompound itemNBT = new NBTTagCompound();
+                    inventory[i].writeToNBT(itemNBT);
+                    nbt.setTag("item_" + i, itemNBT);
+                }
+            }
+            return nbt;
+        }
+
+        public void deserializeNBT(NBTTagCompound nbt) {
+            for (int i = 0; i < inventory.length; i++) {
+                if (nbt.hasKey("item_" + i)) {
+                    inventory[i] = ItemStack.loadItemStackFromNBT(nbt.getCompoundTag("item_" + i));
+                } else {
+                    inventory[i] = null;
+                }
+            }
         }
     }
 }

@@ -51,7 +51,7 @@ public class BlockCollectorCrystal extends BlockCollectorCrystalBase {
 
     @Nonnull
     @Override
-    public ItemStack getDecriptor(Block state) {
+    public ItemStack getDecriptor(Block state, int meta) {
         return new ItemStack(BlocksAS.collectorCrystal);
     }
 

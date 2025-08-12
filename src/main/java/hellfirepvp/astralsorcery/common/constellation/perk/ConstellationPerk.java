@@ -11,9 +11,14 @@ package hellfirepvp.astralsorcery.common.constellation.perk;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 
 import com.google.common.collect.Lists;
@@ -23,6 +28,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.data.config.entry.ConfigEntry;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.event.listener.EventHandlerServer;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.data.TimeoutListContainer;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -87,6 +94,15 @@ public abstract class ConstellationPerk extends ConfigEntry {
 
     public void onEntityKilled(EntityPlayer attacker, EntityLivingBase killed) {}
 
+    public float onHarvestSpeed(EntityPlayer harvester, Block broken, @Nullable BlockPos at, float breakSpeedIn) {
+        return breakSpeedIn;
+    }
+
+    public boolean onCanHarvest(EntityPlayer harvester, @Nonnull ItemStack playerMainHand, Block tryHarvest,
+        boolean prevSuccess) {
+        return prevSuccess;
+    }
+
     public void onTimeout(EntityPlayer player) {}
 
     public boolean hasConfigEntries() {
@@ -94,21 +110,39 @@ public abstract class ConstellationPerk extends ConfigEntry {
     }
 
     public final boolean isCooldownActiveForPlayer(EntityPlayer player) {
-        return EventHandlerServer.perkCooldowns.hasList(player)
-            && EventHandlerServer.perkCooldowns.getOrCreateList(player)
-                .contains(getId());
+        TimeoutListContainer<EventHandlerServer.PlayerWrapperContainer, Integer> container = player
+            .getEntityWorld().isRemote ? EventHandlerServer.perkCooldownsClient : EventHandlerServer.perkCooldowns;
+        EventHandlerServer.PlayerWrapperContainer ct = new EventHandlerServer.PlayerWrapperContainer(player);
+        return container.hasList(ct) && container.getOrCreateList(ct)
+            .contains(getId());
     }
 
     public final void setCooldownActiveForPlayer(EntityPlayer player, int cooldownTicks) {
-        EventHandlerServer.perkCooldowns.getOrCreateList(player)
+        TimeoutListContainer<EventHandlerServer.PlayerWrapperContainer, Integer> container = player
+            .getEntityWorld().isRemote ? EventHandlerServer.perkCooldownsClient : EventHandlerServer.perkCooldowns;
+        EventHandlerServer.PlayerWrapperContainer ct = new EventHandlerServer.PlayerWrapperContainer(player);
+        container.getOrCreateList(ct)
             .setOrAddTimeout(cooldownTicks, getId());
     }
 
+    public final void forceSetCooldownForPlayer(EntityPlayer player, int cooldownTicks) {
+        TimeoutListContainer<EventHandlerServer.PlayerWrapperContainer, Integer> container = player
+            .getEntityWorld().isRemote ? EventHandlerServer.perkCooldownsClient : EventHandlerServer.perkCooldowns;
+        EventHandlerServer.PlayerWrapperContainer ct = new EventHandlerServer.PlayerWrapperContainer(player);
+        if (!container.getOrCreateList(ct)
+            .setTimeout(cooldownTicks, getId())) {
+            setCooldownActiveForPlayer(player, cooldownTicks);
+        }
+    }
+
     public final int getActiveCooldownForPlayer(EntityPlayer player) {
-        if (!EventHandlerServer.perkCooldowns.hasList(player)) {
+        TimeoutListContainer<EventHandlerServer.PlayerWrapperContainer, Integer> container = player
+            .getEntityWorld().isRemote ? EventHandlerServer.perkCooldownsClient : EventHandlerServer.perkCooldowns;
+        EventHandlerServer.PlayerWrapperContainer ct = new EventHandlerServer.PlayerWrapperContainer(player);
+        if (!container.hasList(ct)) {
             return -1;
         }
-        return EventHandlerServer.perkCooldowns.getOrCreateList(player)
+        return container.getOrCreateList(ct)
             .getTimeout(getId());
     }
 
@@ -170,8 +204,19 @@ public abstract class ConstellationPerk extends ConfigEntry {
          * Calls {@link #onPlayerTick(EntityPlayer, Side)} (net.minecraft.entity.player.EntityPlayer,
          * net.minecraftforge.fml.relauncher.Side)}
          */
-        PLAYER_TICK
+        PLAYER_TICK,
+
+        /**
+         * Gets called on a harvest-speed event
+         * Calls {@link #onHarvestSpeed(EntityPlayer, Block, BlockPos, float)}
+         */
+        PLAYER_HARVEST_SPEED,
+
+        /**
+         * Gets called on a harvest-check event
+         * Calls {@link #onCanHarvest(EntityPlayer, ItemStack, Block, boolean)}
+         */
+        PLAYER_HARVEST_TYPE
 
     }
-
 }

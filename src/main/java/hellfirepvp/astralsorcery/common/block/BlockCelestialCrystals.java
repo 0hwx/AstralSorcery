@@ -31,6 +31,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.google.common.collect.Lists;
 
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.block.network.IBlockStarlightRecipient;
@@ -81,22 +82,22 @@ public class BlockCelestialCrystals extends BlockContainer implements IBlockStar
     // return false;
     // }
 
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
-        switch (STAGE) {
-            case 0:
-                return bbStage0;
-            case 1:
-                return bbStage1;
-            case 2:
-                return bbStage2;
-            case 3:
-                return bbStage3;
-            case 4:
-                return bbStage4;
-        }
-        return super.getCollisionBoundingBoxFromPool(worldIn, x, y, z);
-    }
+    // @Override
+    // public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
+    // switch (STAGE) {
+    // case 0:
+    // return bbStage0;
+    // case 1:
+    // return bbStage1;
+    // case 2:
+    // return bbStage2;
+    // case 3:
+    // return bbStage3;
+    // case 4:
+    // return bbStage4;
+    // }
+    // return super.getCollisionBoundingBoxFromPool(worldIn, x, y, z);
+    // }
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -268,13 +269,18 @@ public class BlockCelestialCrystals extends BlockContainer implements IBlockStar
     // }
 
     @Override
+    public int getRenderType() {
+        return RenderingRegistry.getNextAvailableRenderId();
+    }
+
+    @Override
     public boolean hasTileEntity() {
         return true;
     }
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return null;
+        return new TileCelestialCrystals();
     }
 
     @Override

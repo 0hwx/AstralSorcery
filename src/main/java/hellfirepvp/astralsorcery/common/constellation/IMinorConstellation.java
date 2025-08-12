@@ -10,6 +10,8 @@ package hellfirepvp.astralsorcery.common.constellation;
 
 import java.util.List;
 
+import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
+
 /**
  * This class is part of the Astral Sorcery Mod
  * The complete source code for this mod can be found on github.
@@ -20,5 +22,12 @@ import java.util.List;
 public interface IMinorConstellation extends IConstellation {
 
     public List<MoonPhase> getShowupMoonPhases();
+
+    @Override
+    default boolean canDiscover(PlayerProgress progress) {
+        return false;
+        // return progress.getTierReached().isThisLaterOrEqual(ProgressionTier.TRAIT_CRAFT) &&
+        // progress.getAttunedConstellation() != null;
+    }
 
 }

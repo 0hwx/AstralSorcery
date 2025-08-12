@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.constellation;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -20,6 +20,8 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffect;
 import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffectRegistry;
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerkMap;
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerkMapRegistry;
 import hellfirepvp.astralsorcery.common.constellation.star.StarConnection;
 import hellfirepvp.astralsorcery.common.constellation.star.StarLocation;
 import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
@@ -137,11 +139,11 @@ public abstract class ConstellationBase implements IConstellation {
             super(name, color);
         }
 
-        // @Override
-        // @Nullable
-        // public ConstellationPerkMap getPerkMap() {
-        // return ConstellationPerkMapRegistry.getPerkMap(this);
-        // }
+        @Override
+        @Nullable
+        public ConstellationPerkMap getPerkMap() {
+            return ConstellationPerkMapRegistry.getPerkMap(this);
+        }
 
     }
 

@@ -80,8 +80,8 @@ public class TileWell extends TileReceiverBaseInventory {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (!worldObj.isRemote) {
             BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
@@ -248,6 +248,10 @@ public class TileWell extends TileReceiverBaseInventory {
 
     public float getPercFilled() {
         return tank.getPercentageFilled();
+    }
+
+    public void drainFluid(int amount) {
+        tank.drain(amount);
     }
 
     @Override

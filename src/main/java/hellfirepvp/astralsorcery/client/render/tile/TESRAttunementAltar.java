@@ -8,9 +8,7 @@
 
 package hellfirepvp.astralsorcery.client.render.tile;
 
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
@@ -30,25 +28,24 @@ import hellfirepvp.astralsorcery.common.tile.TileAttunementAltar;
  * Created by HellFirePvP
  * Date: 06.12.2016 / 22:03
  */
-public class TESRAttunementAltar extends TileEntitySpecialRenderer {
+public class TESRAttunementAltar extends AstralTileRenderer<TileAttunementAltar> {
 
     private static final ASaltarAT modelAttunementAltar = new ASaltarAT();
     private static final BindableResource texModelAttunementAltar = AssetLibrary
         .loadTexture(AssetLoader.TextureLocation.MODELS, "base/altarattunement");
 
     @Override
-    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
-        TileAttunementAltar te = (TileAttunementAltar) tile;
+    public void renderAstralTileEntityAt(TileAttunementAltar tile, double x, double y, double z, float partialTicks) {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
 
         GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
-        GL11.glScaled(0.0625, 0.0625, 0.0625);
+        GL11.glScaled(0.055, 0.055, 0.055);
         GL11.glRotated(180, 1, 0, 0);
 
         GL11.glPushMatrix();
         GL11.glRotatef(165.0F, 1.0F, 0.0F, 0.0F);
-        RenderHelper.enableStandardItemLighting();
+        // RenderHelper.enableStandardItemLighting();
         GL11.glPopMatrix();
 
         texModelAttunementAltar.bind();
@@ -59,22 +56,22 @@ public class TESRAttunementAltar extends TileEntitySpecialRenderer {
         float endY = -0.5F;
         float tickPartY = (endY - startY) / ((float) TileAttunementAltar.MAX_START_ANIMATION_TICK);
 
-        float prevPosY = endY + (te.prevActivationTick * tickPartY);
-        float posY = endY + (te.activationTick * tickPartY);
+        float prevPosY = endY + (tile.prevActivationTick * tickPartY);
+        float posY = endY + (tile.activationTick * tickPartY);
         double framePosY = RenderingUtils.interpolate(prevPosY, posY, partialTicks);
 
         double generalAnimationTick = ClientScheduler.getClientTick() / 4D;
-        if (te.animate) {
-            if (te.tesrLocked) {
-                te.tesrLocked = false;
+        if (tile.animate) {
+            if (tile.tesrLocked) {
+                tile.tesrLocked = false;
             }
         } else {
-            if (te.tesrLocked) {
+            if (tile.tesrLocked) {
                 generalAnimationTick = 7.25D;
             } else {
                 if (Math.abs((generalAnimationTick % TileAttunementAltar.MAX_START_ANIMATION_SPIN) - 7.25D) <= 0.3125) {
                     generalAnimationTick = 7.25D;
-                    te.tesrLocked = true;
+                    tile.tesrLocked = true;
                 }
             }
         }
@@ -95,24 +92,67 @@ public class TESRAttunementAltar extends TileEntitySpecialRenderer {
             float zOffset = MathHelper.sin(normalized);
 
             GL11.glPushMatrix();
-            GL11.glTranslated(x + 0.5, y + framePosY, z + 0.5);
-            GL11.glScaled(0.0625, 0.0625, 0.0625);
+            GL11.glTranslated(x + 0.5, y + framePosY + 0.5, z + 0.5);
+            GL11.glScaled(0.055, 0.055, 0.055);
             GL11.glRotated(180, 1, 0, 0);
 
-            modelAttunementAltar.renderHovering(
-                xOffset,
-                zOffset,
-                (float) RenderingUtils.interpolate(
-                    ((float) te.prevActivationTick) / TileAttunementAltar.MAX_START_ANIMATION_TICK,
-                    ((float) te.activationTick) / TileAttunementAltar.MAX_START_ANIMATION_TICK,
-                    partialTicks));
+            renderHovering(generalAnimationTick, spinDur, 1);
+
+            // modelAttunementAltar.renderHovering(
+            // xOffset,
+            // zOffset,
+            // (float) RenderingUtils.interpolate(
+            // ((float) tile.prevActivationTick) / TileAttunementAltar.MAX_START_ANIMATION_TICK,
+            // ((float) tile.activationTick) / TileAttunementAltar.MAX_START_ANIMATION_TICK,
+            // partialTicks));
 
             GL11.glPopMatrix();
         }
 
-        RenderHelper.disableStandardItemLighting();
+        // RenderHelper.disableStandardItemLighting();
 
         GL11.glPopAttrib();
+    }
+
+    @Override
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+        GL11.glPushMatrix();
+
+        GL11.glTranslated(0.5, 0.5, 0.5);
+        GL11.glScaled(0.055, 0.055, 0.055);
+        GL11.glRotated(180, 1, 0, 0);
+
+        texModelAttunementAltar.bind();
+        modelAttunementAltar.renderBase();
+
+        // RenderHelper.enableStandardItemLighting();
+
+        // Add animation for the hovering parts similar to tile entity rendering
+        double generalAnimationTick = ClientScheduler.getClientTick() / 4D;
+        float spinDur = TileAttunementAltar.MAX_START_ANIMATION_SPIN;
+        GL11.glTranslated(0.0, -0.5, 0.0);
+        renderHovering(generalAnimationTick, spinDur, 1);
+
+        // RenderHelper.disableStandardItemLighting();
+
+        GL11.glPopMatrix();
+
+    }
+
+    private void renderHovering(double generalAnimationTick, float spinDur, float partialTicks) {
+        for (int i = 1; i < 9; i++) {
+            float incrementer = (spinDur / 8) * i;
+
+            double aFrame = generalAnimationTick + incrementer;
+            double renderFrame = aFrame;
+            double partRenderFrame = (renderFrame % spinDur) / spinDur;
+            float normalized = (float) (partRenderFrame * 2F * Math.PI);
+
+            float xOffset = MathHelper.cos(normalized) * 0.8F; // Scale down the movement for item rendering
+            float zOffset = MathHelper.sin(normalized) * 0.8F;
+
+            modelAttunementAltar.renderHovering(xOffset, zOffset, partialTicks);
+        }
     }
 
 }

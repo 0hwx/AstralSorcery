@@ -16,6 +16,6 @@ import net.minecraft.item.ItemStack;
 public interface ISpecialStackDescriptor {
 
     @Nonnull
-    public ItemStack getDecriptor(Block state);
+    public ItemStack getDecriptor(Block state, int meta);
 
 }

@@ -10,11 +10,8 @@ package hellfirepvp.astralsorcery.client.render.tile;
 
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.obj.WavefrontObject;
 
 import org.lwjgl.opengl.GL11;
@@ -32,7 +29,7 @@ import hellfirepvp.astralsorcery.common.tile.TileCelestialCrystals;
  * Created by HellFirePvP
  * Date: 14.09.2016 / 19:45
  */
-public class TESRCelestialCrystals extends TileEntitySpecialRenderer implements IItemRenderer {
+public class TESRCelestialCrystals extends AstralTileRenderer<TileCelestialCrystals> {
 
     private static int dlC0 = -1, dlC1 = -1, dlC2 = -1, dlC3 = -1, dlC4 = -1;
     private static final BindableResource texCelestialCrystals = AssetLibrary
@@ -41,8 +38,7 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer implements 
     private static int[] rotMapping = new int[] { 45, 135, 270, 90, 315, 0, 180, 225 };
 
     @Override
-    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
-        TileCelestialCrystals te = (TileCelestialCrystals) tile;
+    public void renderAstralTileEntityAt(TileCelestialCrystals tile, double x, double y, double z, float partialTicks) {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
         RenderHelper.disableStandardItemLighting();
@@ -52,14 +48,14 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer implements 
 
         int r = 0x59A51481;
         // BlockPos at = te.getPos();
-        r ^= te.xCoord;
-        r ^= te.yCoord;
-        r ^= te.zCoord;
+        r ^= tile.xCoord;
+        r ^= tile.yCoord;
+        r ^= tile.zCoord;
         r = Math.abs(r);
         r = rotMapping[r % rotMapping.length];
         GL11.glRotated(r, 0, 1, 0);
 
-        renderCelestialCrystals(te.getGrowth());
+        renderCelestialCrystals(tile.getGrowth());
         RenderHelper.enableStandardItemLighting();
         GL11.glPopMatrix();
         GL11.glPopAttrib();

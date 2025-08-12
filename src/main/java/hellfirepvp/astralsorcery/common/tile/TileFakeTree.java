@@ -51,8 +51,8 @@ public class TileFakeTree extends TileEntityTick {
     private int metadata;
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (!worldObj.isRemote) {
             if (ticksExisted > 5 && ticksExisted % 4 == 0) {

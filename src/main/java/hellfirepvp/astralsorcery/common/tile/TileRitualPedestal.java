@@ -91,8 +91,8 @@ public class TileRitualPedestal extends TileReceiverBaseInventory {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (!worldObj.isRemote) {
             if ((ticksExisted & 15) == 0) {

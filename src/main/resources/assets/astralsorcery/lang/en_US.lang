@@ -359,7 +359,8 @@ inventory.altar.2=Celestial Altar
 inventory.altar.3=[NoName-TraitCraft] Altar
 inventory.altar.4=[NoName-Endgame] Altar
 
-fluid.astralsorcery.liquidStarlight=Liquid Starlight
+#fluid.astralsorcery.liquidStarlight=Liquid Starlight
+tile.liquidStarlight.name=Liquid Starlight
 
 tile.BlockStructural.name=Block Structural
 tile.BlockCustomOre.rock_crystal.name=Rock Crystal Ore

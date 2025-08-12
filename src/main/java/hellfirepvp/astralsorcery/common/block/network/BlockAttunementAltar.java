@@ -8,17 +8,22 @@
 
 package hellfirepvp.astralsorcery.common.block.network;
 
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.tile.TileAttunementAltar;
@@ -56,9 +61,28 @@ public class BlockAttunementAltar extends BlockContainer {
     }
 
     @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
-        return boxAttunementAlar;
+    public void addCollisionBoxesToList(World worldIn, int x, int y, int z, AxisAlignedBB mask,
+        List<AxisAlignedBB> list, Entity collider) {
+        this.setBlockBounds(
+            (float) boxAttunementAlar.minX,
+            (float) boxAttunementAlar.minY,
+            (float) boxAttunementAlar.minZ,
+            (float) boxAttunementAlar.maxX,
+            (float) boxAttunementAlar.maxY,
+            (float) boxAttunementAlar.maxZ);
+        super.addCollisionBoxesToList(worldIn, x, y, z, mask, list, collider);
+        // this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
+
+    @Override
+    public int getRenderType() {
+        return RenderingRegistry.getNextAvailableRenderId();
+    }
+
+    // @Override
+    // public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
+    // return boxAttunementAlar;
+    // }
 
     /*
      * @Override
@@ -112,14 +136,24 @@ public class BlockAttunementAltar extends BlockContainer {
     }
 
     @Override
-    public boolean hasTileEntity() {
-        return true;
+    public boolean isNormalCube(IBlockAccess world, int x, int y, int z) {
+        return false;
     }
 
-    // @Override
-    // public boolean hasTileEntity(Block state) {
-    // return true;
-    // }
+    @Override
+    public boolean isBlockNormalCube() {
+        return false;
+    }
+
+    @Override
+    public boolean func_149730_j() {
+        return false;
+    }
+
+    @Override
+    public boolean hasTileEntity(int metadata) {
+        return true;
+    }
 
     @Override
     public TileEntity createTileEntity(World world, int metadata) {
@@ -128,7 +162,7 @@ public class BlockAttunementAltar extends BlockContainer {
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new TileAttunementAltar();
+        return null;
     }
 
 }

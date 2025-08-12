@@ -48,7 +48,7 @@ import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalShovel;
 import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalSword;
 import hellfirepvp.astralsorcery.common.item.tool.ItemLinkingTool;
 import hellfirepvp.astralsorcery.common.item.tool.ItemSkyResonator;
-import hellfirepvp.astralsorcery.common.item.tool.ItemWand;
+import hellfirepvp.astralsorcery.common.item.tool.wand.ItemWand;
 import hellfirepvp.astralsorcery.common.item.wand.ItemArchitectWand;
 import hellfirepvp.astralsorcery.common.item.wand.ItemExchangeWand;
 import hellfirepvp.astralsorcery.common.item.wand.ItemIlluminationWand;
@@ -160,26 +160,6 @@ public class RegistryItems {
         }
         return registerItem(item, simpleName);
     }
-
-    /*
-     * private static <T extends IForgeRegistryEntry> T registerItem(String modId, T item) {
-     * return registerItem(modId, item, item.getClass().getSimpleName());
-     * }
-     * private static <T extends IForgeRegistryEntry> T registerItem(String modId, T item, String name) {
-     * try {
-     * LoadController modController = (LoadController) Loader.class.getField("modController").get(Loader.instance());
-     * Object oldMod = modController.getClass().getField("activeContainer").get(modController);
-     * modController.getClass().getField("activeContainer").set(modController,
-     * Loader.instance().getIndexedModList().get(modId));
-     * register(item, name);
-     * modController.getClass().getField("activeContainer").set(modController, oldMod);
-     * return item;
-     * } catch (Exception exc) {
-     * AstralSorcery.log.error("Could not register item with name " + name);
-     * return null;
-     * }
-     * }
-     */
 
     private static <T extends Item> void register(T item, String name) {
         GameRegistry.registerItem(item, name);

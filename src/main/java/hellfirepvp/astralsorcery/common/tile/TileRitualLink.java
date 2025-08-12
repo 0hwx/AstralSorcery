@@ -45,8 +45,8 @@ public class TileRitualLink extends TileEntityTick implements ILinkableTile {
     private BlockPos linkedTo = null;
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (worldObj.isRemote) {
             playClientEffects();

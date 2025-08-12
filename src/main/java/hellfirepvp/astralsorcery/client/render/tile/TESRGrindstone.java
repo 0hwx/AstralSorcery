@@ -11,9 +11,7 @@ package hellfirepvp.astralsorcery.client.render.tile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
@@ -34,15 +32,14 @@ import hellfirepvp.astralsorcery.common.util.SwordSharpenHelper;
  * Created by HellFirePvP
  * Date: 10.11.2016 / 22:30
  */
-public class TESRGrindstone extends TileEntitySpecialRenderer {
+public class TESRGrindstone extends AstralTileRenderer<TileGrindstone> {
 
     private static final ASgrindingstone modelGrindstone = new ASgrindingstone();
     private static final BindableResource texGrindstone = AssetLibrary
         .loadTexture(AssetLoader.TextureLocation.MODELS, "base/grindingstone");
 
     @Override
-    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
-        TileGrindstone te = (TileGrindstone) tile;
+    public void renderAstralTileEntityAt(TileGrindstone tile, double x, double y, double z, float partialTicks) {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 1.65, z + 0.5);
@@ -54,11 +51,11 @@ public class TESRGrindstone extends TileEntitySpecialRenderer {
         GL11.glRotatef(165.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
         GL11.glPopMatrix();
-        renderModel(te, 1);
+        renderModel(tile, 1);
         GL11.glPopMatrix();
         GL11.glPopAttrib();
 
-        ItemStack grind = te.getGrindingItem();
+        ItemStack grind = tile.getGrindingItem();
         if (grind != null) {
             if (grind.getItem() != null) {
                 TextureHelper.refreshTextureBindState();

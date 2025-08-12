@@ -8,6 +8,7 @@ import net.minecraft.block.BlockOre;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
@@ -26,39 +27,64 @@ public class OreDiscoverer {
         xzLimit = MathHelper.clamp_int(xzLimit, 0, 32);
         BlockPos originPos = position.toBlockPos();
         BlockArray out = new BlockArray();
-        List<Block> successfulOres = new ArrayList<>(12);
-        // BlockPos.MutableBlockPos.PooledMutableBlockPos pooledPos = BlockPos.PooledMutableBlockPos.retain();
-        // try {
-        // for (int xx = -xzLimit; xx <= xzLimit; xx++) {
-        // for (int zz = -xzLimit; zz <= xzLimit; zz++) {
-        // pooledPos.setPos(originPos.getX() + xx, 0, originPos.getZ() + zz);
-        // Chunk c = world.getChunkFromBlockCoords(pooledPos);
-        // int highest = (c.getTopFilledSegment() + 1) * 16;
-        // for (int y = 0; y < highest; y++) {
-        // pooledPos.setY(y);
-        // Block at = c.getBlockState(pooledPos);
-        // if(successfulOres.contains(at)) {
-        // out.addBlock(new BlockPos(pooledPos), at);
-        // } else if (isOre(world, at, pooledPos)) {
-        // out.addBlock(new BlockPos(pooledPos), at);
-        // successfulOres.add(at);
-        // }
-        // }
-        // }
-        // }
-        // } finally {
-        // pooledPos.release();
-        // }
+        List<BlockOreInfo> successfulOres = new ArrayList<>(12);
+
+        for (int xx = -xzLimit; xx <= xzLimit; xx++) {
+            for (int zz = -xzLimit; zz <= xzLimit; zz++) {
+                int chunkX = originPos.getX() + xx;
+                int chunkZ = originPos.getZ() + zz;
+                Chunk c = world.getChunkFromBlockCoords(chunkX, chunkZ);
+                int highest = (c.getTopFilledSegment() + 1) * 16; // Get height limit for chunk
+
+                for (int y = 0; y < highest; y++) {
+                    BlockPos currentPos = new BlockPos(chunkX, y, chunkZ);
+                    Block block = world.getBlock(chunkX, y, chunkZ);
+                    int metadata = world.getBlockMetadata(chunkX, y, chunkZ);
+
+                    BlockOreInfo currentOre = new BlockOreInfo(block, metadata);
+                    if (successfulOres.contains(currentOre)) {
+                        out.addBlock(currentPos, block, metadata);
+                    } else if (isOre(world, block, metadata, currentPos)) {
+                        out.addBlock(currentPos, block, metadata);
+                        successfulOres.add(currentOre);
+                    }
+                }
+            }
+        }
         return out;
     }
 
-    private static boolean isOre(World world, Block state, BlockPos pos) {
-        if (state instanceof BlockOre) { // WELL that's easy enough.
+    private static boolean isOre(World world, Block block, int metadata, BlockPos pos) {
+        if (block instanceof BlockOre) { // WELL that's easy enough.
             return true;
         }
-        ItemStack blockStack = ItemUtils.createBlockStack(state);
-        if (blockStack == null || blockStack.getItem() == null) return false;
-        return ItemUtils.hasOreNamePart(blockStack, "ore");
+        ItemStack blockStack = ItemUtils.createBlockStack(block, metadata);
+        return blockStack != null && ItemUtils.hasOreNamePart(blockStack, "ore");
+    }
+
+    // Helper class to track discovered ore types
+    private static class BlockOreInfo {
+
+        private final Block block;
+        private final int metadata;
+
+        public BlockOreInfo(Block block, int metadata) {
+            this.block = block;
+            this.metadata = metadata;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof BlockOreInfo)) return false;
+            BlockOreInfo other = (BlockOreInfo) obj;
+            return block == other.block && metadata == other.metadata;
+        }
+
+        @Override
+        public int hashCode() {
+            return block.hashCode() * 31 + metadata;
+        }
     }
 
 }

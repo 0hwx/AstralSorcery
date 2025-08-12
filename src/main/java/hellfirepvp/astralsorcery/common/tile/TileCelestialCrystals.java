@@ -52,8 +52,8 @@ public class TileCelestialCrystals extends TileSkybound {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (!worldObj.isRemote) {
             double mul = 1;

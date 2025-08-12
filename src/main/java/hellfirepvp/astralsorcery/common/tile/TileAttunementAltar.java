@@ -136,8 +136,8 @@ public class TileAttunementAltar extends TileEntityTick {
     protected void onFirstTick() {}
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (worldObj.isRemote) {
             renderEffects();

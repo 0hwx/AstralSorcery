@@ -113,8 +113,8 @@ public class TileCrystalLens extends TileTransmissionBase {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (lensColor != null) {
             if (worldObj.isRemote) {

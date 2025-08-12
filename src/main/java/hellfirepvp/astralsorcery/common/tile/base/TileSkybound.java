@@ -20,8 +20,8 @@ public abstract class TileSkybound extends TileEntityTick {
     protected boolean doesSeeSky = false;
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if ((ticksExisted & 15) == 0) {
             updateSkyState(worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord));

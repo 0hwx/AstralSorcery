@@ -8,9 +8,7 @@
 
 package hellfirepvp.astralsorcery.client.gui;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -73,13 +71,13 @@ public class GuiJournalPerkMap extends GuiScreenJournal {
         super(2);
 
         IMajorConstellation attuned = ResearchManager.clientProgress.getAttunedConstellation();
-        // if (attuned != null) {
-        // ConstellationPerkMap map = attuned.getPerkMap();
-        // if (map != null) {
-        // this.mapToDisplay = map;
-        // this.attunedConstellation = attuned;
-        // }
-        // }
+        if (attuned != null) {
+            ConstellationPerkMap map = attuned.getPerkMap();
+            if (map != null) {
+                this.mapToDisplay = map;
+                this.attunedConstellation = attuned;
+            }
+        }
     }
 
     @Override

@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.EnumSkyBlock;
@@ -51,8 +50,8 @@ public class TileIlluminator extends TileSkybound {
     private boolean playerPlaced = false;
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (!playerPlaced) return;
 
@@ -114,7 +113,12 @@ public class TileIlluminator extends TileSkybound {
             BlockPos at = list.remove(index);
             if (!needsRecalc && list.isEmpty()) needsRecalc = true;
             at = at.add(rand.nextInt(5) - 2, rand.nextInt(13) - 6, rand.nextInt(5) - 2);
-            if (illuminatorCheck.isStateValid(worldObj, at, worldObj.getBlock(at.getX(), at.getY(), at.getZ()))) {
+            if (illuminatorCheck.isStateValid(
+                worldObj,
+                at.getX(),
+                at.getY(),
+                at.getZ(),
+                worldObj.getBlock(at.getX(), at.getY(), at.getZ()))) {
                 worldObj.setBlock(at.getX(), at.getY(), at.getZ(), BlocksAS.blockVolatileLight);
                 if (rand.nextInt(4) == 0) {
                     EntityFlare.spawnAmbient(
@@ -174,11 +178,10 @@ public class TileIlluminator extends TileSkybound {
     public static class LightCheck implements BlockStateCheck {
 
         @Override
-        public boolean isStateValid(World world, BlockPos pos, Block state) {
-            return world.isAirBlock(pos.getX(), pos.getY(), pos.getZ())
-                && !world.canBlockSeeTheSky(pos.getX(), pos.getY(), pos.getZ())
-                && world.getFullBlockLightValue(pos.getX(), pos.getY(), pos.getZ()) < 8
-                && world.getSavedLightValue(EnumSkyBlock.Sky, pos.getX(), pos.getY(), pos.getZ()) < 6;
+        public boolean isStateValid(World world, int x, int y, int z, net.minecraft.block.Block block) {
+            return world.isAirBlock(x, y, z) && !world.canBlockSeeTheSky(x, y, z)
+                && world.getFullBlockLightValue(x, y, z) < 8
+                && world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) < 6;
         }
 
     }

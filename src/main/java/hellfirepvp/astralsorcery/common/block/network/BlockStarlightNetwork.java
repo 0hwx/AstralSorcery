@@ -11,7 +11,6 @@ package hellfirepvp.astralsorcery.common.block.network;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
@@ -48,11 +47,11 @@ public abstract class BlockStarlightNetwork extends BlockContainer {
             teN.onBreak();
         }
 
-        TileEntity inv = MiscUtils.getTileAt(worldIn, pos, TileEntity.class, true);
+        // TileEntity inv = MiscUtils.getTileAt(worldIn, pos, TileEntity.class, true);
         // if(inv != null && !worldIn.isRemote) {
         // for (ForgeDirection face : ForgeDirection.values()) {
         // IInventory handle = inv.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face);
-        // if(handle != null) {
+        // if (handle != null) {
         // ItemUtils.dropInventory(handle, worldIn, pos);
         // break;
         // }

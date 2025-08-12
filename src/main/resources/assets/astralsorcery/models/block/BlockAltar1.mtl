@@ -1,0 +1,8 @@
+# Made in Blockbench 4.12.3
+newmtl altar_1_side
+map_Kd altar_1_side.png
+newmtl altar_1_top
+map_Kd altar_1_top.png
+newmtl altar_1_bottom
+map_Kd altar_1_bottom.png
+newmtl none

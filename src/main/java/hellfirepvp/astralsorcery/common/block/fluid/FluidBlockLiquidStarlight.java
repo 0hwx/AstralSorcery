@@ -15,12 +15,14 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialLiquid;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
@@ -44,8 +46,15 @@ import hellfirepvp.astralsorcery.common.util.BlockPos;
  */
 public class FluidBlockLiquidStarlight extends BlockFluidClassic {
 
+    @SideOnly(Side.CLIENT)
+    public IIcon starlightLiquidStill;
+
+    @SideOnly(Side.CLIENT)
+    public IIcon starlightLiquidFlow;
+
     public FluidBlockLiquidStarlight() {
         super(BlocksAS.fluidLiquidStarlight, new MaterialLiquid(MapColor.silverColor));
+        setBlockName("liquidStarlight");
         // setDefaultState(this.blockState.getBaseState().withProperty(LEVEL, 0));
     }
 
@@ -152,6 +161,13 @@ public class FluidBlockLiquidStarlight extends BlockFluidClassic {
             .isLiquid() && super.displaceIfPossible(world, x, y, z);
     }
 
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerBlockIcons(IIconRegister reg) {
+        this.starlightLiquidStill = reg.registerIcon("astralsorcery:fluid/starlight_still");
+        this.starlightLiquidFlow = reg.registerIcon("astralsorcery:fluid/starlight_flow");
+        this.blockIcon = this.starlightLiquidStill;
+    }
     // @Override
     // public Boolean isEntityInsideMaterial(IBlockAccess world, BlockPos blockpos, Block Block, Entity entity, double
     // yToTest, Material materialIn, boolean testingHead) {
@@ -170,4 +186,5 @@ public class FluidBlockLiquidStarlight extends BlockFluidClassic {
 
         }
     }
+
 }

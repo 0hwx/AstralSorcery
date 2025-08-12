@@ -24,7 +24,11 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidContainerItem;
 
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import hellfirepvp.astralsorcery.common.base.WellLiquefaction;
 import hellfirepvp.astralsorcery.common.block.fluid.FluidLiquidStarlight;
 import hellfirepvp.astralsorcery.common.registry.RegistryAchievements;
@@ -58,7 +62,7 @@ public class BlockWell extends BlockStarlightNetwork {
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return null;
+        return createTileEntity(worldIn, meta);
     }
 
     @Override
@@ -73,8 +77,7 @@ public class BlockWell extends BlockStarlightNetwork {
 
     @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
-        BlockPos pos = new BlockPos(x, y, z);
-        TileWell tw = MiscUtils.getTileAt(world, pos, TileWell.class, true);
+        TileWell tw = (TileWell) world.getTileEntity(x, y, z);
         if (tw != null) {
             if (tw.getHeldFluid() != null) {
                 return tw.getHeldFluid()
@@ -101,12 +104,14 @@ public class BlockWell extends BlockStarlightNetwork {
             ItemStack heldItem = player.getHeldItem();
             BlockPos pos = new BlockPos(x, y, z);
             if (heldItem != null && heldItem.getItem() != null && player instanceof EntityPlayerMP) {
-                TileWell tw = MiscUtils.getTileAt(worldIn, pos, TileWell.class, false);
+                TileWell tw = (TileWell) worldIn.getTileEntity(x, y, z);
                 if (tw == null) return false;
 
                 WellLiquefaction.LiquefactionEntry entry = WellLiquefaction.getLiquefactionEntry(heldItem);
                 if (entry != null) {
                     IInventory handle = tw.getInventoryHandler();
+                    System.out.println("Found liquefaction entry: " + handle.getStackInSlot(0));
+                    System.out.println("Fluid: " + tw.getFluidAmount() + " / " + tw.getHeldFluid());
                     if (handle.getStackInSlot(0) != null) return false;
 
                     if (!worldIn.isAirBlock(
@@ -138,12 +143,62 @@ public class BlockWell extends BlockStarlightNetwork {
                     }
                 }
 
-                // if(FluidUtil.tryFillContainerAndStow(heldItem,
-                // tw.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.DOWN), new
-                // InvWrapper(playerIn.inventory), 1000, playerIn)) {
-                // SoundHelper.playSoundAround(SoundEvents.ITEM_BUCKET_FILL, worldIn, pos, 1F, 1F);
-                // tw.markForUpdate();
-                // }
+                // Try to fill container with fluid from well (1.7.10 compatible)
+                if (tw.getFluidAmount() > 0 && tw.getHeldFluid() != null) {
+                    // Create FluidStack from the well's fluid
+                    FluidStack availableFluid = new FluidStack(tw.getHeldFluid(), tw.getFluidAmount());
+
+                    // Try to fill the container
+                    if (heldItem.getItem() instanceof IFluidContainerItem) {
+                        IFluidContainerItem container = (IFluidContainerItem) heldItem.getItem();
+                        int filled = container.fill(heldItem, availableFluid, true);
+
+                        if (filled > 0) {
+                            // Drain fluid from well by reducing tank amount
+                            tw.drainFluid(filled);
+                            // Play sound
+                            worldIn.playSoundEffect(
+                                x + 0.5,
+                                y + 0.5,
+                                z + 0.5,
+                                "random.splash",
+                                0.25F,
+                                1.0F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.4F);
+                            tw.markForUpdate();
+                        }
+                    } else {
+                        // Handle vanilla buckets and other fluid containers using 1.7.10 API
+                        ItemStack filledContainer = FluidContainerRegistry.fillFluidContainer(availableFluid, heldItem);
+                        if (filledContainer != null) {
+                            // Calculate how much fluid was used
+                            FluidStack containerFluid = FluidContainerRegistry.getFluidForFilledItem(filledContainer);
+                            if (containerFluid != null && tw.getFluidAmount() >= containerFluid.amount) {
+                                // Give filled container to player
+                                if (heldItem.stackSize == 1) {
+                                    player.inventory
+                                        .setInventorySlotContents(player.inventory.currentItem, filledContainer);
+                                } else {
+                                    heldItem.stackSize--;
+                                    if (!player.inventory.addItemStackToInventory(filledContainer)) {
+                                        ItemUtils.dropItem(worldIn, x + 0.5F, y + 1F, z + 0.5F, filledContainer);
+                                    }
+                                }
+
+                                // Drain fluid from well
+                                tw.drainFluid(containerFluid.amount);
+                                // Play sound
+                                worldIn.playSoundEffect(
+                                    x + 0.5,
+                                    y + 0.5,
+                                    z + 0.5,
+                                    "random.splash",
+                                    0.25F,
+                                    1.0F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.4F);
+                                tw.markForUpdate();
+                            }
+                        }
+                    }
+                }
             }
         }
         return true;
@@ -151,8 +206,7 @@ public class BlockWell extends BlockStarlightNetwork {
 
     @Override
     public void breakBlock(World worldIn, int x, int y, int z, Block blockBroken, int meta) {
-        BlockPos pos = new BlockPos(x, y, z);
-        TileWell tw = MiscUtils.getTileAt(worldIn, pos, TileWell.class, true);
+        TileWell tw = (TileWell) worldIn.getTileEntity(x, y, z);
         if (tw != null && !worldIn.isRemote) {
             ItemStack stack = tw.getInventoryHandler()
                 .getStackInSlot(0);
@@ -177,26 +231,33 @@ public class BlockWell extends BlockStarlightNetwork {
     @Override
     public void addCollisionBoxesToList(World worldIn, int x, int y, int z, AxisAlignedBB mask,
         List<net.minecraft.util.AxisAlignedBB> list, Entity collider) {
-        // for (AxisAlignedBB box : collisionBoxes) {
-        // addCollisionBoxesToList(worldIn, x, y, z, box, list, collider);
-        // }
+        for (AxisAlignedBB box : collisionBoxes) {
+            this.setBlockBounds(
+                (float) box.minX,
+                (float) box.minY,
+                (float) box.minZ,
+                (float) box.maxX,
+                (float) box.maxY,
+                (float) box.maxZ);
+            super.addCollisionBoxesToList(worldIn, x, y, z, mask, list, collider);
+        }
+        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
-        return boxWell;
-    }
+    // @Override
+    // public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
+    // return boxWell;
+    // }
 
     @Override
     public int getRenderType() {
-        return 1;
+        return RenderingRegistry.getNextAvailableRenderId();
     }
 
     static {
         List<AxisAlignedBB> boxes = new LinkedList<>();
 
         boxes.add(AxisAlignedBB.getBoundingBox(1D / 16D, 0D, 1D / 16D, 15D / 16D, 5D / 16D, 15D / 16D));
-
         boxes.add(AxisAlignedBB.getBoundingBox(1D / 16D, 5D / 16D, 1D / 16D, 2D / 16D, 1D, 15D / 16D));
         boxes.add(AxisAlignedBB.getBoundingBox(1D / 16D, 5D / 16D, 1D / 16D, 15D / 16D, 1D, 2D / 16D));
         boxes.add(AxisAlignedBB.getBoundingBox(14D / 16D, 5D / 16D, 1D / 16D, 15D / 16D, 1D, 15D / 16D));

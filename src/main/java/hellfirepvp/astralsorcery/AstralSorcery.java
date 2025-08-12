@@ -11,7 +11,6 @@ package hellfirepvp.astralsorcery;
 import java.io.File;
 
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.common.MinecraftForge;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -81,13 +80,13 @@ public class AstralSorcery {
 
         proxy.registerConfigDataRegistries();
         Config.loadDataRegistries(event.getModConfigurationDirectory());
-
+        proxy.registerTileRenderers();
         proxy.preInit();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(this);
+        // MinecraftForge.EVENT_BUS.register(this);
 
         proxy.init();
     }

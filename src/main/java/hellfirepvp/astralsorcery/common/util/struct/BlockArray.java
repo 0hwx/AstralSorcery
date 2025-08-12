@@ -13,8 +13,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -44,40 +46,60 @@ public class BlockArray {
 
     protected Map<BlockPos, TileEntityCallback> tileCallbacks = new HashMap<>();
     protected Map<BlockPos, BlockInformation> pattern = new HashMap<>();
-    private Vec3 min = Vec3.createVectorHelper(0, 0, 0), max = Vec3.createVectorHelper(0, 0, 0),
-        size = Vec3.createVectorHelper(0, 0, 0);
+    private Vec3 min = Vec3.createVectorHelper(0, 0, 0);
+    private Vec3 max = Vec3.createVectorHelper(0, 0, 0);
+    private Vec3 size = Vec3.createVectorHelper(0, 0, 0);
 
     public void addBlock(int x, int y, int z, @Nonnull Block block) {
-        addBlock(new BlockPos(x, y, z), block);
+        addBlock(new BlockPos(x, y, z), block, 0);
     }
 
-    public void addBlock(BlockPos offset, @Nonnull Block block) {
-        int meta = 0;
-        pattern.put(offset, new BlockInformation(block, meta));
+    public void addBlock(int x, int y, int z, @Nonnull Block block, int metadata) {
+        addBlock(new BlockPos(x, y, z), block, metadata);
+    }
+
+    public void addBlock(BlockPos offset, @Nonnull Block block, int metadata) {
+        pattern.put(offset, new BlockInformation(block, metadata));
+        updateSize(offset);
+    }
+
+    public void addBlock(int x, int y, int z, @Nonnull Block block, int metadata, BlockStateCheck match) {
+        addBlock(new BlockPos(x, y, z), block, metadata, match);
+    }
+
+    public void addBlock(BlockPos offset, @Nonnull Block block, int metadata, BlockStateCheck match) {
+        pattern.put(offset, new BlockInformation(block, metadata, match));
         updateSize(offset);
     }
 
     public void addAll(BlockArray other) {
-        this.pattern.putAll(other.getPattern());
-        this.tileCallbacks.putAll(other.getTileCallbacks());
+        addAll(other, null);
     }
 
-    public void addBlock(int x, int y, int z, @Nonnull Block block, BlockStateCheck match) {
-        addBlock(new BlockPos(x, y, z), block, match);
-    }
-
-    public void addBlock(BlockPos offset, @Nonnull Block block, BlockStateCheck match) {
-        int meta = 0;
-        pattern.put(offset, new BlockInformation(block, meta, match));
-        updateSize(offset);
+    public void addAll(BlockArray other, @Nullable Function<BlockPos, BlockPos> positionTransform) {
+        for (Map.Entry<BlockPos, BlockInformation> patternEntry : other.pattern.entrySet()) {
+            BlockPos to = patternEntry.getKey();
+            if (positionTransform != null) {
+                to = positionTransform.apply(to);
+            }
+            pattern.put(to, patternEntry.getValue());
+            updateSize(to);
+        }
+        for (Map.Entry<BlockPos, TileEntityCallback> patternEntry : other.tileCallbacks.entrySet()) {
+            BlockPos to = patternEntry.getKey();
+            if (positionTransform != null) {
+                to = positionTransform.apply(to);
+            }
+            tileCallbacks.put(to, patternEntry.getValue());
+        }
     }
 
     public void addTileCallback(BlockPos pos, TileEntityCallback callback) {
         tileCallbacks.put(pos, callback);
     }
 
-    public boolean hasBlockAt(BlockPos newPos) {
-        return pattern.containsKey(newPos);
+    public boolean hasBlockAt(BlockPos pos) {
+        return pattern.containsKey(pos);
     }
 
     public boolean isEmpty() {
@@ -127,12 +149,16 @@ public class BlockArray {
         return tileCallbacks;
     }
 
-    public void addBlockCube(@Nonnull Block block, int ox, int oy, int oz, int tx, int ty, int tz) {
-        addBlockCube(block, new BlockStateCheck.Meta(block, 0), ox, oy, oz, tx, ty, tz);
+    public void addBlockCube(@Nonnull Block block, int metadata, int ox, int oy, int oz, int tx, int ty, int tz) {
+        addBlockCube(block, metadata, new BlockStateCheck.Meta(block, metadata), ox, oy, oz, tx, ty, tz);
     }
 
-    public void addBlockCube(@Nonnull Block state, BlockStateCheck match, int ox, int oy, int oz, int tx, int ty,
-        int tz) {
+    public void addBlockCube(@Nonnull Block block, int ox, int oy, int oz, int tx, int ty, int tz) {
+        addBlockCube(block, 0, new BlockStateCheck.Meta(block, 0), ox, oy, oz, tx, ty, tz);
+    }
+
+    public void addBlockCube(@Nonnull Block block, int metadata, BlockStateCheck match, int ox, int oy, int oz, int tx,
+        int ty, int tz) {
         int lx, ly, lz;
         int hx, hy, hz;
         if (ox < tx) {
@@ -160,24 +186,22 @@ public class BlockArray {
         for (int xx = lx; xx <= hx; xx++) {
             for (int zz = lz; zz <= hz; zz++) {
                 for (int yy = ly; yy <= hy; yy++) {
-                    addBlock(new BlockPos(xx, yy, zz), state, match);
+                    addBlock(new BlockPos(xx, yy, zz), block, metadata, match);
                 }
             }
         }
     }
 
-    public Map<BlockPos, Block> placeInWorld(World world, BlockPos center) {
-        Map<BlockPos, Block> result = new HashMap<>();
+    public Map<BlockPos, BlockInformation> placeInWorld(World world, BlockPos center) {
+        Map<BlockPos, BlockInformation> result = new HashMap<>();
         for (Map.Entry<BlockPos, BlockInformation> entry : pattern.entrySet()) {
             BlockInformation info = entry.getValue();
             BlockPos at = center.add(entry.getKey());
-            Block block = info.type;
-            int meta = info.metadata;
-            world.setBlock(at.getX(), at.getY(), at.getZ(), block, meta, 3);
-            result.put(at, block);
+            world.setBlock(at.getX(), at.getY(), at.getZ(), info.type, info.metadata, 3);
+            result.put(at, info);
 
-            if (block instanceof BlockLiquid) {
-                world.notifyBlocksOfNeighborChange(at.getX(), at.getY(), at.getZ(), block);
+            if (info.type instanceof BlockLiquid || info.type instanceof BlockFluidBase) {
+                world.notifyBlockChange(at.getX(), at.getY(), at.getZ(), info.type);
             }
 
             TileEntity placed = world.getTileEntity(at.getX(), at.getY(), at.getZ());
@@ -197,31 +221,29 @@ public class BlockArray {
             int meta = info.metadata;
             ItemStack s = null;
             if (info.type instanceof BlockFluidBase) {
-                // s = BlockFluidFinite.getFilledBucket(ForgeModContainer.getInstance().universalBucket,
+                // Skip fluids for now in 1.7.10 - bucket handling is different
+                // s = UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket,
                 // ((BlockFluidBase) info.type).getFluid());
+                continue;
             } else if (info.type instanceof BlockStructural) {
                 continue;
-                // Block otherState = info.state.getValue(BlockStructural.BLOCK_TYPE).getblock();
+                // Skip structural blocks for now
+                // IBlockState otherState = info.state.getValue(BlockStructural.BLOCK_TYPE).getSupportedState();
                 // Item i = Item.getItemFromBlock(otherState.getBlock());
                 // if(i == null) continue;
-                // s = new ItemStack(i, 1, otherState.getBlock().getMeta(otherState));
+                // s = new ItemStack(i, 1, otherState.getBlock().getMetaFromState(otherState));
             } else if (info.type instanceof ISpecialStackDescriptor) {
-                s = ((ISpecialStackDescriptor) info.type).getDecriptor(info.type);// todo check
+                s = ((ISpecialStackDescriptor) info.type).getDecriptor(info.type, meta);
             } else {
                 Item i = Item.getItemFromBlock(info.type);
                 if (i == null) continue;
                 s = new ItemStack(i, 1, meta);
             }
-            if (s != null) {
+            if (s != null && s.getItem() != null) {
                 boolean found = false;
                 for (ItemStack stack : out) {
-                    if (stack.getItem()
-                        .getUnlocalizedName()
-                        .equals(
-                            s.getItem()
-                                .getUnlocalizedName())
-                        && stack.getItemDamage() == s.getItemDamage()) {
-                        stack.stackSize++;
+                    if (stack.getItem() == s.getItem() && stack.getItemDamage() == s.getItemDamage()) {
+                        stack.stackSize += 1;
                         found = true;
                         break;
                     }
@@ -248,13 +270,13 @@ public class BlockArray {
         public final int metadata;
         public final BlockStateCheck matcher;
 
-        protected BlockInformation(Block type, int meta) {
-            this(type, meta, new BlockStateCheck.Meta(type, type.damageDropped(meta)));
+        protected BlockInformation(Block type, int metadata) {
+            this(type, metadata, new BlockStateCheck.Meta(type, metadata));
         }
 
-        protected BlockInformation(Block type, int meta, BlockStateCheck matcher) {
+        protected BlockInformation(Block type, int metadata, BlockStateCheck matcher) {
             this.type = type;
-            this.metadata = meta;
+            this.metadata = metadata;
             this.matcher = matcher;
         }
 

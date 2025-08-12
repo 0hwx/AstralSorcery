@@ -6,7 +6,7 @@
  * For further details, see the License file there.
  ******************************************************************************/
 
-package hellfirepvp.astralsorcery.client.util.item;
+package hellfirepvp.astralsorcery.client.render.item;
 
 import java.util.HashMap;
 import java.util.Map;

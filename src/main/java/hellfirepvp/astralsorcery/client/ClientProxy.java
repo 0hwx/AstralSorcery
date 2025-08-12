@@ -22,12 +22,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.Fluid;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.light.ClientLightbeamHandler;
@@ -40,6 +37,8 @@ import hellfirepvp.astralsorcery.client.render.entity.RenderEntityFlare;
 import hellfirepvp.astralsorcery.client.render.entity.RenderEntityIlluminationSpark;
 import hellfirepvp.astralsorcery.client.render.entity.RenderEntityItemHighlight;
 import hellfirepvp.astralsorcery.client.render.entity.RenderEntityStarburst;
+import hellfirepvp.astralsorcery.client.render.item.ItemRendererFilteredTESR;
+import hellfirepvp.astralsorcery.client.render.tile.AstralTileRenderer;
 import hellfirepvp.astralsorcery.client.render.tile.TESRAltar;
 import hellfirepvp.astralsorcery.client.render.tile.TESRAttunementAltar;
 import hellfirepvp.astralsorcery.client.render.tile.TESRAttunementRelay;
@@ -57,11 +56,10 @@ import hellfirepvp.astralsorcery.client.render.tile.TESRTranslucentBlock;
 import hellfirepvp.astralsorcery.client.render.tile.TESRWell;
 import hellfirepvp.astralsorcery.client.util.ItemColorizationHelper;
 import hellfirepvp.astralsorcery.client.util.MeshRegisterHelper;
+import hellfirepvp.astralsorcery.client.util.TexturePreloader;
 import hellfirepvp.astralsorcery.client.util.camera.ClientCameraManager;
-import hellfirepvp.astralsorcery.client.util.item.ItemRendererFilteredTESR;
 import hellfirepvp.astralsorcery.client.util.mappings.ClientJournalMapping;
 import hellfirepvp.astralsorcery.client.util.mappings.ClientPerkTextureMapping;
-import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.common.CommonProxy;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.TickManager;
 import hellfirepvp.astralsorcery.common.block.BlockMachine;
@@ -102,68 +100,30 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void preInit() {
-        try {
-            ((IReloadableResourceManager) Minecraft.getMinecraft()
-                .getResourceManager()).registerReloadListener(AssetLibrary.resReloadInstance);
-        } catch (Exception exc) {
-            AstralSorcery.log.warn(
-                "AstralSorcery: Could not add AssetLibrary to resource manager! Texture reloading will have no effect on AstralSorcery textures.");
-            AssetLibrary.resReloadInstance.onResourceManagerReload(null);
-        }
-        // AdvancedModelLoader.registerModelHandler(new DummyModelLoader()); //IItemRenderer Hook ModelLoader
-        // OBJLoader.INSTANCE.addDomain(AstralSorcery.MODID);
+        // try {
+        // ((IReloadableResourceManager) Minecraft.getMinecraft()
+        // .getResourceManager()).registerReloadListener(AssetLibrary.resReloadInstance);
+        // } catch (Exception exc) {
+        // AstralSorcery.log.warn(
+        // "AstralSorcery: Could not add AssetLibrary to resource manager! Texture reloading will have no effect on
+        // AstralSorcery textures.");
+        // AssetLibrary.resReloadInstance.onResourceManagerReload(null);
+        // }
 
         super.preInit();
 
-        registerFluidRenderers();
         registerEntityRenderers();
 
         CraftingAccessManager.ignoreJEI = false;
     }
 
-    // private void registerPendingIBlockColorBlocks() {
-    // BlockColors colors = Minecraft.getMinecraft().getBlockColors();
-    // for (BlockDynamicColor b : RegistryBlocks.pendingIBlockColorBlocks) {
-    // colors.registerBlockColorHandler(b::getColorMultiplier, (Block) b);
-    // }
-    // }
-    //
-    // private void registerPendingIItemColorItems() {
-    // ItemColors colors = Minecraft.getMinecraft().getItemColors();
-    // for (ItemDynamicColor i : RegistryItems.pendingDynamicColorItems) {
-    // colors.registerItemColorHandler(i::getColorForItemStack, (Item) i);
-    // }
-    // }
-
-    private void registerFluidRenderers() {
-        registerFluidRender(BlocksAS.fluidLiquidStarlight);
-    }
-
-    private void registerFluidRender(Fluid f) {
-        // RegistryBlocks.FluidCustomModelMapper mapper = new RegistryBlocks.FluidCustomModelMapper(f);
-        Block block = f.getBlock();
-        if (block != null) {
-            Item item = Item.getItemFromBlock(block);
-            // if (item != null) {
-            // ModelLoader.registerItemVariants(item);
-            // ModelLoader.setCustomMeshDefinition(item, mapper);
-            // } else {
-            // ModelLoader.setCustomStateMapper(block, mapper);
-            // }
-        }
-    }
-
     @Override
     public void init() {
         super.init();
-
-        MinecraftForge.EVENT_BUS.register(new ClientRenderEventHandler());
-        FMLCommonHandler.instance()
-            .bus()
-            .register(new ClientRenderEventHandler());
-        MinecraftForge.EVENT_BUS.register(new ClientConnectionEventHandler());
-        MinecraftForge.EVENT_BUS.register(EffectHandler.getInstance());
-        MinecraftForge.EVENT_BUS.register(new ClientGatewayHandler());
+        ClientRenderEventHandler.init();
+        ClientConnectionEventHandler.init();
+        EffectHandler.init();
+        ClientGatewayHandler.init();
 
         registerDisplayInformationInit();
 
@@ -176,10 +136,7 @@ public class ClientProxy extends CommonProxy {
     public void postInit() {
         super.postInit();
 
-        // TileEntityItemStackRenderer.instance = new AstralTEISR(TileEntityItemStackRenderer.instance); //Wrapping
-        // TEISR
-
-        // TexturePreloader.doPreloadRoutine();
+        TexturePreloader.doPreloadRoutine();
 
         ClientJournalMapping.init();
         ClientPerkTextureMapping.init();
@@ -197,19 +154,27 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void registerItemRenderers() {
-        // RenderTransformsHelper.init();
 
         ItemRendererFilteredTESR blockMachineRender = new ItemRendererFilteredTESR();
         blockMachineRender
             .addRender(BlockMachine.MachineType.TELESCOPE.getMeta(), new TESRTelescope(), new TileTelescope());
         blockMachineRender
             .addRender(BlockMachine.MachineType.GRINDSTONE.getMeta(), new TESRGrindstone(), new TileGrindstone());
-        // ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.blockMachine), blockMachineRender);
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlocksAS.blockMachine), blockMachineRender);
 
-        ItemRendererFilteredTESR AttunementAlter = new ItemRendererFilteredTESR();
-        AttunementAlter.addRender(0, new TESRAttunementAltar(), new TileAttunementAltar());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlocksAS.attunementAltar), AttunementAlter);
+        // RenderTransformsHelper.init();
+
+        // ItemRendererFilteredTESR blockMachineRender = new ItemRendererFilteredTESR();
+        // blockMachineRender
+        // .addRender(BlockMachine.MachineType.TELESCOPE.getMeta(), new TESRTelescope(), new TileTelescope());
+        // blockMachineRender
+        // .addRender(BlockMachine.MachineType.GRINDSTONE.getMeta(), new TESRGrindstone(), new TileGrindstone());
+        // // ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.blockMachine), blockMachineRender);
+        // MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(blockMachine), blockMachineRender);
+
+        // ItemRendererFilteredTESR AttunementAlter = new ItemRendererFilteredTESR();
+        // AttunementAlter.addRender(0, new TESRAttunementAltar(), new TileAttunementAltar());
+        // MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlocksAS.attunementAltar), AttunementAlter);
 
         // ItemRendererFilteredTESR Alter = new ItemRendererFilteredTESR();
         // Alter.addRender(2, new TESRAltar(),new TileAltar());
@@ -221,13 +186,12 @@ public class ClientProxy extends CommonProxy {
         // ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.celestialCollectorCrystal), new
         // TESRCollectorCrystal());
         // ItemRenderRegistry.register(Item.getItemFromBlock(BlocksAS.celestialCrystals), new TESRCelestialCrystals());
-        MinecraftForgeClient
-            .registerItemRenderer(Item.getItemFromBlock(BlocksAS.collectorCrystal), new TESRCollectorCrystal());
-        MinecraftForgeClient.registerItemRenderer(
-            Item.getItemFromBlock(BlocksAS.celestialCollectorCrystal),
-            new TESRCollectorCrystal());
-        MinecraftForgeClient
-            .registerItemRenderer(Item.getItemFromBlock(BlocksAS.celestialCrystals), new TESRCelestialCrystals());
+        // MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlocksAS.collectorCrystal), new
+        // TESRCollectorCrystal());
+        // MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlocksAS.celestialCollectorCrystal), new
+        // TESRCollectorCrystal());
+        // MinecraftForgeClient
+        // .registerItemRenderer(Item.getItemFromBlock(BlocksAS.celestialCrystals), new TESRCelestialCrystals());
 
         // ItemRenderRegistry.register(ItemsAS.something, new ? implements IItemRenderer());
     }
@@ -245,16 +209,18 @@ public class ClientProxy extends CommonProxy {
         scheduler.addRunnable(r, tickDelay);
     }
 
-    private void registerTileRenderers() {
-        registerTESR(TileAltar.class, new TESRAltar());
+    @Override
+    public void registerTileRenderers() {
+        registerTESR(BlocksAS.blockAltar, TileAltar.class, new TESRAltar());
         registerTESR(TileRitualPedestal.class, new TESRRitualPedestal());
-        registerTESR(TileCollectorCrystal.class, new TESRCollectorCrystal());
-        registerTESR(TileCelestialCrystals.class, new TESRCelestialCrystals());
-        registerTESR(TileWell.class, new TESRWell());
+        registerTESR(BlocksAS.collectorCrystal, TileCollectorCrystal.class, new TESRCollectorCrystal());
+        registerTESR(BlocksAS.celestialCollectorCrystal, TileCollectorCrystal.class, new TESRCollectorCrystal());
+        registerTESR(BlocksAS.celestialCrystals, TileCelestialCrystals.class, new TESRCelestialCrystals());
+        registerTESR(BlocksAS.blockWell, TileWell.class, new TESRWell());
         registerTESR(TileGrindstone.class, new TESRGrindstone());
         registerTESR(TileTelescope.class, new TESRTelescope());
         registerTESR(TileFakeTree.class, new TESRFakeTree());
-        registerTESR(TileAttunementAltar.class, new TESRAttunementAltar());
+        registerTESR(BlocksAS.attunementAltar, TileAttunementAltar.class, new TESRAttunementAltar());
         registerTESR(TileCrystalLens.class, new TESRLens());
         registerTESR(TileCrystalPrismLens.class, new TESRPrismLens());
         registerTESR(TileStarlightInfuser.class, new TESRStarlightInfuser());
@@ -265,6 +231,11 @@ public class ClientProxy extends CommonProxy {
 
     private <T extends TileEntity> void registerTESR(Class<T> tile, TileEntitySpecialRenderer renderer) {
         ClientRegistry.bindTileEntitySpecialRenderer(tile, renderer);
+    }
+
+    private <T extends TileEntity> void registerTESR(Block block, Class<T> tile, AstralTileRenderer renderer) {
+        ClientRegistry.bindTileEntitySpecialRenderer(tile, renderer);
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(block), renderer);
     }
 
     public void registerEntityRenderers() {

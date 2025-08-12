@@ -28,9 +28,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -86,6 +88,13 @@ public final class EffectHandler {
 
     public static EffectHandler getInstance() {
         return instance;
+    }
+
+    public static void init() {
+        FMLCommonHandler.instance()
+            .bus()
+            .register(instance);
+        MinecraftForge.EVENT_BUS.register(instance);
     }
 
     public void requestGatewayUIFor(World world, Vector3 pos, double sphereRadius) {

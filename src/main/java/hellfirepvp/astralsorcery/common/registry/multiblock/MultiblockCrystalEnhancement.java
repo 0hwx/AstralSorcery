@@ -39,11 +39,7 @@ public class MultiblockCrystalEnhancement extends PatternBlockArray {
 
         addBlockCube(mrw, -1, -5, -1, 1, -5, 1);
         for (BlockPos offset : TileCollectorCrystal.offsetsLiquidStarlight) {
-            addBlock(
-                offset,
-                BlocksAS.blockLiquidStarlight,
-                (world, pos, state) -> state.equals(BlocksAS.blockLiquidStarlight)
-                    && world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ()) == 0);
+            addBlock(offset, BlocksAS.blockLiquidStarlight, 0);
         }
         addBlockCube(Blocks.air, 1, 1, 1, -1, -1, -1);
         addBlock(0, 0, 0, BlocksAS.celestialCollectorCrystal);

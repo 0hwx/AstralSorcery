@@ -43,17 +43,17 @@ public class StructureDesertShrine extends StructureBlockArray {
     }
 
     @Override
-    public Map<BlockPos, Block> placeInWorld(World world, BlockPos center) {
+    public Map<BlockPos, BlockInformation> placeInWorld(World world, BlockPos center) {
         center = center.down();
-        Map<BlockPos, Block> result = super.placeInWorld(world, center);
+        Map<BlockPos, BlockInformation> result = super.placeInWorld(world, center);
         placeSand(world, center);
         return result;
     }
 
     @Override
-    public Map<BlockPos, Block> placeInWorld(World world, BlockPos center, PastPlaceProcessor processor) {
+    public Map<BlockPos, BlockInformation> placeInWorld(World world, BlockPos center, PastPlaceProcessor processor) {
         center = center.down();
-        Map<BlockPos, Block> result = super.placeInWorld(world, center, processor);
+        Map<BlockPos, BlockInformation> result = super.placeInWorld(world, center, processor);
         placeSand(world, center);
         return result;
     }

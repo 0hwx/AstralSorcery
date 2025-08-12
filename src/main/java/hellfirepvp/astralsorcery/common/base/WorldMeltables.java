@@ -32,13 +32,13 @@ import hellfirepvp.astralsorcery.common.util.MiscUtils;
  */
 public enum WorldMeltables implements MeltInteraction {
 
-    COBBLE(new BlockStateCheck.Blockes(Blocks.cobblestone), Blocks.flowing_lava, 180),
-    STONE(new BlockStateCheck.Blockes(Blocks.stone), Blocks.flowing_lava, 100),
-    OBSIDIAN(new BlockStateCheck.Blockes(Blocks.obsidian), Blocks.flowing_lava, 75),
-    NETHERRACK(new BlockStateCheck.Blockes(Blocks.netherrack), Blocks.flowing_lava, 40),
-    NETHERBRICK(new BlockStateCheck.Blockes(Blocks.nether_brick), Blocks.flowing_lava, 60),
+    COBBLE(new BlockStateCheck.Block(Blocks.cobblestone), Blocks.flowing_lava, 180),
+    STONE(new BlockStateCheck.Block(Blocks.stone), Blocks.flowing_lava, 100),
+    OBSIDIAN(new BlockStateCheck.Block(Blocks.obsidian), Blocks.flowing_lava, 75),
+    NETHERRACK(new BlockStateCheck.Block(Blocks.netherrack), Blocks.flowing_lava, 40),
+    NETHERBRICK(new BlockStateCheck.Block(Blocks.nether_brick), Blocks.flowing_lava, 60),
     // MAGMA( new BlockStateCheck.Blockes(Blocks.MAGMA), Blocks.FLOWING_LAVA.getDefaultState(), 1),
-    ICE(new BlockStateCheck.Blockes(Blocks.ice), Blocks.flowing_water, 1),;
+    ICE(new BlockStateCheck.Block(Blocks.ice), Blocks.flowing_water, 1),;
     // FROSTED_ICE(new BlockStateCheck.Blockes(Blocks.FROSTED_ICE), Blocks.FLOWING_WATER.getDefaultState(), 1),
     // PACKED_ICE( new BlockStateCheck.Blockes(Blocks.PACKED_ICE), Blocks.FLOWING_WATER.getDefaultState(), 2);
 
@@ -54,7 +54,7 @@ public enum WorldMeltables implements MeltInteraction {
 
     @Override
     public boolean isMeltable(World world, BlockPos pos, Block worldState) {
-        return meltableCheck.isStateValid(world, pos, worldState);
+        return meltableCheck.isStateValid(world, pos.getX(), pos.getY(), pos.getZ(), worldState);
     }
 
     @Override
@@ -122,7 +122,7 @@ public enum WorldMeltables implements MeltInteraction {
 
         @Override
         public boolean isMeltable(World world, BlockPos pos, Block state) {
-            return matchInState.isStateValid(world, pos, state);
+            return matchInState.isStateValid(world, pos.getX(), pos.getY(), pos.getZ(), state);
         }
 
         @Nullable

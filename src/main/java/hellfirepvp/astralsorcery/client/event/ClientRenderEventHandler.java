@@ -29,10 +29,13 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.obj.WavefrontObject;
+import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -98,6 +101,13 @@ public class ClientRenderEventHandler {
 
     private static int chargeTempRevealTicks = 0;
     private static float visibilityTempCharge = 0F;
+
+    public static void init() {
+        FMLCommonHandler.instance()
+            .bus()
+            .register(new ClientRenderEventHandler());
+        MinecraftForge.EVENT_BUS.register(new ClientRenderEventHandler());
+    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     @SideOnly(Side.CLIENT)
@@ -586,6 +596,15 @@ public class ClientRenderEventHandler {
         GL11.glCallList(dList + 1);
         GL11.glPopMatrix();
         GL11.glPopMatrix();
+    }
+
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public void onTextureStitchPre(TextureStitchEvent.Pre event) {
+        if (event.map.getTextureType() == 0) { // 0 = blocks
+            event.map.registerIcon("astralsorcery:fluid/starlight_still");
+            event.map.registerIcon("astralsorcery:fluid/starlight_flow");
+        }
     }
 
     private static class ItemStackHudRenderInstance {

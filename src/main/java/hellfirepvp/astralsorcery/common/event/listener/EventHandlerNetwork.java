@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.S3FPacketCustomPayload;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -44,6 +45,12 @@ import io.netty.buffer.Unpooled;
 public class EventHandlerNetwork {
 
     private static final String AS_WORLDHANDLERS_PAYLOAD = "AS|WH";
+
+    public static void init() {
+        FMLCommonHandler.instance()
+            .bus()
+            .register(new EventHandlerNetwork());
+    }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onLogin(PlayerEvent.PlayerLoggedInEvent e) {

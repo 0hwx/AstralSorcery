@@ -109,10 +109,10 @@ public enum TreeTypes {
             return;
         }
 
-        logCheck = logMeta == null ? new BlockStateCheck.Blockes(log) : new BlockStateCheck.AnyMeta(log, logMeta);
-        leavesCheck = leaveMeta == null ? new BlockStateCheck.Blockes(leaf)
+        logCheck = logMeta == null ? new BlockStateCheck.Block(log) : new BlockStateCheck.AnyMeta(log, logMeta);
+        leavesCheck = leaveMeta == null ? new BlockStateCheck.Block(leaf)
             : new BlockStateCheck.AnyMeta(leaf, leaveMeta);
-        saplingCheck = saplingMeta == null ? new BlockStateCheck.Blockes(sapling)
+        saplingCheck = saplingMeta == null ? new BlockStateCheck.Block(sapling)
             : new BlockStateCheck.Meta(sapling, saplingMeta);
 
         if (logMeta == null) {
@@ -190,8 +190,8 @@ public enum TreeTypes {
     @Nullable
     public static TreeTypes getTree(World world, BlockPos pos, Block blockToTest) {
         for (TreeTypes type : values()) {
-            if (type.exists() && (type.logCheck.isStateValid(world, pos, blockToTest)
-                || type.leavesCheck.isStateValid(world, pos, blockToTest))) {
+            if (type.exists() && (type.logCheck.isStateValid(world, pos.getX(), pos.getY(), pos.getZ(), blockToTest)
+                || type.leavesCheck.isStateValid(world, pos.getX(), pos.getY(), pos.getZ(), blockToTest))) {
                 return type;
             }
         }

@@ -8,6 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.event.listener;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -23,6 +24,12 @@ import hellfirepvp.astralsorcery.common.registry.RegistryAchievements;
  * Date: 13.09.2016 / 20:19
  */
 public class EventHandlerAchievements {
+
+    public static void init() {
+        FMLCommonHandler.instance()
+            .bus()
+            .register(new EventHandlerAchievements());
+    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPick(PlayerEvent.ItemPickupEvent event) {

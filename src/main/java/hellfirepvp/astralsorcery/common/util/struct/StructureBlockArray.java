@@ -24,18 +24,18 @@ import hellfirepvp.astralsorcery.common.util.BlockPos;
  */
 public class StructureBlockArray extends BlockArray {
 
-    public Map<BlockPos, Block> placeInWorld(World world, BlockPos center, PastPlaceProcessor processor) {
-        Map<BlockPos, Block> result = super.placeInWorld(world, center);
+    public Map<BlockPos, BlockInformation> placeInWorld(World world, BlockPos center, PastPlaceProcessor processor) {
+        Map<BlockPos, BlockInformation> result = super.placeInWorld(world, center);
         if (processor != null) {
-            for (Map.Entry<BlockPos, Block> entry : result.entrySet())
-                processor.process(world, entry.getKey(), entry.getValue());
+            for (Map.Entry<BlockPos, BlockInformation> entry : result.entrySet())
+                processor.process(world, entry.getKey(), entry.getValue().type, entry.getValue().metadata);
         }
         return result;
     }
 
     public static interface PastPlaceProcessor {
 
-        public void process(World world, BlockPos pos, Block currentState);
+        public void process(World world, BlockPos pos, Block block, int meta);
 
     }
 

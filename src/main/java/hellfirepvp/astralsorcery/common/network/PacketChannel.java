@@ -112,4 +112,8 @@ public class PacketChannel {
         return new NetworkRegistry.TargetPoint(world.provider.dimensionId, pos.getX(), pos.getY(), pos.getZ(), range);
     }
 
+    public static NetworkRegistry.TargetPoint pointFromPos(World world, int x, int y, int z, double range) {
+        return new NetworkRegistry.TargetPoint(world.provider.dimensionId, x, y, z, range);
+    }
+
 }

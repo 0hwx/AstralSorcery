@@ -37,8 +37,8 @@ public class TileCelestialGateway extends TileEntityTick {
     private Object clientSphere = null;
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (worldObj.isRemote) {
             playEffects();

@@ -58,7 +58,8 @@ public class TreeDiscoverer {
         while (!offsetPositions.isEmpty()) {
             BlockPos offset = offsetPositions.pop();
 
-            Block atState = world.getBlock(offset.getX(), offset.getY(), offset.getZ());
+            Block atBlock = world.getBlock(offset.getX(), offset.getY(), offset.getZ());
+            int atMeta = world.getBlockMetadata(offset.getX(), offset.getY(), offset.getZ());
             boolean successful = false;
             Tuple<BlockStateCheck, BlockStateCheck> atChecks = null;
             if (logCheck == null || leafCheck == null) {
@@ -71,14 +72,14 @@ public class TreeDiscoverer {
                 leafCheck = atChecks.value;
             }
             if (logCheck != null) {
-                if (logCheck.isStateValid(world, offset, atState)) {
-                    out.addBlock(offset, atState);
+                if (logCheck.isStateValid(world, offset.getX(), offset.getY(), offset.getZ(), atBlock)) {
+                    out.addBlock(offset, atBlock, atMeta);
                     successful = true;
                 }
             }
             if (leafCheck != null) {
-                if (leafCheck.isStateValid(world, offset, atState)) {
-                    out.addBlock(offset, atState);
+                if (leafCheck.isStateValid(world, offset.getX(), offset.getY(), offset.getZ(), atBlock)) {
+                    out.addBlock(offset, atBlock, atMeta);
                     successful = true;
                 }
             }
@@ -97,8 +98,8 @@ public class TreeDiscoverer {
                         }
                     }
                 } else {
-                    for (ForgeDirection face : ForgeDirection.values()) {
-                        BlockPos newPos = offset.offset(face);
+                    for (ForgeDirection face : ForgeDirection.VALID_DIRECTIONS) {
+                        BlockPos newPos = offset.add(face.offsetX, face.offsetY, face.offsetZ);
                         if ((xzLimitSq == -1 || flatDistanceSq(newPos, origin) <= xzLimitSq)
                             && !out.hasBlockAt(newPos)) {
                             offsetPositions.push(newPos);
@@ -123,19 +124,26 @@ public class TreeDiscoverer {
 
         TreeTypes t = TreeTypes.getTree(world, pos);
         if (t != null) {
-            logCheck = t.getLogCheck();
-            leafCheck = t.getLeavesCheck();
-        } else {
-            Block at = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
-            if (at instanceof BlockLog) {
-                logCheck = new BlockStateCheck.Blockes(at);
-            } else if (at.isWood(world, pos.getX(), pos.getY(), pos.getZ())) {
-                logCheck = new BlockStateCheck.Blockes(at);
+            Block atBlock = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+            if (t.getLogCheck()
+                .isStateValid(world, pos.getX(), pos.getY(), pos.getZ(), atBlock)) {
+                logCheck = t.getLogCheck();
             }
-            if (at instanceof BlockLeaves) {
-                leafCheck = new BlockStateCheck.Blockes(at);
-            } else if (at.isLeaves(world, pos.getX(), pos.getY(), pos.getZ())) {
-                leafCheck = new BlockStateCheck.Blockes(at);
+            if (t.getLeavesCheck()
+                .isStateValid(world, pos.getX(), pos.getY(), pos.getZ(), atBlock)) {
+                leafCheck = t.getLeavesCheck();
+            }
+        } else {
+            Block atBlock = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+            if (atBlock instanceof BlockLog) {
+                logCheck = new BlockStateCheck.Block(atBlock);
+            } else if (atBlock.isWood(world, pos.getX(), pos.getY(), pos.getZ())) {
+                logCheck = new BlockStateCheck.Block(atBlock);
+            }
+            if (atBlock instanceof BlockLeaves) {
+                leafCheck = new BlockStateCheck.Block(atBlock);
+            } else if (atBlock.isLeaves(world, pos.getX(), pos.getY(), pos.getZ())) {
+                leafCheck = new BlockStateCheck.Block(atBlock);
             }
         }
         return new Tuple<>(logCheck, leafCheck);

@@ -12,7 +12,6 @@ import java.awt.Color;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
@@ -79,7 +78,7 @@ public class CEffectHorologium extends CEffectPositionList {
             BlockPos sel = entry.getPos();
             if (MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(sel.chunkX(), sel.chunkZ()))) {
                 TileEntity te = world.getTileEntity(sel.getX(), sel.getY(), sel.getZ());
-                if (TileAccelerationBlacklist.canAccelerate(te)) { // Does != null && instanceof ITickable check.
+                if (TileAccelerationBlacklist.canAccelerate(te)) { // Does != null && te.canUpdate check.
                     PktParticleEvent ev = new PktParticleEvent(
                         PktParticleEvent.ParticleEventType.CE_ACCEL_TILE,
                         sel.getX(),
@@ -90,7 +89,7 @@ public class CEffectHorologium extends CEffectPositionList {
                         long startNs = System.nanoTime();
                         int times = 5 + rand.nextInt(3);
                         while (times > 0) {
-                            ((ITickable) te).tick();
+                            te.updateEntity(); // Update the tile entity to ensure it is in a valid state.
                             if ((System.nanoTime() - startNs) >= 80_000) {
                                 break;
                             }

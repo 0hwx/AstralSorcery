@@ -11,6 +11,8 @@ package hellfirepvp.astralsorcery.common.constellation;
 import javax.annotation.Nullable;
 
 import hellfirepvp.astralsorcery.common.constellation.effect.ConstellationEffect;
+import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
+import hellfirepvp.astralsorcery.common.data.research.ProgressionTier;
 import hellfirepvp.astralsorcery.common.util.ILocatable;
 
 /**
@@ -25,4 +27,9 @@ public interface IWeakConstellation extends IConstellation {
     @Nullable
     public ConstellationEffect getRitualEffect(ILocatable origin);
 
+    @Override
+    default boolean canDiscover(PlayerProgress progress) {
+        return progress.getTierReached()
+            .isThisLaterOrEqual(ProgressionTier.ATTUNEMENT) && progress.wasOnceAttuned();
+    }
 }

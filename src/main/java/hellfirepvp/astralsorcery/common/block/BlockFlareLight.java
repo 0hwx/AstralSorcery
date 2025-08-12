@@ -27,6 +27,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.google.common.collect.Lists;
 
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
@@ -99,7 +100,7 @@ public class BlockFlareLight extends Block {
 
     @Override
     public int getRenderType() {
-        return 2;
+        return RenderingRegistry.getNextAvailableRenderId();
     }
 
     @Override

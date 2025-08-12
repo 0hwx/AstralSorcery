@@ -72,8 +72,8 @@ public class TileTreeBeacon extends TileReceiverBase {
         MathHelper.floor_double(ConfigEntryTreeBeacon.maxCount));
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if (worldObj.isRemote) {
             playEffects();

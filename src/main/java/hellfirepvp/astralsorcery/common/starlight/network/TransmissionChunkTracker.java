@@ -10,6 +10,7 @@ package hellfirepvp.astralsorcery.common.starlight.network;
 
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
@@ -24,12 +25,10 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
  */
 public class TransmissionChunkTracker {
 
-    private static final TransmissionChunkTracker instance = new TransmissionChunkTracker();
-
     private TransmissionChunkTracker() {}
 
-    public static TransmissionChunkTracker getInstance() {
-        return instance;
+    public static void init() {
+        MinecraftForge.EVENT_BUS.register(new TransmissionChunkTracker());
     }
 
     @SubscribeEvent

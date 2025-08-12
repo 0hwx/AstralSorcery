@@ -61,8 +61,8 @@ public class TileAttunementRelay extends TileInventoryBase {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void updateEntity() {
+        super.updateEntity();
 
         if ((ticksExisted & 15) == 0) {
             updateSkyState();

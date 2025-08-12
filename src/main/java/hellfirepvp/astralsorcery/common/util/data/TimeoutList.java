@@ -26,7 +26,7 @@ import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
  * Created by HellFirePvP
  * Date: 17.11.2016 / 22:34
  */
-public class TimeoutList<V> implements ITickHandler {
+public class TimeoutList<V> implements ITickHandler, Iterable<V> {
 
     private final TimeoutDelegate<V> delegate;
     private final EnumSet<TickEvent.Type> tickTypes;
@@ -87,6 +87,14 @@ public class TimeoutList<V> implements ITickHandler {
         return -1;
     }
 
+    public void addAll(TimeoutList<V> entries) {
+        if (entries == null) return;
+
+        for (TimeoutEntry<V> entry : entries.tickEntries) {
+            setOrAddTimeout(entry.timeout, entry.value);
+        }
+    }
+
     public boolean isEmpty() {
         return tickEntries.isEmpty();
     }
@@ -104,6 +112,26 @@ public class TimeoutList<V> implements ITickHandler {
                 iterator.remove();
             }
         }
+    }
+
+    @Override
+    public Iterator<V> iterator() {
+        return new Iterator<V>() {
+
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < tickEntries.size();
+            }
+
+            @Override
+            public V next() {
+                V val = tickEntries.get(index).value;
+                index++;
+                return val;
+            }
+        };
     }
 
     @Override
