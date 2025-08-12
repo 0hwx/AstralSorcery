@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.entities;
 
-import java.awt.*;
+import java.awt.Color;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;

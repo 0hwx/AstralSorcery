@@ -8,7 +8,8 @@
 
 package hellfirepvp.astralsorcery.client.gui;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 
 import net.minecraft.client.Minecraft;

@@ -8,7 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

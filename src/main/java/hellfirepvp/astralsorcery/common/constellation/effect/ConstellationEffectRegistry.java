@@ -17,7 +17,16 @@ import javax.annotation.Nullable;
 import net.minecraftforge.common.MinecraftForge;
 
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
-import hellfirepvp.astralsorcery.common.constellation.effect.aoe.*;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectAevitas;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectArmara;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectBootes;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectDiscidia;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectFornax;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectHorologium;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectLucerna;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectMineralis;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectOctans;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectVicio;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.event.APIRegistryEvent;
 import hellfirepvp.astralsorcery.common.lib.Constellations;

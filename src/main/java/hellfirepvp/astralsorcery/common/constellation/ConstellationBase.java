@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.constellation;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;

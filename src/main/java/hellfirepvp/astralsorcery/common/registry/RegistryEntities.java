@@ -12,7 +12,13 @@ import net.minecraft.entity.Entity;
 
 import cpw.mods.fml.common.registry.EntityRegistry;
 import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.entities.*;
+import hellfirepvp.astralsorcery.common.entities.EntityCrystal;
+import hellfirepvp.astralsorcery.common.entities.EntityCrystalTool;
+import hellfirepvp.astralsorcery.common.entities.EntityFlare;
+import hellfirepvp.astralsorcery.common.entities.EntityIlluminationSpark;
+import hellfirepvp.astralsorcery.common.entities.EntityItemHighlighted;
+import hellfirepvp.astralsorcery.common.entities.EntityItemStardust;
+import hellfirepvp.astralsorcery.common.entities.EntityStarburst;
 
 /**
  * This class is part of the Astral Sorcery Mod

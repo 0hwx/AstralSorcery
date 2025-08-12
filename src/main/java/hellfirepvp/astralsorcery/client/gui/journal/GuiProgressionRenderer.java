@@ -8,7 +8,8 @@
 
 package hellfirepvp.astralsorcery.client.gui.journal;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;

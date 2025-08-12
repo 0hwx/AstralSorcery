@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.client.effect;
 
-import java.awt.*;
+import java.awt.Color;
 
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;

@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.client.gui.journal;
 
-import java.awt.*;
+import java.awt.Point;
 
 import javax.annotation.Nullable;
 

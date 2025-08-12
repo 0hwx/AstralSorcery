@@ -1,7 +1,6 @@
 package hellfirepvp.astralsorcery.common.tile;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
 
 import javax.annotation.Nullable;
 

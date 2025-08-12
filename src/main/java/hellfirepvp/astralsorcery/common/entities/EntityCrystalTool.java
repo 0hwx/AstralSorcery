@@ -8,7 +8,6 @@
 
 package hellfirepvp.astralsorcery.common.entities;
 
-import java.awt.*;
 import java.util.List;
 
 import javax.annotation.Nullable;

@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.common.util.effect;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 

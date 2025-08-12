@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.client.effect.light;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;

@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.common.tile;
 
-import java.awt.*;
+import java.awt.Color;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;

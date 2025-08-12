@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.item.crystal;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;

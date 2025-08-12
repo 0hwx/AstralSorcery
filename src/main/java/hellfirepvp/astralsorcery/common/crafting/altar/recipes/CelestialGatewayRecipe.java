@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Random;
 
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;

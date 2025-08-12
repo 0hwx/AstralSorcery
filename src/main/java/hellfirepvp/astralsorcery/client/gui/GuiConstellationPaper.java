@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.client.gui;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;

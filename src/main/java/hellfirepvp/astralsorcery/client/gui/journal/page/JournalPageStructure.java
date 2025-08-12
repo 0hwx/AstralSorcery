@@ -8,7 +8,8 @@
 
 package hellfirepvp.astralsorcery.client.gui.journal.page;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.List;
 

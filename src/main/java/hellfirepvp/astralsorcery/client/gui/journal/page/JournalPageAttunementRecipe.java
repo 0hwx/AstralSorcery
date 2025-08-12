@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.client.gui.journal.page;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;

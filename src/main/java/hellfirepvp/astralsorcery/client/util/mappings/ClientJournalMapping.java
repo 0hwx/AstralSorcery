@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.client.util.mappings;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 

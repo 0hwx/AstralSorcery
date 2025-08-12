@@ -13,7 +13,11 @@ import net.minecraft.entity.player.InventoryPlayer;
 
 import hellfirepvp.astralsorcery.client.gui.base.GuiInventoryContainerBase;
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
-import hellfirepvp.astralsorcery.common.container.*;
+import hellfirepvp.astralsorcery.common.container.ContainerAltarAttunement;
+import hellfirepvp.astralsorcery.common.container.ContainerAltarBase;
+import hellfirepvp.astralsorcery.common.container.ContainerAltarConstellation;
+import hellfirepvp.astralsorcery.common.container.ContainerAltarDiscovery;
+import hellfirepvp.astralsorcery.common.container.ContainerAltarTrait;
 import hellfirepvp.astralsorcery.common.crafting.IGatedRecipe;
 import hellfirepvp.astralsorcery.common.crafting.altar.AbstractAltarRecipe;
 import hellfirepvp.astralsorcery.common.crafting.altar.AltarRecipeRegistry;

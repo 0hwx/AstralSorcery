@@ -10,7 +10,30 @@ package hellfirepvp.astralsorcery.common.constellation.perk;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.impl.*;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkCreationBreedables;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkCreationFlares;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkCreationGrowables;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkCreationMending;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkCreationReach;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkCreationStoneEnrichment;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDamageBleed;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDamageDistance;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDamageIncrease;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDamageKnockedback;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDamageOnKill;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDamageReflect;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDefensiveCheatDeath;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDefensiveDamageDodge;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDefensiveDamageReduction;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDefensiveElemental;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDefensiveNoArmor;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkDefensiveReduceFall;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkTravelLavaProtection;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkTravelMovespeed;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkTravelPlaceLight;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkTravelReduceFoodNeed;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkTravelStepAssist;
+import hellfirepvp.astralsorcery.common.constellation.perk.impl.PerkTravelWaterMovement;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.util.data.TimeoutListContainer;
 

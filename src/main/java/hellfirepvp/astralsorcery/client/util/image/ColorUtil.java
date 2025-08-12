@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.client.util.image;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class ColorUtil {
 

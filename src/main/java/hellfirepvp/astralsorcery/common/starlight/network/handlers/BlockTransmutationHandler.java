@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.starlight.network.handlers;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;

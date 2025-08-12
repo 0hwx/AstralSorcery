@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.item.base;
 
-import java.awt.*;
+import java.awt.Color;
 
 import net.minecraft.item.ItemStack;
 

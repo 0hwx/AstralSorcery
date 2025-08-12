@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.potion;
 
-import java.awt.*;
+import java.awt.Color;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

@@ -8,8 +8,7 @@
 
 package hellfirepvp.astralsorcery.client.effect.texture;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;

@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.common.entities;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 
 import net.minecraft.entity.Entity;

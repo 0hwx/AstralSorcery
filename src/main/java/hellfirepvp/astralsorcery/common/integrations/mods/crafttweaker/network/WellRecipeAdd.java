@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network;
 
-import java.awt.*;
+import java.awt.Color;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;

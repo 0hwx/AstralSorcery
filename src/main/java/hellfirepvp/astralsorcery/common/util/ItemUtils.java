@@ -8,7 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 

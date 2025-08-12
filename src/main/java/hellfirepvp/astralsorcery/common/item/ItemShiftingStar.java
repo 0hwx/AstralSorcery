@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
-import java.awt.*;
+import java.awt.Color;
 
 import javax.annotation.Nullable;
 

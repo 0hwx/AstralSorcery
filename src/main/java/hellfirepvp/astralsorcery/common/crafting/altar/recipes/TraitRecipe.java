@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 

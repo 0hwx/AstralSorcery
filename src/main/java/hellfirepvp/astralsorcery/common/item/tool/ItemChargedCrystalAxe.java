@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.common.item.tool;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Map;
 
 import net.minecraft.client.renderer.texture.IIconRegister;

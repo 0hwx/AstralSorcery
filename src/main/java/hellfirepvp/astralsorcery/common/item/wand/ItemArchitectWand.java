@@ -8,8 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.item.wand;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;

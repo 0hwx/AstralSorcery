@@ -18,7 +18,11 @@ package hellfirepvp.astralsorcery.client.util.image;
  * available at http://lokeshdhakar.com/projects/color-thief/
  */
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.annotation.Nullable;
 

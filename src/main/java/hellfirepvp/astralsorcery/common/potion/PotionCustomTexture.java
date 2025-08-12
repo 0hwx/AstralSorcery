@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.potion;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;

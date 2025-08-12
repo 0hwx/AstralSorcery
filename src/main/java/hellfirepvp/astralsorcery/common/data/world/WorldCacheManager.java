@@ -25,7 +25,11 @@ import com.google.common.io.Files;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
-import hellfirepvp.astralsorcery.common.data.world.data.*;
+import hellfirepvp.astralsorcery.common.data.world.data.ChunkVersionBuffer;
+import hellfirepvp.astralsorcery.common.data.world.data.GatewayCache;
+import hellfirepvp.astralsorcery.common.data.world.data.LightNetworkBuffer;
+import hellfirepvp.astralsorcery.common.data.world.data.RockCrystalBuffer;
+import hellfirepvp.astralsorcery.common.data.world.data.StructureGenBuffer;
 
 /**
  * This class is part of the Astral Sorcery Mod

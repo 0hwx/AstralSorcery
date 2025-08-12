@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.common.network.packet.client;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
 

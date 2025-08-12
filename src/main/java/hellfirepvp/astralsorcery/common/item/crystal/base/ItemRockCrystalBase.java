@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.item.crystal.base;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;

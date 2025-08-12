@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
-import java.awt.*;
+import java.awt.Color;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;

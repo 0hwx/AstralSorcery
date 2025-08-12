@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.common.constellation;
 
-import java.awt.*;
+import java.awt.Point;
 
 /**
  * This class is part of the Astral Sorcery Mod

@@ -10,7 +10,10 @@ package hellfirepvp.astralsorcery.common.data.config;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.minecraftforge.common.config.Configuration;
 

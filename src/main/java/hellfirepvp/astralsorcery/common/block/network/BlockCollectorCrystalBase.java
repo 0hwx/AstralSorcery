@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.block.network;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 
 import net.minecraft.block.material.Material;

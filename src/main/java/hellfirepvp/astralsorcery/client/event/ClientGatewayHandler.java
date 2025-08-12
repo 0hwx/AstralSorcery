@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.client.event;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 

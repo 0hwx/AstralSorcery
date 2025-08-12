@@ -1,6 +1,6 @@
 package hellfirepvp.astralsorcery.common.block;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Random;
 
 import net.minecraft.block.Block;

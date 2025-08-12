@@ -8,7 +8,7 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect.aoe;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 
 import javax.annotation.Nullable;

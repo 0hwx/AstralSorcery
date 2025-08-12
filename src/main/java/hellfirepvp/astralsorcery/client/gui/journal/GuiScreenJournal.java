@@ -8,7 +8,9 @@
 
 package hellfirepvp.astralsorcery.client.gui.journal;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
