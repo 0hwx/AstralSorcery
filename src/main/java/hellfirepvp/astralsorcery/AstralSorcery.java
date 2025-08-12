@@ -121,6 +121,4 @@ public class AstralSorcery {
     // static {
     // FluidRegistry.enableUniversalBucket();
     // }
-
-    /* workflow test */
 }
