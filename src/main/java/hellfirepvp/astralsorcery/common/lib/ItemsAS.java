@@ -8,16 +8,34 @@
 
 package hellfirepvp.astralsorcery.common.lib;
 
-import hellfirepvp.astralsorcery.common.item.*;
+import net.minecraft.item.ItemStack;
+
+import hellfirepvp.astralsorcery.common.item.ItemColoredLens;
+import hellfirepvp.astralsorcery.common.item.ItemConstellationPaper;
+import hellfirepvp.astralsorcery.common.item.ItemCraftingComponent;
+import hellfirepvp.astralsorcery.common.item.ItemHandTelescope;
+import hellfirepvp.astralsorcery.common.item.ItemIlluminationPowder;
+import hellfirepvp.astralsorcery.common.item.ItemInfusedGlass;
+import hellfirepvp.astralsorcery.common.item.ItemJournal;
+import hellfirepvp.astralsorcery.common.item.ItemShiftingStar;
 import hellfirepvp.astralsorcery.common.item.crystal.ItemCelestialCrystal;
 import hellfirepvp.astralsorcery.common.item.crystal.ItemRockCrystalSimple;
 import hellfirepvp.astralsorcery.common.item.crystal.ItemTunedCelestialCrystal;
 import hellfirepvp.astralsorcery.common.item.crystal.ItemTunedRockCrystal;
-import hellfirepvp.astralsorcery.common.item.tool.*;
+import hellfirepvp.astralsorcery.common.item.tool.ItemChargedCrystalAxe;
+import hellfirepvp.astralsorcery.common.item.tool.ItemChargedCrystalPickaxe;
+import hellfirepvp.astralsorcery.common.item.tool.ItemChargedCrystalShovel;
+import hellfirepvp.astralsorcery.common.item.tool.ItemChargedCrystalSword;
+import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalAxe;
+import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalPickaxe;
+import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalShovel;
+import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalSword;
+import hellfirepvp.astralsorcery.common.item.tool.ItemLinkingTool;
+import hellfirepvp.astralsorcery.common.item.tool.ItemSkyResonator;
+import hellfirepvp.astralsorcery.common.item.tool.ItemWand;
 import hellfirepvp.astralsorcery.common.item.wand.ItemArchitectWand;
 import hellfirepvp.astralsorcery.common.item.wand.ItemExchangeWand;
 import hellfirepvp.astralsorcery.common.item.wand.ItemIlluminationWand;
-import net.minecraft.item.ItemStack;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -39,7 +57,7 @@ public class ItemsAS {
     public static ItemHandTelescope handTelescope;
     public static ItemIlluminationWand illuminationWand;
     public static ItemShiftingStar shiftingStar;
-    //public static ItemRoseBranchBow roseBranchBow;
+    // public static ItemRoseBranchBow roseBranchBow;
     public static ItemArchitectWand architectWand;
     public static ItemExchangeWand exchangeWand;
     public static ItemIlluminationPowder illuminationPowder;

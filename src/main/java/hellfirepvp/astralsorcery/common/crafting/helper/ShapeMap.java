@@ -8,9 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.crafting.helper;
 
-import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
-
 import java.util.HashMap;
+
+import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 
 /**
  * This class is part of the Astral Sorcery Mod

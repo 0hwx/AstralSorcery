@@ -8,13 +8,14 @@
 
 package hellfirepvp.astralsorcery.client.gui.journal.page;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
-import org.lwjgl.opengl.GL11;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.lwjgl.opengl.GL11;
 
 /**
  * This class is part of the Astral Sorcery Mod

@@ -8,6 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.client;
 
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
 import hellfirepvp.astralsorcery.common.tile.TileAttunementAltar;
@@ -15,11 +21,6 @@ import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,7 +34,6 @@ public class PktAttuneConstellation implements IMessage, IMessageHandler<PktAttu
     public IMajorConstellation attunement = null;
     private int worldId = -1;
     private BlockPos at = BlockPos.ORIGIN;
-
 
     public PktAttuneConstellation() {}
 
@@ -60,17 +60,19 @@ public class PktAttuneConstellation implements IMessage, IMessageHandler<PktAttu
     @Override
     public IMessage onMessage(PktAttuneConstellation message, MessageContext ctx) {
         IMajorConstellation cst = message.attunement;
-        if(cst != null) {
+        if (cst != null) {
             World w = DimensionManager.getWorld(message.worldId);
             TileAttunementAltar ta = MiscUtils.getTileAt(w, message.at, TileAttunementAltar.class, true);
-            if(ta != null) {
+            if (ta != null) {
                 ta.askForAttunement(ctx.getServerHandler().playerEntity, cst);
             }
-            /*EntityPlayer req = ctx.getServerHandler().playerEntity;
-            PlayerProgress prog = ResearchManager.getProgress(req, Side.SERVER);
-            if(prog != null && prog.getAttunedConstellation() == null) {
-                ResearchManager.setAttunedConstellation(req, cst);
-            }*/
+            /*
+             * EntityPlayer req = ctx.getServerHandler().playerEntity;
+             * PlayerProgress prog = ResearchManager.getProgress(req, Side.SERVER);
+             * if(prog != null && prog.getAttunedConstellation() == null) {
+             * ResearchManager.setAttunedConstellation(req, cst);
+             * }
+             */
         }
         return null;
     }

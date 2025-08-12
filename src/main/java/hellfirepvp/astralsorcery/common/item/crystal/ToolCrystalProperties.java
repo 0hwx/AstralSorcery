@@ -8,12 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.item.crystal;
 
-import net.minecraft.nbt.NBTTagCompound;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,7 +42,10 @@ public class ToolCrystalProperties extends CrystalProperties {
             totalPurity += c.getPurity();
             totalCollectivity += c.getCollectiveCapability();
         }
-        return new ToolCrystalProperties(totalSize, totalPurity / properties.size(), totalCollectivity / properties.size());
+        return new ToolCrystalProperties(
+            totalSize,
+            totalPurity / properties.size(),
+            totalCollectivity / properties.size());
     }
 
     public static ToolCrystalProperties readFromNBT(NBTTagCompound compound) {
@@ -56,11 +60,11 @@ public class ToolCrystalProperties extends CrystalProperties {
         this.collectiveCapability = Math.max(0, this.collectiveCapability - 1);
     }
 
-    //Return null if the tool should break during grind.
+    // Return null if the tool should break during grind.
     @Nullable
     public ToolCrystalProperties grindCopy(Random rand) {
         CrystalProperties out = super.grindCopy(rand);
-        if(out == null) return null;
+        if (out == null) return null;
         return new ToolCrystalProperties(out.size, out.purity, out.collectiveCapability);
     }
 

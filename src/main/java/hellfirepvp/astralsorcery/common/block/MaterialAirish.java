@@ -32,8 +32,8 @@ public class MaterialAirish extends Material {
         return false;
     }
 
-//    @Override
-//    public EnumPushReaction getMobilityFlag() {
-//        return EnumPushReaction.IGNORE;
-//    }
+    // @Override
+    // public EnumPushReaction getMobilityFlag() {
+    // return EnumPushReaction.IGNORE;
+    // }
 }

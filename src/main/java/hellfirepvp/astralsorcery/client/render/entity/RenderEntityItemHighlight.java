@@ -8,8 +8,6 @@
 
 package hellfirepvp.astralsorcery.client.render.entity;
 
-import hellfirepvp.astralsorcery.client.util.RenderingUtils;
-import hellfirepvp.astralsorcery.common.entities.EntityItemHighlighted;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -17,7 +15,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.opengl.GL11;
+
+import hellfirepvp.astralsorcery.client.util.RenderingUtils;
+import hellfirepvp.astralsorcery.common.entities.EntityItemHighlighted;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -30,14 +32,14 @@ public class RenderEntityItemHighlight extends Render {
 
     private final RenderItem renderItem = new RenderItem();
 
-    public RenderEntityItemHighlight(){
+    public RenderEntityItemHighlight() {
         renderItem.setRenderManager(RenderManager.instance);
     }
 
     @Override
     public void doRender(Entity itemHighlighted, double x, double y, double z, float entityYaw, float partialTicks) {
-        EntityItemHighlighted entity = (EntityItemHighlighted)itemHighlighted;
-        RenderingUtils.renderLightRayEffects(x , y + 0.20, z , entity.getHighlightColor(), 16024L, entity.age, 16, 20, 5);
+        EntityItemHighlighted entity = (EntityItemHighlighted) itemHighlighted;
+        RenderingUtils.renderLightRayEffects(x, y + 0.20, z, entity.getHighlightColor(), 16024L, entity.age, 16, 20, 5);
 
         GL11.glPushMatrix();
         ItemStack stack = entity.getEntityItem();

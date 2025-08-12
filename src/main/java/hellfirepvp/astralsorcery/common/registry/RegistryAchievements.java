@@ -8,14 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.registry;
 
+import net.minecraft.stats.Achievement;
+import net.minecraftforge.common.AchievementPage;
+
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.block.BlockMachine;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
-import net.minecraft.stats.Achievement;
-import net.minecraftforge.common.AchievementPage;
-import net.minecraftforge.common.ForgeModContainer;
-//import net.minecraftforge.fluids.UniversalBucket;
+// import net.minecraftforge.fluids.UniversalBucket;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -37,25 +37,55 @@ public class RegistryAchievements {
     public static AchievementPage achievementPageAstralSorcery;
 
     public static void init() {
-        achvRockCrystal = new Achievement("achievement.as.minerockcrystal", "astralsorcery.minerockcrystal", -1, 3,
-                ItemsAS.rockCrystal, null);
-        achvCelestialCrystal = new Achievement("achievement.as.celestialcrystal", "astralsorcery.celestialcrystal", -2, 1,
-                ItemsAS.celestialCrystal, achvRockCrystal);
-//        achvLiqStarlight = new Achievement("achievement.as.liquidstarlight", "astralsorcery.liquidstarlight", 0, 0,
-//                UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, BlocksAS.fluidLiquidStarlight), achvRockCrystal);
+        achvRockCrystal = new Achievement(
+            "achievement.as.minerockcrystal",
+            "astralsorcery.minerockcrystal",
+            -1,
+            3,
+            ItemsAS.rockCrystal,
+            null);
+        achvCelestialCrystal = new Achievement(
+            "achievement.as.celestialcrystal",
+            "astralsorcery.celestialcrystal",
+            -2,
+            1,
+            ItemsAS.celestialCrystal,
+            achvRockCrystal);
+        // achvLiqStarlight = new Achievement("achievement.as.liquidstarlight", "astralsorcery.liquidstarlight", 0, 0,
+        // UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket,
+        // BlocksAS.fluidLiquidStarlight), achvRockCrystal);
 
-        achvBuildHandTelescope = new Achievement("achievement.as.buildtelescope.1", "astralsorcery.buildtelescope.1", 2, 1,
-                ItemsAS.handTelescope, null);
-        achvDiscoverConstellation = new Achievement("achievement.as.seeconstellation", "astralsorcery.seeconstellation", 2, -1,
-                BlockMachine.MachineType.TELESCOPE.asStack(), achvBuildHandTelescope);
-        achvBuildActTelescope = new Achievement("achievement.as.buildtelescope.2", "astralsorcery.buildtelescope.2", 4, 0,
-                BlockMachine.MachineType.TELESCOPE.asStack(), achvBuildHandTelescope);
-        achvPlayerAttunement = new Achievement("achievement.as.playerAttunement", "astralsorcery.playerAttunement", 1, -3,
-                BlocksAS.attunementAltar, achvDiscoverConstellation);
-
+        achvBuildHandTelescope = new Achievement(
+            "achievement.as.buildtelescope.1",
+            "astralsorcery.buildtelescope.1",
+            2,
+            1,
+            ItemsAS.handTelescope,
+            null);
+        achvDiscoverConstellation = new Achievement(
+            "achievement.as.seeconstellation",
+            "astralsorcery.seeconstellation",
+            2,
+            -1,
+            BlockMachine.MachineType.TELESCOPE.asStack(),
+            achvBuildHandTelescope);
+        achvBuildActTelescope = new Achievement(
+            "achievement.as.buildtelescope.2",
+            "astralsorcery.buildtelescope.2",
+            4,
+            0,
+            BlockMachine.MachineType.TELESCOPE.asStack(),
+            achvBuildHandTelescope);
+        achvPlayerAttunement = new Achievement(
+            "achievement.as.playerAttunement",
+            "astralsorcery.playerAttunement",
+            1,
+            -3,
+            BlocksAS.attunementAltar,
+            achvDiscoverConstellation);
 
         achvCelestialCrystal.setSpecial();
-//        achvLiqStarlight.setSpecial();
+        // achvLiqStarlight.setSpecial();
         achvDiscoverConstellation.setSpecial();
         achvPlayerAttunement.setSpecial();
 
@@ -64,13 +94,18 @@ public class RegistryAchievements {
         achvBuildHandTelescope.registerStat();
         achvDiscoverConstellation.registerStat();
         achvBuildActTelescope.registerStat();
-//        achvLiqStarlight.registerStat();
+        // achvLiqStarlight.registerStat();
         achvPlayerAttunement.registerStat();
 
-        achievementPageAstralSorcery = new AchievementPage(AstralSorcery.NAME,
-                achvRockCrystal, achvCelestialCrystal, achvBuildHandTelescope,
-                achvDiscoverConstellation, achvBuildActTelescope, achvLiqStarlight,
-                achvPlayerAttunement);
+        achievementPageAstralSorcery = new AchievementPage(
+            AstralSorcery.NAME,
+            achvRockCrystal,
+            achvCelestialCrystal,
+            achvBuildHandTelescope,
+            achvDiscoverConstellation,
+            achvBuildActTelescope,
+            achvLiqStarlight,
+            achvPlayerAttunement);
 
         AchievementPage.registerAchievementPage(achievementPageAstralSorcery);
     }

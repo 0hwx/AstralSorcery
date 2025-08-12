@@ -8,6 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.potion;
 
+import java.awt.Color;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
@@ -15,10 +19,6 @@ import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import java.awt.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -34,15 +34,15 @@ public class PotionCheatDeath extends PotionCustomTexture {
     public static final Color PHOENIX_COLOR = new Color(0xFF5711);
 
     public PotionCheatDeath() {
-        super(24,false, 0xFF5711);
+        super(24, false, 0xFF5711);
         setPotionName("effect.as.cheatdeath");
-//        setBeneficial(); could be isUsable()
+        // setBeneficial(); could be isUsable()
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public BindableResource getResource() {
-        if(texBuffer == null) {
+        if (texBuffer == null) {
             texBuffer = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC, "potion_cheatdeath");
         }
         return (BindableResource) texBuffer;
@@ -52,14 +52,14 @@ public class PotionCheatDeath extends PotionCustomTexture {
     public static void playEntityDeathEffect(PktParticleEvent event) {
         for (int i = 0; i < 25; i++) {
             Vector3 at = event.getVec();
-            EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    at.getX(),
-                    at.getY() + rand.nextFloat(),
-                    at.getZ());
-            p.motion((rand.nextFloat() * 0.1F) * (rand.nextBoolean() ? 1 : -1),
-                     (rand.nextFloat() * 0.1F) * (rand.nextBoolean() ? 1 : -1),
-                     (rand.nextFloat() * 0.1F) * (rand.nextBoolean() ? 1 : -1));
-            p.scale(0.25F).setColor(PHOENIX_COLOR);
+            EntityFXFacingParticle p = EffectHelper
+                .genericFlareParticle(at.getX(), at.getY() + rand.nextFloat(), at.getZ());
+            p.motion(
+                (rand.nextFloat() * 0.1F) * (rand.nextBoolean() ? 1 : -1),
+                (rand.nextFloat() * 0.1F) * (rand.nextBoolean() ? 1 : -1),
+                (rand.nextFloat() * 0.1F) * (rand.nextBoolean() ? 1 : -1));
+            p.scale(0.25F)
+                .setColor(PHOENIX_COLOR);
         }
     }
 

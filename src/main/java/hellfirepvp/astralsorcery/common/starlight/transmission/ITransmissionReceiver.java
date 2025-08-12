@@ -8,13 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.starlight.transmission;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import net.minecraft.world.World;
+
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.starlight.WorldNetworkHandler;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.world.World;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod

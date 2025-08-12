@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
-import hellfirepvp.astralsorcery.common.constellation.IConstellation;
+import javax.annotation.Nullable;
+
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nullable;
+import hellfirepvp.astralsorcery.common.constellation.IConstellation;
 
 /**
  * This class is part of the Astral Sorcery Mod

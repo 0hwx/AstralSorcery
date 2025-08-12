@@ -8,7 +8,6 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
-
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 

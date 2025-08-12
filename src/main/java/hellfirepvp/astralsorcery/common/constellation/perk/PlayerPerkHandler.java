@@ -8,19 +8,20 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
+
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
 import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.enchantment.EnchantmentPlayerWornTick;
 import hellfirepvp.astralsorcery.common.registry.RegistryEnchantments;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.relauncher.Side;
-
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,19 +36,20 @@ public class PlayerPerkHandler implements ITickHandler {
     public void tick(TickEvent.Type type, Object... context) {
         EntityPlayer ticked = (EntityPlayer) context[0];
         PlayerProgress prog = ResearchManager.getProgress(ticked, (Side) context[1]);
-        if(prog != null) {
+        if (prog != null) {
             Map<ConstellationPerk, Integer> perks = new HashMap<>(prog.getAppliedPerks());
             for (ConstellationPerk perk : perks.keySet()) {
-                if(!prog.isPerkActive(perk)) continue;
-                if(perk.mayExecute(ConstellationPerk.Target.PLAYER_TICK)) {
+                if (!prog.isPerkActive(perk)) continue;
+                if (perk.mayExecute(ConstellationPerk.Target.PLAYER_TICK)) {
                     perk.onPlayerTick(ticked, (Side) context[1]);
                 }
             }
         }
         boolean client = ticked.getEntityWorld().isRemote;
         for (EnchantmentPlayerWornTick e : RegistryEnchantments.wearableTickEnchantments) {
-            int max = EnchantmentHelper.getMaxEnchantmentLevel(e.effectId, ticked.getLastActiveItems()); // todo check this
-            if(max > 0) {
+            int max = EnchantmentHelper.getMaxEnchantmentLevel(e.effectId, ticked.getLastActiveItems()); // todo check
+                                                                                                         // this
+            if (max > 0) {
                 e.onWornTick(client, ticked, max);
             }
         }

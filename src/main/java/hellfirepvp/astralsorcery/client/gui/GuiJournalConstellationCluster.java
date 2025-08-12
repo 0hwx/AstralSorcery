@@ -8,6 +8,22 @@
 
 package hellfirepvp.astralsorcery.client.gui;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.MathHelper;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.gui.journal.GuiScreenJournal;
 import hellfirepvp.astralsorcery.client.util.RenderConstellation;
@@ -19,18 +35,6 @@ import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.constellation.IConstellation;
 import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.MathHelper;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,15 +45,18 @@ import java.util.Map;
  */
 public class GuiJournalConstellationCluster extends GuiScreenJournal {
 
-    //private static OverlayText.OverlayFontRenderer fRend = new OverlayText.OverlayFontRenderer();
+    // private static OverlayText.OverlayFontRenderer fRend = new OverlayText.OverlayFontRenderer();
 
-    //private static final BindableResource texArrowLeft = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC, "arrow_left");
-    //private static final BindableResource texArrowRight = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC, "arrow_right");
+    // private static final BindableResource texArrowLeft = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC,
+    // "arrow_left");
+    // private static final BindableResource texArrowRight = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC,
+    // "arrow_right");
 
-    private static final BindableResource texArrow = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiJArrow");
+    private static final BindableResource texArrow = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiJArrow");
 
     private static final int width = 80, height = 110;
-    private static final Map<Integer, Point> offsetMap = new HashMap<>(); //we put 6 on "1" page/screen
+    private static final Map<Integer, Point> offsetMap = new HashMap<>(); // we put 6 on "1" page/screen
 
     private List<IConstellation> constellations;
     private String unlocTitle;
@@ -59,7 +66,8 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
 
     private Rectangle rectBack, rectPrev, rectNext;
 
-    public GuiJournalConstellationCluster(int bookmark, int pageId, String unlocTitle, List<IConstellation> constellations) {
+    public GuiJournalConstellationCluster(int bookmark, int pageId, String unlocTitle,
+        List<IConstellation> constellations) {
         this(bookmark, unlocTitle, constellations);
         this.pageId = pageId;
     }
@@ -75,13 +83,16 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
         List<IConstellation> constellations = ConstellationRegistry.resolve(client.getSeenConstellations());
         return new GuiJournalConstellationCluster(1, "no.title", constellations);
 
-        /*if(tiersFound.isEmpty()) {
-            return new GuiJournalConstellationCluster(1, false, "gui.journal.c.unmapped", unmapped);
-        } else if(tiersFound.size() == 1) {
-            return new GuiJournalConstellationCluster(1, true, tiersFound.get(0).getUnlocalizedName(), tierMapped.get(tiersFound.get(0)));
-        } else {
-            return new GuiJournalConstellations(unmapped, tiersFound);
-        }*/
+        /*
+         * if(tiersFound.isEmpty()) {
+         * return new GuiJournalConstellationCluster(1, false, "gui.journal.c.unmapped", unmapped);
+         * } else if(tiersFound.size() == 1) {
+         * return new GuiJournalConstellationCluster(1, true, tiersFound.get(0).getUnlocalizedName(),
+         * tierMapped.get(tiersFound.get(0)));
+         * } else {
+         * return new GuiJournalConstellations(unmapped, tiersFound);
+         * }
+         */
     }
 
     @Override
@@ -93,8 +104,8 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
 
         zLevel += 250;
         drawNavArrows(partialTicks);
-        //fRend.zLevel = zLevel;
-        //fRend.font_size_multiplicator = 0.07F;
+        // fRend.zLevel = zLevel;
+        // fRend.font_size_multiplicator = 0.07F;
         drawTitle();
         rectCRenderMap.clear();
         drawConstellations();
@@ -115,19 +126,20 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
     }
 
     private void drawTitle() {
-        //no title atm
-        if(unlocTitle != null && false) {
+        // no title atm
+        if (unlocTitle != null && false) {
             float r = 0xDD / 255F;
             float g = 0xDD / 255F;
             float b = 0xDD / 255F;
 
             TextureHelper.refreshTextureBindState();
             GL11.glColor4f(r, g, b, 1F);
-            String translated = I18n.format(unlocTitle).toUpperCase();
+            String translated = I18n.format(unlocTitle)
+                .toUpperCase();
             FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
             fr.drawString(translated, guiLeft + 225, guiTop + 14, Color.DARK_GRAY.getRGB(), true);
-            //fRend.drawString(translated, guiLeft + 225, guiTop + 14, zLevel, Color.DARK_GRAY, 0.7F, 0);
-//            GL11.glColor4f(1F, 1F, 1F, 1F);
+            // fRend.drawString(translated, guiLeft + 225, guiTop + 14, zLevel, Color.DARK_GRAY, 0.7F, 0);
+            // GL11.glColor4f(1F, 1F, 1F, 1F);
             GL11.glColor4f(1F, 1F, 1F, 1F);
         }
     }
@@ -139,14 +151,14 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
         rectNext = null;
         rectPrev = null;
         GL11.glColor4f(1F, 1F, 1F, 1F);
-        if(cIndex > 0) {
+        if (cIndex > 0) {
             int width = 30;
             int height = 15;
             rectPrev = new Rectangle(guiLeft + 15, guiTop + 127, width, height);
             GL11.glPushMatrix();
             GL11.glTranslated(rectPrev.getX() + (width / 2), rectPrev.getY() + (height / 2), 0);
             float uFrom = 0F, vFrom = 0.5F;
-            if(rectPrev.contains(mouse)) {
+            if (rectPrev.contains(mouse)) {
                 uFrom = 0.5F;
                 GL11.glScaled(1.1, 1.1, 1.1);
             } else {
@@ -161,14 +173,14 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
             TextureHelper.refreshTextureBindState();
         }
         int nextIndex = cIndex + 6;
-        if(constellations.size() >= (nextIndex + 1)) {
+        if (constellations.size() >= (nextIndex + 1)) {
             int width = 30;
             int height = 15;
             rectNext = new Rectangle(guiLeft + 367, guiTop + 125, width, height);
             GL11.glPushMatrix();
             GL11.glTranslated(rectNext.getX() + (width / 2), rectNext.getY() + (height / 2), 0);
             float uFrom = 0F, vFrom = 0F;
-            if(rectNext.contains(mouse)) {
+            if (rectNext.contains(mouse)) {
                 uFrom = 0.5F;
                 GL11.glScaled(1.1, 1.1, 1.1);
             } else {
@@ -183,14 +195,14 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
             TextureHelper.refreshTextureBindState();
         }
 
-        if(bookmarkIndex != 1) {
+        if (bookmarkIndex != 1) {
             int width = 30;
             int height = 15;
             rectBack = new Rectangle(guiLeft + 197, guiTop + 230, width, height);
             GL11.glPushMatrix();
             GL11.glTranslated(rectBack.getX() + (width / 2), rectBack.getY() + (height / 2), 0);
             float uFrom = 0F, vFrom = 0.5F;
-            if(rectBack.contains(mouse)) {
+            if (rectBack.contains(mouse)) {
                 uFrom = 0.5F;
                 GL11.glScaled(1.1, 1.1, 1.1);
             } else {
@@ -206,13 +218,18 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
         }
     }
 
-    protected static Rectangle drawConstellationRect(IConstellation display, double offsetX, double offsetY, float zLevel, Point mouse, @Nullable String specTitle) {
-        Rectangle rect = new Rectangle(MathHelper.floor_double(offsetX), MathHelper.floor_double(offsetY), width, height);
+    protected static Rectangle drawConstellationRect(IConstellation display, double offsetX, double offsetY,
+        float zLevel, Point mouse, @Nullable String specTitle) {
+        Rectangle rect = new Rectangle(
+            MathHelper.floor_double(offsetX),
+            MathHelper.floor_double(offsetY),
+            width,
+            height);
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glTranslated(offsetX + (width / 2), offsetY + (width / 2), zLevel);
 
-        if(rect.contains(mouse)) {
+        if (rect.contains(mouse)) {
             GL11.glScaled(1.1, 1.1, 1.1);
         }
 
@@ -225,25 +242,38 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
 
         GL11.glColor4f(r, g, b, 1F);
 
-        RenderConstellation.renderConstellationIntoGUI(c, display,
-                0, 0, 0,
-                80, 80, 2.5F, new RenderConstellation.BrightnessFunction() {
-                    @Override
-                    public float getBrightness() {
-                        return 0.15F;
-                    }
-                }, true, false);
+        RenderConstellation.renderConstellationIntoGUI(
+            c,
+            display,
+            0,
+            0,
+            0,
+            80,
+            80,
+            2.5F,
+            new RenderConstellation.BrightnessFunction() {
+
+                @Override
+                public float getBrightness() {
+                    return 0.15F;
+                }
+            },
+            true,
+            false);
 
         GL11.glColor4f(r, g, b, 1F);
 
         TextureHelper.refreshTextureBindState();
-        String trName = specTitle == null ? I18n.format(display.getUnlocalizedName()).toUpperCase() : I18n.format(specTitle).toUpperCase();
+        String trName = specTitle == null ? I18n.format(display.getUnlocalizedName())
+            .toUpperCase()
+            : I18n.format(specTitle)
+                .toUpperCase();
         FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         int fullLength = (width / 2) - ((fr.getStringWidth(trName)) / 2);
         fr.drawString(trName, fullLength, 75, 0xBBDDDDDD, true);
 
         GL11.glColor4f(1F, 1F, 1F, 1F);
-//        GL11.glColor4f(1F, 1F, 1F, 1F);
+        // GL11.glColor4f(1F, 1F, 1F, 1F);
         GL11.glPopMatrix();
         return rect;
     }
@@ -252,46 +282,55 @@ public class GuiJournalConstellationCluster extends GuiScreenJournal {
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        if(mouseButton != 0) return;
+        if (mouseButton != 0) return;
         Point p = new Point(mouseX, mouseY);
-        if(rectResearchBookmark != null && rectResearchBookmark.contains(p)) {
+        if (rectResearchBookmark != null && rectResearchBookmark.contains(p)) {
             GuiJournalProgression.resetJournal();
-            Minecraft.getMinecraft().displayGuiScreen(GuiJournalProgression.getJournalInstance());
+            Minecraft.getMinecraft()
+                .displayGuiScreen(GuiJournalProgression.getJournalInstance());
             return;
         }
-        if(rectPerkMapBookmark != null && rectPerkMapBookmark.contains(p)) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiJournalPerkMap());
+        if (rectPerkMapBookmark != null && rectPerkMapBookmark.contains(p)) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(new GuiJournalPerkMap());
             return;
         }
-        if(bookmarkIndex == -1 && rectConstellationBookmark != null && rectConstellationBookmark.contains(p)) {
-            Minecraft.getMinecraft().displayGuiScreen(getConstellationScreen());
+        if (bookmarkIndex == -1 && rectConstellationBookmark != null && rectConstellationBookmark.contains(p)) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(getConstellationScreen());
             return;
         }
         for (Rectangle r : rectCRenderMap.keySet()) {
-            if(r.contains(p)) {
+            if (r.contains(p)) {
                 IConstellation c = rectCRenderMap.get(r);
-                Minecraft.getMinecraft().displayGuiScreen(new GuiJournalConstellationDetails(this, c));
+                Minecraft.getMinecraft()
+                    .displayGuiScreen(new GuiJournalConstellationDetails(this, c));
             }
         }
-        if(rectBack != null && rectBack.contains(p)) {
-            Minecraft.getMinecraft().displayGuiScreen(getConstellationScreen());
+        if (rectBack != null && rectBack.contains(p)) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(getConstellationScreen());
             return;
         }
-        if(rectPrev != null && rectPrev.contains(p)) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiJournalConstellationCluster(bookmarkIndex, pageId - 1, unlocTitle, constellations));
+        if (rectPrev != null && rectPrev.contains(p)) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(
+                    new GuiJournalConstellationCluster(bookmarkIndex, pageId - 1, unlocTitle, constellations));
             return;
         }
-        if(rectNext != null && rectNext.contains(p)) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiJournalConstellationCluster(bookmarkIndex, pageId + 1, unlocTitle, constellations));
+        if (rectNext != null && rectNext.contains(p)) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(
+                    new GuiJournalConstellationCluster(bookmarkIndex, pageId + 1, unlocTitle, constellations));
         }
     }
 
     static {
-        offsetMap.put(0, new Point( 30,  20));
-        offsetMap.put(1, new Point( 30, 140));
-        offsetMap.put(2, new Point(120,  80));
+        offsetMap.put(0, new Point(30, 20));
+        offsetMap.put(1, new Point(30, 140));
+        offsetMap.put(2, new Point(120, 80));
 
-        offsetMap.put(3, new Point(310,  20));
+        offsetMap.put(3, new Point(310, 20));
         offsetMap.put(4, new Point(220, 100));
         offsetMap.put(5, new Point(310, 140));
     }

@@ -8,12 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.constellation;
 
-import hellfirepvp.astralsorcery.common.constellation.distribution.WorldSkyHandler;
-import hellfirepvp.astralsorcery.common.data.config.Config;
-import hellfirepvp.astralsorcery.common.data.config.entry.GeneralConfig;
+import java.util.Random;
+
 import net.minecraft.world.World;
 
-import java.util.Random;
+import hellfirepvp.astralsorcery.common.constellation.distribution.WorldSkyHandler;
+import hellfirepvp.astralsorcery.common.data.config.entry.GeneralConfig;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -24,16 +24,16 @@ import java.util.Random;
  */
 public interface IConstellationSpecialShowup extends IConstellation {
 
-    //Will be called on either side.
+    // Will be called on either side.
     public boolean doesShowUp(WorldSkyHandler handle, World world, long day);
 
-    //Fed directly into the worldSkyHandler's distribution, only use values 0-1.
+    // Fed directly into the worldSkyHandler's distribution, only use values 0-1.
     public float getDistribution(WorldSkyHandler handle, World world, long day, boolean showingUp);
 
     default public boolean isDayOfSolarEclipse(long offsetSeed, long day) {
         Random r = new Random(offsetSeed);
         for (int i = 0; i < 10 + r.nextInt(10); i++) {
-            r.nextLong(); //Flush
+            r.nextLong(); // Flush
         }
         int rand = r.nextInt(36);
         if (rand >= 18) {

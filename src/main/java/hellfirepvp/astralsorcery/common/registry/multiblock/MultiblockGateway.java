@@ -1,10 +1,11 @@
 package hellfirepvp.astralsorcery.common.registry.multiblock;
 
+import net.minecraft.block.Block;
+
 import hellfirepvp.astralsorcery.common.block.BlockBlackMarble;
 import hellfirepvp.astralsorcery.common.block.BlockMarble;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
-import net.minecraft.block.Block;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,14 +32,14 @@ public class MultiblockGateway extends PatternBlockArray {
         addBlock(0, 0, 0, BlocksAS.celestialGateway);
 
         addBlock(-3, -1, -3, mru);
-        addBlock( 3, -1, -3, mru);
-        addBlock( 3, -1,  3, mru);
-        addBlock(-3, -1,  3, mru);
+        addBlock(3, -1, -3, mru);
+        addBlock(3, -1, 3, mru);
+        addBlock(-3, -1, 3, mru);
 
-        addBlock(-3,  0, -3, mgr);
-        addBlock( 3,  0, -3, mgr);
-        addBlock( 3,  0,  3, mgr);
-        addBlock(-3,  0,  3, mgr);
+        addBlock(-3, 0, -3, mgr);
+        addBlock(3, 0, -3, mgr);
+        addBlock(3, 0, 3, mgr);
+        addBlock(-3, 0, 3, mgr);
     }
 
 }

@@ -8,6 +8,19 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect.aoe;
 
+import java.awt.Color;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
@@ -18,23 +31,8 @@ import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ILocatable;
-import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.config.Configuration;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
-import java.awt.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -58,23 +56,42 @@ public class CEffectOctans extends CEffectPositionListGen<GenListEntries.Counter
         super(origin, Constellations.octans, "octans", searchRange, maxFishingGrounds, (world, pos) -> {
             Block at = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
             int meta = world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
-            return at instanceof BlockLiquid && at.getMaterial().equals(Material.water) && meta == 0 && world.isAirBlock(pos.up().getX(), pos.up().getY(), pos.up().getZ());
-        }, (pos) -> new GenListEntries.CounterMaxListEntry(pos, minFishTickTime + rand.nextInt(maxFishTickTime - minFishTickTime + 1)));
+            return at instanceof BlockLiquid && at.getMaterial()
+                .equals(Material.water)
+                && meta == 0
+                && world.isAirBlock(
+                    pos.up()
+                        .getX(),
+                    pos.up()
+                        .getY(),
+                    pos.up()
+                        .getZ());
+        },
+            (pos) -> new GenListEntries.CounterMaxListEntry(
+                pos,
+                minFishTickTime + rand.nextInt(maxFishTickTime - minFishTickTime + 1)));
     }
 
     @Override
-    public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect, @Nullable IMinorConstellation possibleTraitEffect) {
-        if(!enabled) return false;
+    public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect,
+        @Nullable IMinorConstellation possibleTraitEffect) {
+        if (!enabled) return false;
         percStrength *= potencyMultiplier;
-        if(percStrength < 1) {
-            if(world.rand.nextFloat() > percStrength) return false;
+        if (percStrength < 1) {
+            if (world.rand.nextFloat() > percStrength) return false;
         }
 
         boolean changed = false;
         GenListEntries.CounterMaxListEntry entry = getRandomElementByChance(rand);
-        if(entry != null) {
-            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(entry.getPos().chunkX(), entry.getPos().chunkZ()))) {
-                if(!verifier.isValid(world, entry.getPos())) {
+        if (entry != null) {
+            if (MiscUtils.isChunkLoaded(
+                world,
+                new ChunkCoordIntPair(
+                    entry.getPos()
+                        .chunkX(),
+                    entry.getPos()
+                        .chunkZ()))) {
+                if (!verifier.isValid(world, entry.getPos())) {
                     removeElement(entry);
                     changed = true;
                 } else {
@@ -83,24 +100,29 @@ public class CEffectOctans extends CEffectPositionListGen<GenListEntries.Counter
                         percStrength -= 0.1;
                     } while (rand.nextFloat() < percStrength);
                     changed = true;
-                    if(entry.counter >= entry.maxCount) {
+                    if (entry.counter >= entry.maxCount) {
                         Vector3 dropLoc = new Vector3(entry.getPos()).add(0.5, 0.85, 0.5);
                         entry.maxCount = minFishTickTime + rand.nextInt(maxFishTickTime - minFishTickTime + 1);
                         entry.counter = 0;
-//                        LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
-//                        builder.withLuck(rand.nextInt(2) * rand.nextFloat());
-//                        for(ItemStack loot : world.getLootTableManager().getLootTableFromLocation(LootTableList.GAMEPLAY_FISHING).generateLootForPools(rand, builder.build())) {
-//                            EntityItem ei = ItemUtils.dropItemNaturally(world, dropLoc.getX(), dropLoc.getY(), dropLoc.getZ(), loot);
-//                            ei.motionY = Math.abs(ei.motionY);
-//                        }
+                        // LootContext.Builder builder = new LootContext.Builder((WorldServer) world);
+                        // builder.withLuck(rand.nextInt(2) * rand.nextFloat());
+                        // for(ItemStack loot :
+                        // world.getLootTableManager().getLootTableFromLocation(LootTableList.GAMEPLAY_FISHING).generateLootForPools(rand,
+                        // builder.build())) {
+                        // EntityItem ei = ItemUtils.dropItemNaturally(world, dropLoc.getX(), dropLoc.getY(),
+                        // dropLoc.getZ(), loot);
+                        // ei.motionY = Math.abs(ei.motionY);
+                        // }
                     }
-                    PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.CE_WATER_FISH, entry.getPos());
+                    PktParticleEvent ev = new PktParticleEvent(
+                        PktParticleEvent.ParticleEventType.CE_WATER_FISH,
+                        entry.getPos());
                     PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(world, entry.getPos(), 8));
                 }
             }
         }
 
-        if(findNewPosition(world, pos)) changed = true;
+        if (findNewPosition(world, pos)) changed = true;
 
         return changed;
     }
@@ -112,14 +134,48 @@ public class CEffectOctans extends CEffectPositionListGen<GenListEntries.Counter
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        searchRange = cfg.getInt(getKey() + "Range", getConfigurationSection(), 12, 1, 32, "Defines the radius (in blocks) in which the ritual will search for water ");
-        maxFishingGrounds = cfg.getInt(getKey() + "Count", getConfigurationSection(), 20, 1, 4000, "Defines the amount of crops the ritual can cache at max. count");
-        enabled = cfg.getBoolean(getKey() + "Enabled", getConfigurationSection(), true, "Set to false to disable this ConstellationEffect.");
-        potencyMultiplier = cfg.getFloat(getKey() + "PotencyMultiplier", getConfigurationSection(), 1.0F, 0.01F, 100F, "Set the potency multiplier for this ritual effect. Will affect all ritual effects and their efficiency.");
-        minFishTickTime = cfg.getInt(getKey() + "MinFishTickTime", getConfigurationSection(), 100, 20, Integer.MAX_VALUE, "Defines the minimum default tick-time until a fish may be fished by the ritual. gets reduced internally the more starlight was provided at the ritual.");
-        maxFishTickTime = cfg.getInt(getKey() + "MaxFishTickTime", getConfigurationSection(), 500, 20, Integer.MAX_VALUE, "Defines the maximum default tick-time until a fish may be fished by the ritual. gets reduced internally the more starlight was provided at the ritual. Has to be bigger as the minimum time; if it isn't it'll be set to the minimum.");
+        searchRange = cfg.getInt(
+            getKey() + "Range",
+            getConfigurationSection(),
+            12,
+            1,
+            32,
+            "Defines the radius (in blocks) in which the ritual will search for water ");
+        maxFishingGrounds = cfg.getInt(
+            getKey() + "Count",
+            getConfigurationSection(),
+            20,
+            1,
+            4000,
+            "Defines the amount of crops the ritual can cache at max. count");
+        enabled = cfg.getBoolean(
+            getKey() + "Enabled",
+            getConfigurationSection(),
+            true,
+            "Set to false to disable this ConstellationEffect.");
+        potencyMultiplier = cfg.getFloat(
+            getKey() + "PotencyMultiplier",
+            getConfigurationSection(),
+            1.0F,
+            0.01F,
+            100F,
+            "Set the potency multiplier for this ritual effect. Will affect all ritual effects and their efficiency.");
+        minFishTickTime = cfg.getInt(
+            getKey() + "MinFishTickTime",
+            getConfigurationSection(),
+            100,
+            20,
+            Integer.MAX_VALUE,
+            "Defines the minimum default tick-time until a fish may be fished by the ritual. gets reduced internally the more starlight was provided at the ritual.");
+        maxFishTickTime = cfg.getInt(
+            getKey() + "MaxFishTickTime",
+            getConfigurationSection(),
+            500,
+            20,
+            Integer.MAX_VALUE,
+            "Defines the maximum default tick-time until a fish may be fished by the ritual. gets reduced internally the more starlight was provided at the ritual. Has to be bigger as the minimum time; if it isn't it'll be set to the minimum.");
 
-        if(maxFishTickTime < minFishTickTime) {
+        if (maxFishTickTime < minFishTickTime) {
             maxFishTickTime = minFishTickTime;
         }
 
@@ -129,11 +185,14 @@ public class CEffectOctans extends CEffectPositionListGen<GenListEntries.Counter
     public static void playParticles(PktParticleEvent event) {
         Vector3 at = event.getVec();
         EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                at.getX() + rand.nextFloat(),
-                at.getY() + rand.nextFloat(),
-                at.getZ() + rand.nextFloat());
-        p.motion(0, 0.03 + rand.nextFloat() * 0.01, 0).setMaxAge(5 + rand.nextInt(5));
-        p.scale(0.2F).setColor(Color.CYAN).gravity(-0.03);
+            at.getX() + rand.nextFloat(),
+            at.getY() + rand.nextFloat(),
+            at.getZ() + rand.nextFloat());
+        p.motion(0, 0.03 + rand.nextFloat() * 0.01, 0)
+            .setMaxAge(5 + rand.nextInt(5));
+        p.scale(0.2F)
+            .setColor(Color.CYAN)
+            .gravity(-0.03);
     }
 
 }

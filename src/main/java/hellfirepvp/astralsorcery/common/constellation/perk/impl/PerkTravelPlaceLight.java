@@ -8,13 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.common.config.Configuration;
+
+import cpw.mods.fml.relauncher.Side;
 import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.tile.TileIlluminator;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.config.Configuration;
-import cpw.mods.fml.relauncher.Side;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,15 +34,18 @@ public class PerkTravelPlaceLight extends ConstellationPerk {
 
     @Override
     public void onPlayerTick(EntityPlayer player, Side side) {
-        if(side == Side.SERVER) {
-            if(rand.nextInt(chanceToSpawnLight) == 0) {
-                BlockPos pos = new BlockPos(player).getPosition().add(
-                        rand.nextInt(4) - 2,
-                        rand.nextInt(4) - 2,
-                        rand.nextInt(4) - 2);
-                if(TileIlluminator.illuminatorCheck.isStateValid(player.getEntityWorld(), pos, player.getEntityWorld().getBlock(pos.getX(), pos.getY(), pos.getZ()))) {
+        if (side == Side.SERVER) {
+            if (rand.nextInt(chanceToSpawnLight) == 0) {
+                BlockPos pos = new BlockPos(player).getPosition()
+                    .add(rand.nextInt(4) - 2, rand.nextInt(4) - 2, rand.nextInt(4) - 2);
+                if (TileIlluminator.illuminatorCheck.isStateValid(
+                    player.getEntityWorld(),
+                    pos,
+                    player.getEntityWorld()
+                        .getBlock(pos.getX(), pos.getY(), pos.getZ()))) {
                     addAlignmentCharge(player, 2);
-                    player.getEntityWorld().setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.blockVolatileLight);
+                    player.getEntityWorld()
+                        .setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.blockVolatileLight);
                 }
             }
         }
@@ -54,6 +58,12 @@ public class PerkTravelPlaceLight extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        chanceToSpawnLight = cfg.getInt(getKey() + "ChanceForLight", getConfigurationSection(), 100, 20, 4000, "Sets the chance (Random.nextInt(chance) == 0) to try to see if a light close to the player might be spawned");
+        chanceToSpawnLight = cfg.getInt(
+            getKey() + "ChanceForLight",
+            getConfigurationSection(),
+            100,
+            20,
+            4000,
+            "Sets the chance (Random.nextInt(chance) == 0) to try to see if a light close to the player might be spawned");
     }
 }

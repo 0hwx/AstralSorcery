@@ -8,19 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.tile.base;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
+
 import hellfirepvp.astralsorcery.common.auxiliary.link.ILinkableTile;
 import hellfirepvp.astralsorcery.common.starlight.IStarlightReceiver;
 import hellfirepvp.astralsorcery.common.starlight.WorldNetworkHandler;
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionReceiver;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -74,8 +76,9 @@ public abstract class TileReceiverBase extends TileNetwork implements IStarlight
     @Nullable
     public <T extends ITransmissionReceiver> T tryGetNode() {
         BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
-        IPrismTransmissionNode node = WorldNetworkHandler.getNetworkHandler(worldObj).getTransmissionNode(pos);
-        if(node == null || !(node instanceof ITransmissionReceiver)) return null;
+        IPrismTransmissionNode node = WorldNetworkHandler.getNetworkHandler(worldObj)
+            .getTransmissionNode(pos);
+        if (node == null || !(node instanceof ITransmissionReceiver)) return null;
         return (T) node;
     }
 

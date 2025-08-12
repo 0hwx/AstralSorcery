@@ -8,9 +8,9 @@
 
 package hellfirepvp.astralsorcery.client.models.obj;
 
+import net.minecraftforge.client.model.obj.WavefrontObject;
 
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
-import net.minecraftforge.client.model.obj.WavefrontObject;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,6 +33,6 @@ public class OBJModelLibrary {
         return AssetLoader.loadObjModel(AssetLoader.ModelLocation.OBJ, name);
     }
 
-    public static void init() {} //To invoke static initializer for fields
+    public static void init() {} // To invoke static initializer for fields
 
 }

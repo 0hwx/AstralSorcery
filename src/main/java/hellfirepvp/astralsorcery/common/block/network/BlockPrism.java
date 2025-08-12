@@ -8,19 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.block.network;
 
-import com.google.common.collect.Lists;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
-import hellfirepvp.astralsorcery.common.lib.Sounds;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.tile.network.TileCrystalLens;
-import hellfirepvp.astralsorcery.common.tile.network.TileCrystalPrismLens;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.ItemUtils;
-import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import hellfirepvp.astralsorcery.common.util.SoundHelper;
-import net.minecraft.block.material.MapColor;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,13 +22,20 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.collect.Lists;
+
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
+import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.tile.network.TileCrystalPrismLens;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ItemUtils;
+import hellfirepvp.astralsorcery.common.util.MiscUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -49,12 +46,13 @@ import java.util.List;
  */
 public class BlockPrism extends BlockStarlightNetwork {
 
-    private static final AxisAlignedBB boxPrism = AxisAlignedBB.getBoundingBox(3D/16D, 0, 3D/16D, 13D/16D, 14D/16D, 13D/16D);
+    private static final AxisAlignedBB boxPrism = AxisAlignedBB
+        .getBoundingBox(3D / 16D, 0, 3D / 16D, 13D / 16D, 14D / 16D, 13D / 16D);
 
     public BlockPrism() {
         super("BlockPrism", Material.rock);
         setHardness(3.0F);
-//        setSoundType(SoundType.GLASS);
+        // setSoundType(SoundType.GLASS);
         setResistance(12.0F);
         setHarvestLevel("pickaxe", 2);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
@@ -68,11 +66,12 @@ public class BlockPrism extends BlockStarlightNetwork {
         list.add(stack);
     }
 
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
-//        CrystalProperties.addPropertyTooltip(CrystalProperties.getCrystalProperties(stack), tooltip, CrystalProperties.MAX_SIZE_CELESTIAL);
-//    }
+    // @Override
+    // @SideOnly(Side.CLIENT)
+    // public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
+    // CrystalProperties.addPropertyTooltip(CrystalProperties.getCrystalProperties(stack), tooltip,
+    // CrystalProperties.MAX_SIZE_CELESTIAL);
+    // }
 
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
@@ -85,7 +84,9 @@ public class BlockPrism extends BlockStarlightNetwork {
     }
 
     @Override
-    public boolean isNormalCube() { return false; }
+    public boolean isNormalCube() {
+        return false;
+    }
 
     @Override
     public boolean hasTileEntity() {
@@ -98,7 +99,7 @@ public class BlockPrism extends BlockStarlightNetwork {
     }
 
     @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
         return Lists.newArrayList();
     }
 
@@ -107,7 +108,7 @@ public class BlockPrism extends BlockStarlightNetwork {
         ItemStack stack = super.getPickBlock(target, world, x, y, z, player);
         BlockPos pos = new BlockPos(x, y, z);
         TileCrystalPrismLens lens = MiscUtils.getTileAt(world, pos, TileCrystalPrismLens.class, true);
-        if(lens != null && lens.getCrystalProperties() != null) {
+        if (lens != null && lens.getCrystalProperties() != null) {
             CrystalProperties.applyCrystalProperties(stack, lens.getCrystalProperties());
         } else {
             CrystalProperties.applyCrystalProperties(stack, CrystalProperties.getMaxCelestialProperties());
@@ -119,10 +120,11 @@ public class BlockPrism extends BlockStarlightNetwork {
     public void onBlockHarvested(World worldIn, int x, int y, int z, int meta, EntityPlayer player) {
         BlockPos pos = new BlockPos(x, y, z);
         TileCrystalPrismLens lens = MiscUtils.getTileAt(worldIn, pos, TileCrystalPrismLens.class, true);
-        if(lens != null && !worldIn.isRemote && !player.capabilities.isCreativeMode) {
+        if (lens != null && !worldIn.isRemote && !player.capabilities.isCreativeMode) {
             ItemStack drop;
-            if(lens.getLensColor() != null) {
-                drop = lens.getLensColor().asStack();
+            if (lens.getLensColor() != null) {
+                drop = lens.getLensColor()
+                    .asStack();
                 ItemUtils.dropItemNaturally(worldIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop);
             }
 
@@ -131,18 +133,20 @@ public class BlockPrism extends BlockStarlightNetwork {
             ItemUtils.dropItemNaturally(worldIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop);
         }
 
-        super.onBlockHarvested(worldIn, pos.getX(), pos.getY(), pos.getZ(),meta, player);
+        super.onBlockHarvested(worldIn, pos.getX(), pos.getY(), pos.getZ(), meta, player);
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-        if(!worldIn.isRemote && player.isSneaking()) {
+    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX,
+        float hitY, float hitZ) {
+        if (!worldIn.isRemote && player.isSneaking()) {
             BlockPos pos = new BlockPos(x, y, z);
             TileCrystalPrismLens lens = MiscUtils.getTileAt(worldIn, pos, TileCrystalPrismLens.class, true);
-            if(lens != null && lens.getLensColor() != null) {
-                ItemStack drop = lens.getLensColor().asStack();
+            if (lens != null && lens.getLensColor() != null) {
+                ItemStack drop = lens.getLensColor()
+                    .asStack();
                 ItemUtils.dropItemNaturally(worldIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop);
-//                SoundHelper.playSoundAround(Sounds.clipSwitch, worldIn, pos, 0.8F, 1.5F);
+                // SoundHelper.playSoundAround(Sounds.clipSwitch, worldIn, pos, 0.8F, 1.5F);
                 lens.setLensColor(null);
                 return true;
             }
@@ -155,10 +159,10 @@ public class BlockPrism extends BlockStarlightNetwork {
         return side == ForgeDirection.DOWN;
     }
 
-//    @Override
-//    public BlockRenderLayer getBlockLayer() {
-//        return BlockRenderLayer.TRANSLUCENT;
-//    }
+    // @Override
+    // public BlockRenderLayer getBlockLayer() {
+    // return BlockRenderLayer.TRANSLUCENT;
+    // }
 
     @Override
     public TileEntity createTileEntity(World world, int meta) {
@@ -179,7 +183,7 @@ public class BlockPrism extends BlockStarlightNetwork {
     public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
         BlockPos pos = new BlockPos(x, y, z);
         TileCrystalPrismLens te = MiscUtils.getTileAt(worldIn, pos, TileCrystalPrismLens.class, true);
-        if(te == null) return;
+        if (te == null) return;
         te.onPlace(CrystalProperties.getCrystalProperties(stack));
     }
 

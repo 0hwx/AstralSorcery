@@ -8,6 +8,17 @@
 
 package hellfirepvp.astralsorcery.client.gui;
 
+import java.awt.Color;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.util.Blending;
 import hellfirepvp.astralsorcery.client.util.MoonPhaseRenderHelper;
 import hellfirepvp.astralsorcery.client.util.RenderConstellation;
@@ -22,15 +33,6 @@ import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.constellation.MoonPhase;
 import hellfirepvp.astralsorcery.common.lib.Sounds;
 import hellfirepvp.astralsorcery.common.util.SoundHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,8 +43,9 @@ import java.util.List;
  */
 public class GuiConstellationPaper extends GuiWHScreen {
 
-    private static final BindableResource textureScroll = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiConPaper");
-    //private static final OverlayText.OverlayFontRenderer ofr = new OverlayText.OverlayFontRenderer();
+    private static final BindableResource textureScroll = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiConPaper");
+    // private static final OverlayText.OverlayFontRenderer ofr = new OverlayText.OverlayFontRenderer();
 
     private final IConstellation constellation;
     private List<MoonPhase> phases = new LinkedList<>();
@@ -54,12 +57,13 @@ public class GuiConstellationPaper extends GuiWHScreen {
     }
 
     private void testPhases() {
-        if(constellation instanceof IWeakConstellation) {
+        if (constellation instanceof IWeakConstellation) {
             Collections.addAll(phases, MoonPhase.values());
-        } else if(constellation instanceof IMinorConstellation) {
-            //Why this way? To maintain phase-order.
+        } else if (constellation instanceof IMinorConstellation) {
+            // Why this way? To maintain phase-order.
             for (MoonPhase ph : MoonPhase.values()) {
-                if(((IMinorConstellation) constellation).getShowupMoonPhases().contains(ph)) {
+                if (((IMinorConstellation) constellation).getShowupMoonPhases()
+                    .contains(ph)) {
                     phases.add(ph);
                 }
             }
@@ -78,7 +82,7 @@ public class GuiConstellationPaper extends GuiWHScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        //ofr.font_size_multiplicator = 0.08F;
+        // ofr.font_size_multiplicator = 0.08F;
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
         drawScroll();
@@ -93,20 +97,21 @@ public class GuiConstellationPaper extends GuiWHScreen {
     }
 
     private void drawHeader() {
-        String locName = I18n.format(constellation.getUnlocalizedName()).toUpperCase();
+        String locName = I18n.format(constellation.getUnlocalizedName())
+            .toUpperCase();
         TextureHelper.refreshTextureBindState();
         FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         double length = fr.getStringWidth(locName) * 1.8;
         double offsetLeft = width / 2 - length / 2;
         int offsetTop = guiTop + 31;
-        //new Color(0.3F, 0.3F, 0.3F, 0.8F);
-        //GL11.glColor4f(0.3F, 0.3F, 0.3F, 0.8F);
+        // new Color(0.3F, 0.3F, 0.3F, 0.8F);
+        // GL11.glColor4f(0.3F, 0.3F, 0.3F, 0.8F);
         GL11.glPushMatrix();
         GL11.glTranslated(offsetLeft + 15, offsetTop, 0);
         GL11.glScaled(1.8, 1.8, 1.8);
         fr.drawString(locName, 0, 0, 0xAA4D4D4D, false);
         GL11.glPopMatrix();
-//        GL11.glColor4f(1, 1, 1, 1);
+        // GL11.glColor4f(1, 1, 1, 1);
         GL11.glColor4f(1, 1, 1, 1);
     }
 
@@ -114,16 +119,24 @@ public class GuiConstellationPaper extends GuiWHScreen {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderConstellation.renderConstellationIntoGUI(
-                new Color(0.4F, 0.4F, 0.4F, 0.8F), constellation,
-                width / 2 - 110 / 2, guiTop + 84,
-                zLevel,
-                110, 110, 2F, new RenderConstellation.BrightnessFunction() {
-                    @Override
-                    public float getBrightness() {
-                        //return 0.8F - (0.6F * (tierN / h));
-                        return 0.5F;
-                    }
-                }, true, false);
+            new Color(0.4F, 0.4F, 0.4F, 0.8F),
+            constellation,
+            width / 2 - 110 / 2,
+            guiTop + 84,
+            zLevel,
+            110,
+            110,
+            2F,
+            new RenderConstellation.BrightnessFunction() {
+
+                @Override
+                public float getBrightness() {
+                    // return 0.8F - (0.6F * (tierN / h));
+                    return 0.5F;
+                }
+            },
+            true,
+            false);
         GL11.glDisable(GL11.GL_BLEND);
     }
 
@@ -131,7 +144,7 @@ public class GuiConstellationPaper extends GuiWHScreen {
         GL11.glEnable(GL11.GL_BLEND);
         Blending.DEFAULT.apply();
         GL11.glColor4f(1, 1, 1, 1);
-        if(constellation instanceof IConstellationSpecialShowup) {
+        if (constellation instanceof IConstellationSpecialShowup) {
             double scale = 1.8;
             TextureHelper.refreshTextureBindState();
             FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
@@ -143,7 +156,7 @@ public class GuiConstellationPaper extends GuiWHScreen {
             GL11.glScaled(scale, scale, scale);
             fr.drawString("? ? ?", 0, 0, 0xAA4D4D4D, false);
             GL11.glPopMatrix();
-//            GL11.glColor4f(1, 1, 1, 1);
+            // GL11.glColor4f(1, 1, 1, 1);
             GL11.glColor4f(1, 1, 1, 1);
             TextureHelper.refreshTextureBindState();
         } else {
@@ -152,12 +165,12 @@ public class GuiConstellationPaper extends GuiWHScreen {
             int offsetY = guiTop + 206;
             for (int i = 0; i < phases.size(); i++) {
                 MoonPhase ph = phases.get(i);
-                MoonPhaseRenderHelper.getMoonPhaseTexture(ph).bind();
+                MoonPhaseRenderHelper.getMoonPhaseTexture(ph)
+                    .bind();
                 drawRect(offsetX + (i * (size + 2)), offsetY, size, size);
             }
         }
     }
-
 
     private void drawScroll() {
         GL11.glEnable(GL11.GL_BLEND);

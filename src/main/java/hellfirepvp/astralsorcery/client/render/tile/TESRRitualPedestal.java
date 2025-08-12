@@ -8,6 +8,16 @@
 
 package hellfirepvp.astralsorcery.client.render.tile;
 
+import java.awt.Color;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.effect.texture.TextureSpritePlane;
 import hellfirepvp.astralsorcery.client.util.RenderConstellation;
@@ -19,14 +29,6 @@ import hellfirepvp.astralsorcery.common.item.crystal.ItemTunedCelestialCrystal;
 import hellfirepvp.astralsorcery.common.item.crystal.base.ItemTunedCrystalBase;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -43,15 +45,16 @@ public class TESRRitualPedestal extends TileEntitySpecialRenderer {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         renderCrystalStack(te, x, y, z);
 
-        if(te.shouldDoAdditionalEffects()) {
+        if (te.shouldDoAdditionalEffects()) {
             renderEffects(te);
 
             GL11.glPushMatrix();
             GL11.glDisable(GL11.GL_ALPHA_TEST);
 
             IConstellation c = te.getDisplayConstellation();
-            if(c != null) {
-                float alphaDaytime = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(te.getWorldObj());
+            if (c != null) {
+                float alphaDaytime = ConstellationSkyHandler.getInstance()
+                    .getCurrentDaytimeDistribution(te.getWorldObj());
                 alphaDaytime *= 0.8F;
 
                 int max = 5000;
@@ -67,7 +70,13 @@ public class TESRRitualPedestal extends TileEntitySpecialRenderer {
 
                 float br = 0.6F * (alphaDaytime * percRunning);
 
-                RenderConstellation.renderConstellationIntoWorldFlat(c, c.getConstellationColor(), new Vector3(te).add(0.5, 0.04, 0.5), 3 + tr, 2, 0.1F + br);
+                RenderConstellation.renderConstellationIntoWorldFlat(
+                    c,
+                    c.getConstellationColor(),
+                    new Vector3(te).add(0.5, 0.04, 0.5),
+                    3 + tr,
+                    2,
+                    0.1F + br);
             }
 
             GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -79,27 +88,39 @@ public class TESRRitualPedestal extends TileEntitySpecialRenderer {
     private void renderEffects(TileRitualPedestal te) {
         int tick = te.getEffectWorkTick();
         float percRunning = ((float) tick / (float) TileRitualPedestal.MAX_EFFECT_TICK);
-        if(percRunning > 1E-4) {
+        if (percRunning > 1E-4) {
             TextureSpritePlane sprite = te.getHaloEffectSprite();
-            float alphaMul = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().theWorld);
+            float alphaMul = ConstellationSkyHandler.getInstance()
+                .getCurrentDaytimeDistribution(Minecraft.getMinecraft().theWorld);
             sprite.setAlphaMultiplier(percRunning * alphaMul);
         }
     }
 
     private void renderCrystalStack(TileRitualPedestal te, double x, double y, double z) {
-        ItemStack i = te.getInventoryHandler().getStackInSlot(0);
-        if(i != null && i.getItem() != null) {
+        ItemStack i = te.getInventoryHandler()
+            .getStackInSlot(0);
+        if (i != null && i.getItem() != null) {
             Item it = i.getItem();
-            if(it instanceof ItemTunedCrystalBase) {
+            if (it instanceof ItemTunedCrystalBase) {
                 GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
                 GL11.glPushMatrix();
                 boolean celestial = it instanceof ItemTunedCelestialCrystal;
-                Color c = celestial ? BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL.displayColor : BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL.displayColor;
+                Color c = celestial ? BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL.displayColor
+                    : BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL.displayColor;
                 long sBase = 1553015L;
                 sBase ^= (long) te.xCoord;
                 sBase ^= (long) te.yCoord;
                 sBase ^= (long) te.zCoord;
-                RenderingUtils.renderLightRayEffects(x + 0.5, y + 1.3, z + 0.5, c, sBase, ClientScheduler.getClientTick(), 20, 50, 25);
+                RenderingUtils.renderLightRayEffects(
+                    x + 0.5,
+                    y + 1.3,
+                    z + 0.5,
+                    c,
+                    sBase,
+                    ClientScheduler.getClientTick(),
+                    20,
+                    50,
+                    25);
 
                 GL11.glTranslated(x + 0.5, y + 1, z + 0.5);
                 GL11.glScaled(0.6, 0.6, 0.6);

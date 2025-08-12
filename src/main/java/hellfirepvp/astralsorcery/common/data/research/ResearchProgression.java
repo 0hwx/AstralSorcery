@@ -8,14 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.data.research;
 
-import hellfirepvp.astralsorcery.AstralSorcery;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import hellfirepvp.astralsorcery.AstralSorcery;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -26,8 +26,10 @@ import java.util.Map;
  */
 public enum ResearchProgression {
 
-    /*DISCOVERY(0, ProgressionTier.DISCOVERY),
-    STARLIGHT(1, ProgressionTier.BASIC_CRAFT);*/
+    /*
+     * DISCOVERY(0, ProgressionTier.DISCOVERY),
+     * STARLIGHT(1, ProgressionTier.BASIC_CRAFT);
+     */
     DISCOVERY(0, ProgressionTier.DISCOVERY),
     BASIC_CRAFT(1, ProgressionTier.BASIC_CRAFT, DISCOVERY),
     ATTUNEMENT(2, ProgressionTier.ATTUNEMENT, BASIC_CRAFT),
@@ -56,10 +58,16 @@ public enum ResearchProgression {
 
     void addResearchToGroup(ResearchNode res) {
         for (ResearchNode node : researchNodes) {
-            if(node.renderPosX == res.renderPosX &&
-                    node.renderPosZ == res.renderPosZ) {
-                throw new IllegalArgumentException("Tried to register 2 Research Nodes at the same position at x=" + res.renderPosX + ", z=" + res.renderPosZ + "! " +
-                        "Present: " + node.getUnLocalizedName() + " - Tried to set: " + res.getUnLocalizedName());
+            if (node.renderPosX == res.renderPosX && node.renderPosZ == res.renderPosZ) {
+                throw new IllegalArgumentException(
+                    "Tried to register 2 Research Nodes at the same position at x=" + res.renderPosX
+                        + ", z="
+                        + res.renderPosZ
+                        + "! "
+                        + "Present: "
+                        + node.getUnLocalizedName()
+                        + " - Tried to set: "
+                        + res.getUnLocalizedName());
             }
         }
         this.researchNodes.add(res);
@@ -73,17 +81,18 @@ public enum ResearchProgression {
         return new Registry(this);
     }
 
-    /*public boolean tryStepTo(EntityPlayer player, boolean force) {
-        return (force || canStepTo(player)) && ResearchManager.forceUnsafeResearchStep(player, this);
-    }
-
-    public boolean canStepTo(EntityPlayer player) {
-        PlayerProgress progress = ResearchManager.getProgress(player);
-        if(progress == null) return false;
-        List<ResearchProgression> playerResearchProgression = progress.getResearchProgression();
-        ProgressionTier playerTier = progress.getTierReached();
-        return playerTier.isThisLaterOrEqual(requiredProgress) && playerResearchProgression.containsAll(preConditions);
-    }*/
+    /*
+     * public boolean tryStepTo(EntityPlayer player, boolean force) {
+     * return (force || canStepTo(player)) && ResearchManager.forceUnsafeResearchStep(player, this);
+     * }
+     * public boolean canStepTo(EntityPlayer player) {
+     * PlayerProgress progress = ResearchManager.getProgress(player);
+     * if(progress == null) return false;
+     * List<ResearchProgression> playerResearchProgression = progress.getResearchProgression();
+     * ProgressionTier playerTier = progress.getTierReached();
+     * return playerTier.isThisLaterOrEqual(requiredProgress) && playerResearchProgression.containsAll(preConditions);
+     * }
+     */
 
     public ProgressionTier getRequiredProgress() {
         return requiredProgress;

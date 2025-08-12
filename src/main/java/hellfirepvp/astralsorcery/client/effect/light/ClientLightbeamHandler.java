@@ -8,6 +8,16 @@
 
 package hellfirepvp.astralsorcery.client.effect.light;
 
+import java.awt.Color;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+
 import cpw.mods.fml.common.gameevent.TickEvent;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
@@ -18,15 +28,6 @@ import hellfirepvp.astralsorcery.common.tile.network.TileCrystalLens;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-
-import java.awt.*;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -43,26 +44,27 @@ public class ClientLightbeamHandler implements ITickHandler {
     @Override
     public void tick(TickEvent.Type type, Object... context) {
         ticksExisted++;
-        if(ticksExisted % 40 == 0) {
+        if (ticksExisted % 40 == 0) {
             ticksExisted = 0;
             Entity rView = Minecraft.getMinecraft().renderViewEntity;
-            if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
-            if(rView != null) {
+            if (rView == null) rView = Minecraft.getMinecraft().thePlayer;
+            if (rView != null) {
                 int dimId = rView.worldObj.provider.dimensionId;
                 DataLightConnections connections = SyncDataHolder.getDataClient(SyncDataHolder.DATA_LIGHT_CONNECTIONS);
-                if(connections.clientReceivingData) return;
+                if (connections.clientReceivingData) return;
 
                 Map<BlockPos, List<BlockPos>> positions = connections.getClientConnections(dimId);
-                if(positions != null) {
-                    Iterator<Map.Entry<BlockPos, List<BlockPos>>> iterator = positions.entrySet().iterator();
+                if (positions != null) {
+                    Iterator<Map.Entry<BlockPos, List<BlockPos>>> iterator = positions.entrySet()
+                        .iterator();
                     while (iterator.hasNext()) {
                         Map.Entry<BlockPos, List<BlockPos>> entry = iterator.next();
-                        if(entry == null) continue;
+                        if (entry == null) continue;
                         BlockPos at = entry.getKey();
                         if (rView.getDistanceSq(at.getX(), at.getY(), at.getZ()) <= Config.maxEffectRenderDistanceSq) {
                             Vector3 source = new Vector3(at).add(0.5, 0.5, 0.5);
                             Color overlay = null;
-                            TileCrystalLens lens = MiscUtils.getTileAt(rView.worldObj,  at, TileCrystalLens.class, true);
+                            TileCrystalLens lens = MiscUtils.getTileAt(rView.worldObj, at, TileCrystalLens.class, true);
                             if (lens != null) {
                                 if (lens.getLensColor() != null) {
                                     overlay = lens.getLensColor().wrappedColor;
@@ -70,9 +72,14 @@ public class ClientLightbeamHandler implements ITickHandler {
                             }
                             for (BlockPos dst : entry.getValue()) {
                                 Vector3 to = new Vector3(dst).add(0.5, 0.5, 0.5);
-                                EffectLightbeam beam = EffectHandler.getInstance().lightbeam(to, source, 0.6);
+                                EffectLightbeam beam = EffectHandler.getInstance()
+                                    .lightbeam(to, source, 0.6);
                                 if (overlay != null) {
-                                    beam.setColorOverlay(overlay.getRed() / 255F, overlay.getGreen() / 255F, overlay.getBlue() / 255F, 1F);
+                                    beam.setColorOverlay(
+                                        overlay.getRed() / 255F,
+                                        overlay.getGreen() / 255F,
+                                        overlay.getBlue() / 255F,
+                                        1F);
                                 }
                             }
                         }

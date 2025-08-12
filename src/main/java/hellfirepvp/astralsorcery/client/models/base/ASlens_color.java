@@ -11,6 +11,7 @@ package hellfirepvp.astralsorcery.client.models.base;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -47,11 +48,11 @@ public class ASlens_color extends ModelBase {
 
     @Override
     public void render(Entity entity, float modelYaw, float modelPitch, float f2, float f3, float f4, float scale) {
-        this.glass.    rotateAngleX = modelPitch * 0.017453292F;
-        this.fitting1. rotateAngleX = modelPitch * 0.017453292F;
-        this.fitting2. rotateAngleX = modelPitch * 0.017453292F;
+        this.glass.rotateAngleX = modelPitch * 0.017453292F;
+        this.fitting1.rotateAngleX = modelPitch * 0.017453292F;
+        this.fitting2.rotateAngleX = modelPitch * 0.017453292F;
         this.detail1_1.rotateAngleX = modelPitch * 0.017453292F;
-        this.detail1.  rotateAngleX = modelPitch * 0.017453292F;
+        this.detail1.rotateAngleX = modelPitch * 0.017453292F;
 
         this.glass.render(scale);
         GL11.glColor4f(1F, 1F, 1F, 1F);

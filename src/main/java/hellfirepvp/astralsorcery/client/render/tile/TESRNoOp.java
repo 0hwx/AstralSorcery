@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.client.render.tile;
 
-import hellfirepvp.astralsorcery.client.util.item.IItemRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+
+import hellfirepvp.astralsorcery.client.util.item.IItemRenderer;
 
 /**
  * This class is part of the Astral Sorcery Mod

@@ -8,20 +8,22 @@
 
 package hellfirepvp.astralsorcery.common.crafting.helper;
 
-import hellfirepvp.astralsorcery.common.crafting.IAccessibleRecipe;
-import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
-import javax.annotation.Nullable;
-import java.util.LinkedList;
-import java.util.List;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.crafting.IAccessibleRecipe;
+import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -45,7 +47,7 @@ public class AccessibleRecipeAdapater implements IAccessibleRecipe {
     @SideOnly(Side.CLIENT)
     public List<ItemStack> getExpectedStackForRender(int row, int column) {
         ItemHandle handle = abstractRecipe.getExpectedStack(row, column);
-        if(handle == null) return null;
+        if (handle == null) return null;
         return refactorSubItems(handle.getApplicableItemsForRender());
     }
 
@@ -59,7 +61,7 @@ public class AccessibleRecipeAdapater implements IAccessibleRecipe {
     @SideOnly(Side.CLIENT)
     public List<ItemStack> getExpectedStackForRender(ShapedRecipeSlot slot) {
         ItemHandle handle = abstractRecipe.getExpectedStack(slot);
-        if(handle == null) return null;
+        if (handle == null) return null;
         return refactorSubItems(handle.getApplicableItemsForRender());
     }
 
@@ -72,8 +74,9 @@ public class AccessibleRecipeAdapater implements IAccessibleRecipe {
     private List<ItemStack> refactorSubItems(List<ItemStack> applicableItems) {
         List<ItemStack> out = new LinkedList<>();
         for (ItemStack oreDictIn : applicableItems) {
-            if(oreDictIn.getItemDamage() == OreDictionary.WILDCARD_VALUE && !oreDictIn.isItemStackDamageable()) {
-                oreDictIn.getItem().getSubItems(oreDictIn.getItem(), CreativeTabs.tabDecorations, out);
+            if (oreDictIn.getItemDamage() == OreDictionary.WILDCARD_VALUE && !oreDictIn.isItemStackDamageable()) {
+                oreDictIn.getItem()
+                    .getSubItems(oreDictIn.getItem(), CreativeTabs.tabDecorations, out);
             } else {
                 out.add(oreDictIn);
             }
@@ -103,8 +106,8 @@ public class AccessibleRecipeAdapater implements IAccessibleRecipe {
         return parent.getRecipeOutput();
     }
 
-//    @Override
-//    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-//        return parent.getRemainingItems(inv);
-//    }
+    // @Override
+    // public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+    // return parent.getRemainingItems(inv);
+    // }
 }

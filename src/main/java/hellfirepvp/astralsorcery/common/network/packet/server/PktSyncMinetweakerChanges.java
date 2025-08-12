@@ -8,18 +8,19 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.client.util.ItemColorizationHelper;
-import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
-import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network.SerializeableRecipe;
-import io.netty.buffer.ByteBuf;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import java.util.List;
+import hellfirepvp.astralsorcery.client.util.ItemColorizationHelper;
+import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
+import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network.SerializeableRecipe;
+import io.netty.buffer.ByteBuf;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -48,7 +49,9 @@ public class PktSyncMinetweakerChanges implements IMessage, IMessageHandler<PktS
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(recipe.getType().ordinal());
+        buf.writeInt(
+            recipe.getType()
+                .ordinal());
         recipe.write(buf);
     }
 
@@ -89,7 +92,7 @@ public class PktSyncMinetweakerChanges implements IMessage, IMessageHandler<PktS
                 change.onMessage(change, ctx);
             }
             CraftingAccessManager.compile();
-            if(p.parts.size() > 0) { //Only if it's actually necessary...
+            if (p.parts.size() > 0) { // Only if it's actually necessary...
                 reloadColors();
             }
             return null;

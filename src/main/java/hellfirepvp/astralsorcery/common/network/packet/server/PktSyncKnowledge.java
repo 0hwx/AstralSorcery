@@ -8,6 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.constellation.IConstellation;
@@ -19,14 +27,6 @@ import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -60,7 +60,8 @@ public class PktSyncKnowledge implements IMessage, IMessageHandler<PktSyncKnowle
         this.knownConstellations = progress.getKnownConstellations();
         this.seenConstellations = progress.getSeenConstellations();
         this.researchProgression = progress.getResearchProgression();
-        this.progressTier = progress.getTierReached().ordinal();
+        this.progressTier = progress.getTierReached()
+            .ordinal();
         this.attunedConstellation = progress.getAttunedConstellation();
         this.appliedPerks = progress.getAppliedPerks();
         this.alignmentCharge = progress.getAlignmentCharge();
@@ -104,23 +105,28 @@ public class PktSyncKnowledge implements IMessage, IMessageHandler<PktSyncKnowle
         }
 
         int attunementPresent = buf.readByte();
-        if(attunementPresent != -1) {
+        if (attunementPresent != -1) {
             String attunement = ByteBufUtils.readString(buf);
             IConstellation c = ConstellationRegistry.getConstellationByName(attunement);
-            if(c == null || !(c instanceof IMajorConstellation)) {
-                AstralSorcery.log.warn("[AstralSorcery] received constellation-attunement progress-packet with unknown constellation: " + attunement);
+            if (c == null || !(c instanceof IMajorConstellation)) {
+                AstralSorcery.log.warn(
+                    "[AstralSorcery] received constellation-attunement progress-packet with unknown constellation: "
+                        + attunement);
             } else {
                 this.attunedConstellation = (IMajorConstellation) c;
             }
         }
 
         int perkLength = buf.readInt();
-        if(perkLength != -1) {
+        if (perkLength != -1) {
             this.appliedPerks = new HashMap<>(perkLength);
             for (int i = 0; i < perkLength; i++) {
                 int id = buf.readInt();
                 int lvl = buf.readInt();
-                this.appliedPerks.put(ConstellationPerks.getById(id).getSingleInstance(), lvl);
+                this.appliedPerks.put(
+                    ConstellationPerks.getById(id)
+                        .getSingleInstance(),
+                    lvl);
             }
         } else {
             this.appliedPerks = new HashMap<>();
@@ -162,14 +168,14 @@ public class PktSyncKnowledge implements IMessage, IMessageHandler<PktSyncKnowle
             buf.writeInt(-1);
         }
 
-        if(attunedConstellation != null) {
+        if (attunedConstellation != null) {
             buf.writeByte(1);
             ByteBufUtils.writeString(buf, attunedConstellation.getUnlocalizedName());
         } else {
             buf.writeByte(-1);
         }
 
-        if(appliedPerks != null) {
+        if (appliedPerks != null) {
             buf.writeInt(appliedPerks.size());
             for (ConstellationPerk perk : appliedPerks.keySet()) {
                 buf.writeInt(perk.getId());

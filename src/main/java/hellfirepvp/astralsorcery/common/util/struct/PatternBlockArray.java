@@ -8,13 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.util.struct;
 
-import hellfirepvp.astralsorcery.common.util.BlockPos;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.Map;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -36,13 +37,13 @@ public class PatternBlockArray extends BlockArray {
             BlockInformation info = entry.getValue();
             BlockPos at = center.add(entry.getKey());
             Block state = world.getBlock(at.getX(), at.getY(), at.getZ());
-            if(!info.matcher.isStateValid(world, at, state)) {
+            if (!info.matcher.isStateValid(world, at, state)) {
                 return false;
             }
-            if(matcherMap.containsKey(entry.getKey())) {
+            if (matcherMap.containsKey(entry.getKey())) {
                 TileEntity te = world.getTileEntity(at.getX(), at.getY(), at.getZ());
                 TileEntityMatcher matcher = matcherMap.get(entry.getKey());
-                if(matcher.isApplicable(te) && !matcher.matches(world, entry.getKey(), te)) {
+                if (matcher.isApplicable(te) && !matcher.matches(world, entry.getKey(), te)) {
                     return false;
                 }
             }

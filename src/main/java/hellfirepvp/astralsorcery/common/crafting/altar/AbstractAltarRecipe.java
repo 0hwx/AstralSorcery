@@ -8,6 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar;
 
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.item.ItemStack;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
 import hellfirepvp.astralsorcery.common.crafting.IAccessibleRecipe;
 import hellfirepvp.astralsorcery.common.crafting.IGatedRecipe;
@@ -21,13 +30,6 @@ import hellfirepvp.astralsorcery.common.crafting.helper.ShapedRecipeSlot;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
-import net.minecraft.item.ItemStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -82,17 +84,19 @@ public abstract class AbstractAltarRecipe {
         return ItemUtils.copyStackWithSize(out, out.stackSize);
     }
 
-    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler, boolean ignoreStarlightRequirement) {
-        if(!ignoreStarlightRequirement && !fulfillesStarlightRequirement(altar)) return false;
+    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler,
+        boolean ignoreStarlightRequirement) {
+        if (!ignoreStarlightRequirement && !fulfillesStarlightRequirement(altar)) return false;
 
-        if(this instanceof IGatedRecipe) {
-            if(altar.getWorldObj().isRemote) {
-                if(!((IGatedRecipe) this).hasProgressionClient()) return false;
+        if (this instanceof IGatedRecipe) {
+            if (altar.getWorldObj().isRemote) {
+                if (!((IGatedRecipe) this).hasProgressionClient()) return false;
             }
         }
 
-        if(this instanceof INighttimeRecipe) {
-            if(!ConstellationSkyHandler.getInstance().isNight(altar.getWorldObj())) return false;
+        if (this instanceof INighttimeRecipe) {
+            if (!ConstellationSkyHandler.getInstance()
+                .isNight(altar.getWorldObj())) return false;
         }
 
         ItemStack[] altarInv = new ItemStack[9];
@@ -142,74 +146,74 @@ public abstract class AbstractAltarRecipe {
         return 100;
     }
 
-    //Return false and the item in the slot is not consumed.
+    // Return false and the item in the slot is not consumed.
     public boolean mayDecrement(TileAltar ta, ShapedRecipeSlot slot) {
         ItemHandle handle = recipe.getExpectedStackHandle(slot);
         return handle == null || handle.getFluidTypeAndAmount() == null;
     }
 
     public boolean mayDecrement(TileAltar ta, AttunementRecipe.AttunementAltarSlot slot) {
-        if(!(this instanceof AttunementRecipe)) return true;
+        if (!(this instanceof AttunementRecipe)) return true;
         AttunementRecipe thisRecipe = (AttunementRecipe) this;
         ItemHandle handle = thisRecipe.getAttItemHandle(slot);
         return handle == null || handle.getFluidTypeAndAmount() == null;
     }
 
     public boolean mayDecrement(TileAltar ta, ConstellationRecipe.ConstellationAtlarSlot slot) {
-        if(!(this instanceof ConstellationRecipe)) return true;
+        if (!(this instanceof ConstellationRecipe)) return true;
         ConstellationRecipe thisRecipe = (ConstellationRecipe) this;
         ItemHandle handle = thisRecipe.getCstItemHandle(slot);
         return handle == null || handle.getFluidTypeAndAmount() == null;
     }
 
-    //Called if the respective method above returns 'false' to allow for proper decrement-handling.
+    // Called if the respective method above returns 'false' to allow for proper decrement-handling.
     public void handleItemConsumption(TileAltar ta, ShapedRecipeSlot slot) {
         ItemHandle handle = recipe.getExpectedStackHandle(slot);
-        if(handle == null) return;
+        if (handle == null) return;
 
         TileReceiverBaseInventory.ItemHandlerTile inventory = ta.getInventoryHandler();
         ItemStack stack = inventory.getStackInSlot(slot.getSlotID());
-        if(stack != null) {
+        if (stack != null) {
             ItemStack result = ItemUtils.drainFluidFromItem(stack, handle.getFluidTypeAndAmount(), true);
-            if(result != null) {
+            if (result != null) {
                 inventory.setInventorySlotContents(slot.getSlotID(), result);
             }
         }
     }
 
     public void handleItemConsumption(TileAltar ta, AttunementRecipe.AttunementAltarSlot slot) {
-        if(!(this instanceof AttunementRecipe)) return;
+        if (!(this instanceof AttunementRecipe)) return;
         AttunementRecipe thisRecipe = (AttunementRecipe) this;
         ItemHandle handle = thisRecipe.getAttItemHandle(slot);
-        if(handle == null) return;
+        if (handle == null) return;
 
         TileReceiverBaseInventory.ItemHandlerTile inventory = ta.getInventoryHandler();
         ItemStack stack = inventory.getStackInSlot(slot.getSlotId());
-        if(stack != null) {
+        if (stack != null) {
             ItemStack result = ItemUtils.drainFluidFromItem(stack, handle.getFluidTypeAndAmount(), true);
-            if(result != null) {
+            if (result != null) {
                 inventory.setInventorySlotContents(slot.getSlotId(), result);
             }
         }
     }
 
     public void handleItemConsumption(TileAltar ta, ConstellationRecipe.ConstellationAtlarSlot slot) {
-        if(!(this instanceof ConstellationRecipe)) return;
+        if (!(this instanceof ConstellationRecipe)) return;
         ConstellationRecipe thisRecipe = (ConstellationRecipe) this;
         ItemHandle handle = thisRecipe.getCstItemHandle(slot);
-        if(handle == null) return;
+        if (handle == null) return;
 
         TileReceiverBaseInventory.ItemHandlerTile inventory = ta.getInventoryHandler();
         ItemStack stack = inventory.getStackInSlot(slot.getSlotId());
-        if(stack != null) {
+        if (stack != null) {
             ItemStack result = ItemUtils.drainFluidFromItem(stack, handle.getFluidTypeAndAmount(), true);
-            if(result != null) {
+            if (result != null) {
                 inventory.setInventorySlotContents(slot.getSlotId(), result);
             }
         }
     }
 
-    //Can be used to applyServer modifications to items on the shapeMap.
+    // Can be used to applyServer modifications to items on the shapeMap.
     public void applyOutputModificationsServer(TileAltar ta, Random rand) {}
 
     public void onCraftServerFinish(TileAltar altar, Random rand) {}

@@ -8,15 +8,17 @@
 
 package hellfirepvp.astralsorcery.client.sky;
 
-import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
-import hellfirepvp.astralsorcery.common.data.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IRenderHandler;
+
 import org.lwjgl.opengl.GL11;
+
+import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
+import hellfirepvp.astralsorcery.common.data.config.Config;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,24 +43,26 @@ public class RenderSkybox extends IRenderHandler {
     @Override
     public void render(float partialTicks, WorldClient world, Minecraft mc) {
         if (!astralSky.isInitialized() && !AssetLibrary.reloading) {
-            astralSky.setInitialized(world.getWorldInfo().getSeed());
+            astralSky.setInitialized(
+                world.getWorldInfo()
+                    .getSeed());
         }
 
-        //if(true) return;
+        // if(true) return;
 
         if (Config.weakSkyRendersWhitelist.contains(world.provider.dimensionId)) {
-            if(otherSkyRenderer != null) {
+            if (otherSkyRenderer != null) {
                 otherSkyRenderer.render(partialTicks, world, mc);
             } else {
                 RenderGlobal rg = Minecraft.getMinecraft().renderGlobal;
-                //Make vanilla guess
-                if(world.provider.dimensionId == 1) {
-//                    rg.renderSky(partialTicks);
-                } else if(Minecraft.getMinecraft().theWorld.provider.isSurfaceWorld()) {
+                // Make vanilla guess
+                if (world.provider.dimensionId == 1) {
+                    // rg.renderSky(partialTicks);
+                } else if (Minecraft.getMinecraft().theWorld.provider.isSurfaceWorld()) {
                     IRenderHandler render = world.provider.getSkyRenderer();
                     world.provider.setSkyRenderer(null);
 
-                    if(Minecraft.getMinecraft().gameSettings.anaglyph) {
+                    if (Minecraft.getMinecraft().gameSettings.anaglyph) {
                         EntityRenderer.anaglyphField = 0;
                         GL11.glColorMask(false, true, true, false);
                         rg.renderSky(partialTicks);

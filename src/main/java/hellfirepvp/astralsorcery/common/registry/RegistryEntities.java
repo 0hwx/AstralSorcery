@@ -8,10 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.registry;
 
+import net.minecraft.entity.Entity;
+
 import cpw.mods.fml.common.registry.EntityRegistry;
 import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.entities.*;
-import net.minecraft.entity.Entity;
+import hellfirepvp.astralsorcery.common.entities.EntityCrystal;
+import hellfirepvp.astralsorcery.common.entities.EntityCrystalTool;
+import hellfirepvp.astralsorcery.common.entities.EntityFlare;
+import hellfirepvp.astralsorcery.common.entities.EntityIlluminationSpark;
+import hellfirepvp.astralsorcery.common.entities.EntityItemHighlighted;
+import hellfirepvp.astralsorcery.common.entities.EntityItemStardust;
+import hellfirepvp.astralsorcery.common.entities.EntityStarburst;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -38,8 +45,16 @@ public class RegistryEntities {
         registerEntity(EntityCrystalTool.class, "EntityCrystalTool", modEid++, 64, 20, true);
     }
 
-    private static void registerEntity(Class<? extends Entity> entityClass, String name, int id, int trackingRange, int updateFreq, boolean sendVelUpdates) {
-        EntityRegistry.registerModEntity(entityClass, name, id, AstralSorcery.instance, trackingRange, updateFreq, sendVelUpdates);
+    private static void registerEntity(Class<? extends Entity> entityClass, String name, int id, int trackingRange,
+        int updateFreq, boolean sendVelUpdates) {
+        EntityRegistry.registerModEntity(
+            entityClass,
+            name,
+            id,
+            AstralSorcery.instance,
+            trackingRange,
+            updateFreq,
+            sendVelUpdates);
     }
 
 }

@@ -8,14 +8,16 @@
 
 package hellfirepvp.astralsorcery.common.starlight.network;
 
-import cpw.mods.fml.common.gameevent.TickEvent;
-import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
-import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.world.World;
+
+import cpw.mods.fml.common.gameevent.TickEvent;
+import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -38,11 +40,11 @@ public class StarlightTransmissionHandler implements ITickHandler {
     @Override
     public void tick(TickEvent.Type type, Object... context) {
         World world = (World) context[0];
-        if(world.isRemote) return;
+        if (world.isRemote) return;
 
         int dimId = world.provider.dimensionId;
         TransmissionWorldHandler handle = worldHandlers.get(dimId);
-        if(handle == null) {
+        if (handle == null) {
             handle = new TransmissionWorldHandler(world);
             worldHandlers.put(dimId, handle);
         }
@@ -52,7 +54,7 @@ public class StarlightTransmissionHandler implements ITickHandler {
     public void informWorldUnload(World world) {
         int dimId = world.provider.dimensionId;
         TransmissionWorldHandler handle = worldHandlers.get(dimId);
-        if(handle != null) {
+        if (handle != null) {
             handle.clear(world.provider.dimensionId);
         }
         this.worldHandlers.remove(dimId);
@@ -60,7 +62,7 @@ public class StarlightTransmissionHandler implements ITickHandler {
 
     @Nullable
     public TransmissionWorldHandler getWorldHandler(World world) {
-        if(world == null) return null;
+        if (world == null) return null;
         return worldHandlers.get(world.provider.dimensionId);
     }
 

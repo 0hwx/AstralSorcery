@@ -8,6 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.event.listener;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.server.S3FPacketCustomPayload;
+
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -25,13 +33,6 @@ import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktSyncAlignmentLevels;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktSyncConfig;
 import io.netty.buffer.Unpooled;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.S3FPacketCustomPayload;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -50,7 +51,7 @@ public class EventHandlerNetwork {
         AstralSorcery.log.info("Synchronizing configuration to " + p.getDisplayName());
         PacketChannel.CHANNEL.sendTo(new PktSyncConfig(), p);
         PacketChannel.CHANNEL.sendTo(new PktSyncAlignmentLevels(ConstellationPerkLevelManager.levelsRequired), p);
-        if(Mods.MINETWEAKER.isPresent()) {
+        if (Mods.MINETWEAKER.isPresent()) {
             PacketChannel.CHANNEL.sendTo(ModIntegrationCrafttweaker.compileRecipeChangePacket(), p);
         }
 
@@ -63,7 +64,8 @@ public class EventHandlerNetwork {
     @SubscribeEvent
     public void onLoginEarly(FMLNetworkEvent.ServerConnectionFromClientEvent event) {
         PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
-        List<Integer> dimensions = ((DataWorldSkyHandlers) SyncDataHolder.getDataServer(SyncDataHolder.DATA_SKY_HANDLERS)).getSkyHandlerDimensions();
+        List<Integer> dimensions = ((DataWorldSkyHandlers) SyncDataHolder
+            .getDataServer(SyncDataHolder.DATA_SKY_HANDLERS)).getSkyHandlerDimensions();
         buf.writeInt(dimensions.size());
         for (int i : dimensions) {
             buf.writeInt(i);
@@ -72,15 +74,17 @@ public class EventHandlerNetwork {
     }
 
     public static void clientCatchWorldHandlerPayload(S3FPacketCustomPayload pkt) {
-        if(pkt.func_149169_c().equals(AS_WORLDHANDLERS_PAYLOAD)) {
-            byte[] buf = pkt.func_149168_d(); //todo check this
+        if (pkt.func_149169_c()
+            .equals(AS_WORLDHANDLERS_PAYLOAD)) {
+            byte[] buf = pkt.func_149168_d(); // todo check this
             int size = buf.length;
             List<Integer> dimensions = new ArrayList<>(size);
             for (int i = 0; i < size; i++) {
                 dimensions.add(buf.length);
             }
 
-            ((DataWorldSkyHandlers) SyncDataHolder.getDataClient(SyncDataHolder.DATA_SKY_HANDLERS)).updateClient(dimensions);
+            ((DataWorldSkyHandlers) SyncDataHolder.getDataClient(SyncDataHolder.DATA_SKY_HANDLERS))
+                .updateClient(dimensions);
         }
     }
 
@@ -89,7 +93,7 @@ public class EventHandlerNetwork {
         EntityPlayer player = e.player;
 
         PlayerChargeHandler.instance.informDisconnect(player);
-        //ResearchManager.logoutResetClient(player);
+        // ResearchManager.logoutResetClient(player);
     }
 
 }

@@ -8,6 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.item.crystal.base;
 
+import java.awt.Color;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.entities.EntityCrystal;
 import hellfirepvp.astralsorcery.common.item.base.IGrindable;
 import hellfirepvp.astralsorcery.common.item.base.ItemHighlighted;
@@ -17,19 +32,6 @@ import hellfirepvp.astralsorcery.common.item.crystal.ItemTunedCelestialCrystal;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import java.awt.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -57,11 +59,11 @@ public abstract class ItemRockCrystalBase extends Item implements IGrindable, It
     public GrindResult grind(TileGrindstone grindstone, ItemStack stack, Random rand) {
         CrystalProperties prop = CrystalProperties.getCrystalProperties(stack);
         CrystalProperties result = prop.grindCopy(rand);
-        if(result == null) {
+        if (result == null) {
             return GrindResult.failBreakItem();
         }
         CrystalProperties.applyCrystalProperties(stack, result);
-        if(result.getSize() <= 0) {
+        if (result.getSize() <= 0) {
             return GrindResult.failBreakItem();
         }
         return GrindResult.success();
@@ -82,7 +84,7 @@ public abstract class ItemRockCrystalBase extends Item implements IGrindable, It
         EntityCrystal crystal = new EntityCrystal(world, location.posX, location.posY, location.posZ, itemstack);
         crystal.delayBeforeCanPickup = 10;
         crystal.age = -6000;
-//        crystal.setNoDespawn();
+        // crystal.setNoDespawn();
         crystal.motionX = location.motionX;
         crystal.motionY = location.motionY;
         crystal.motionZ = location.motionZ;
@@ -98,7 +100,10 @@ public abstract class ItemRockCrystalBase extends Item implements IGrindable, It
     @SideOnly(Side.CLIENT)
     protected Optional<Boolean> addCrystalPropertyToolTip(ItemStack stack, List<String> tooltip) {
         boolean isCelestial = this instanceof ItemCelestialCrystal || this instanceof ItemTunedCelestialCrystal;
-        return CrystalProperties.addPropertyTooltip(CrystalProperties.getCrystalProperties(stack), tooltip, isCelestial ? CrystalProperties.MAX_SIZE_CELESTIAL : CrystalProperties.MAX_SIZE_ROCK);
+        return CrystalProperties.addPropertyTooltip(
+            CrystalProperties.getCrystalProperties(stack),
+            tooltip,
+            isCelestial ? CrystalProperties.MAX_SIZE_CELESTIAL : CrystalProperties.MAX_SIZE_ROCK);
     }
 
     public abstract ItemTunedCrystalBase getTunedItemVariant();

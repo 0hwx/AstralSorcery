@@ -23,7 +23,7 @@ public abstract class TileSkybound extends TileEntityTick {
     public void tick() {
         super.tick();
 
-        if((ticksExisted & 15) == 0) {
+        if ((ticksExisted & 15) == 0) {
             updateSkyState(worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord));
         }
     }

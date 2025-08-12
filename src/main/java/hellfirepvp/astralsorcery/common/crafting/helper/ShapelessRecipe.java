@@ -8,7 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.crafting.helper;
 
-import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,7 +18,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
-import javax.annotation.Nullable;
+import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
 public class ShapelessRecipe extends AbstractCacheableRecipe {
 
     protected int contentCounter = 0;
-    protected ItemHandle[] contents = new ItemHandle[9]; //Max. 9
+    protected ItemHandle[] contents = new ItemHandle[9]; // Max. 9
 
     public ShapelessRecipe(Block block) {
         this(new ItemStack(block));
@@ -52,19 +53,19 @@ public class ShapelessRecipe extends AbstractCacheableRecipe {
     }
 
     public ShapelessRecipe add(ItemStack stack) {
-        if(contentCounter >= 9) return this; //Add nothing then.
+        if (contentCounter >= 9) return this; // Add nothing then.
         this.contents[contentCounter++] = new ItemHandle(stack);
         return this;
     }
 
     public ShapelessRecipe add(String oreDictName) {
-        if(contentCounter >= 9) return this; //Add nothing then.
+        if (contentCounter >= 9) return this; // Add nothing then.
         this.contents[contentCounter++] = new ItemHandle(oreDictName);
         return this;
     }
 
     public ShapelessRecipe addPart(FluidStack fluidStack) {
-        if(contentCounter >= 9) return this; //Add nothing then.
+        if (contentCounter >= 9) return this; // Add nothing then.
         this.contents[contentCounter++] = new ItemHandle(fluidStack);
         return this;
     }
@@ -78,22 +79,23 @@ public class ShapelessRecipe extends AbstractCacheableRecipe {
     }
 
     public ShapelessRecipe addPart(ItemHandle handle) {
-        if(contentCounter >= 9) return this; //Add nothing then.
+        if (contentCounter >= 9) return this; // Add nothing then.
         this.contents[contentCounter++] = handle;
         return this;
     }
 
     @Override
     public void register() {
-        CraftingManager.getInstance().addRecipe(null,make());
-    } //todo check this
+        CraftingManager.getInstance()
+            .addRecipe(null, make());
+    } // todo check this
 
     @Override
     public AccessibleRecipeAdapater make() {
         Object[] parts = new Object[contentCounter];
         for (int i = 0; i < parts.length; i++) {
             Object obj = parts[i];
-            if(obj instanceof ItemHandle) {
+            if (obj instanceof ItemHandle) {
                 parts[i] = contents[i].getObjectForRecipe();
             } else {
                 parts[i] = contents[i];
@@ -107,7 +109,7 @@ public class ShapelessRecipe extends AbstractCacheableRecipe {
         Object[] parts = new Object[contentCounter];
         for (int i = 0; i < parts.length; i++) {
             Object obj = parts[i];
-            if(obj instanceof ItemHandle) {
+            if (obj instanceof ItemHandle) {
                 parts[i] = contents[i].getObjectForRecipe();
             } else {
                 parts[i] = contents[i];

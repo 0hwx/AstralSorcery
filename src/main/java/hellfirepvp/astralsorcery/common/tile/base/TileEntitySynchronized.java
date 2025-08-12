@@ -8,13 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.tile.base;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -46,22 +46,22 @@ public abstract class TileEntitySynchronized extends TileEntity {
 
     public void writeNetNBT(NBTTagCompound compound) {}
 
-//    @Override
-//    public final SPacketUpdateTileEntity getUpdatePacket() {
-//        NBTTagCompound compound = new NBTTagCompound();
-//        super.writeToNBT(compound);
-//        writeCustomNBT(compound);
-//        writeNetNBT(compound);
-//        return new SPacketUpdateTileEntity(getPos(), 255, compound);
-//    }
-//
-//    @Override
-//    public NBTTagCompound getUpdateTag() {
-//        NBTTagCompound compound = new NBTTagCompound();
-//        super.writeToNBT(compound);
-//        writeCustomNBT(compound);
-//        return compound;
-//    }
+    // @Override
+    // public final SPacketUpdateTileEntity getUpdatePacket() {
+    // NBTTagCompound compound = new NBTTagCompound();
+    // super.writeToNBT(compound);
+    // writeCustomNBT(compound);
+    // writeNetNBT(compound);
+    // return new SPacketUpdateTileEntity(getPos(), 255, compound);
+    // }
+    //
+    // @Override
+    // public NBTTagCompound getUpdateTag() {
+    // NBTTagCompound compound = new NBTTagCompound();
+    // super.writeToNBT(compound);
+    // writeCustomNBT(compound);
+    // return compound;
+    // }
     @Override
     public void onDataPacket(NetworkManager manager, S35PacketUpdateTileEntity packet) {
         super.onDataPacket(manager, packet);
@@ -71,7 +71,7 @@ public abstract class TileEntitySynchronized extends TileEntity {
 
     public void markForUpdate() {
         Block thisState = worldObj.getBlock(xCoord, yCoord, zCoord);
-        worldObj.notifyBlockChange(xCoord, yCoord, zCoord,thisState);
+        worldObj.notifyBlockChange(xCoord, yCoord, zCoord, thisState);
         markDirty();
     }
 

@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-import com.google.common.collect.Lists;
-import net.minecraft.block.Block;
-import net.minecraft.world.World;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
+
+import com.google.common.collect.Lists;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -62,7 +63,8 @@ public interface BlockStateCheck {
 
         @Override
         public boolean isStateValid(World world, BlockPos pos, Block state) {
-            return state.equals(block) && pos.getMetadata(world) == toCheck; // state.getBlock().getMeta(state) == toCheck;
+            return state.equals(block) && pos.getMetadata(world) == toCheck; // state.getBlock().getMeta(state) ==
+                                                                             // toCheck;
         }
     }
 

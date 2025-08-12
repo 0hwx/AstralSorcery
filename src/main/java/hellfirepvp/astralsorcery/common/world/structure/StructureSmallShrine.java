@@ -8,16 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.world.structure;
 
-import hellfirepvp.astralsorcery.common.data.world.data.StructureGenBuffer;
-import hellfirepvp.astralsorcery.common.lib.MultiBlockArrays;
+import java.util.Random;
 
-import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.world.World;
-
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
-import java.util.Random;
+import hellfirepvp.astralsorcery.common.data.world.data.StructureGenBuffer;
+import hellfirepvp.astralsorcery.common.lib.MultiBlockArrays;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -29,7 +27,13 @@ import java.util.Random;
 public class StructureSmallShrine extends WorldGenAttributeStructure {
 
     public StructureSmallShrine() {
-        super(0, "smallShrine", () -> MultiBlockArrays.smallShrine, StructureGenBuffer.StructureType.SMALL, BiomeDictionary.Type.PLAINS, BiomeDictionary.Type.FOREST);
+        super(
+            0,
+            "smallShrine",
+            () -> MultiBlockArrays.smallShrine,
+            StructureGenBuffer.StructureType.SMALL,
+            BiomeDictionary.Type.PLAINS,
+            BiomeDictionary.Type.FOREST);
         this.idealDistance = 256F;
     }
 
@@ -41,40 +45,44 @@ public class StructureSmallShrine extends WorldGenAttributeStructure {
 
     @Override
     public boolean fulfillsSpecificConditions(BlockPos pos, World world, Random random) {
-        if(!isApplicableBiome(world, pos)) return false;
-        if(!canSpawnShrineCorner(world, pos.add(-4, 0,  4))) return false;
-        if(!canSpawnShrineCorner(world, pos.add( 4, 0, -4))) return false;
-        if(!canSpawnShrineCorner(world, pos.add( 4, 0,  4))) return false;
-        if(!canSpawnShrineCorner(world, pos.add(-4, 0, -4))) return false;
+        if (!isApplicableBiome(world, pos)) return false;
+        if (!canSpawnShrineCorner(world, pos.add(-4, 0, 4))) return false;
+        if (!canSpawnShrineCorner(world, pos.add(4, 0, -4))) return false;
+        if (!canSpawnShrineCorner(world, pos.add(4, 0, 4))) return false;
+        if (!canSpawnShrineCorner(world, pos.add(-4, 0, -4))) return false;
         return true;
     }
 
     private boolean canSpawnShrineCorner(World world, BlockPos pos) {
         int dY = world.getTopSolidOrLiquidBlock(pos.getX(), pos.getZ());
-        if (dY >= cfgEntry.getMinY() && dY <= cfgEntry.getMaxY() && Math.abs(dY - pos.getY()) <= 1 && isApplicableBiome(world, pos)) {
-            return !world.getBlock(pos.getX(), dY, pos.getZ()).getMaterial().isLiquid();
+        if (dY >= cfgEntry.getMinY() && dY <= cfgEntry.getMaxY()
+            && Math.abs(dY - pos.getY()) <= 1
+            && isApplicableBiome(world, pos)) {
+            return !world.getBlock(pos.getX(), dY, pos.getZ())
+                .getMaterial()
+                .isLiquid();
         }
         return false;
     }
 
     private boolean isApplicableBiome(World world, BlockPos pos) {
-        if(cfgEntry.shouldIgnoreBiomeSpecifications()) return true;
+        if (cfgEntry.shouldIgnoreBiomeSpecifications()) return true;
 
-//        BiomeGenBase b = world.getBiomeGenForCoords(pos.getX(), pos.getZ());
-//        BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(b);
-//        if(types == null || types.length == 0) return false;
+        // BiomeGenBase b = world.getBiomeGenForCoords(pos.getX(), pos.getZ());
+        // BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(b);
+        // if(types == null || types.length == 0) return false;
         boolean applicable = false;
-//        for (BiomeDictionary.Type t : types) {
-//            if (cfgEntry.getTypes().contains(t)) applicable = true;
-//        }
+        // for (BiomeDictionary.Type t : types) {
+        // if (cfgEntry.getTypes().contains(t)) applicable = true;
+        // }
         return applicable;
     }
 
     @Override
     public BlockPos getGenerationPosition(int chX, int chZ, World world, Random rand) {
-        int rX = (chX  * 16) + rand.nextInt(16) + 8;
-        int rZ = (chZ  * 16) + rand.nextInt(16) + 8;
-        int rY = world.getTopSolidOrLiquidBlock(rX,rZ);
+        int rX = (chX * 16) + rand.nextInt(16) + 8;
+        int rZ = (chZ * 16) + rand.nextInt(16) + 8;
+        int rY = world.getTopSolidOrLiquidBlock(rX, rZ);
         return new BlockPos(rX, rY, rZ);
     }
 }

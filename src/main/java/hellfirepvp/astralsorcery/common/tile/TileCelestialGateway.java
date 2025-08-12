@@ -1,5 +1,12 @@
 package hellfirepvp.astralsorcery.common.tile;
 
+import java.awt.Color;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.NBTTagCompound;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
@@ -12,12 +19,6 @@ import hellfirepvp.astralsorcery.common.lib.MultiBlockArrays;
 import hellfirepvp.astralsorcery.common.tile.base.TileEntityTick;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.NBTTagCompound;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import java.awt.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -39,27 +40,36 @@ public class TileCelestialGateway extends TileEntityTick {
     public void tick() {
         super.tick();
 
-        if(worldObj.isRemote) {
+        if (worldObj.isRemote) {
             playEffects();
         } else {
             BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
-            if((ticksExisted & 15) == 0) {
-                updateSkyState(worldObj.canBlockSeeTheSky(pos.up().getX(), pos.up().getY(), pos.up().getZ()));
+            if ((ticksExisted & 15) == 0) {
+                updateSkyState(
+                    worldObj.canBlockSeeTheSky(
+                        pos.up()
+                            .getX(),
+                        pos.up()
+                            .getY(),
+                        pos.up()
+                            .getZ()));
             }
 
-            if((ticksExisted & 15) == 0) {
+            if ((ticksExisted & 15) == 0) {
                 updateMultBlock(MultiBlockArrays.patternCelestialGateway.matches(worldObj, pos));
             }
 
-            if(gatewayRegistered) {
-                if(!hasMultiblock() || !doesSeeSky()) {
-                    GatewayCache cache = WorldCacheManager.getOrLoadData(worldObj, WorldCacheManager.SaveKey.GATEWAY_DATA);
+            if (gatewayRegistered) {
+                if (!hasMultiblock() || !doesSeeSky()) {
+                    GatewayCache cache = WorldCacheManager
+                        .getOrLoadData(worldObj, WorldCacheManager.SaveKey.GATEWAY_DATA);
                     cache.removePosition(worldObj, pos);
                     gatewayRegistered = false;
                 }
             } else {
-                if(hasMultiblock() && doesSeeSky()) {
-                    GatewayCache cache = WorldCacheManager.getOrLoadData(worldObj, WorldCacheManager.SaveKey.GATEWAY_DATA);
+                if (hasMultiblock() && doesSeeSky()) {
+                    GatewayCache cache = WorldCacheManager
+                        .getOrLoadData(worldObj, WorldCacheManager.SaveKey.GATEWAY_DATA);
                     cache.offerPosition(worldObj, pos);
                     gatewayRegistered = true;
                 }
@@ -73,7 +83,7 @@ public class TileCelestialGateway extends TileEntityTick {
     private void updateMultBlock(boolean matches) {
         boolean update = hasMultiblock != matches;
         this.hasMultiblock = matches;
-        if(update) {
+        if (update) {
             markForUpdate();
         }
     }
@@ -81,7 +91,7 @@ public class TileCelestialGateway extends TileEntityTick {
     private void updateSkyState(boolean seeSky) {
         boolean update = doesSeeSky != seeSky;
         this.doesSeeSky = seeSky;
-        if(update) {
+        if (update) {
             markForUpdate();
         }
     }
@@ -98,45 +108,62 @@ public class TileCelestialGateway extends TileEntityTick {
     private void playEffects() {
         boolean prec = hasMultiblock && doesSeeSky;
         setupGatewayUI(prec);
-        if(prec) {
+        if (prec) {
             playFrameParticles();
         }
     }
 
     @SideOnly(Side.CLIENT)
     private void setupGatewayUI(boolean preconditionsFulfilled) {
-        if(preconditionsFulfilled) {
+        if (preconditionsFulfilled) {
             BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
             Vector3 sphereVec = new Vector3(pos).add(0.5, 1.62, 0.5);
-            if(clientSphere == null) {
-                CompoundEffectSphere sphere = new CompoundGatewayShield(sphereVec.clone(), Vector3.RotAxis.Y_AXIS, 6, 8, 10);
-                sphere.setRemoveIfInvisible(true).setAlphaFadeDistance(4);
-                EffectHandler.getInstance().registerFX(sphere);
+            if (clientSphere == null) {
+                CompoundEffectSphere sphere = new CompoundGatewayShield(
+                    sphereVec.clone(),
+                    Vector3.RotAxis.Y_AXIS,
+                    6,
+                    8,
+                    10);
+                sphere.setRemoveIfInvisible(true)
+                    .setAlphaFadeDistance(4);
+                EffectHandler.getInstance()
+                    .registerFX(sphere);
                 clientSphere = sphere;
             }
             double playerDst = new Vector3(Minecraft.getMinecraft().thePlayer).distance(sphereVec);
-            if(clientSphere != null) {
-                if(!((CompoundEffectSphere) clientSphere).getPosition().equals(sphereVec)) {
+            if (clientSphere != null) {
+                if (!((CompoundEffectSphere) clientSphere).getPosition()
+                    .equals(sphereVec)) {
                     ((CompoundEffectSphere) clientSphere).requestRemoval();
 
-                    CompoundEffectSphere sphere = new CompoundGatewayShield(sphereVec.clone(), Vector3.RotAxis.Y_AXIS, 6, 8, 10);
-                    sphere.setRemoveIfInvisible(true).setAlphaFadeDistance(4);
-                    EffectHandler.getInstance().registerFX(sphere);
+                    CompoundEffectSphere sphere = new CompoundGatewayShield(
+                        sphereVec.clone(),
+                        Vector3.RotAxis.Y_AXIS,
+                        6,
+                        8,
+                        10);
+                    sphere.setRemoveIfInvisible(true)
+                        .setAlphaFadeDistance(4);
+                    EffectHandler.getInstance()
+                        .registerFX(sphere);
                     clientSphere = sphere;
                 }
-                if(((EntityComplexFX) clientSphere).isRemoved() && playerDst < 5) {
-                    EffectHandler.getInstance().registerFX((EntityComplexFX) clientSphere);
+                if (((EntityComplexFX) clientSphere).isRemoved() && playerDst < 5) {
+                    EffectHandler.getInstance()
+                        .registerFX((EntityComplexFX) clientSphere);
                 }
             }
-            if(playerDst < 5.5) {
+            if (playerDst < 5.5) {
                 Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
             }
-            if(playerDst < 2.5) {
-                EffectHandler.getInstance().requestGatewayUIFor(worldObj, sphereVec, 5.5);
+            if (playerDst < 2.5) {
+                EffectHandler.getInstance()
+                    .requestGatewayUIFor(worldObj, sphereVec, 5.5);
             }
         } else {
-            if(clientSphere != null) {
-                if(!((EntityComplexFX) clientSphere).isRemoved()) {
+            if (clientSphere != null) {
+                if (!((EntityComplexFX) clientSphere).isRemoved()) {
                     ((EntityComplexFX) clientSphere).requestRemoval();
                 }
             }
@@ -148,13 +175,15 @@ public class TileCelestialGateway extends TileEntityTick {
         for (int i = 0; i < 2; i++) {
             BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
             Vector3 offset = new Vector3(pos).add(-2, 0, -2);
-            if(rand.nextBoolean()) {
+            if (rand.nextBoolean()) {
                 offset.add(5 * (rand.nextBoolean() ? 1 : 0), 0, rand.nextFloat() * 5);
             } else {
                 offset.add(rand.nextFloat() * 5, 0, 5 * (rand.nextBoolean() ? 1 : 0));
             }
             EntityFXFacingParticle p = EffectHelper.genericFlareParticle(offset.getX(), offset.getY(), offset.getZ());
-            p.gravity(0.0045).scale(0.25F + rand.nextFloat() * 0.15F).setMaxAge(40 + rand.nextInt(40));
+            p.gravity(0.0045)
+                .scale(0.25F + rand.nextFloat() * 0.15F)
+                .setMaxAge(40 + rand.nextInt(40));
             Color c = new Color(60, 0, 255);
             switch (rand.nextInt(4)) {
                 case 0:

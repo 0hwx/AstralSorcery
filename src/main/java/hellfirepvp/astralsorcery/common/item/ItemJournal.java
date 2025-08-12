@@ -8,16 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.CommonProxy;
-import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
-import hellfirepvp.astralsorcery.common.constellation.IConstellation;
-import hellfirepvp.astralsorcery.common.container.ContainerJournal;
-import hellfirepvp.astralsorcery.common.lib.ItemsAS;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -28,13 +24,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.common.CommonProxy;
+import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
+import hellfirepvp.astralsorcery.common.constellation.IConstellation;
+import hellfirepvp.astralsorcery.common.container.ContainerJournal;
+import hellfirepvp.astralsorcery.common.lib.ItemsAS;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -53,9 +54,9 @@ public class ItemJournal extends Item {
 
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer playerIn) {
-        if(world.isRemote && !playerIn.isSneaking()) {
+        if (world.isRemote && !playerIn.isSneaking()) {
             AstralSorcery.proxy.openGui(CommonProxy.EnumGuiId.JOURNAL, playerIn, world, 0, 0, 0);
-        } else if(!world.isRemote && playerIn.isSneaking()) {
+        } else if (!world.isRemote && playerIn.isSneaking()) {
             AstralSorcery.proxy.openGui(CommonProxy.EnumGuiId.JOURNAL_STORAGE, playerIn, world, 0, 0, 0);
         }
         return stack;
@@ -63,7 +64,7 @@ public class ItemJournal extends Item {
 
     @Nullable
     public static ContainerJournal getContainer(InventoryPlayer playerInv, ItemStack stack, int journalIndex) {
-        if(stack == null || !(stack.getItem() instanceof ItemJournal)) return null;
+        if (stack == null || !(stack.getItem() instanceof ItemJournal)) return null;
         return new ContainerJournal(playerInv, stack, journalIndex);
     }
 
@@ -96,7 +97,7 @@ public class ItemJournal extends Item {
         LinkedList<IConstellation> out = new LinkedList<>();
         for (int i = 0; i < constellationPapers.tagCount(); i++) {
             IConstellation c = ConstellationRegistry.getConstellationByName(constellationPapers.getStringTagAt(i));
-            if(c != null) {
+            if (c != null) {
                 out.add(c);
             }
         }
@@ -114,11 +115,9 @@ public class ItemJournal extends Item {
         cmp.setTag("constellations", list);
     }
 
-
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IIconRegister register)
-    {
-       this.itemIcon = register.registerIcon("astralsorcery:journal");
+    public void registerIcons(IIconRegister register) {
+        this.itemIcon = register.registerIcon("astralsorcery:journal");
     }
 }

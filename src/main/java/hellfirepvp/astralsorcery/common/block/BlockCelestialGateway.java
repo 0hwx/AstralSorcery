@@ -1,17 +1,17 @@
 package hellfirepvp.astralsorcery.common.block;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.Material;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+
 import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
 import hellfirepvp.astralsorcery.common.data.world.data.GatewayCache;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.tile.TileCelestialGateway;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -22,7 +22,8 @@ import net.minecraft.world.World;
  */
 public class BlockCelestialGateway extends BlockContainer {
 
-    private static final AxisAlignedBB box =  AxisAlignedBB.getBoundingBox(1D / 16D, 0D / 16D, 1D / 16D, 15D / 16D, 1D / 16D, 10D / 15D);
+    private static final AxisAlignedBB box = AxisAlignedBB
+        .getBoundingBox(1D / 16D, 0D / 16D, 1D / 16D, 15D / 16D, 1D / 16D, 10D / 15D);
 
     public BlockCelestialGateway() {
         super(Material.rock);
@@ -82,10 +83,10 @@ public class BlockCelestialGateway extends BlockContainer {
         return false;
     }
 
-//    @Override
-//    public boolean canRenderInLayer(Block state, BlockRenderLayer layer) {
-//        return layer == BlockRenderLayer.SOLID || layer == BlockRenderLayer.TRANSLUCENT;
-//    }
+    // @Override
+    // public boolean canRenderInLayer(Block state, BlockRenderLayer layer) {
+    // return layer == BlockRenderLayer.SOLID || layer == BlockRenderLayer.TRANSLUCENT;
+    // }
 
     @Override
     public int getRenderType() {

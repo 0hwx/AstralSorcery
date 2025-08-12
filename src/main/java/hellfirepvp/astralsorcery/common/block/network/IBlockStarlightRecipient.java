@@ -8,11 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.block.network;
 
-import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
+import java.util.Random;
+
 import net.minecraft.world.World;
 
-import java.util.Random;
+import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,12 +34,13 @@ public interface IBlockStarlightRecipient {
      * Note that this is only fired if this block is a block linked to an endpoint of a network
      * and if this block is not a transmission node.
      *
-     * @param world the world this block instance is in
-     * @param rand a world-independent random for convenience
-     * @param pos the position
+     * @param world         the world this block instance is in
+     * @param rand          a world-independent random for convenience
+     * @param pos           the position
      * @param starlightType the constellation type of the starlight received
-     * @param amount the amount received
+     * @param amount        the amount received
      */
-    public void receiveStarlight(World world, Random rand, BlockPos pos, IWeakConstellation starlightType, double amount);
+    public void receiveStarlight(World world, Random rand, BlockPos pos, IWeakConstellation starlightType,
+        double amount);
 
 }

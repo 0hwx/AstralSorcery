@@ -57,7 +57,8 @@ public class SmeltingRecipe extends AbstractRecipe {
 
     @Override
     public void register() {
-        FurnaceRecipes.smelting().func_151394_a(smelted, getOutput(), exp);
+        FurnaceRecipes.smelting()
+            .func_151394_a(smelted, getOutput(), exp);
     }
 
 }

@@ -8,19 +8,20 @@
 
 package hellfirepvp.astralsorcery.common.entities;
 
-import hellfirepvp.astralsorcery.client.effect.EffectHelper;
-import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
+import java.awt.Color;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.awt.*;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.client.effect.EffectHelper;
+import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
+import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -42,14 +43,14 @@ public class EntityIlluminationSpark extends EntityThrowable {
     public EntityIlluminationSpark(World worldIn, EntityLivingBase throwerIn) {
         super(worldIn, throwerIn);
         setThrowableHeading(throwerIn.rotationPitch, throwerIn.rotationYaw, 0.0F, 0.7F, 1.0F);
-//        setHeadingFromThrower(throwerIn, throwerIn.rotationPitch, throwerIn.rotationYaw, 0.0F, 0.7F, 1.0F);
+        // setHeadingFromThrower(throwerIn, throwerIn.rotationPitch, throwerIn.rotationYaw, 0.0F, 0.7F, 1.0F);
     }
 
     @Override
     public void onUpdate() {
         super.onUpdate();
 
-        if(worldObj.isRemote) {
+        if (worldObj.isRemote) {
             playEffects();
         }
     }
@@ -59,10 +60,12 @@ public class EntityIlluminationSpark extends EntityThrowable {
         EntityFXFacingParticle particle;
         for (int i = 0; i < 6; i++) {
             particle = EffectHelper.genericFlareParticle(posX, posY, posZ);
-            particle.motion(
+            particle
+                .motion(
                     rand.nextFloat() * 0.04F - rand.nextFloat() * 0.08F,
                     rand.nextFloat() * 0.04F - rand.nextFloat() * 0.08F,
-                    rand.nextFloat() * 0.04F - rand.nextFloat() * 0.08F).scale(0.25F);
+                    rand.nextFloat() * 0.04F - rand.nextFloat() * 0.08F)
+                .scale(0.25F);
             randomizeColor(particle);
         }
         particle = EffectHelper.genericFlareParticle(posX, posY, posZ);
@@ -95,10 +98,18 @@ public class EntityIlluminationSpark extends EntityThrowable {
                 ForgeDirection dir = ForgeDirection.getOrientation(result.sideHit);
                 BlockPos pos = new BlockPos(result.blockX, result.blockY, result.blockZ).offset(dir);
                 int meta = worldObj.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
-                if (worldObj.canPlaceEntityOnSide(BlocksAS.blockVolatileLight, pos.getX(), pos.getY(), pos.getZ(), false, result.sideHit, null, null)) {
-                    worldObj.setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.blockVolatileLight,meta, 3);
+                if (worldObj.canPlaceEntityOnSide(
+                    BlocksAS.blockVolatileLight,
+                    pos.getX(),
+                    pos.getY(),
+                    pos.getZ(),
+                    false,
+                    result.sideHit,
+                    null,
+                    null)) {
+                    worldObj.setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.blockVolatileLight, meta, 3);
                 }
-            } else if(result.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+            } else if (result.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
                 if (result.entityHit.equals(getThrower())) {
                     return;
                 }

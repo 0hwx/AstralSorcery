@@ -9,7 +9,6 @@
 package hellfirepvp.astralsorcery.client.render;
 
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 
 /**
@@ -21,16 +20,16 @@ import net.minecraft.entity.Entity;
  */
 public abstract class RenderEntityModel<T extends Entity> extends Render {
 
-//    protected RenderEntityModel(RenderManager renderManager) {
-//        super(renderManager);
-//    }
-//
-//    public abstract void doModelRender(T entity, float pTicks);
-//
-//    public static abstract class RenderEntityModelFactory<T extends Entity> implements IRenderFactory<T> {
-//
-//        public abstract RenderEntityModel<? super T> createRenderFor(RenderManager manager);
-//
-//    }
+    // protected RenderEntityModel(RenderManager renderManager) {
+    // super(renderManager);
+    // }
+    //
+    // public abstract void doModelRender(T entity, float pTicks);
+    //
+    // public static abstract class RenderEntityModelFactory<T extends Entity> implements IRenderFactory<T> {
+    //
+    // public abstract RenderEntityModel<? super T> createRenderFor(RenderManager manager);
+    //
+    // }
 
 }

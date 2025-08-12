@@ -8,13 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.util.data;
 
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.MiscUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -53,15 +53,15 @@ public class WorldBlockPos extends BlockPos {
         return wrap(world, super.add(x, y, z));
     }
 
-//    @Override
-//    public WorldBlockPos add(double x, double y, double z) {
-//        return wrap(world, super.add(x, y, z));
-//    }
-//
-//    @Override
-//    public WorldBlockPos add(Vec3 vec) {
-//        return wrap(world, super.add(vec));
-//    }
+    // @Override
+    // public WorldBlockPos add(double x, double y, double z) {
+    // return wrap(world, super.add(x, y, z));
+    // }
+    //
+    // @Override
+    // public WorldBlockPos add(Vec3 vec) {
+    // return wrap(world, super.add(vec));
+    // }
 
     public <T extends TileEntity> T getTileAt(Class<T> tileClass, boolean forceChunkLoad) {
         return MiscUtils.getTileAt(world, this, tileClass, forceChunkLoad);

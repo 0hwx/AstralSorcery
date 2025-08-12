@@ -8,8 +8,35 @@
 
 package hellfirepvp.astralsorcery.common.data.research;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.DimensionManager;
+
 import com.google.common.io.Files;
+
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.event.ClientRenderEventHandler;
 import hellfirepvp.astralsorcery.common.block.network.BlockAltar;
@@ -28,31 +55,6 @@ import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.PlayerUtil;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
-import com.mojang.realmsclient.gui.ChatFormatting;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.common.DimensionManager;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -69,7 +71,7 @@ public class ResearchManager {
 
     @Nullable
     public static PlayerProgress getProgress(EntityPlayer player, Side side) {
-        if(side == Side.CLIENT) {
+        if (side == Side.CLIENT) {
             return clientProgress;
         } else {
             return getProgress(player);
@@ -89,9 +91,9 @@ public class ResearchManager {
             progress = playerProgressServer.get(uuid);
         }
         if (progress == null) {
-            progress = new PlayerProgress(); //WELL we already try recovering.. so wtf.
-            //AstralSorcery.log.warn("Failed to load AstralSocery Progress data!");
-            //AstralSorcery.log.warn("Erroneous file: " + uuid.toString() + ".astral");
+            progress = new PlayerProgress(); // WELL we already try recovering.. so wtf.
+            // AstralSorcery.log.warn("Failed to load AstralSocery Progress data!");
+            // AstralSorcery.log.warn("Erroneous file: " + uuid.toString() + ".astral");
         }
         return progress;
     }
@@ -122,10 +124,11 @@ public class ResearchManager {
 
     public static void unsafeForceGiveResearch(EntityPlayer player, ResearchProgression prog) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return;
+        if (progress == null) return;
 
         ProgressionTier reqTier = prog.getRequiredProgress();
-        if(!progress.getTierReached().isThisLaterOrEqual(reqTier)) {
+        if (!progress.getTierReached()
+            .isThisLaterOrEqual(reqTier)) {
             progress.setTierReached(reqTier);
         }
 
@@ -133,7 +136,8 @@ public class ResearchManager {
         progToGive.add(prog);
         while (!progToGive.isEmpty()) {
             ResearchProgression give = progToGive.pop();
-            if(!progress.getResearchProgression().contains(give)) {
+            if (!progress.getResearchProgression()
+                .contains(give)) {
                 progress.forceGainResearch(give);
             }
             progToGive.addAll(give.getPreConditions());
@@ -148,15 +152,17 @@ public class ResearchManager {
 
     public static void giveResearchIgnoreFail(EntityPlayer player, ResearchProgression prog) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return;
+        if (progress == null) return;
 
         ProgressionTier tier = prog.getRequiredProgress();
-        if(!progress.getTierReached().isThisLaterOrEqual(tier)) return;
+        if (!progress.getTierReached()
+            .isThisLaterOrEqual(tier)) return;
         for (ResearchProgression other : prog.getPreConditions()) {
-            if(!progress.getResearchProgression().contains(other)) return;
+            if (!progress.getResearchProgression()
+                .contains(other)) return;
         }
 
-        if(progress.forceGainResearch(prog)) {
+        if (progress.forceGainResearch(prog)) {
             PktProgressionUpdate pkt = new PktProgressionUpdate(prog);
             PacketChannel.CHANNEL.sendTo(pkt, (EntityPlayerMP) player);
         }
@@ -167,12 +173,12 @@ public class ResearchManager {
 
     public static void giveProgressionIgnoreFail(EntityPlayer player, ProgressionTier tier) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return;
+        if (progress == null) return;
 
         ProgressionTier t = progress.getTierReached();
-        if(!t.hasNextTier()) return; //No higher tier available anyway.
+        if (!t.hasNextTier()) return; // No higher tier available anyway.
         ProgressionTier next = t.next();
-        if(!next.equals(tier)) return; //Given one is not the next step.
+        if (!next.equals(tier)) return; // Given one is not the next step.
 
         progress.setTierReached(next);
         PktProgressionUpdate pkt = new PktProgressionUpdate(next);
@@ -184,13 +190,13 @@ public class ResearchManager {
 
     public static boolean discoverConstellations(Collection<IConstellation> csts, EntityPlayer player) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
+        if (progress == null) return false;
 
         for (IConstellation c : csts) {
             progress.discoverConstellation(c.getUnlocalizedName());
         }
 
-        player.addStat(RegistryAchievements.achvDiscoverConstellation,1);
+        player.addStat(RegistryAchievements.achvDiscoverConstellation, 1);
 
         pushProgressToClientUnsafe(player);
         savePlayerKnowledge(player);
@@ -199,11 +205,11 @@ public class ResearchManager {
 
     public static boolean discoverConstellation(IConstellation c, EntityPlayer player) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
+        if (progress == null) return false;
 
         progress.discoverConstellation(c.getUnlocalizedName());
 
-        player.addStat(RegistryAchievements.achvDiscoverConstellation,1);
+        player.addStat(RegistryAchievements.achvDiscoverConstellation, 1);
 
         pushProgressToClientUnsafe(player);
         savePlayerKnowledge(player);
@@ -212,7 +218,7 @@ public class ResearchManager {
 
     public static boolean memorizeConstellation(IConstellation c, EntityPlayer player) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
+        if (progress == null) return false;
 
         progress.memorizeConstellation(c.getUnlocalizedName());
 
@@ -223,7 +229,7 @@ public class ResearchManager {
 
     public static boolean maximizeTier(EntityPlayer player) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
+        if (progress == null) return false;
         progress.setTierReached(ProgressionTier.values()[ProgressionTier.values().length - 1]);
 
         PktProgressionUpdate pkt = new PktProgressionUpdate();
@@ -236,7 +242,7 @@ public class ResearchManager {
 
     public static boolean setAttunedBefore(EntityPlayer player, boolean wasAttunedBefore) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
+        if (progress == null) return false;
 
         progress.setAttunedBefore(wasAttunedBefore);
 
@@ -247,13 +253,13 @@ public class ResearchManager {
 
     public static boolean setAttunedConstellation(EntityPlayer player, @Nullable IMajorConstellation constellation) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
+        if (progress == null) return false;
 
         progress.clearPerks();
         progress.forceCharge(0);
         progress.setAttunedConstellation(constellation);
 
-        player.addStat(RegistryAchievements.achvPlayerAttunement,1);
+        player.addStat(RegistryAchievements.achvPlayerAttunement, 1);
 
         pushProgressToClientUnsafe(player);
         savePlayerKnowledge(player);
@@ -262,12 +268,12 @@ public class ResearchManager {
 
     public static boolean applyPerk(EntityPlayer player, @Nonnull ConstellationPerks perk) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
-        if(!progress.hasFreeAlignmentLevel()) return false;
-        if(progress.hasPerkUnlocked(perk)) return false;
+        if (progress == null) return false;
+        if (!progress.hasFreeAlignmentLevel()) return false;
+        if (progress.hasPerkUnlocked(perk)) return false;
 
         int free = progress.getNextFreeLevel();
-        if(free == -1) return false;
+        if (free == -1) return false;
         progress.addPerk(perk.getSingleInstance(), free);
 
         pushProgressToClientUnsafe(player);
@@ -277,7 +283,7 @@ public class ResearchManager {
 
     public static boolean resetPerks(EntityPlayer player) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
+        if (progress == null) return false;
 
         progress.clearPerks();
 
@@ -288,7 +294,7 @@ public class ResearchManager {
 
     public static boolean forceCharge(EntityPlayer player, int charge) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
+        if (progress == null) return false;
 
         progress.forceCharge(charge);
 
@@ -299,11 +305,11 @@ public class ResearchManager {
 
     public static boolean modifyAlignmentCharge(EntityPlayer player, double charge) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
+        if (progress == null) return false;
 
         progress.modifyCharge(charge);
 
-        //AstralSorcery.log.info("NewCharge: " + player.getName() + " - " + progress.getAlignmentCharge());
+        // AstralSorcery.log.info("NewCharge: " + player.getName() + " - " + progress.getAlignmentCharge());
 
         pushProgressToClientUnsafe(player);
         savePlayerKnowledge(player);
@@ -317,31 +323,33 @@ public class ResearchManager {
      * null: no playerdata found.
      * some progression: New progression reached.
      */
-    /*public static Optional<ProgressionTier> stepTier(EntityPlayer player) {
-        PlayerProgress progress = getProgress(player);
-        if(progress == null) return Optional.of(null);
-        if(!progress.stepTier()) {
-            return Optional.empty();
-        }
+    /*
+     * public static Optional<ProgressionTier> stepTier(EntityPlayer player) {
+     * PlayerProgress progress = getProgress(player);
+     * if(progress == null) return Optional.of(null);
+     * if(!progress.stepTier()) {
+     * return Optional.empty();
+     * }
+     * pushProgressToClientUnsafe(player);
+     * savePlayerKnowledge(player);
+     * return Optional.of(progress.getTierReached());
+     * }
+     */
 
-        pushProgressToClientUnsafe(player);
-        savePlayerKnowledge(player);
-        return Optional.of(progress.getTierReached());
-    }*/
-
-    /*protected static boolean forceUnsafeResearchStep(EntityPlayer player, ResearchProgression progression) {
-        PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
-        progress.forceGainResearch(progression);
-
-        pushProgressToClientUnsafe(player);
-        savePlayerKnowledge(player);
-        return true;
-    }*/
+    /*
+     * protected static boolean forceUnsafeResearchStep(EntityPlayer player, ResearchProgression progression) {
+     * PlayerProgress progress = getProgress(player);
+     * if(progress == null) return false;
+     * progress.forceGainResearch(progression);
+     * pushProgressToClientUnsafe(player);
+     * savePlayerKnowledge(player);
+     * return true;
+     * }
+     */
 
     public static boolean forceMaximizeResearch(EntityPlayer player) {
         PlayerProgress progress = getProgress(player);
-        if(progress == null) return false;
+        if (progress == null) return false;
         for (ResearchProgression progression : ResearchProgression.values()) {
             progress.forceGainResearch(progression);
         }
@@ -380,7 +388,8 @@ public class ResearchManager {
         }
         try {
             NBTTagCompound cmp = new NBTTagCompound();
-            playerProgressServer.get(pUUID).store(cmp);
+            playerProgressServer.get(pUUID)
+                .store(cmp);
             CompressedStreamTools.write(cmp, playerFile);
         } catch (IOException e) {}
     }
@@ -401,9 +410,10 @@ public class ResearchManager {
             playerFile = getPlayerBackupFile(pUUID);
             try {
                 load_unsafe(pUUID, playerFile);
-                Files.copy(playerFile, getPlayerFile(pUUID)); //Copying back.
+                Files.copy(playerFile, getPlayerFile(pUUID)); // Copying back.
             } catch (Exception e1) {
-                AstralSorcery.log.warn("Unable to load progress from backup progress file. Copying relevant files to error files.");
+                AstralSorcery.log
+                    .warn("Unable to load progress from backup progress file. Copying relevant files to error files.");
                 AstralSorcery.log.warn("Erroneous file: " + playerFile.getName());
                 e1.printStackTrace();
 
@@ -411,12 +421,15 @@ public class ResearchManager {
                 File plBackup = getPlayerBackupFile(pUUID);
                 try {
                     Files.copy(plOriginal, new File(plOriginal.getParent(), plOriginal.getName() + ".lerror"));
-                    Files.copy(plBackup,   new File(plBackup.getParent(),     plBackup.getName() + ".lerror"));
-                    AstralSorcery.log.warn("Copied progression files to error files. In case you would like to try me (HellFirePvP) to maybe see what i can do about maybe recovering the files,");
-                    AstralSorcery.log.warn("send them over to me at the issue tracker https://github.com/HellFirePvP/AstralSorcery/issues - 90% that i won't be able to do anything, but reporting it would still be great.");
+                    Files.copy(plBackup, new File(plBackup.getParent(), plBackup.getName() + ".lerror"));
+                    AstralSorcery.log.warn(
+                        "Copied progression files to error files. In case you would like to try me (HellFirePvP) to maybe see what i can do about maybe recovering the files,");
+                    AstralSorcery.log.warn(
+                        "send them over to me at the issue tracker https://github.com/HellFirePvP/AstralSorcery/issues - 90% that i won't be able to do anything, but reporting it would still be great.");
                 } catch (IOException e2) {
                     AstralSorcery.log.warn("Unable to copy files to error-files.");
-                    AstralSorcery.log.warn("I've had enough. I can't even access or open the files apparently. I'm giving up.");
+                    AstralSorcery.log
+                        .warn("I've had enough. I can't even access or open the files apparently. I'm giving up.");
                     e2.printStackTrace();
                 }
                 plOriginal.delete();
@@ -431,7 +444,7 @@ public class ResearchManager {
     }
 
     private static void load_unsafe(UUID pUUID, File playerFile) throws Exception {
-        NBTTagCompound compound = CompressedStreamTools.read(playerFile); //IO-Exc thrown only here.
+        NBTTagCompound compound = CompressedStreamTools.read(playerFile); // IO-Exc thrown only here.
         load_unsafeFromNBT(pUUID, compound);
     }
 
@@ -451,16 +464,19 @@ public class ResearchManager {
 
     public static File getPlayerFile(UUID pUUID) {
         File f = new File(getPlayerDirectory(), pUUID.toString() + ".astral");
-        if(!f.exists()) {
+        if (!f.exists()) {
             try {
                 CompressedStreamTools.write(new NBTTagCompound(), f);
-            } catch (IOException ignored) {} //Will be created later anyway... just as fail-safe.
+            } catch (IOException ignored) {} // Will be created later anyway... just as fail-safe.
         }
         return f;
     }
 
     public static boolean doesPlayerFileExist(EntityPlayer player) {
-        return new File(getPlayerDirectory(), player.getUniqueID().toString() + ".astral").exists();
+        return new File(
+            getPlayerDirectory(),
+            player.getUniqueID()
+                .toString() + ".astral").exists();
     }
 
     public static File getPlayerBackupFile(EntityPlayer player) {
@@ -469,16 +485,18 @@ public class ResearchManager {
 
     public static File getPlayerBackupFile(UUID pUUID) {
         File f = new File(getPlayerDirectory(), pUUID.toString() + ".astralback");
-        if(!f.exists()) {
+        if (!f.exists()) {
             try {
                 CompressedStreamTools.write(new NBTTagCompound(), f);
-            } catch (IOException ignored) {} //Will be created later anyway... just as fail-safe.
+            } catch (IOException ignored) {} // Will be created later anyway... just as fail-safe.
         }
         return f;
     }
 
     private static File getPlayerDirectory() {
-        File wDir = DimensionManager.getWorld(0).getSaveHandler().getWorldDirectory();
+        File wDir = DimensionManager.getWorld(0)
+            .getSaveHandler()
+            .getWorldDirectory();
         File pDir = new File(wDir, "playerdata");
         if (!pDir.exists()) {
             pDir.mkdirs();
@@ -487,20 +505,23 @@ public class ResearchManager {
     }
 
     public static void saveAndClearServerCache() {
-        playerProgressServer.keySet().forEach(ResearchManager::savePlayerKnowledge);
+        playerProgressServer.keySet()
+            .forEach(ResearchManager::savePlayerKnowledge);
         playerProgressServer.clear();
     }
 
-    /*public static void logoutResetClient(EntityPlayer player) {
-        PktSyncKnowledge pkt = new PktSyncKnowledge(PktSyncKnowledge.STATE_WIPE);
-        PacketChannel.CHANNEL.sendTo(pkt, (net.minecraft.entity.player.EntityPlayerMP) player);
-    }*/
+    /*
+     * public static void logoutResetClient(EntityPlayer player) {
+     * PktSyncKnowledge pkt = new PktSyncKnowledge(PktSyncKnowledge.STATE_WIPE);
+     * PacketChannel.CHANNEL.sendTo(pkt, (net.minecraft.entity.player.EntityPlayerMP) player);
+     * }
+     */
 
     public static void recieveProgressFromServer(PktSyncKnowledge message) {
         int currentLvl = clientProgress == null ? 0 : ConstellationPerkLevelManager.getAlignmentLevel(clientProgress);
         clientProgress = new PlayerProgress();
         clientProgress.receive(message);
-        if(ConstellationPerkLevelManager.getAlignmentLevel(clientProgress) > currentLvl) {
+        if (ConstellationPerkLevelManager.getAlignmentLevel(clientProgress) > currentLvl) {
             showBar();
         }
     }
@@ -518,13 +539,14 @@ public class ResearchManager {
     public static void informCraftingInfusionCompletion(TileStarlightInfuser infuser, ActiveInfusionTask recipe) {
         EntityPlayer crafter = recipe.tryGetCraftingPlayerServer();
         BlockPos pos = new BlockPos(infuser.xCoord, infuser.yCoord, infuser.zCoord);
-        if(crafter == null) {
+        if (crafter == null) {
             AstralSorcery.log.warn("Infusion finished, player that initialized crafting could not be found!");
             AstralSorcery.log.warn("Affected tile: " + pos + " in dim " + infuser.getWorldObj().provider.dimensionId);
             return;
         }
 
-        ItemStack out = recipe.getRecipeToCraft().getOutput(infuser);
+        ItemStack out = recipe.getRecipeToCraft()
+            .getOutput(infuser);
         Item iOut = out.getItem();
 
         informCraft(crafter, out, iOut, Block.getBlockFromItem(iOut));
@@ -533,13 +555,14 @@ public class ResearchManager {
     public static void informCraftingAltarCompletion(TileAltar altar, ActiveCraftingTask recipeToCraft) {
         EntityPlayer crafter = recipeToCraft.tryGetCraftingPlayerServer();
         BlockPos pos = new BlockPos(altar.xCoord, altar.yCoord, altar.zCoord);
-        if(crafter == null) {
+        if (crafter == null) {
             AstralSorcery.log.warn("Crafting finished, player that initialized crafting could not be found!");
             AstralSorcery.log.warn("Affected tile: " + pos + " in dim " + altar.getWorldObj().provider.dimensionId);
             return;
         }
 
-        ItemStack out = recipeToCraft.getRecipeToCraft().getOutputForRender();
+        ItemStack out = recipeToCraft.getRecipeToCraft()
+            .getOutputForRender();
         Item iOut = out.getItem();
 
         informCraft(crafter, out, iOut, Block.getBlockFromItem(iOut));
@@ -547,11 +570,11 @@ public class ResearchManager {
 
     private static void informCraft(EntityPlayer crafter, ItemStack crafted, Item itemCrafted, @Nullable Block iBlock) {
 
-        if(itemCrafted instanceof ItemHandTelescope) {
-            crafter.addStat(RegistryAchievements.achvBuildHandTelescope,1);
+        if (itemCrafted instanceof ItemHandTelescope) {
+            crafter.addStat(RegistryAchievements.achvBuildHandTelescope, 1);
         }
-        if(iBlock != null) {
-            if(iBlock instanceof BlockAltar) {
+        if (iBlock != null) {
+            if (iBlock instanceof BlockAltar) {
                 giveProgressionIgnoreFail(crafter, ProgressionTier.BASIC_CRAFT);
                 giveResearchIgnoreFail(crafter, ResearchProgression.BASIC_CRAFT);
 
@@ -577,17 +600,27 @@ public class ResearchManager {
     }
 
     private static void informPlayersAboutProgressionLoss(UUID pUUID) {
-        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        if(server != null) {
+        MinecraftServer server = FMLCommonHandler.instance()
+            .getMinecraftServerInstance();
+        if (server != null) {
             EntityPlayerMP player = PlayerUtil.getPlayerByUUID(pUUID);
-            if(player != null) {
-                player.addChatMessage(new ChatComponentText("AstralSorcery: Your progression could not be loaded and can't be recovered from backup. Please contact an administrator to lookup what went wrong and/or potentially recover your data from a backup.").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)));
+            if (player != null) {
+                player.addChatMessage(
+                    new ChatComponentText(
+                        "AstralSorcery: Your progression could not be loaded and can't be recovered from backup. Please contact an administrator to lookup what went wrong and/or potentially recover your data from a backup.")
+                            .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)));
             }
             String resolvedName = player != null ? player.getDisplayName() : pUUID.toString() + " (Not online)";
-            for (String opName : server.getConfigurationManager().func_152606_n()) {
-                EntityPlayer pl = server.getConfigurationManager().func_152612_a(opName);
-                if(pl != null) {
-                    pl.addChatMessage(new ChatComponentText("AstralSorcery: The progression of " + resolvedName + " could not be loaded and can't be recovered from backup. Error files might be created from the unloadable progression files, check the console for additional information!").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)));
+            for (String opName : server.getConfigurationManager()
+                .func_152606_n()) {
+                EntityPlayer pl = server.getConfigurationManager()
+                    .func_152612_a(opName);
+                if (pl != null) {
+                    pl.addChatMessage(
+                        new ChatComponentText(
+                            "AstralSorcery: The progression of " + resolvedName
+                                + " could not be loaded and can't be recovered from backup. Error files might be created from the unloadable progression files, check the console for additional information!")
+                                    .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)));
                 }
             }
         }

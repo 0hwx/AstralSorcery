@@ -1,5 +1,16 @@
 package hellfirepvp.astralsorcery.common.data.world.data;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
+
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.base.CelestialGatewaySystem;
 import hellfirepvp.astralsorcery.common.data.world.CachedWorldData;
@@ -7,16 +18,6 @@ import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
 import hellfirepvp.astralsorcery.common.tile.TileCelestialGateway;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -39,10 +40,10 @@ public class GatewayCache extends CachedWorldData {
 
     public void offerPosition(World world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos.getX(), pos.getY(), pos.getZ());
-        if(te == null || !(te instanceof TileCelestialGateway)) {
+        if (te == null || !(te instanceof TileCelestialGateway)) {
             return;
         }
-        if(gatewayPositions.contains(pos)) {
+        if (gatewayPositions.contains(pos)) {
             return;
         }
         gatewayPositions.add(pos);
@@ -52,10 +53,11 @@ public class GatewayCache extends CachedWorldData {
     }
 
     public void removePosition(World world, BlockPos pos) {
-        if(gatewayPositions.remove(pos)) {
+        if (gatewayPositions.remove(pos)) {
             markDirty();
             CelestialGatewaySystem.instance.removePosition(world, pos);
-            AstralSorcery.log.info("Removed gateway node at: dim=" + world.provider.dimensionId + ", " + pos.toString());
+            AstralSorcery.log
+                .info("Removed gateway node at: dim=" + world.provider.dimensionId + ", " + pos.toString());
         }
     }
 
@@ -67,14 +69,18 @@ public class GatewayCache extends CachedWorldData {
         Iterator<BlockPos> iterator = gatewayPositions.iterator();
         while (iterator.hasNext()) {
             BlockPos pos = iterator.next();
-            TileEntity te = world.getTileEntity(pos.getX(), pos.getY(), pos.getZ()); //Loads the chunk... uh...
+            TileEntity te = world.getTileEntity(pos.getX(), pos.getY(), pos.getZ()); // Loads the chunk... uh...
             if (te == null || !(te instanceof TileCelestialGateway)) {
                 iterator.remove();
                 AstralSorcery.log.info("Invalid entry: " + pos + " - no gateway tileentity found there!");
             }
         }
 
-        AstralSorcery.log.info("GatewayCache checked and fully loaded in " + (System.currentTimeMillis() - msStart) + "ms! Collected and checked " + gatewayPositions.size() + " gateway nodes!");
+        AstralSorcery.log.info(
+            "GatewayCache checked and fully loaded in " + (System.currentTimeMillis() - msStart)
+                + "ms! Collected and checked "
+                + gatewayPositions.size()
+                + " gateway nodes!");
     }
 
     @Override

@@ -1,28 +1,35 @@
 package hellfirepvp.astralsorcery.common.constellation.starmap;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
-import hellfirepvp.astralsorcery.common.constellation.DrawnConstellation;
-import hellfirepvp.astralsorcery.common.constellation.IConstellation;
-import hellfirepvp.astralsorcery.common.registry.RegistryPotions;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
-import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.Constants;
 
-import java.awt.*;
-import java.util.*;
-import java.util.List;
+import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
+import com.mojang.realmsclient.gui.ChatFormatting;
+
+import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
+import hellfirepvp.astralsorcery.common.constellation.DrawnConstellation;
+import hellfirepvp.astralsorcery.common.constellation.IConstellation;
+import hellfirepvp.astralsorcery.common.registry.RegistryPotions;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -36,7 +43,7 @@ public class ActiveStarMap {
     private static final Random rand = new Random();
 
     private Map<IConstellation, Float> starProportions = new HashMap<>();
-    private Map<IConstellation, List<Point>> mapOffsets = new HashMap<>(); //Just kept here for drawing reasons...
+    private Map<IConstellation, List<Point>> mapOffsets = new HashMap<>(); // Just kept here for drawing reasons...
 
     public static ActiveStarMap compile(List<DrawnConstellation> constellations) {
         ActiveStarMap asm = new ActiveStarMap();
@@ -44,26 +51,24 @@ public class ActiveStarMap {
         Collections.reverse(constellations);
         List<Rectangle> usedSpace = new LinkedList<>();
 
-        int maxSize = 50 * 50; //w * h
+        int maxSize = 50 * 50; // w * h
 
         for (DrawnConstellation c : constellations) {
             Point center = c.point;
-            Rectangle used = new Rectangle(
-                    center.x - 25, center.y - 25,
-                    50, 50);
+            Rectangle used = new Rectangle(center.x - 25, center.y - 25, 50, 50);
 
             List<Rectangle> intersecting = new LinkedList<>();
             for (Rectangle other : usedSpace) {
                 Rectangle r = used.intersection(other);
-                if(!r.isEmpty()) {
+                if (!r.isEmpty()) {
                     intersecting.add(r);
                 }
             }
 
             usedSpace.add(used);
 
-            //I don't need to do deeper recursion than 2nd degree since it's only 3 constellations at most.
-            //Thus there's only at most 1 intersection between the other 2.
+            // I don't need to do deeper recursion than 2nd degree since it's only 3 constellations at most.
+            // Thus there's only at most 1 intersection between the other 2.
             int intersectingSize = 0;
             for (int i = 0; i < intersecting.size(); i++) {
                 Rectangle r = intersecting.get(i);
@@ -80,23 +85,23 @@ public class ActiveStarMap {
             }
 
             float perc = 1F - (((float) intersectingSize) / ((float) maxSize));
-            if(asm.starProportions.containsKey(c.constellation)) {
+            if (asm.starProportions.containsKey(c.constellation)) {
                 asm.starProportions.put(c.constellation, asm.starProportions.get(c.constellation) + perc);
             } else {
                 asm.starProportions.put(c.constellation, perc);
             }
         }
 
-        //Crop it down for duplicates.
+        // Crop it down for duplicates.
         Map<IConstellation, Float> multipliers = new HashMap<>();
         for (IConstellation c : asm.starProportions.keySet()) {
             int count = 0;
             for (DrawnConstellation dc : constellations) {
-                if(dc.constellation.equals(c)) {
+                if (dc.constellation.equals(c)) {
                     count++;
                 }
             }
-            if(count > 1) {
+            if (count > 1) {
                 multipliers.put(c, (float) count);
             }
         }
@@ -104,8 +109,9 @@ public class ActiveStarMap {
             asm.starProportions.put(c, asm.starProportions.get(c) / multipliers.get(c));
         }
         for (DrawnConstellation c : constellations) {
-            if(asm.mapOffsets.containsKey(c.constellation)) {
-                asm.mapOffsets.get(c.constellation).add(c.point);
+            if (asm.mapOffsets.containsKey(c.constellation)) {
+                asm.mapOffsets.get(c.constellation)
+                    .add(c.point);
             } else {
                 asm.mapOffsets.put(c.constellation, Lists.newArrayList(c.point));
             }
@@ -119,7 +125,7 @@ public class ActiveStarMap {
         for (Map.Entry<IConstellation, Float> entry : asm.starProportions.entrySet()) {
             float perc = entry.getValue();
             perc = MathHelper.clamp_float(perc, 0F, 1F);
-            if(perc >= 0.75F) {
+            if (perc >= 0.75F) {
                 perc = (perc * 3F) - 2.25F;
                 perc *= perc;
                 perc = -perc + 1;
@@ -134,7 +140,7 @@ public class ActiveStarMap {
     }
 
     public boolean tryApplyEnchantments(ItemStack stack) {
-        if(stack == null || stack.getItem() == null) return false;
+        if (stack == null || stack.getItem() == null) return false;
         Map<IConstellation, List<ConstellationMapEffectRegistry.EnchantmentMapEffect>> effectMap = new HashMap<>();
 
         for (IConstellation c : starProportions.keySet()) {
@@ -143,7 +149,8 @@ public class ActiveStarMap {
                 List<ConstellationMapEffectRegistry.EnchantmentMapEffect> applicable = new LinkedList<>();
                 for (ConstellationMapEffectRegistry.EnchantmentMapEffect enchEffect : e.enchantmentEffects) {
                     Enchantment ench = enchEffect.ench;
-                    if ((((stack.getItem() instanceof ItemBook || stack.getItem() instanceof ItemEnchantedBook) && ench.isAllowedOnBooks()) || ench.canApply(stack))) {
+                    if ((((stack.getItem() instanceof ItemBook || stack.getItem() instanceof ItemEnchantedBook)
+                        && ench.isAllowedOnBooks()) || ench.canApply(stack))) {
                         applicable.add(enchEffect);
                     }
                 }
@@ -155,13 +162,14 @@ public class ActiveStarMap {
         boolean appliedSomething = false;
         Map<Integer, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
 
-        lblEnchantments:
-        for (Map.Entry<IConstellation, List<ConstellationMapEffectRegistry.EnchantmentMapEffect>> entry : effectMap.entrySet()) {
+        lblEnchantments: for (Map.Entry<IConstellation, List<ConstellationMapEffectRegistry.EnchantmentMapEffect>> entry : effectMap
+            .entrySet()) {
             for (ConstellationMapEffectRegistry.EnchantmentMapEffect effect : entry.getValue()) {
                 if (enchantments.containsKey(effect.ench.effectId)) continue;
                 for (Map.Entry<Integer, Integer> existingEntry : enchantments.entrySet()) {
                     Enchantment existing = Enchantment.enchantmentsList[existingEntry.getKey()];
-                    if (existing != null && (!existing.canApplyTogether(effect.ench) || !effect.ench.canApplyTogether(existing))) {
+                    if (existing != null
+                        && (!existing.canApplyTogether(effect.ench) || !effect.ench.canApplyTogether(existing))) {
                         continue lblEnchantments;
                     }
                 }
@@ -176,7 +184,7 @@ public class ActiveStarMap {
                 } else {
                     stack.addEnchantment(effect.ench, lvl);
                 }
-                enchantments = EnchantmentHelper.getEnchantments(stack); //Update
+                enchantments = EnchantmentHelper.getEnchantments(stack); // Update
                 appliedSomething = true;
             }
         }
@@ -184,7 +192,7 @@ public class ActiveStarMap {
     }
 
     public void tryApplyPotionEffects(ItemStack stack) {
-        if(stack == null || stack.getItem() == null) return;
+        if (stack == null || stack.getItem() == null) return;
 
         List<PotionEffect> applicableEffects = new LinkedList<>();
         for (IConstellation c : starProportions.keySet()) {
@@ -193,17 +201,24 @@ public class ActiveStarMap {
                 for (ConstellationMapEffectRegistry.PotionMapEffect effect : me.potionEffects) {
                     float perc = starProportions.get(c);
                     perc = MathHelper.clamp_float(perc, 0F, 1F);
-                    int amp = effect.minPotionAmplifier + Math.round((effect.maxPotionAmplifier - effect.minPotionAmplifier) * perc);
+                    int amp = effect.minPotionAmplifier
+                        + Math.round((effect.maxPotionAmplifier - effect.minPotionAmplifier) * perc);
                     int tDuration = 4 * 1200 + Math.round(rand.nextFloat() * 2 * 1200);
                     applicableEffects.add(new PotionEffect(effect.potion.getId(), tDuration, amp, false));
                 }
             }
         }
         if (rand.nextInt(30) == 0) {
-            applicableEffects.add(new PotionEffect(RegistryPotions.potionCheatDeath.getId(), 2 * 1200 + Math.round(rand.nextFloat() * 6 * 1200), 0, false));
+            applicableEffects.add(
+                new PotionEffect(
+                    RegistryPotions.potionCheatDeath.getId(),
+                    2 * 1200 + Math.round(rand.nextFloat() * 6 * 1200),
+                    0,
+                    false));
         }
-        stack.setStackDisplayName(ChatFormatting.RESET + "Stardew"); //Big RIP. 1.10.2 has no dynamic translateable name integration here.
-        //stack.setTranslatableName("potion.as.crafted.name");
+        stack.setStackDisplayName(ChatFormatting.RESET + "Stardew"); // Big RIP. 1.10.2 has no dynamic translateable
+                                                                     // name integration here.
+        // stack.setTranslatableName("potion.as.crafted.name");
         Collections.shuffle(applicableEffects);
         appendEffects(stack, applicableEffects);
     }
@@ -226,7 +241,10 @@ public class ActiveStarMap {
         NBTTagList l = new NBTTagList();
         for (Map.Entry<IConstellation, Float> entry : starProportions.entrySet()) {
             NBTTagCompound c = new NBTTagCompound();
-            c.setString("cst", entry.getKey().getUnlocalizedName());
+            c.setString(
+                "cst",
+                entry.getKey()
+                    .getUnlocalizedName());
             c.setFloat("perc", entry.getValue());
             l.appendTag(c);
         }
@@ -235,7 +253,10 @@ public class ActiveStarMap {
         l = new NBTTagList();
         for (Map.Entry<IConstellation, List<Point>> offsetEntry : mapOffsets.entrySet()) {
             NBTTagCompound c = new NBTTagCompound();
-            c.setString("cst", offsetEntry.getKey().getUnlocalizedName());
+            c.setString(
+                "cst",
+                offsetEntry.getKey()
+                    .getUnlocalizedName());
             NBTTagList posList = new NBTTagList();
             for (Point p : offsetEntry.getValue()) {
                 NBTTagCompound tag = new NBTTagCompound();
@@ -257,7 +278,7 @@ public class ActiveStarMap {
             NBTTagCompound c = list.getCompoundTagAt(i);
             String str = c.getString("cst");
             IConstellation cst = ConstellationRegistry.getConstellationByName(str);
-            if(cst != null) {
+            if (cst != null) {
                 float perc = c.getFloat("perc");
                 map.starProportions.put(cst, perc);
             }
@@ -267,7 +288,7 @@ public class ActiveStarMap {
             NBTTagCompound c = list.getCompoundTagAt(i);
             String str = c.getString("cst");
             IConstellation cst = ConstellationRegistry.getConstellationByName(str);
-            if(cst != null) {
+            if (cst != null) {
                 NBTTagList posList = c.getTagList("posList", Constants.NBT.TAG_COMPOUND);
                 List<Point> positions = Lists.newArrayList();
                 for (int j = 0; j < posList.tagCount(); j++) {
@@ -280,19 +301,15 @@ public class ActiveStarMap {
         return map;
     }
 
-    public static ItemStack appendEffects(ItemStack itemIn, Collection<PotionEffect> effects)
-    {
-        if (effects.isEmpty())
-        {
+    public static ItemStack appendEffects(ItemStack itemIn, Collection<PotionEffect> effects) {
+        if (effects.isEmpty()) {
             return itemIn;
-        }
-        else
-        {
-            NBTTagCompound nbttagcompound = (NBTTagCompound) Objects.firstNonNull(itemIn.getTagCompound(), new NBTTagCompound());
+        } else {
+            NBTTagCompound nbttagcompound = (NBTTagCompound) Objects
+                .firstNonNull(itemIn.getTagCompound(), new NBTTagCompound());
             NBTTagList nbttaglist = nbttagcompound.getTagList("CustomPotionEffects", 9);
 
-            for (PotionEffect potioneffect : effects)
-            {
+            for (PotionEffect potioneffect : effects) {
                 nbttaglist.appendTag(potioneffect.writeCustomPotionEffectToNBT(new NBTTagCompound()));
             }
 

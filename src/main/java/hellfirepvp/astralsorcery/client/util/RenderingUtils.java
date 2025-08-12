@@ -8,12 +8,11 @@
 
 package hellfirepvp.astralsorcery.client.util;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.data.Tuple;
-import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.block.Block;
+import java.awt.Color;
+import java.util.List;
+import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -30,16 +29,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
+
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-import java.util.List;
-import java.util.Random;
-
-import static org.lwjgl.opengl.GL11.GL_ALPHA;
+import cpw.mods.fml.client.FMLClientHandler;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.data.Tuple;
+import hellfirepvp.astralsorcery.common.util.data.Vector3;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -51,7 +49,7 @@ import static org.lwjgl.opengl.GL11.GL_ALPHA;
 public class RenderingUtils {
 
     private static final Random rand = new Random();
-//    private static EntityDiggingFX.Factory diggingFactory = new EntityDiggingFX.Factory();
+    // private static EntityDiggingFX.Factory diggingFactory = new EntityDiggingFX.Factory();
 
     public static void playBlockBreakParticles(BlockPos pos, Block block) {
         EffectRenderer pm = Minecraft.getMinecraft().effectRenderer;
@@ -61,13 +59,16 @@ public class RenderingUtils {
                     double d0 = (double) pos.getX() + ((double) j + 0.5D) / 4D;
                     double d1 = (double) pos.getY() + ((double) k + 0.5D) / 4D;
                     double d2 = (double) pos.getZ() + ((double) l + 0.5D) / 4D;
-                    EntityFX digging = new EntityDiggingFX(Minecraft.getMinecraft().theWorld,
-                            d0, d1, d2,
-                            d0 - (double) pos.getX() - 0.5D,
-                            d1 - (double) pos.getY() - 0.5D,
-                            d2 - (double) pos.getZ() - 0.5D,
-                            block,
-                            Block.getIdFromBlock(block)); //todo fix
+                    EntityFX digging = new EntityDiggingFX(
+                        Minecraft.getMinecraft().theWorld,
+                        d0,
+                        d1,
+                        d2,
+                        d0 - (double) pos.getX() - 0.5D,
+                        d1 - (double) pos.getY() - 0.5D,
+                        d2 - (double) pos.getZ() - 0.5D,
+                        block,
+                        Block.getIdFromBlock(block)); // todo fix
                     pm.addEffect(digging);
                 }
             }
@@ -75,9 +76,9 @@ public class RenderingUtils {
     }
 
     public static void getVertexData(Tessellator tess) {
-//        tess.getVertexState((float) TileEntityRendererDispatcher.staticPlayerX,
-//                (float) TileEntityRendererDispatcher.staticPlayerY,
-//                (float) TileEntityRendererDispatcher.staticPlayerZ);
+        // tess.getVertexState((float) TileEntityRendererDispatcher.staticPlayerX,
+        // (float) TileEntityRendererDispatcher.staticPlayerY,
+        // (float) TileEntityRendererDispatcher.staticPlayerZ);
     }
 
     public static Color clampToColor(int rgb) {
@@ -86,23 +87,23 @@ public class RenderingUtils {
 
     public static Color clampToColorWithMultiplier(int rgb, float mul) {
         int r = ((rgb >> 16) & 0xFF);
-        int g = ((rgb >> 8)  & 0xFF);
-        int b = ((rgb >> 0)  & 0xFF);
+        int g = ((rgb >> 8) & 0xFF);
+        int b = ((rgb >> 0) & 0xFF);
         return new Color(
-                MathHelper.clamp_int((int) (((float) r) * mul), 0, 255),
-                MathHelper.clamp_int((int) (((float) g) * mul), 0, 255),
-                MathHelper.clamp_int((int) (((float) b) * mul), 0, 255));
+            MathHelper.clamp_int((int) (((float) r) * mul), 0, 255),
+            MathHelper.clamp_int((int) (((float) g) * mul), 0, 255),
+            MathHelper.clamp_int((int) (((float) b) * mul), 0, 255));
     }
 
     public static Color clampToColor(int r, int g, int b) {
         return new Color(
-                MathHelper.clamp_int((int) (((float) r)), 0, 255),
-                MathHelper.clamp_int((int) (((float) g)), 0, 255),
-                MathHelper.clamp_int((int) (((float) b)), 0, 255));
+            MathHelper.clamp_int((int) (((float) r)), 0, 255),
+            MathHelper.clamp_int((int) (((float) g)), 0, 255),
+            MathHelper.clamp_int((int) (((float) b)), 0, 255));
     }
 
     public static double interpolate(double oldP, double newP, float partialTicks) {
-        if(oldP == newP) return oldP;
+        if (oldP == newP) return oldP;
         return oldP + ((newP - oldP) * partialTicks);
     }
 
@@ -117,15 +118,16 @@ public class RenderingUtils {
         return prevRotation + partialTick * rot;
     }
 
-    //Use with caution. Big block of rendering hack.
+    // Use with caution. Big block of rendering hack.
     @Deprecated
-    public static void unsafe_preRenderHackCamera(EntityPlayer renderView, double x, double y, double z, double prevX, double prevY, double prevZ, double yaw, double yawPrev, double pitch, double pitchPrev) {
+    public static void unsafe_preRenderHackCamera(EntityPlayer renderView, double x, double y, double z, double prevX,
+        double prevY, double prevZ, double yaw, double yawPrev, double pitch, double pitchPrev) {
         TileEntityRendererDispatcher.staticPlayerX = x;
         TileEntityRendererDispatcher.staticPlayerY = y;
         TileEntityRendererDispatcher.staticPlayerZ = z;
 
         Entity rv = Minecraft.getMinecraft().renderViewEntity;
-        if(rv == null || !rv.equals(renderView)) {
+        if (rv == null || !rv.equals(renderView)) {
             Minecraft.getMinecraft().renderViewEntity = renderView;
             rv = renderView;
         }
@@ -141,14 +143,14 @@ public class RenderingUtils {
         render.lastTickPosY = prevY;
         render.lastTickPosZ = prevZ;
 
-        render.rotationYawHead =     (float)yaw;
-        render.rotationYaw =         (float)yaw;
-        render.prevRotationYaw =     (float)yawPrev;
-        render.prevRotationYawHead = (float)yawPrev;
-        render.cameraYaw =           (float)yaw;
-        render.prevCameraYaw =       (float)yawPrev;
-        render.rotationPitch =       (float)pitch;
-        render.prevRotationPitch =   (float)pitchPrev;
+        render.rotationYawHead = (float) yaw;
+        render.rotationYaw = (float) yaw;
+        render.prevRotationYaw = (float) yawPrev;
+        render.prevRotationYawHead = (float) yawPrev;
+        render.cameraYaw = (float) yaw;
+        render.prevCameraYaw = (float) yawPrev;
+        render.rotationPitch = (float) pitch;
+        render.prevRotationPitch = (float) pitchPrev;
 
         render = Minecraft.getMinecraft().thePlayer;
 
@@ -162,30 +164,31 @@ public class RenderingUtils {
         render.lastTickPosY = prevY;
         render.lastTickPosZ = prevZ;
 
-        render.rotationYawHead =     (float)yaw;
-        render.rotationYaw =         (float)yaw;
-        render.prevRotationYaw =     (float)yawPrev;
-        render.prevRotationYawHead = (float)yawPrev;
-        render.cameraYaw =           (float)yaw;
-        render.prevCameraYaw =       (float)yawPrev;
-        render.rotationPitch =       (float)pitch;
-        render.prevRotationPitch =   (float)pitchPrev;
+        render.rotationYawHead = (float) yaw;
+        render.rotationYaw = (float) yaw;
+        render.prevRotationYaw = (float) yawPrev;
+        render.prevRotationYawHead = (float) yawPrev;
+        render.cameraYaw = (float) yaw;
+        render.prevCameraYaw = (float) yawPrev;
+        render.rotationPitch = (float) pitch;
+        render.prevRotationPitch = (float) pitchPrev;
 
-        Minecraft.getMinecraft().setIngameNotInFocus();
+        Minecraft.getMinecraft()
+            .setIngameNotInFocus();
         ActiveRenderInfo.updateRenderInfo(render, false);
         Minecraft.getMinecraft().mouseHelper.grabMouseCursor();
     }
 
     @Deprecated
     public static void unsafe_resetCamera() {
-        if(Minecraft.getMinecraft().thePlayer != null) {
+        if (Minecraft.getMinecraft().thePlayer != null) {
             EntityPlayer player = Minecraft.getMinecraft().thePlayer;
             Minecraft.getMinecraft().renderViewEntity = player;
             double x = player.posX;
             double y = player.posY;
             double z = player.posZ;
             RenderManager rm = RenderManager.instance;
-//            rm.setRenderPosition(x, y, z);
+            // rm.setRenderPosition(x, y, z);
             rm.renderPosX = x;
             rm.renderPosY = y;
             rm.renderPosZ = z;
@@ -197,11 +200,13 @@ public class RenderingUtils {
             TileEntityRendererDispatcher.staticPlayerY = y;
             TileEntityRendererDispatcher.staticPlayerZ = z;
 
-            Minecraft.getMinecraft().setIngameFocus();
+            Minecraft.getMinecraft()
+                .setIngameFocus();
             Minecraft.getMinecraft().mouseHelper.grabMouseCursor();
 
-            if(Minecraft.getMinecraft().currentScreen != null) {
-                Minecraft.getMinecraft().displayGuiScreen(null);
+            if (Minecraft.getMinecraft().currentScreen != null) {
+                Minecraft.getMinecraft()
+                    .displayGuiScreen(null);
             }
 
             if (Minecraft.isRunningOnMac) {
@@ -212,19 +217,22 @@ public class RenderingUtils {
         }
     }
 
-    public static void renderLightRayEffects(double x, double y, double z, Color effectColor, long seed, long continuousTick, int dstJump, int countFancy, int countNormal) {
+    public static void renderLightRayEffects(double x, double y, double z, Color effectColor, long seed,
+        long continuousTick, int dstJump, int countFancy, int countNormal) {
         renderLightRayEffects(x, y, z, effectColor, seed, continuousTick, dstJump, 1, countFancy, countNormal);
     }
 
-    public static void renderLightRayEffects(double x, double y, double z, Color effectColor, long seed, long continuousTick, int dstJump, float scale, int countFancy, int countNormal) {
+    public static void renderLightRayEffects(double x, double y, double z, Color effectColor, long seed,
+        long continuousTick, int dstJump, float scale, int countFancy, int countNormal) {
         rand.setSeed(seed);
         GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
 
-        int fancy_count = !FMLClientHandler.instance().getClient().gameSettings.fancyGraphics ? countNormal : countFancy;
+        int fancy_count = !FMLClientHandler.instance()
+            .getClient().gameSettings.fancyGraphics ? countNormal : countFancy;
 
         Tessellator tes = Tessellator.instance;
-//        VertexBuffer vb = tes.getBuffer();
+        // VertexBuffer vb = tes.getBuffer();
 
         RenderHelper.disableStandardItemLighting();
         float f1 = continuousTick / 400.0F;
@@ -244,24 +252,33 @@ public class RenderingUtils {
             GL11.glRotatef(rand.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
             GL11.glRotatef(rand.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
             GL11.glRotatef(rand.nextFloat() * 360.0F + f1 * 360.0F, 0.0F, 0.0F, 1.0F);
-//            vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
+            // vb.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
             tes.startDrawing(GL11.GL_TRIANGLE_FAN);
             float fa = rand.nextFloat() * 20.0F + 5.0F + f2 * 10.0F;
             float f4 = rand.nextFloat() * 2.0F + 1.0F + f2 * 2.0F;
             fa /= 30.0F / (Math.min(dstJump, 10 * scale) / 10.0F);
             f4 /= 30.0F / (Math.min(dstJump, 10 * scale) / 10.0F);
-            tes.setColorRGBA(effectColor.getRed(), effectColor.getGreen(), effectColor.getBlue(), (int) (255.0F * (1.0F - f2)));
+            tes.setColorRGBA(
+                effectColor.getRed(),
+                effectColor.getGreen(),
+                effectColor.getBlue(),
+                (int) (255.0F * (1.0F - f2)));
             tes.addVertex(0, 0, 0);
             tes.setColorRGBA(effectColor.getRed(), effectColor.getGreen(), effectColor.getBlue(), 0);
-            tes.addVertex(-0.7D * f4, fa,   -0.5F * f4);
-            tes.addVertex( 0.7D * f4, fa,   -0.5F * f4);
-            tes.addVertex( 0.0D,      fa,    1.0F * f4);
-            tes.addVertex(-0.7D * f4, fa,   -0.5F * f4);
-//            vb.pos(0, 0, 0).color(effectColor.getRed(), effectColor.getGreen(), effectColor.getBlue(), (int) (255.0F * (1.0F - f2))).endVertex();
-//            vb.pos(-0.7D * f4, fa,   -0.5F * f4).color(effectColor.getRed(), effectColor.getGreen(), effectColor.getBlue(), 0).endVertex();
-//            vb.pos( 0.7D * f4, fa,   -0.5F * f4).color(effectColor.getRed(), effectColor.getGreen(), effectColor.getBlue(), 0).endVertex();
-//            vb.pos( 0.0D,      fa,    1.0F * f4).color(effectColor.getRed(), effectColor.getGreen(), effectColor.getBlue(), 0).endVertex();
-//            vb.pos(-0.7D * f4, fa,   -0.5F * f4).color(effectColor.getRed(), effectColor.getGreen(), effectColor.getBlue(), 0).endVertex();
+            tes.addVertex(-0.7D * f4, fa, -0.5F * f4);
+            tes.addVertex(0.7D * f4, fa, -0.5F * f4);
+            tes.addVertex(0.0D, fa, 1.0F * f4);
+            tes.addVertex(-0.7D * f4, fa, -0.5F * f4);
+            // vb.pos(0, 0, 0).color(effectColor.getRed(), effectColor.getGreen(), effectColor.getBlue(), (int) (255.0F
+            // * (1.0F - f2))).endVertex();
+            // vb.pos(-0.7D * f4, fa, -0.5F * f4).color(effectColor.getRed(), effectColor.getGreen(),
+            // effectColor.getBlue(), 0).endVertex();
+            // vb.pos( 0.7D * f4, fa, -0.5F * f4).color(effectColor.getRed(), effectColor.getGreen(),
+            // effectColor.getBlue(), 0).endVertex();
+            // vb.pos( 0.0D, fa, 1.0F * f4).color(effectColor.getRed(), effectColor.getGreen(), effectColor.getBlue(),
+            // 0).endVertex();
+            // vb.pos(-0.7D * f4, fa, -0.5F * f4).color(effectColor.getRed(), effectColor.getGreen(),
+            // effectColor.getBlue(), 0).endVertex();
             tes.draw();
         }
         GL11.glPopMatrix();
@@ -277,45 +294,59 @@ public class RenderingUtils {
         GL11.glPopMatrix();
     }
 
-    public static void renderBlueStackTooltip(int x, int y, List<Tuple<ItemStack, String>> tooltipData, FontRenderer fr, RenderItem ri) {
+    public static void renderBlueStackTooltip(int x, int y, List<Tuple<ItemStack, String>> tooltipData, FontRenderer fr,
+        RenderItem ri) {
         renderStackTooltip(x, y, tooltipData, new Color(0x000027), new Color(0x000044), Color.WHITE, fr, ri);
     }
 
-    public static void renderStackTooltip(int x, int y, List<Tuple<ItemStack, String>> tooltipData, Color color, Color colorFade, Color strColor, FontRenderer fr, RenderItem ri) {
+    public static void renderStackTooltip(int x, int y, List<Tuple<ItemStack, String>> tooltipData, Color color,
+        Color colorFade, Color strColor, FontRenderer fr, RenderItem ri) {
         Minecraft mc = Minecraft.getMinecraft();
         TextureHelper.setActiveTextureToAtlasSprite();
         if (!tooltipData.isEmpty()) {
             int esWidth = 0;
             for (Tuple<ItemStack, String> toolTip : tooltipData) {
                 int width = fr.getStringWidth(toolTip.value) + 17;
-                if (width > esWidth)
-                    esWidth = width;
+                if (width > esWidth) esWidth = width;
             }
-            ScaledResolution sr = new ScaledResolution(mc,mc.displayWidth, mc.displayHeight);
-            if(x + 15 + esWidth > sr.getScaledWidth()) {
+            ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+            if (x + 15 + esWidth > sr.getScaledWidth()) {
                 x -= esWidth + 24;
             }
             int pX = x + 12;
             int pY = y - 12;
             int sumLineHeight = 8;
-            if (tooltipData.size() > 1)
-                sumLineHeight += 2 + (tooltipData.size() - 1) * 17;
+            if (tooltipData.size() > 1) sumLineHeight += 2 + (tooltipData.size() - 1) * 17;
             float z = 300F;
 
             GL11.glDisable(GL11.GL_DEPTH_TEST);
-            drawGradientRect(pX - 3,           pY - 4,                 z, pX + esWidth + 3, pY - 3,                 color, colorFade);
-            drawGradientRect(pX - 3,           pY + sumLineHeight + 3, z, pX + esWidth + 3, pY + sumLineHeight + 4, color, colorFade);
-            drawGradientRect(pX - 3,           pY - 3,                 z, pX + esWidth + 3, pY + sumLineHeight + 3, color, colorFade);
-            drawGradientRect(pX - 4,           pY - 3,                 z, pX - 3,           pY + sumLineHeight + 3, color, colorFade);
-            drawGradientRect(pX + esWidth + 3, pY - 3,                 z, pX + esWidth + 4, pY + sumLineHeight + 3, color, colorFade);
+            drawGradientRect(pX - 3, pY - 4, z, pX + esWidth + 3, pY - 3, color, colorFade);
+            drawGradientRect(
+                pX - 3,
+                pY + sumLineHeight + 3,
+                z,
+                pX + esWidth + 3,
+                pY + sumLineHeight + 4,
+                color,
+                colorFade);
+            drawGradientRect(pX - 3, pY - 3, z, pX + esWidth + 3, pY + sumLineHeight + 3, color, colorFade);
+            drawGradientRect(pX - 4, pY - 3, z, pX - 3, pY + sumLineHeight + 3, color, colorFade);
+            drawGradientRect(pX + esWidth + 3, pY - 3, z, pX + esWidth + 4, pY + sumLineHeight + 3, color, colorFade);
 
             int rgb = color.getRGB();
             int col = (rgb & 0x00FFFFFF) | rgb & 0xFF000000;
             Color colOp = new Color(col);
-            drawGradientRect(pX - 3,           pY - 3 + 1,             z, pX - 3 + 1,       pY + sumLineHeight + 3 - 1, color, colOp);
-            drawGradientRect(pX + esWidth + 2, pY - 3 + 1,             z, pX + esWidth + 3, pY + sumLineHeight + 3 - 1, color, colOp);
-            drawGradientRect(pX - 3,           pY - 3,                 z, pX + esWidth + 3, pY - 3 + 1,                 colOp, colOp);
-            drawGradientRect(pX - 3,           pY + sumLineHeight + 2, z, pX + esWidth + 3, pY + sumLineHeight + 3,     color, color);
+            drawGradientRect(pX - 3, pY - 3 + 1, z, pX - 3 + 1, pY + sumLineHeight + 3 - 1, color, colOp);
+            drawGradientRect(
+                pX + esWidth + 2,
+                pY - 3 + 1,
+                z,
+                pX + esWidth + 3,
+                pY + sumLineHeight + 3 - 1,
+                color,
+                colOp);
+            drawGradientRect(pX - 3, pY - 3, z, pX + esWidth + 3, pY - 3 + 1, colOp, colOp);
+            drawGradientRect(pX - 3, pY + sumLineHeight + 2, z, pX + esWidth + 3, pY + sumLineHeight + 3, color, color);
 
             GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
             for (Tuple<ItemStack, String> stackDesc : tooltipData) {
@@ -323,7 +354,7 @@ public class RenderingUtils {
                 GL11.glColor4f(1F, 1F, 1F, 1F);
                 GL11.glPushMatrix();
                 RenderHelper.enableGUIStandardItemLighting();
-                ri.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.renderEngine,stackDesc.key, pX - 1, pY - 5);
+                ri.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.renderEngine, stackDesc.key, pX - 1, pY - 5);
 
                 GL11.glEnable(GL11.GL_BLEND);
                 Blending.DEFAULT.apply();
@@ -336,7 +367,7 @@ public class RenderingUtils {
             GL11.glEnable(GL11.GL_DEPTH_TEST);
         }
 
-//        GL11.enableAlpha();
+        // GL11.enableAlpha();
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glColor4f(1F, 1F, 1F, 1F);
         GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -347,65 +378,75 @@ public class RenderingUtils {
         renderTooltip(x, y, tooltipData, new Color(0x000027), new Color(0x000044), Color.WHITE, fontRenderer);
     }
 
-    public static void renderTooltip(int x, int y, List<String> tooltipData, Color color, Color colorFade, Color strColor, FontRenderer fontRenderer) {
+    public static void renderTooltip(int x, int y, List<String> tooltipData, Color color, Color colorFade,
+        Color strColor, FontRenderer fontRenderer) {
         Minecraft mc = Minecraft.getMinecraft();
         TextureHelper.setActiveTextureToAtlasSprite();
         boolean lighting = GL11.glGetBoolean(GL11.GL_LIGHTING);
-        if (lighting)
-            RenderHelper.disableStandardItemLighting();
+        if (lighting) RenderHelper.disableStandardItemLighting();
 
         if (!tooltipData.isEmpty()) {
             int esWidth = 0;
             for (String toolTip : tooltipData) {
                 int width = fontRenderer.getStringWidth(toolTip);
-                if (width > esWidth)
-                    esWidth = width;
+                if (width > esWidth) esWidth = width;
             }
-            ScaledResolution sr = new ScaledResolution(mc,mc.displayWidth, mc.displayHeight);
-            if(x + 15 + esWidth > sr.getScaledWidth()) {
+            ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+            if (x + 15 + esWidth > sr.getScaledWidth()) {
                 x -= esWidth + 24;
             }
             int pX = x + 12;
             int pY = y - 12;
             int sumLineHeight = 8;
-            if (tooltipData.size() > 1)
-                sumLineHeight += 2 + (tooltipData.size() - 1) * 10;
+            if (tooltipData.size() > 1) sumLineHeight += 2 + (tooltipData.size() - 1) * 10;
             float z = 300F;
 
-            drawGradientRect(pX - 3,           pY - 4,                 z, pX + esWidth + 3, pY - 3,                 color, colorFade);
-            drawGradientRect(pX - 3,           pY + sumLineHeight + 3, z, pX + esWidth + 3, pY + sumLineHeight + 4, color, colorFade);
-            drawGradientRect(pX - 3,           pY - 3,                 z, pX + esWidth + 3, pY + sumLineHeight + 3, color, colorFade);
-            drawGradientRect(pX - 4,           pY - 3,                 z, pX - 3,           pY + sumLineHeight + 3, color, colorFade);
-            drawGradientRect(pX + esWidth + 3, pY - 3,                 z, pX + esWidth + 4, pY + sumLineHeight + 3, color, colorFade);
+            drawGradientRect(pX - 3, pY - 4, z, pX + esWidth + 3, pY - 3, color, colorFade);
+            drawGradientRect(
+                pX - 3,
+                pY + sumLineHeight + 3,
+                z,
+                pX + esWidth + 3,
+                pY + sumLineHeight + 4,
+                color,
+                colorFade);
+            drawGradientRect(pX - 3, pY - 3, z, pX + esWidth + 3, pY + sumLineHeight + 3, color, colorFade);
+            drawGradientRect(pX - 4, pY - 3, z, pX - 3, pY + sumLineHeight + 3, color, colorFade);
+            drawGradientRect(pX + esWidth + 3, pY - 3, z, pX + esWidth + 4, pY + sumLineHeight + 3, color, colorFade);
 
             int rgb = color.getRGB();
             int col = (rgb & 0x00FFFFFF) | rgb & 0xFF000000;
             Color colOp = new Color(col);
-            drawGradientRect(pX - 3,           pY - 3 + 1,             z, pX - 3 + 1,       pY + sumLineHeight + 3 - 1, color, colOp);
-            drawGradientRect(pX + esWidth + 2, pY - 3 + 1,             z, pX + esWidth + 3, pY + sumLineHeight + 3 - 1, color, colOp);
-            drawGradientRect(pX - 3,           pY - 3,                 z, pX + esWidth + 3, pY - 3 + 1,                 colOp, colOp);
-            drawGradientRect(pX - 3,           pY + sumLineHeight + 2, z, pX + esWidth + 3, pY + sumLineHeight + 3,     color, color);
+            drawGradientRect(pX - 3, pY - 3 + 1, z, pX - 3 + 1, pY + sumLineHeight + 3 - 1, color, colOp);
+            drawGradientRect(
+                pX + esWidth + 2,
+                pY - 3 + 1,
+                z,
+                pX + esWidth + 3,
+                pY + sumLineHeight + 3 - 1,
+                color,
+                colOp);
+            drawGradientRect(pX - 3, pY - 3, z, pX + esWidth + 3, pY - 3 + 1, colOp, colOp);
+            drawGradientRect(pX - 3, pY + sumLineHeight + 2, z, pX + esWidth + 3, pY + sumLineHeight + 3, color, color);
 
             GL11.glDisable(GL11.GL_DEPTH_TEST);
             for (int i = 0; i < tooltipData.size(); ++i) {
                 String str = tooltipData.get(i);
                 fontRenderer.drawString(str, pX, pY, strColor.getRGB());
-                if (i == 0)
-                    pY += 2;
+                if (i == 0) pY += 2;
                 pY += 10;
             }
             GL11.glColor4f(1F, 1F, 1F, 1F);
             GL11.glEnable(GL11.GL_DEPTH_TEST);
         }
 
-        if (lighting)
-            RenderHelper.enableStandardItemLighting();
+        if (lighting) RenderHelper.enableStandardItemLighting();
         GL11.glColor4f(1F, 1F, 1F, 1F);
     }
 
     public static void removeStandartTranslationFromTESRMatrix(float partialTicks) {
         Entity rView = Minecraft.getMinecraft().renderViewEntity;
-        if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
+        if (rView == null) rView = Minecraft.getMinecraft().thePlayer;
         Entity entity = rView;
         double tx = entity.lastTickPosX + ((entity.posX - entity.lastTickPosX) * partialTicks);
         double ty = entity.lastTickPosY + ((entity.posY - entity.lastTickPosY) * partialTicks);
@@ -415,7 +456,7 @@ public class RenderingUtils {
 
     public static Vector3 getStandartTranslationRemovalVector(float partialTicks) {
         Entity rView = Minecraft.getMinecraft().renderViewEntity;
-        if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
+        if (rView == null) rView = Minecraft.getMinecraft().thePlayer;
         Entity entity = rView;
         double tx = entity.lastTickPosX + ((entity.posX - entity.lastTickPosX) * partialTicks);
         double ty = entity.lastTickPosY + ((entity.posY - entity.lastTickPosY) * partialTicks);
@@ -423,56 +464,114 @@ public class RenderingUtils {
         return new Vector3(-tx, -ty, -tz);
     }
 
-    public static void renderAngleRotatedTexturedRectVB(Vector3 renderOffset, Vector3 axis, double angleRad, double scale, double u, double v, double uLength, double vLength, Color c, int alpha, Tessellator tess, float partialTicks) {
+    public static void renderAngleRotatedTexturedRectVB(Vector3 renderOffset, Vector3 axis, double angleRad,
+        double scale, double u, double v, double uLength, double vLength, Color c, int alpha, Tessellator tess,
+        float partialTicks) {
         GL11.glPushMatrix();
-        //removeStandartTranslationFromTESRMatrix(partialTicks);
+        // removeStandartTranslationFromTESRMatrix(partialTicks);
         Vector3 shift = getStandartTranslationRemovalVector(partialTicks);
 
-        Vector3 renderStart = axis.clone().perpendicular().rotate(angleRad, axis).normalize();
+        Vector3 renderStart = axis.clone()
+            .perpendicular()
+            .rotate(angleRad, axis)
+            .normalize();
 
-        Vector3 vec = renderStart.clone().rotate(Math.toRadians(90), axis).normalize().multiply(scale).add(renderOffset);
+        Vector3 vec = renderStart.clone()
+            .rotate(Math.toRadians(90), axis)
+            .normalize()
+            .multiply(scale)
+            .add(renderOffset);
         tess.setColorRGBA(c.getRed(), c.getGreen(), c.getBlue(), alpha);
-        tess.addVertexWithUV(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ(), u,           v + vLength);
-//        vb.pos(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ()).tex(u,           v + vLength).color(c.getRed(), c.getGreen(), c.getBlue(), alpha).endVertex();
+        tess.addVertexWithUV(
+            shift.getX() + vec.getX(),
+            shift.getY() + vec.getY(),
+            shift.getZ() + vec.getZ(),
+            u,
+            v + vLength);
+        // vb.pos(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ()).tex(u, v +
+        // vLength).color(c.getRed(), c.getGreen(), c.getBlue(), alpha).endVertex();
 
-        vec = renderStart.clone().multiply(-1).normalize().multiply(scale).add(renderOffset);
-        tess.addVertexWithUV(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ(), u + uLength, v + vLength);
-//        vb.pos(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ()).tex(u + uLength, v + vLength).color(c.getRed(), c.getGreen(), c.getBlue(), alpha).endVertex();
+        vec = renderStart.clone()
+            .multiply(-1)
+            .normalize()
+            .multiply(scale)
+            .add(renderOffset);
+        tess.addVertexWithUV(
+            shift.getX() + vec.getX(),
+            shift.getY() + vec.getY(),
+            shift.getZ() + vec.getZ(),
+            u + uLength,
+            v + vLength);
+        // vb.pos(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ()).tex(u + uLength, v +
+        // vLength).color(c.getRed(), c.getGreen(), c.getBlue(), alpha).endVertex();
 
-        vec = renderStart.clone().rotate(Math.toRadians(270), axis).normalize().multiply(scale).add(renderOffset);
-        tess.addVertexWithUV(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ(), u + uLength, v          );
-//        vb.pos(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ()).tex(u + uLength, v          ).color(c.getRed(), c.getGreen(), c.getBlue(), alpha).endVertex();
+        vec = renderStart.clone()
+            .rotate(Math.toRadians(270), axis)
+            .normalize()
+            .multiply(scale)
+            .add(renderOffset);
+        tess.addVertexWithUV(
+            shift.getX() + vec.getX(),
+            shift.getY() + vec.getY(),
+            shift.getZ() + vec.getZ(),
+            u + uLength,
+            v);
+        // vb.pos(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ()).tex(u + uLength, v
+        // ).color(c.getRed(), c.getGreen(), c.getBlue(), alpha).endVertex();
 
-        vec = renderStart.clone().normalize().multiply(scale).add(renderOffset);
-        tess.addVertexWithUV(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ(), u,           v          );
-//        vb.pos(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ()).tex(u,           v          ).color(c.getRed(), c.getGreen(), c.getBlue(), alpha).endVertex();
+        vec = renderStart.clone()
+            .normalize()
+            .multiply(scale)
+            .add(renderOffset);
+        tess.addVertexWithUV(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ(), u, v);
+        // vb.pos(shift.getX() + vec.getX(), shift.getY() + vec.getY(), shift.getZ() + vec.getZ()).tex(u, v
+        // ).color(c.getRed(), c.getGreen(), c.getBlue(), alpha).endVertex();
 
         GL11.glPopMatrix();
     }
 
-    public static void renderAngleRotatedTexturedRect(Vector3 renderOffset, Vector3 axis, double angleRad, double scale, double u, double v, double uLength, double vLength, float partialTicks) {
+    public static void renderAngleRotatedTexturedRect(Vector3 renderOffset, Vector3 axis, double angleRad, double scale,
+        double u, double v, double uLength, double vLength, float partialTicks) {
         GL11.glPushMatrix();
         removeStandartTranslationFromTESRMatrix(partialTicks);
 
-        Vector3 renderStart = axis.clone().perpendicular().rotate(angleRad, axis).normalize();
+        Vector3 renderStart = axis.clone()
+            .perpendicular()
+            .rotate(angleRad, axis)
+            .normalize();
         Tessellator tes = Tessellator.instance;
         tes.startDrawingQuads();
 
-        Vector3 vec = renderStart.clone().rotate(Math.toRadians(90), axis).normalize().multiply(scale).add(renderOffset);
-        tes.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u,           v + vLength);
-//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,           v + vLength).endVertex();
+        Vector3 vec = renderStart.clone()
+            .rotate(Math.toRadians(90), axis)
+            .normalize()
+            .multiply(scale)
+            .add(renderOffset);
+        tes.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u, v + vLength);
+        // buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u, v + vLength).endVertex();
 
-        vec = renderStart.clone().multiply(-1).normalize().multiply(scale).add(renderOffset);
+        vec = renderStart.clone()
+            .multiply(-1)
+            .normalize()
+            .multiply(scale)
+            .add(renderOffset);
         tes.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u + uLength, v + vLength);
-//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uLength, v + vLength).endVertex();
+        // buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uLength, v + vLength).endVertex();
 
-        vec = renderStart.clone().rotate(Math.toRadians(270), axis).normalize().multiply(scale).add(renderOffset);
+        vec = renderStart.clone()
+            .rotate(Math.toRadians(270), axis)
+            .normalize()
+            .multiply(scale)
+            .add(renderOffset);
         tes.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u + uLength, v);
-//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uLength, v          ).endVertex();
+        // buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u + uLength, v ).endVertex();
 
-        vec = renderStart.clone().normalize().multiply(scale).add(renderOffset);
-        tes.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u,           v          );
-//        buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u,           v          ).endVertex();
+        vec = renderStart.clone()
+            .normalize()
+            .multiply(scale)
+            .add(renderOffset);
+        tes.addVertexWithUV(vec.getX(), vec.getY(), vec.getZ(), u, v);
+        // buf.pos(vec.getX(), vec.getY(), vec.getZ()).tex(u, v ).endVertex();
 
         tes.draw();
 
@@ -487,18 +586,20 @@ public class RenderingUtils {
         GL11.glShadeModel(GL11.GL_SMOOTH);
         Tessellator tes = Tessellator.instance;
         tes.startDrawingQuads();
-        tes.setColorRGBA(color.getRed(),     color.getGreen(),     color.getBlue(),     color.getAlpha());
-        tes.addVertex(toX, y,   z);
-        tes.addVertex(x,   y,   z);
+        tes.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        tes.addVertex(toX, y, z);
+        tes.addVertex(x, y, z);
         tes.setColorRGBA(colorFade.getRed(), colorFade.getGreen(), colorFade.getBlue(), colorFade.getAlpha());
-        tes.addVertex(x,   toY, z);
+        tes.addVertex(x, toY, z);
         tes.addVertex(toX, toY, z);
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-//        vb.pos(toX, y,   z).color(color.getRed(),     color.getGreen(),     color.getBlue(),     color.getAlpha())    .endVertex();
-//        vb.pos(x,   y,   z).color(color.getRed(),     color.getGreen(),     color.getBlue(),     color.getAlpha())    .endVertex();
-//        vb.pos(x,   toY, z).color(colorFade.getRed(), colorFade.getGreen(), colorFade.getBlue(), colorFade.getAlpha()).endVertex();
-//        vb.pos(toX, toY, z).color(colorFade.getRed(), colorFade.getGreen(), colorFade.getBlue(), colorFade.getAlpha()).endVertex();
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        // vb.pos(toX, y, z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()) .endVertex();
+        // vb.pos(x, y, z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()) .endVertex();
+        // vb.pos(x, toY, z).color(colorFade.getRed(), colorFade.getGreen(), colorFade.getBlue(),
+        // colorFade.getAlpha()).endVertex();
+        // vb.pos(toX, toY, z).color(colorFade.getRed(), colorFade.getGreen(), colorFade.getBlue(),
+        // colorFade.getAlpha()).endVertex();
         tes.draw();
         GL11.glShadeModel(GL11.GL_FLAT);
         GL11.glDisable(GL11.GL_BLEND);
@@ -506,19 +607,37 @@ public class RenderingUtils {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
-    public static void renderFacingFullQuadVB(Tessellator tess, double px, double py, double pz, float partialTicks, float scale, float angle, float colorRed, float colorGreen, float colorBlue, float alpha) {
-        renderFacingQuadVB(tess, px, py, pz, partialTicks, scale, angle, 0, 0, 1, 1, colorRed, colorGreen, colorBlue, alpha);
+    public static void renderFacingFullQuadVB(Tessellator tess, double px, double py, double pz, float partialTicks,
+        float scale, float angle, float colorRed, float colorGreen, float colorBlue, float alpha) {
+        renderFacingQuadVB(
+            tess,
+            px,
+            py,
+            pz,
+            partialTicks,
+            scale,
+            angle,
+            0,
+            0,
+            1,
+            1,
+            colorRed,
+            colorGreen,
+            colorBlue,
+            alpha);
     }
 
-    public static void renderFacingQuadVB(Tessellator tess, double px, double py, double pz, float partialTicks, float scale, float angle, double u, double v, double uLength, double vLength, float colorRed, float colorGreen, float colorBlue, float alpha) {
-        float arX =  ActiveRenderInfo.rotationX;
-        float arZ =  ActiveRenderInfo.rotationZ;
+    public static void renderFacingQuadVB(Tessellator tess, double px, double py, double pz, float partialTicks,
+        float scale, float angle, double u, double v, double uLength, double vLength, float colorRed, float colorGreen,
+        float colorBlue, float alpha) {
+        float arX = ActiveRenderInfo.rotationX;
+        float arZ = ActiveRenderInfo.rotationZ;
         float arYZ = ActiveRenderInfo.rotationYZ;
         float arXY = ActiveRenderInfo.rotationXY;
         float arXZ = ActiveRenderInfo.rotationXZ;
 
         Entity e = Minecraft.getMinecraft().renderViewEntity;
-        if(e == null) {
+        if (e == null) {
             e = Minecraft.getMinecraft().thePlayer;
         }
         double iPX = e.prevPosX + (e.posX - e.prevPosX) * partialTicks;
@@ -526,13 +645,14 @@ public class RenderingUtils {
         double iPZ = e.prevPosZ + (e.posZ - e.prevPosZ) * partialTicks;
 
         Vector3 v1 = new Vector3(-arX * scale - arYZ * scale, -arXZ * scale, -arZ * scale - arXY * scale);
-        Vector3 v2 = new Vector3(-arX * scale + arYZ * scale,  arXZ * scale, -arZ * scale + arXY * scale);
-        Vector3 v3 = new Vector3( arX * scale + arYZ * scale,  arXZ * scale,  arZ * scale + arXY * scale);
-        Vector3 v4 = new Vector3( arX * scale - arYZ * scale, -arXZ * scale,  arZ * scale - arXY * scale);
+        Vector3 v2 = new Vector3(-arX * scale + arYZ * scale, arXZ * scale, -arZ * scale + arXY * scale);
+        Vector3 v3 = new Vector3(arX * scale + arYZ * scale, arXZ * scale, arZ * scale + arXY * scale);
+        Vector3 v4 = new Vector3(arX * scale - arYZ * scale, -arXZ * scale, arZ * scale - arXY * scale);
         if (angle != 0.0F) {
             Vector3 pvec = new Vector3(iPX, iPY, iPZ);
             Vector3 tvec = new Vector3(px, py, pz);
-            Vector3 qvec = pvec.subtract(tvec).normalize();
+            Vector3 qvec = pvec.subtract(tvec)
+                .normalize();
             Vector3.Quat q = Vector3.Quat.buildQuatFrom3DVector(qvec, angle);
             q.rotateWithMagnitude(v1);
             q.rotateWithMagnitude(v2);
@@ -540,29 +660,40 @@ public class RenderingUtils {
             q.rotateWithMagnitude(v4);
         }
         tess.setColorRGBA_F(colorRed, colorGreen, colorBlue, alpha);
-        tess.addVertexWithUV(px + v1.getX() - iPX, py + v1.getY() - iPY, pz + v1.getZ() - iPZ,u + uLength,v + vLength);
-        tess.addVertexWithUV(px + v2.getX() - iPX, py + v2.getY() - iPY, pz + v2.getZ() - iPZ,u + uLength, v);
-        tess.addVertexWithUV(px + v3.getX() - iPX, py + v3.getY() - iPY, pz + v3.getZ() - iPZ, u,v);
-        tess.addVertexWithUV(px + v4.getX() - iPX, py + v4.getY() - iPY, pz + v4.getZ() - iPZ, u,v + vLength);
-//        vb.pos(px + v1.getX() - iPX, py + v1.getY() - iPY, pz + v1.getZ() - iPZ).tex(u + uLength,           v + vLength).color(colorRed, colorGreen, colorBlue, alpha).endVertex();
-//        vb.pos(px + v2.getX() - iPX, py + v2.getY() - iPY, pz + v2.getZ() - iPZ).tex(u + uLength, v).color(colorRed, colorGreen, colorBlue, alpha).endVertex();
-//        vb.pos(px + v3.getX() - iPX, py + v3.getY() - iPY, pz + v3.getZ() - iPZ).tex(u, v          ).color(colorRed, colorGreen, colorBlue, alpha).endVertex();
-//        vb.pos(px + v4.getX() - iPX, py + v4.getY() - iPY, pz + v4.getZ() - iPZ).tex(u,           v + vLength).color(colorRed, colorGreen, colorBlue, alpha).endVertex();
+        tess.addVertexWithUV(
+            px + v1.getX() - iPX,
+            py + v1.getY() - iPY,
+            pz + v1.getZ() - iPZ,
+            u + uLength,
+            v + vLength);
+        tess.addVertexWithUV(px + v2.getX() - iPX, py + v2.getY() - iPY, pz + v2.getZ() - iPZ, u + uLength, v);
+        tess.addVertexWithUV(px + v3.getX() - iPX, py + v3.getY() - iPY, pz + v3.getZ() - iPZ, u, v);
+        tess.addVertexWithUV(px + v4.getX() - iPX, py + v4.getY() - iPY, pz + v4.getZ() - iPZ, u, v + vLength);
+        // vb.pos(px + v1.getX() - iPX, py + v1.getY() - iPY, pz + v1.getZ() - iPZ).tex(u + uLength, v +
+        // vLength).color(colorRed, colorGreen, colorBlue, alpha).endVertex();
+        // vb.pos(px + v2.getX() - iPX, py + v2.getY() - iPY, pz + v2.getZ() - iPZ).tex(u + uLength, v).color(colorRed,
+        // colorGreen, colorBlue, alpha).endVertex();
+        // vb.pos(px + v3.getX() - iPX, py + v3.getY() - iPY, pz + v3.getZ() - iPZ).tex(u, v ).color(colorRed,
+        // colorGreen, colorBlue, alpha).endVertex();
+        // vb.pos(px + v4.getX() - iPX, py + v4.getY() - iPY, pz + v4.getZ() - iPZ).tex(u, v + vLength).color(colorRed,
+        // colorGreen, colorBlue, alpha).endVertex();
     }
 
-    public static void renderFacingFullQuad(double px, double py, double pz, float partialTicks, float scale, float angle) {
+    public static void renderFacingFullQuad(double px, double py, double pz, float partialTicks, float scale,
+        float angle) {
         renderFacingQuad(px, py, pz, partialTicks, scale, angle, 0, 0, 1, 1);
     }
 
-    public static void renderFacingQuad(double px, double py, double pz, float partialTicks, float scale, float angle, double u, double v, double uLength, double vLength) {
-        float arX =  ActiveRenderInfo.rotationX;
-        float arZ =  ActiveRenderInfo.rotationZ;
+    public static void renderFacingQuad(double px, double py, double pz, float partialTicks, float scale, float angle,
+        double u, double v, double uLength, double vLength) {
+        float arX = ActiveRenderInfo.rotationX;
+        float arZ = ActiveRenderInfo.rotationZ;
         float arYZ = ActiveRenderInfo.rotationYZ;
         float arXY = ActiveRenderInfo.rotationXY;
         float arXZ = ActiveRenderInfo.rotationXZ;
 
         Entity e = Minecraft.getMinecraft().renderViewEntity;
-        if(e == null) {
+        if (e == null) {
             e = Minecraft.getMinecraft().thePlayer;
         }
         double iPX = e.prevPosX + (e.posX - e.prevPosX) * partialTicks;
@@ -570,13 +701,14 @@ public class RenderingUtils {
         double iPZ = e.prevPosZ + (e.posZ - e.prevPosZ) * partialTicks;
 
         Vector3 v1 = new Vector3(-arX * scale - arYZ * scale, -arXZ * scale, -arZ * scale - arXY * scale);
-        Vector3 v2 = new Vector3(-arX * scale + arYZ * scale,  arXZ * scale, -arZ * scale + arXY * scale);
-        Vector3 v3 = new Vector3( arX * scale + arYZ * scale,  arXZ * scale,  arZ * scale + arXY * scale);
-        Vector3 v4 = new Vector3( arX * scale - arYZ * scale, -arXZ * scale,  arZ * scale - arXY * scale);
+        Vector3 v2 = new Vector3(-arX * scale + arYZ * scale, arXZ * scale, -arZ * scale + arXY * scale);
+        Vector3 v3 = new Vector3(arX * scale + arYZ * scale, arXZ * scale, arZ * scale + arXY * scale);
+        Vector3 v4 = new Vector3(arX * scale - arYZ * scale, -arXZ * scale, arZ * scale - arXY * scale);
         if (angle != 0.0F) {
             Vector3 pvec = new Vector3(iPX, iPY, iPZ);
             Vector3 tvec = new Vector3(px, py, pz);
-            Vector3 qvec = pvec.subtract(tvec).normalize();
+            Vector3 qvec = pvec.subtract(tvec)
+                .normalize();
             Vector3.Quat q = Vector3.Quat.buildQuatFrom3DVector(qvec, angle);
             q.rotateWithMagnitude(v1);
             q.rotateWithMagnitude(v2);
@@ -585,16 +717,22 @@ public class RenderingUtils {
         }
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
-        tess.addVertexWithUV(px + v1.getX() - iPX, py + v1.getY() - iPY, pz + v1.getZ() - iPZ, u,           v + vLength);
-        tess.addVertexWithUV(px + v2.getX() - iPX, py + v2.getY() - iPY, pz + v2.getZ() - iPZ, u + uLength, v + vLength);
-        tess.addVertexWithUV(px + v3.getX() - iPX, py + v3.getY() - iPY, pz + v3.getZ() - iPZ, u + uLength, v          );
-        tess.addVertexWithUV(px + v4.getX() - iPX, py + v4.getY() - iPY, pz + v4.getZ() - iPZ, u,           v          );
-//        VertexBuffer vb = t.getBuffer();
-//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(px + v1.getX() - iPX, py + v1.getY() - iPY, pz + v1.getZ() - iPZ).tex(u,           v + vLength).endVertex();
-//        vb.pos(px + v2.getX() - iPX, py + v2.getY() - iPY, pz + v2.getZ() - iPZ).tex(u + uLength, v + vLength).endVertex();
-//        vb.pos(px + v3.getX() - iPX, py + v3.getY() - iPY, pz + v3.getZ() - iPZ).tex(u + uLength, v          ).endVertex();
-//        vb.pos(px + v4.getX() - iPX, py + v4.getY() - iPY, pz + v4.getZ() - iPZ).tex(u,           v          ).endVertex();
+        tess.addVertexWithUV(px + v1.getX() - iPX, py + v1.getY() - iPY, pz + v1.getZ() - iPZ, u, v + vLength);
+        tess.addVertexWithUV(
+            px + v2.getX() - iPX,
+            py + v2.getY() - iPY,
+            pz + v2.getZ() - iPZ,
+            u + uLength,
+            v + vLength);
+        tess.addVertexWithUV(px + v3.getX() - iPX, py + v3.getY() - iPY, pz + v3.getZ() - iPZ, u + uLength, v);
+        tess.addVertexWithUV(px + v4.getX() - iPX, py + v4.getY() - iPY, pz + v4.getZ() - iPZ, u, v);
+        // VertexBuffer vb = t.getBuffer();
+        // vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(px + v1.getX() - iPX, py + v1.getY() - iPY, pz + v1.getZ() - iPZ).tex(u, v + vLength).endVertex();
+        // vb.pos(px + v2.getX() - iPX, py + v2.getY() - iPY, pz + v2.getZ() - iPZ).tex(u + uLength, v +
+        // vLength).endVertex();
+        // vb.pos(px + v3.getX() - iPX, py + v3.getY() - iPY, pz + v3.getZ() - iPZ).tex(u + uLength, v ).endVertex();
+        // vb.pos(px + v4.getX() - iPX, py + v4.getY() - iPY, pz + v4.getZ() - iPZ).tex(u, v ).endVertex();
         tess.draw();
     }
 

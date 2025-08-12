@@ -8,27 +8,27 @@
 
 package hellfirepvp.astralsorcery.common.starlight.network.handlers;
 
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.base.LightOreTransmutations;
-import hellfirepvp.astralsorcery.common.block.BlockCustomOre;
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.starlight.network.StarlightNetworkRegistry;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.block.Block;
-import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -47,13 +47,14 @@ public class BlockTransmutationHandler implements StarlightNetworkRegistry.IStar
     }
 
     @Override
-    public void receiveStarlight(World world, Random rand, BlockPos pos, @Nullable IWeakConstellation starlightType, double amount) {
+    public void receiveStarlight(World world, Random rand, BlockPos pos, @Nullable IWeakConstellation starlightType,
+        double amount) {
         long ms = System.currentTimeMillis();
 
-        if(!runningTransmutations.containsKey(pos)) {
+        if (!runningTransmutations.containsKey(pos)) {
             Block tryStateIn = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
             LightOreTransmutations.Transmutation tr = LightOreTransmutations.searchForTransmutation(tryStateIn);
-            if(tr != null) {
+            if (tr != null) {
                 ActiveTransmutation atr = new ActiveTransmutation();
                 runningTransmutations.put(pos, atr);
                 atr.accCharge = 0D;
@@ -65,14 +66,18 @@ public class BlockTransmutationHandler implements StarlightNetworkRegistry.IStar
         }
         ActiveTransmutation node = runningTransmutations.get(pos);
         long diff = ms - node.lastMSrec;
-        if(diff >= 15_000) node.accCharge = 0;
+        if (diff >= 15_000) node.accCharge = 0;
         node.accCharge += amount;
         node.lastMSrec = ms;
 
-        PktParticleEvent pkt = new PktParticleEvent(PktParticleEvent.ParticleEventType.TRANSMUTATION_CHARGE, pos.getX(), pos.getY(), pos.getZ());
+        PktParticleEvent pkt = new PktParticleEvent(
+            PktParticleEvent.ParticleEventType.TRANSMUTATION_CHARGE,
+            pos.getX(),
+            pos.getY(),
+            pos.getZ());
         PacketChannel.CHANNEL.sendToAllAround(pkt, PacketChannel.pointFromPos(world, pos, 16));
 
-        if(node.accCharge >= node.runningTransmutation.cost) {
+        if (node.accCharge >= node.runningTransmutation.cost) {
             runningTransmutations.remove(pos);
 
             world.setBlock(pos.getX(), pos.getY(), pos.getZ(), node.runningTransmutation.output);
@@ -85,11 +90,15 @@ public class BlockTransmutationHandler implements StarlightNetworkRegistry.IStar
         Random rand = EffectHandler.STATIC_EFFECT_RAND;
 
         EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                event.getVec().getX() + rand.nextFloat(),
-                event.getVec().getY() + rand.nextFloat(),
-                event.getVec().getZ() + rand.nextFloat());
+            event.getVec()
+                .getX() + rand.nextFloat(),
+            event.getVec()
+                .getY() + rand.nextFloat(),
+            event.getVec()
+                .getZ() + rand.nextFloat());
         p.motion(0, rand.nextFloat() * 0.05, 0);
-        p.scale(0.2F).setColor(Color.WHITE);
+        p.scale(0.2F)
+            .setColor(Color.WHITE);
     }
 
     public static class ActiveTransmutation {

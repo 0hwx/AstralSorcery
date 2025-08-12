@@ -8,20 +8,23 @@
 
 package hellfirepvp.astralsorcery.client.gui.journal;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
+
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.MathHelper;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.gui.GuiWHScreen;
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerkMap;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.MathHelper;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -32,10 +35,14 @@ import java.awt.*;
  */
 public abstract class GuiScreenJournal extends GuiWHScreen {
 
-    public static final BindableResource textureResBlank    = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiJBlankBook");
-    public static final BindableResource textureResShell    = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiJSpaceBook");
-    public static final BindableResource textureBookmark    = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiJBookmark");
-    public static final BindableResource textureBookmarkStr = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiJBookmarkStretched");
+    public static final BindableResource textureResBlank = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiJBlankBook");
+    public static final BindableResource textureResShell = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiJSpaceBook");
+    public static final BindableResource textureBookmark = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiJBookmark");
+    public static final BindableResource textureBookmarkStr = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiJBookmarkStretched");
 
     protected final int bookmarkIndex;
 
@@ -52,7 +59,7 @@ public abstract class GuiScreenJournal extends GuiWHScreen {
 
         Point mouse = getCurrentMousePoint();
 
-        zLevel += 100; //To ensure that it over-renders items conflicting with the shell.
+        zLevel += 100; // To ensure that it over-renders items conflicting with the shell.
         drawWHRect(background);
         drawBookmarks(zLevel, mouse);
         zLevel -= 100;
@@ -65,36 +72,57 @@ public abstract class GuiScreenJournal extends GuiWHScreen {
         GL11.glPushMatrix();
         GL11.glColor4f(1F, 1F, 1F, 1F);
 
-        double bookmarkWidth =  67;
+        double bookmarkWidth = 67;
         double bookmarkHeight = 15;
 
         double offsetX = guiLeft + guiWidth - 17.25;
-        double offsetY = guiTop  + 20;
+        double offsetY = guiTop + 20;
 
-        rectResearchBookmark = drawBookmark(offsetX, offsetY, bookmarkWidth, bookmarkHeight, bookmarkWidth + (bookmarkIndex == 0 ? 0 : 5), zLevel, "gui.journal.bm.knowledge.name", 0xDDDDDDDD, mousePoint);
+        rectResearchBookmark = drawBookmark(
+            offsetX,
+            offsetY,
+            bookmarkWidth,
+            bookmarkHeight,
+            bookmarkWidth + (bookmarkIndex == 0 ? 0 : 5),
+            zLevel,
+            "gui.journal.bm.knowledge.name",
+            0xDDDDDDDD,
+            mousePoint);
 
-        if(!ResearchManager.clientProgress.getSeenConstellations().isEmpty()) {
+        if (!ResearchManager.clientProgress.getSeenConstellations()
+            .isEmpty()) {
             offsetY = guiTop + 40;
-            rectConstellationBookmark = drawBookmark(offsetX, offsetY, bookmarkWidth, bookmarkHeight, bookmarkWidth + (bookmarkIndex == 1 ? 0 : 5), zLevel, "gui.journal.bm.constellations.name", 0xDDDDDDDD, mousePoint);
+            rectConstellationBookmark = drawBookmark(
+                offsetX,
+                offsetY,
+                bookmarkWidth,
+                bookmarkHeight,
+                bookmarkWidth + (bookmarkIndex == 1 ? 0 : 5),
+                zLevel,
+                "gui.journal.bm.constellations.name",
+                0xDDDDDDDD,
+                mousePoint);
         }
 
         IMajorConstellation attuned = ResearchManager.clientProgress.getAttunedConstellation();
-        //attuned = Constellations.discidia;
-//        if(attuned != null) {
-//            ConstellationPerkMap map = attuned.getPerkMap();
-//            if(map != null) {
-//                offsetY = guiTop + 60;
-//                rectPerkMapBookmark = drawBookmark(offsetX, offsetY, bookmarkWidth, bookmarkHeight, bookmarkWidth + (bookmarkIndex == 2 ? 0 : 5), zLevel, "gui.journal.bm.perks.name", 0xDDDDDDDD, mousePoint);
-//            }
-//        }
+        // attuned = Constellations.discidia;
+        // if(attuned != null) {
+        // ConstellationPerkMap map = attuned.getPerkMap();
+        // if(map != null) {
+        // offsetY = guiTop + 60;
+        // rectPerkMapBookmark = drawBookmark(offsetX, offsetY, bookmarkWidth, bookmarkHeight, bookmarkWidth +
+        // (bookmarkIndex == 2 ? 0 : 5), zLevel, "gui.journal.bm.perks.name", 0xDDDDDDDD, mousePoint);
+        // }
+        // }
 
         GL11.glPopMatrix();
     }
 
-    private Rectangle drawBookmark(double offsetX, double offsetY, double width, double height, double mouseOverWidth, float zLevel, String title, int titleRGBColor, Point mousePoint) {
+    private Rectangle drawBookmark(double offsetX, double offsetY, double width, double height, double mouseOverWidth,
+        float zLevel, String title, int titleRGBColor, Point mousePoint) {
         TextureHelper.setActiveTextureToAtlasSprite();
-        //Reset styles, because MC fontrenderer is STUPID A F
-        if(titleRGBColor == Color.WHITE.getRGB()) {
+        // Reset styles, because MC fontrenderer is STUPID A F
+        if (titleRGBColor == Color.WHITE.getRGB()) {
             fontRendererObj.drawString("", 0, 0, Color.BLACK.getRGB());
         } else {
             fontRendererObj.drawString("", 0, 0, Color.WHITE.getRGB());
@@ -103,13 +131,21 @@ public abstract class GuiScreenJournal extends GuiWHScreen {
         GL11.glColor4f(1F, 1F, 1F, 1F);
         textureBookmark.bind();
 
-        Rectangle r = new Rectangle(MathHelper.floor_double(offsetX), MathHelper.floor_double(offsetY), MathHelper.floor_double(width), MathHelper.floor_double(height));
-        if(r.contains(mousePoint)) {
-            if(mouseOverWidth > width) {
+        Rectangle r = new Rectangle(
+            MathHelper.floor_double(offsetX),
+            MathHelper.floor_double(offsetY),
+            MathHelper.floor_double(width),
+            MathHelper.floor_double(height));
+        if (r.contains(mousePoint)) {
+            if (mouseOverWidth > width) {
                 textureBookmarkStr.bind();
             }
             width = mouseOverWidth;
-            r = new Rectangle(MathHelper.floor_double(offsetX), MathHelper.floor_double(offsetY), MathHelper.floor_double(width), MathHelper.floor_double(height));
+            r = new Rectangle(
+                MathHelper.floor_double(offsetX),
+                MathHelper.floor_double(offsetY),
+                MathHelper.floor_double(width),
+                MathHelper.floor_double(height));
         }
 
         Tessellator tess = Tessellator.instance;
@@ -119,13 +155,13 @@ public abstract class GuiScreenJournal extends GuiWHScreen {
         tess.addVertexWithUV(offsetX + width, offsetY, zLevel, 1, 0);
         tess.addVertexWithUV(offsetX, offsetY, zLevel, 0, 0);
         tess.draw();
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
-//        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
-//        tes.draw();
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(offsetX, offsetY + height, zLevel).tex(0, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY, zLevel).tex(1, 0).endVertex();
+        // vb.pos(offsetX, offsetY, zLevel).tex(0, 0).endVertex();
+        // tes.draw();
 
         GL11.glPushMatrix();
         GL11.glTranslated(offsetX + 2, offsetY + 4, zLevel + 50);

@@ -8,15 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.world.attributes;
 
-import hellfirepvp.astralsorcery.common.block.BlockMarble;
+import java.util.Random;
+
+import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.WorldGenMinable;
+
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.world.WorldGenAttribute;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.WorldGenMinable;
-
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,17 +31,17 @@ public class GenAttributeMarble extends WorldGenAttribute {
 
     public GenAttributeMarble() {
         super(0);
-        marbleMineable = new WorldGenMinable(
-                BlocksAS.blockMarble //getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW)
+        marbleMineable = new WorldGenMinable(BlocksAS.blockMarble // getDefaultState().withProperty(BlockMarble.MARBLE_TYPE,
+                                                                  // BlockMarble.MarbleBlockType.RAW)
             , Config.marbleVeinSize);
     }
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world) {
         for (int i = 0; i < Config.marbleAmount; i++) {
-            int rX = (chunkX  * 16) + random.nextInt(16);
+            int rX = (chunkX * 16) + random.nextInt(16);
             int rY = 50 + random.nextInt(10);
-            int rZ = (chunkZ  * 16) + random.nextInt(16);
+            int rZ = (chunkZ * 16) + random.nextInt(16);
             BlockPos pos = new BlockPos(rX, rY, rZ);
             marbleMineable.generate(world, random, pos.getX(), pos.getY(), pos.getZ());
         }

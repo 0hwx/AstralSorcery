@@ -8,12 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.crafting.infusion;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
-import net.minecraft.entity.player.EntityPlayer;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
+
+import net.minecraft.entity.player.EntityPlayer;
+
+import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -39,7 +40,8 @@ public class ActiveInfusionTask {
 
     @Nullable
     public EntityPlayer tryGetCraftingPlayerServer() {
-//        return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerCraftingUUID);
+        // return
+        // FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerCraftingUUID);
         return null;
     }
 

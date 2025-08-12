@@ -1,18 +1,20 @@
 package hellfirepvp.astralsorcery.common.world.retrogen;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
-import hellfirepvp.astralsorcery.common.data.world.data.ChunkVersionBuffer;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
+import hellfirepvp.astralsorcery.common.data.world.data.ChunkVersionBuffer;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -42,12 +44,12 @@ public class ChunkVersionController {
 
     @SubscribeEvent
     public void onChUnload(ChunkEvent.Unload ev) {
-        if(ev.getChunk().worldObj.isRemote) return;
+        if (ev.getChunk().worldObj.isRemote) return;
 
         ChunkCoordIntPair cp = new ChunkCoordIntPair(ev.getChunk().xPosition, ev.getChunk().zPosition);
-        //To be fair. We don't expect the dequeue to ever get bigger than 1-2 entries...
-        //If it does, someone REALLY MESSED UP.
-        if(!queuedSaveBuffer.contains(cp)) {
+        // To be fair. We don't expect the dequeue to ever get bigger than 1-2 entries...
+        // If it does, someone REALLY MESSED UP.
+        if (!queuedSaveBuffer.contains(cp)) {
             queuedSaveBuffer.add(cp);
         }
     }
@@ -56,15 +58,16 @@ public class ChunkVersionController {
     public void onChDataLoad(ChunkDataEvent.Load ev) {
         ChunkCoordIntPair cp = new ChunkCoordIntPair(ev.getChunk().xPosition, ev.getChunk().zPosition);
         NBTTagCompound tag = ev.getData();
-        if(tag.hasKey(AS_VERSION_KEY)) {
+        if (tag.hasKey(AS_VERSION_KEY)) {
             versionBuffer.put(cp, tag.getInteger(AS_VERSION_KEY));
         } else {
-            ChunkVersionBuffer buf = WorldCacheManager.getOrLoadData(ev.world, WorldCacheManager.SaveKey.CHUNK_VERSIONING);
+            ChunkVersionBuffer buf = WorldCacheManager
+                .getOrLoadData(ev.world, WorldCacheManager.SaveKey.CHUNK_VERSIONING);
             Integer savedVersion = buf.getGenerationVersion(cp);
-            if(savedVersion != null) {
+            if (savedVersion != null) {
                 versionBuffer.put(cp, savedVersion);
             } else {
-                versionBuffer.put(cp, -1); //Can't grab any data...
+                versionBuffer.put(cp, -1); // Can't grab any data...
             }
         }
     }
@@ -73,10 +76,12 @@ public class ChunkVersionController {
     public void onChDataSave(ChunkDataEvent.Save ev) {
         ChunkCoordIntPair cp = new ChunkCoordIntPair(ev.getChunk().xPosition, ev.getChunk().zPosition);
         Integer buf = versionBuffer.get(cp);
-        if(buf != null) {
-            ev.getData().setInteger(AS_VERSION_KEY, buf);
+        if (buf != null) {
+            ev.getData()
+                .setInteger(AS_VERSION_KEY, buf);
         } else {
-            ev.getData().setInteger(AS_VERSION_KEY, -1); //So at least we don't have to look it up somewhere else later.
+            ev.getData()
+                .setInteger(AS_VERSION_KEY, -1); // So at least we don't have to look it up somewhere else later.
         }
     }
 

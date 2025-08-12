@@ -8,14 +8,16 @@
 
 package hellfirepvp.astralsorcery.common.crafting;
 
-import hellfirepvp.astralsorcery.common.crafting.helper.ShapedRecipeSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
 
 import javax.annotation.Nullable;
-import java.util.List;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.crafting.helper.ShapedRecipeSlot;
 
 /**
  * This class is part of the Astral Sorcery Mod

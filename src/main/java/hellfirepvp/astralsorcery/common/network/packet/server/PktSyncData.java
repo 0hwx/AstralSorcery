@@ -8,20 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.data.AbstractData;
 import hellfirepvp.astralsorcery.common.data.SyncDataHolder;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,8 +36,7 @@ public class PktSyncData implements IMessage, IMessageHandler<PktSyncData, IMess
     private Map<String, AbstractData> data = new HashMap<>();
     private boolean shouldSyncAll = false;
 
-    public PktSyncData() {
-    }
+    public PktSyncData() {}
 
     public PktSyncData(Map<String, AbstractData> dataToSend, boolean shouldSyncAll) {
         this.data = dataToSend;
@@ -52,7 +52,8 @@ public class PktSyncData implements IMessage, IMessageHandler<PktSyncData, IMess
             String key = ByteBufUtils.readString(pb);
 
             byte providerId = pb.readByte();
-            AbstractData.AbstractDataProvider<? extends AbstractData> provider = AbstractData.Registry.getProvider(providerId);
+            AbstractData.AbstractDataProvider<? extends AbstractData> provider = AbstractData.Registry
+                .getProvider(providerId);
             if (provider == null) {
                 AstralSorcery.log.warn("Provider for ID " + providerId + " doesn't exist! Skipping...");
                 continue;

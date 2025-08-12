@@ -8,22 +8,24 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ChatComponentText;
+
+import com.mojang.realmsclient.gui.ChatFormatting;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.gui.GuiJournalPerkMap;
 import hellfirepvp.astralsorcery.client.gui.GuiJournalProgression;
 import hellfirepvp.astralsorcery.client.gui.journal.GuiScreenJournal;
 import hellfirepvp.astralsorcery.common.data.research.ProgressionTier;
 import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
-import com.mojang.realmsclient.gui.ChatFormatting;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.util.ChatComponentText;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -69,8 +71,8 @@ public class PktProgressionUpdate implements IMessage, IMessageHandler<PktProgre
 
     @Override
     public IMessage onMessage(PktProgressionUpdate message, MessageContext ctx) {
-        if(message.isPresent) {
-            if(message.isProg) {
+        if (message.isPresent) {
+            if (message.isProg) {
                 addProgressChatMessage(message.tier);
             } else {
                 addResearchChatMessage(message.tier);
@@ -83,9 +85,10 @@ public class PktProgressionUpdate implements IMessage, IMessageHandler<PktProgre
     @SideOnly(Side.CLIENT)
     private void closeAndRefreshJournal() {
         GuiScreen open = Minecraft.getMinecraft().currentScreen;
-        if(open != null) {
-            if(open instanceof GuiScreenJournal && !(open instanceof GuiJournalPerkMap)) {
-                Minecraft.getMinecraft().displayGuiScreen(null);
+        if (open != null) {
+            if (open instanceof GuiScreenJournal && !(open instanceof GuiJournalPerkMap)) {
+                Minecraft.getMinecraft()
+                    .displayGuiScreen(null);
             }
         }
 

@@ -8,16 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.block.network;
 
-import com.google.common.collect.Lists;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import hellfirepvp.astralsorcery.common.block.BlockVariants;
-import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.tile.network.TileCrystalLens;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.ItemUtils;
-import hellfirepvp.astralsorcery.common.util.MiscUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -30,13 +24,21 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.google.common.collect.Lists;
+
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.block.BlockVariants;
+import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
+import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.tile.network.TileCrystalLens;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ItemUtils;
+import hellfirepvp.astralsorcery.common.util.MiscUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -47,18 +49,19 @@ import java.util.List;
  */
 public class BlockLens extends BlockStarlightNetwork implements BlockVariants {
 
-    private static final AxisAlignedBB boxLens =  AxisAlignedBB.getBoundingBox(2.5D/16D, 0, 2.5D/16D, 13.5D/16D, 14.5D/16D, 13.5D/16D);
+    private static final AxisAlignedBB boxLens = AxisAlignedBB
+        .getBoundingBox(2.5D / 16D, 0, 2.5D / 16D, 13.5D / 16D, 14.5D / 16D, 13.5D / 16D);
 
-//    public static PropertyBool RENDER_FULLY = PropertyBool.create("render");
+    // public static PropertyBool RENDER_FULLY = PropertyBool.create("render");
 
     public BlockLens() {
         super("BlockLens", Material.rock);
         setHardness(3.0F);
-//        setSoundType(SoundType.GLASS);
+        // setSoundType(SoundType.GLASS);
         setResistance(12.0F);
         setHarvestLevel("pickaxe", 2);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
-//        setDefaultState(this.blockState.getBaseState().withProperty(RENDER_FULLY, true));
+        // setDefaultState(this.blockState.getBaseState().withProperty(RENDER_FULLY, true));
     }
 
     @Override
@@ -69,11 +72,12 @@ public class BlockLens extends BlockStarlightNetwork implements BlockVariants {
         list.add(stack);
     }
 
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
-//        CrystalProperties.addPropertyTooltip(CrystalProperties.getCrystalProperties(stack), tooltip, CrystalProperties.MAX_SIZE_CELESTIAL);
-//    }
+    // @Override
+    // @SideOnly(Side.CLIENT)
+    // public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
+    // CrystalProperties.addPropertyTooltip(CrystalProperties.getCrystalProperties(stack), tooltip,
+    // CrystalProperties.MAX_SIZE_CELESTIAL);
+    // }
 
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
@@ -86,17 +90,19 @@ public class BlockLens extends BlockStarlightNetwork implements BlockVariants {
     }
 
     @Override
-    public boolean isNormalCube() { return false; }
+    public boolean isNormalCube() {
+        return false;
+    }
 
     @Override
     public boolean hasTileEntity() {
         return true;
     }
 
-//    @Override
-//    public int getMeta() {
-//        return 0;
-//    }
+    // @Override
+    // public int getMeta() {
+    // return 0;
+    // }
 
     @Override
     public TileEntity createTileEntity(World world, int metadata) {
@@ -108,10 +114,10 @@ public class BlockLens extends BlockStarlightNetwork implements BlockVariants {
         return null;
     }
 
-//    @Override
-//    protected BlockStateContainer createBlockState() {
-//        return new BlockStateContainer(this, RENDER_FULLY);
-//    }
+    // @Override
+    // protected BlockStateContainer createBlockState() {
+    // return new BlockStateContainer(this, RENDER_FULLY);
+    // }
 
     @Override
     public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
@@ -119,7 +125,7 @@ public class BlockLens extends BlockStarlightNetwork implements BlockVariants {
     }
 
     @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
         return Lists.newArrayList();
     }
 
@@ -128,7 +134,7 @@ public class BlockLens extends BlockStarlightNetwork implements BlockVariants {
         ItemStack stack = super.getPickBlock(target, world, x, y, z, player);
         BlockPos pos = new BlockPos(x, y, z);
         TileCrystalLens lens = MiscUtils.getTileAt(world, pos, TileCrystalLens.class, true);
-        if(lens != null && lens.getCrystalProperties() != null) {
+        if (lens != null && lens.getCrystalProperties() != null) {
             CrystalProperties.applyCrystalProperties(stack, lens.getCrystalProperties());
         } else {
             CrystalProperties.applyCrystalProperties(stack, CrystalProperties.getMaxCelestialProperties());
@@ -140,10 +146,11 @@ public class BlockLens extends BlockStarlightNetwork implements BlockVariants {
     public void onBlockHarvested(World worldIn, int x, int y, int z, int meta, EntityPlayer player) {
         BlockPos pos = new BlockPos(x, y, z);
         TileCrystalLens lens = MiscUtils.getTileAt(worldIn, pos, TileCrystalLens.class, true);
-        if(lens != null && !worldIn.isRemote && !player.capabilities.isCreativeMode) {
+        if (lens != null && !worldIn.isRemote && !player.capabilities.isCreativeMode) {
             ItemStack drop;
-            if(lens.getLensColor() != null) {
-                drop = lens.getLensColor().asStack();
+            if (lens.getLensColor() != null) {
+                drop = lens.getLensColor()
+                    .asStack();
                 ItemUtils.dropItemNaturally(worldIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop);
             }
 
@@ -152,18 +159,20 @@ public class BlockLens extends BlockStarlightNetwork implements BlockVariants {
             ItemUtils.dropItemNaturally(worldIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop);
         }
 
-        super.onBlockHarvested(worldIn, pos.getX(), pos.getY(), pos.getZ(),meta, player);
+        super.onBlockHarvested(worldIn, pos.getX(), pos.getY(), pos.getZ(), meta, player);
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-        if(!worldIn.isRemote && player.isSneaking()) {
+    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX,
+        float hitY, float hitZ) {
+        if (!worldIn.isRemote && player.isSneaking()) {
             BlockPos pos = new BlockPos(x, y, z);
             TileCrystalLens lens = MiscUtils.getTileAt(worldIn, pos, TileCrystalLens.class, true);
-            if(lens != null && lens.getLensColor() != null) {
-                ItemStack drop = lens.getLensColor().asStack();
+            if (lens != null && lens.getLensColor() != null) {
+                ItemStack drop = lens.getLensColor()
+                    .asStack();
                 ItemUtils.dropItemNaturally(worldIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop);
-//                SoundHelper.playSoundAround(Sounds.clipSwitch, worldIn, pos, 0.8F, 1.5F);
+                // SoundHelper.playSoundAround(Sounds.clipSwitch, worldIn, pos, 0.8F, 1.5F);
                 lens.setLensColor(null);
                 return true;
             }
@@ -171,10 +180,10 @@ public class BlockLens extends BlockStarlightNetwork implements BlockVariants {
         return false;
     }
 
-//    @Override
-//    public Block getActualState(Block state, IBlockAccess worldIn, BlockPos pos) {
-//        return state.withProperty(RENDER_FULLY, false);
-//    }
+    // @Override
+    // public Block getActualState(Block state, IBlockAccess worldIn, BlockPos pos) {
+    // return state.withProperty(RENDER_FULLY, false);
+    // }
 
     @Override
     public int getRenderType() {
@@ -185,20 +194,21 @@ public class BlockLens extends BlockStarlightNetwork implements BlockVariants {
     public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
         BlockPos pos = new BlockPos(x, y, z);
         TileCrystalLens te = MiscUtils.getTileAt(worldIn, pos, TileCrystalLens.class, true);
-        if(te == null) return;
+        if (te == null) return;
         te.onPlace(CrystalProperties.getCrystalProperties(stack));
     }
 
     @Override
     public List<Block> getValidStates() {
         return Arrays.asList();
-//        return Arrays.asList(getDefaultState().withProperty(RENDER_FULLY, false), getDefaultState().withProperty(RENDER_FULLY, true));
+        // return Arrays.asList(getDefaultState().withProperty(RENDER_FULLY, false),
+        // getDefaultState().withProperty(RENDER_FULLY, true));
     }
 
     @Override
     public String getMetaName(int meta) {
         return "";
-//        return state.getValue(RENDER_FULLY).toString();
+        // return state.getValue(RENDER_FULLY).toString();
     }
 
     @Override

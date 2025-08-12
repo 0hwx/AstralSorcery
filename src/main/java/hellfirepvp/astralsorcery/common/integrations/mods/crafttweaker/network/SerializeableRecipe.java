@@ -8,9 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.function.Function;
+
+import io.netty.buffer.ByteBuf;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,18 +33,18 @@ public interface SerializeableRecipe {
 
     public static enum CraftingType {
 
-        INFUSION_ADD    ((v) -> new InfusionRecipeAdd()),
-        INFUSION_REMOVE ((v) -> new InfusionRecipeRemove()),
-//        ORETPYE_ADD     ((v) -> new OreTypeAdd()),
-//        ORETYPE_REMOVE  ((v) -> new OreTypeRemove()),
-        TRANSMUTE_ADD   ((v) -> new LightTransmutationAdd()),
+        INFUSION_ADD((v) -> new InfusionRecipeAdd()),
+        INFUSION_REMOVE((v) -> new InfusionRecipeRemove()),
+        // ORETPYE_ADD ((v) -> new OreTypeAdd()),
+        // ORETYPE_REMOVE ((v) -> new OreTypeRemove()),
+        TRANSMUTE_ADD((v) -> new LightTransmutationAdd()),
         TRANSMUTE_REMOVE((v) -> new LightTransmutationRemove()),
-        WELL_ADD        ((v) -> new WellRecipeAdd()),
-        WELL_REMOVE     ((v) -> new WellRecipeRemove()),
-        ALTAR_REMOVE    ((v) -> new AltarRecipeRemove()),
-        ALTAR_T1_ADD    ((v) -> new AltarRecipeDiscovery()),
-        ALTAR_T2_ADD    ((v) -> new AltarRecipeAttunement()),
-        ALTAR_T3_ADD    ((v) -> new AltarRecipeConstellation());
+        WELL_ADD((v) -> new WellRecipeAdd()),
+        WELL_REMOVE((v) -> new WellRecipeRemove()),
+        ALTAR_REMOVE((v) -> new AltarRecipeRemove()),
+        ALTAR_T1_ADD((v) -> new AltarRecipeDiscovery()),
+        ALTAR_T2_ADD((v) -> new AltarRecipeAttunement()),
+        ALTAR_T3_ADD((v) -> new AltarRecipeConstellation());
 
         private final Function<Void, ? extends SerializeableRecipe> recipeProvider;
 

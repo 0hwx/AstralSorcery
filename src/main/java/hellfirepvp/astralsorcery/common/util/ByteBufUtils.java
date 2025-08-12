@@ -8,20 +8,22 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.util.UUID;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fluids.FluidStack;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.util.UUID;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -83,7 +85,7 @@ public class ByteBufUtils {
     public static void writeItemStack(ByteBuf byteBuf, @Nullable ItemStack stack) {
         boolean defined = stack != null;
         byteBuf.writeBoolean(defined);
-        if(defined) {
+        if (defined) {
             NBTTagCompound tag = new NBTTagCompound();
             stack.writeToNBT(tag);
             writeNBTTag(byteBuf, tag);
@@ -93,7 +95,7 @@ public class ByteBufUtils {
     @Nullable
     public static ItemStack readItemStack(ByteBuf byteBuf) {
         boolean defined = byteBuf.readBoolean();
-        if(defined) {
+        if (defined) {
             return ItemStack.loadItemStackFromNBT(readNBTTag(byteBuf));
         } else {
             return null;
@@ -103,7 +105,7 @@ public class ByteBufUtils {
     public static void writeFluidStack(ByteBuf byteBuf, @Nullable FluidStack stack) {
         boolean defined = stack != null;
         byteBuf.writeBoolean(defined);
-        if(defined) {
+        if (defined) {
             NBTTagCompound tag = new NBTTagCompound();
             stack.writeToNBT(tag);
             writeNBTTag(byteBuf, tag);
@@ -113,7 +115,7 @@ public class ByteBufUtils {
     @Nullable
     public static FluidStack readFluidStack(ByteBuf byteBuf) {
         boolean defined = byteBuf.readBoolean();
-        if(defined) {
+        if (defined) {
             return FluidStack.loadFluidStackFromNBT(readNBTTag(byteBuf));
         } else {
             return null;

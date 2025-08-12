@@ -8,11 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import hellfirepvp.astralsorcery.client.effect.EffectHelper;
-import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
-import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import java.awt.Color;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,11 +22,13 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
-import java.awt.*;
+import hellfirepvp.astralsorcery.client.effect.EffectHelper;
+import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
+import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -59,11 +60,14 @@ public class ItemShiftingStar extends Item {
     @Nullable
     @Override
     public ItemStack onEaten(ItemStack stack, World worldIn, EntityPlayer entityLiving) {
-        if(!worldIn.isRemote && entityLiving instanceof EntityPlayer) {
+        if (!worldIn.isRemote && entityLiving instanceof EntityPlayer) {
             EntityPlayer pl = (EntityPlayer) entityLiving;
-            if(ResearchManager.setAttunedConstellation(pl, null)) {
-                pl.addChatMessage(new ChatComponentTranslation("progress.remove.attunement").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.BLUE)));
-//                SoundHelper.playSoundAround(SoundEvents.BLOCK_GLASS_BREAK, worldIn, entityLiving.getPosition(), 1F, 1F);
+            if (ResearchManager.setAttunedConstellation(pl, null)) {
+                pl.addChatMessage(
+                    new ChatComponentTranslation("progress.remove.attunement")
+                        .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.BLUE)));
+                // SoundHelper.playSoundAround(SoundEvents.BLOCK_GLASS_BREAK, worldIn, entityLiving.getPosition(), 1F,
+                // 1F);
             }
         }
         return null;
@@ -71,7 +75,7 @@ public class ItemShiftingStar extends Item {
 
     @Override
     public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
-        if(player.getEntityWorld().isRemote) {
+        if (player.getEntityWorld().isRemote) {
             playEffects();
         }
     }
@@ -80,11 +84,12 @@ public class ItemShiftingStar extends Item {
     private void playEffects() {
         EntityPlayer p = Minecraft.getMinecraft().thePlayer;
         for (int i = 0; i < 3; i++) {
-            EntityFXFacingParticle particle = EffectHelper.genericFlareParticle(p.posX, p.posY + p.getEyeHeight() / 2, p.posZ);
+            EntityFXFacingParticle particle = EffectHelper
+                .genericFlareParticle(p.posX, p.posY + p.getEyeHeight() / 2, p.posZ);
             particle.motion(-0.1 + itemRand.nextFloat() * 0.2, 0.01, -0.1 + itemRand.nextFloat() * 0.2);
-            if(itemRand.nextInt(3) == 0) particle.setColor(Color.WHITE);
+            if (itemRand.nextInt(3) == 0) particle.setColor(Color.WHITE);
             particle.scale(0.3F);
-            if(itemRand.nextInt(4) == 0) particle.scale(0.2F);
+            if (itemRand.nextInt(4) == 0) particle.scale(0.2F);
         }
     }
 
@@ -100,8 +105,7 @@ public class ItemShiftingStar extends Item {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerIcons(IIconRegister register)
-    {
+    public void registerIcons(IIconRegister register) {
         this.itemIcon = register.registerIcon("astralsorcery:shifting_star");
     }
 

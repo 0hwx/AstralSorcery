@@ -8,20 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
-import hellfirepvp.astralsorcery.common.tile.TileAttunementAltar;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
-import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.tile.TileAttunementAltar;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
+import hellfirepvp.astralsorcery.common.util.MiscUtils;
+import io.netty.buffer.ByteBuf;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -30,7 +31,8 @@ import cpw.mods.fml.relauncher.SideOnly;
  * Created by HellFirePvP
  * Date: 28.12.2016 / 01:53
  */
-public class PktAttunementAltarState implements IMessage, IMessageHandler<PktAttunementAltarState, PktAttunementAltarState> {
+public class PktAttunementAltarState
+    implements IMessage, IMessageHandler<PktAttunementAltarState, PktAttunementAltarState> {
 
     private int entityId = -1;
     private int worldId = -1;
@@ -69,11 +71,11 @@ public class PktAttunementAltarState implements IMessage, IMessageHandler<PktAtt
 
     @Override
     public PktAttunementAltarState onMessage(PktAttunementAltarState message, MessageContext ctx) {
-        if(ctx.side == Side.SERVER) {
-            if(message.started) {
+        if (ctx.side == Side.SERVER) {
+            if (message.started) {
                 World w = DimensionManager.getWorld(message.worldId);
                 TileAttunementAltar ta = MiscUtils.getTileAt(w, message.at, TileAttunementAltar.class, true);
-                if(ta != null) {
+                if (ta != null) {
                     EntityPlayer pl = ctx.getServerHandler().playerEntity;
                     ta.markPlayerStartCameraFlight(pl);
                 }
@@ -86,13 +88,14 @@ public class PktAttunementAltarState implements IMessage, IMessageHandler<PktAtt
 
     @SideOnly(Side.CLIENT)
     private PktAttunementAltarState recClient(PktAttunementAltarState message) {
-        if(Minecraft.getMinecraft().theWorld != null &&
-                Minecraft.getMinecraft().theWorld.provider.dimensionId == message.worldId &&
-                Minecraft.getMinecraft().thePlayer != null &&
-                Minecraft.getMinecraft().thePlayer.getEntityId() == message.entityId) {
-            TileAttunementAltar ta = MiscUtils.getTileAt(Minecraft.getMinecraft().theWorld, message.at, TileAttunementAltar.class, true);
+        if (Minecraft.getMinecraft().theWorld != null
+            && Minecraft.getMinecraft().theWorld.provider.dimensionId == message.worldId
+            && Minecraft.getMinecraft().thePlayer != null
+            && Minecraft.getMinecraft().thePlayer.getEntityId() == message.entityId) {
+            TileAttunementAltar ta = MiscUtils
+                .getTileAt(Minecraft.getMinecraft().theWorld, message.at, TileAttunementAltar.class, true);
             if (ta != null) {
-                if(ta.tryStartCameraFlight()) {
+                if (ta.tryStartCameraFlight()) {
                     return new PktAttunementAltarState(true, message.worldId, message.at);
                 }
             }

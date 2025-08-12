@@ -8,9 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.tile.base;
 
-import hellfirepvp.astralsorcery.common.starlight.transmission.TransmissionNetworkHelper;
-
 import java.util.Random;
+
+import hellfirepvp.astralsorcery.common.starlight.transmission.TransmissionNetworkHelper;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -25,12 +25,12 @@ public abstract class TileNetwork extends TileEntityTick {
 
     @Override
     protected void onFirstTick() {
-        if(worldObj.isRemote) return;
+        if (worldObj.isRemote) return;
         TransmissionNetworkHelper.informNetworkTilePlacement(this);
     }
 
     public void onBreak() {
-        if(worldObj.isRemote) return;
+        if (worldObj.isRemote) return;
         TransmissionNetworkHelper.informNetworkTileRemoval(this);
     }
 

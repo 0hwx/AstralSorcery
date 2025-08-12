@@ -1,17 +1,16 @@
 package hellfirepvp.astralsorcery.client.effect.block;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
 import hellfirepvp.astralsorcery.client.util.Blending;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.biome.BiomeGenBase;
-import org.lwjgl.opengl.GL11;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -70,12 +69,14 @@ public class EffectTranslucentFallingBlock extends EntityComplexFX {
         return this;
     }
 
-    public EffectTranslucentFallingBlock setMotionController(MotionController<EffectTranslucentFallingBlock> motionController) {
+    public EffectTranslucentFallingBlock setMotionController(
+        MotionController<EffectTranslucentFallingBlock> motionController) {
         this.motionController = motionController;
         return this;
     }
 
-    public EffectTranslucentFallingBlock setPositionController(PositionController<EffectTranslucentFallingBlock> positionController) {
+    public EffectTranslucentFallingBlock setPositionController(
+        PositionController<EffectTranslucentFallingBlock> positionController) {
         this.positionController = positionController;
         return this;
     }
@@ -101,8 +102,10 @@ public class EffectTranslucentFallingBlock extends EntityComplexFX {
     }
 
     public EffectTranslucentFallingBlock tumble() {
-        this.rotationDegreeAxis = Vector3.positiveYRandom().multiply(360);
-        this.rotationChange = Vector3.random().multiply(12);
+        this.rotationDegreeAxis = Vector3.positiveYRandom()
+            .multiply(360);
+        this.rotationChange = Vector3.random()
+            .multiply(12);
         return this;
     }
 
@@ -120,16 +123,16 @@ public class EffectTranslucentFallingBlock extends EntityComplexFX {
 
     public Vector3 getInterpolatedPosition(float percent) {
         return new Vector3(
-                RenderingUtils.interpolate(prevPosition.getX(), position.getX(), percent),
-                RenderingUtils.interpolate(prevPosition.getY(), position.getY(), percent),
-                RenderingUtils.interpolate(prevPosition.getZ(), position.getZ(), percent));
+            RenderingUtils.interpolate(prevPosition.getX(), position.getX(), percent),
+            RenderingUtils.interpolate(prevPosition.getY(), position.getY(), percent),
+            RenderingUtils.interpolate(prevPosition.getZ(), position.getZ(), percent));
     }
 
     public Vector3 getInterpolatedRotation(float percent) {
         return new Vector3(
-                RenderingUtils.interpolate(prevRotationDegreeAxis.getX(), rotationDegreeAxis.getX(), percent),
-                RenderingUtils.interpolate(prevRotationDegreeAxis.getY(), rotationDegreeAxis.getY(), percent),
-                RenderingUtils.interpolate(prevRotationDegreeAxis.getZ(), rotationDegreeAxis.getZ(), percent));
+            RenderingUtils.interpolate(prevRotationDegreeAxis.getX(), rotationDegreeAxis.getX(), percent),
+            RenderingUtils.interpolate(prevRotationDegreeAxis.getY(), rotationDegreeAxis.getY(), percent),
+            RenderingUtils.interpolate(prevRotationDegreeAxis.getZ(), rotationDegreeAxis.getZ(), percent));
     }
 
     @Override
@@ -155,7 +158,7 @@ public class EffectTranslucentFallingBlock extends EntityComplexFX {
             this.position.add(this.motion);
         }
 
-        if(this.rotationChange.lengthSquared() > 0) {
+        if (this.rotationChange.lengthSquared() > 0) {
             this.prevRotationDegreeAxis = this.rotationDegreeAxis.clone();
             this.rotationDegreeAxis.add(this.rotationChange);
         }
@@ -170,7 +173,7 @@ public class EffectTranslucentFallingBlock extends EntityComplexFX {
         GL11.glColor4f(1F, 1F, 1F, 1F);
         GL11.glEnable(GL11.GL_BLEND);
         Blending.ADDITIVEDARK.apply();
-        if(disableDepth) {
+        if (disableDepth) {
             GL11.glDisable(GL11.GL_DEPTH_TEST);
         }
         GL11.glDisable(GL11.GL_CULL_FACE);
@@ -199,13 +202,15 @@ public class EffectTranslucentFallingBlock extends EntityComplexFX {
 
         Tessellator tes = Tessellator.instance;
         tes.startDrawingQuads();
-//        IBlockAccess world = new AirBlockRenderWorld(BiomeGenBase.plains, Minecraft.getMinecraft().theWorld.getWorldInfo().getTerrainType());
+        // IBlockAccess world = new AirBlockRenderWorld(BiomeGenBase.plains,
+        // Minecraft.getMinecraft().theWorld.getWorldInfo().getTerrainType());
         RenderBlocks renderBlocks = new RenderBlocks();
-//        Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(this.blockState, BlockPos.ORIGIN, world, vb); // todo fix
+        // Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlock(this.blockState, BlockPos.ORIGIN, world,
+        // vb); // todo fix
         tes.draw();
 
         GL11.glEnable(GL11.GL_CULL_FACE);
-        if(disableDepth) {
+        if (disableDepth) {
             GL11.glEnable(GL11.GL_DEPTH_TEST);
         }
         Blending.DEFAULT.apply();

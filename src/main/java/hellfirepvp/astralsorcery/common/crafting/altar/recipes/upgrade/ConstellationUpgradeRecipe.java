@@ -8,6 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes.upgrade;
 
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.item.ItemStack;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
@@ -28,15 +39,6 @@ import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.item.ItemStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -47,34 +49,31 @@ import java.util.Random;
  */
 public class ConstellationUpgradeRecipe extends AttunementRecipe implements IAltarUpgradeRecipe, INighttimeRecipe {
 
-    private static Vector3[] offsetPillars = new Vector3[] {
-            new Vector3( 3, 2,  3),
-            new Vector3(-3, 2,  3),
-            new Vector3( 3, 2, -3),
-            new Vector3(-3, 2, -3)
-    };
+    private static Vector3[] offsetPillars = new Vector3[] { new Vector3(3, 2, 3), new Vector3(-3, 2, 3),
+        new Vector3(3, 2, -3), new Vector3(-3, 2, -3) };
 
     public ConstellationUpgradeRecipe() {
-        super(new ShapedRecipe(new ItemStack(BlocksAS.blockAltar, 1, BlockAltar.AltarType.ALTAR_3.ordinal()))
-                .addPart(BlockMarble.MarbleBlockType.PILLAR.asStack(),
-                        ShapedRecipeSlot.LOWER_LEFT,
-                        ShapedRecipeSlot.LOWER_RIGHT)
-                .addPart(BlockMarble.MarbleBlockType.CHISELED.asStack(),
-                        ShapedRecipeSlot.RIGHT,
-                        ShapedRecipeSlot.LEFT)
-                .addPart(ItemCraftingComponent.MetaType.STARMETAL_INGOT.asStack(),
-                        ShapedRecipeSlot.LOWER_CENTER)
-                .addPart(ItemCraftingComponent.MetaType.AQUAMARINE.asStack(),
-                        ShapedRecipeSlot.UPPER_LEFT,
-                        ShapedRecipeSlot.UPPER_RIGHT)
-                .addPart(ItemHandle.getCrystalVariant(false, false),
-                        ShapedRecipeSlot.CENTER));
-        setAttItem(BlockMarble.MarbleBlockType.CHISELED.asStack(),
-                AttunementAltarSlot.LOWER_LEFT,
-                AttunementAltarSlot.LOWER_RIGHT);
-        setAttItem(ItemCraftingComponent.MetaType.STARDUST.asStack(),
-                AttunementAltarSlot.UPPER_RIGHT,
-                AttunementAltarSlot.UPPER_LEFT);
+        super(
+            new ShapedRecipe(new ItemStack(BlocksAS.blockAltar, 1, BlockAltar.AltarType.ALTAR_3.ordinal()))
+                .addPart(
+                    BlockMarble.MarbleBlockType.PILLAR.asStack(),
+                    ShapedRecipeSlot.LOWER_LEFT,
+                    ShapedRecipeSlot.LOWER_RIGHT)
+                .addPart(BlockMarble.MarbleBlockType.CHISELED.asStack(), ShapedRecipeSlot.RIGHT, ShapedRecipeSlot.LEFT)
+                .addPart(ItemCraftingComponent.MetaType.STARMETAL_INGOT.asStack(), ShapedRecipeSlot.LOWER_CENTER)
+                .addPart(
+                    ItemCraftingComponent.MetaType.AQUAMARINE.asStack(),
+                    ShapedRecipeSlot.UPPER_LEFT,
+                    ShapedRecipeSlot.UPPER_RIGHT)
+                .addPart(ItemHandle.getCrystalVariant(false, false), ShapedRecipeSlot.CENTER));
+        setAttItem(
+            BlockMarble.MarbleBlockType.CHISELED.asStack(),
+            AttunementAltarSlot.LOWER_LEFT,
+            AttunementAltarSlot.LOWER_RIGHT);
+        setAttItem(
+            ItemCraftingComponent.MetaType.STARDUST.asStack(),
+            AttunementAltarSlot.UPPER_RIGHT,
+            AttunementAltarSlot.UPPER_LEFT);
     }
 
     @Override
@@ -89,8 +88,11 @@ public class ConstellationUpgradeRecipe extends AttunementRecipe implements IAlt
     }
 
     @Override
-    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler, boolean ignoreStarlightRequirement) {
-        return altar.getAltarLevel().ordinal() < getLevelUpgradingTo().ordinal() && super.matches(altar, invHandler, ignoreStarlightRequirement);
+    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler,
+        boolean ignoreStarlightRequirement) {
+        return altar.getAltarLevel()
+            .ordinal() < getLevelUpgradingTo().ordinal()
+            && super.matches(altar, invHandler, ignoreStarlightRequirement);
     }
 
     @Nullable
@@ -111,29 +113,36 @@ public class ConstellationUpgradeRecipe extends AttunementRecipe implements IAlt
         altar.tryForceLevelUp(getLevelUpgradingTo(), true);
     }
 
-
     @Override
     @SideOnly(Side.CLIENT)
     public void onCraftClientTick(TileAltar altar, ActiveCraftingTask.CraftingState state, long tick, Random rand) {
         super.onCraftClientTick(altar, state, tick, rand);
 
-        if(state == ActiveCraftingTask.CraftingState.ACTIVE) {
+        if (state == ActiveCraftingTask.CraftingState.ACTIVE) {
             Vector3 altarVec = new Vector3(altar);
-            Vector3 thisAltar = altarVec.clone().add(0.5, 0.5, 0.5);
+            Vector3 thisAltar = altarVec.clone()
+                .add(0.5, 0.5, 0.5);
             for (int i = 0; i < 3; i++) {
                 Vector3 dir = offsetPillars[rand.nextInt(offsetPillars.length)].clone();
-                dir.multiply(rand.nextFloat()).add(thisAltar.clone());
+                dir.multiply(rand.nextFloat())
+                    .add(thisAltar.clone());
 
                 EntityFXFacingParticle particle = EffectHelper.genericFlareParticle(dir.getX(), dir.getY(), dir.getZ());
-                particle.setColor(MiscUtils.calcRandomConstellationColor(rand.nextFloat())).scale(0.2F + (0.2F * rand.nextFloat())).gravity(0.004);
+                particle.setColor(MiscUtils.calcRandomConstellationColor(rand.nextFloat()))
+                    .scale(0.2F + (0.2F * rand.nextFloat()))
+                    .gravity(0.004);
             }
 
             EffectRenderer pm = Minecraft.getMinecraft().effectRenderer;
-            if(rand.nextInt(12) == 0) {
-                pm.addBlockDestroyEffects(altar.xCoord, altar.yCoord, altar.zCoord, BlocksAS.blockMarble,0);
+            if (rand.nextInt(12) == 0) {
+                pm.addBlockDestroyEffects(altar.xCoord, altar.yCoord, altar.zCoord, BlocksAS.blockMarble, 0);
             }
-            if(tick % 48 == 0 && rand.nextInt(2) == 0) {
-                EffectHandler.getInstance().textureSpritePlane(SpriteLibrary.spriteCraftBurst, Vector3.RotAxis.Y_AXIS.clone()).setPosition(new Vector3(altar).add(0.5, 0.05, 0.5)).setScale(5 + rand.nextInt(2)).setNoRotation(rand.nextInt(360));
+            if (tick % 48 == 0 && rand.nextInt(2) == 0) {
+                EffectHandler.getInstance()
+                    .textureSpritePlane(SpriteLibrary.spriteCraftBurst, Vector3.RotAxis.Y_AXIS.clone())
+                    .setPosition(new Vector3(altar).add(0.5, 0.05, 0.5))
+                    .setScale(5 + rand.nextInt(2))
+                    .setNoRotation(rand.nextInt(360));
             }
         }
     }

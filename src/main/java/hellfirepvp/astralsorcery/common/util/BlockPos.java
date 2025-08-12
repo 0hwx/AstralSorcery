@@ -1,6 +1,5 @@
 package hellfirepvp.astralsorcery.common.util;
 
-
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
@@ -51,10 +50,13 @@ public class BlockPos {
     }
 
     public BlockPos(Vec3 vec) {
-        this(MathHelper.floor_double(vec.xCoord), MathHelper.floor_double(vec.yCoord), MathHelper.floor_double(vec.zCoord));
+        this(
+            MathHelper.floor_double(vec.xCoord),
+            MathHelper.floor_double(vec.yCoord),
+            MathHelper.floor_double(vec.zCoord));
     }
-    public BlockPos(Entity entity)
-    {
+
+    public BlockPos(Entity entity) {
         this(entity.posX, entity.posY, entity.posZ);
     }
 
@@ -106,45 +108,36 @@ public class BlockPos {
         return add(-pos.getX(), -pos.getY(), -pos.getZ());
     }
 
-    public static float getEyeHeight(Entity entity)
-    {
+    public static float getEyeHeight(Entity entity) {
         return entity.height * 0.85F;
     }
-    public static float getEyeHeight(EntityPlayer player)
-    {
+
+    public static float getEyeHeight(EntityPlayer player) {
         float f = player.eyeHeight;
 
-        if (player.isPlayerSleeping())
-        {
+        if (player.isPlayerSleeping()) {
             f = 0.2F;
-        }
-        else if (!player.isSneaking() && player.height != 1.65F)
-        {
-//            if (player.isElytraFlying() || player.height == 0.6F)
-//            {
-//                f = 0.4F;
-//            }
-        }
-        else
-        {
+        } else if (!player.isSneaking() && player.height != 1.65F) {
+            // if (player.isElytraFlying() || player.height == 0.6F)
+            // {
+            // f = 0.4F;
+            // }
+        } else {
             f -= 0.08F;
         }
 
         return f;
     }
 
-    public BlockPos getPosition()
-    {
+    public BlockPos getPosition() {
         return new BlockPos(this.getX(), this.getY() + 0.5D, this.getZ());
     }
 
-    public Vec3 getPositionVec()
-    {
+    public Vec3 getPositionVec() {
         return new BlockPos(this.getX(), this.getY() + 0.5D, this.getZ()).getPositionVec();
     }
 
-    public Vec3 getPositionVector()
-    {
+    public Vec3 getPositionVector() {
         return Vec3.createVectorHelper(this.getX(), this.getY(), this.getZ());
     }
 
@@ -284,59 +277,52 @@ public class BlockPos {
         return new ChunkPosition(chunkX(), y, chunkZ());
     }
 
-    public double getDistance(int xIn, int yIn, int zIn)
-    {
-        double d0 = (double)(this.getX() - xIn);
-        double d1 = (double)(this.getY() - yIn);
-        double d2 = (double)(this.getZ() - zIn);
+    public double getDistance(int xIn, int yIn, int zIn) {
+        double d0 = (double) (this.getX() - xIn);
+        double d1 = (double) (this.getY() - yIn);
+        double d2 = (double) (this.getZ() - zIn);
         return Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
     }
 
     /**
      * Calculate squared distance to the given coordinates
      */
-    public double distanceSq(double toX, double toY, double toZ)
-    {
-        double d0 = (double)this.getX() - toX;
-        double d1 = (double)this.getY() - toY;
-        double d2 = (double)this.getZ() - toZ;
+    public double distanceSq(double toX, double toY, double toZ) {
+        double d0 = (double) this.getX() - toX;
+        double d1 = (double) this.getY() - toY;
+        double d2 = (double) this.getZ() - toZ;
         return d0 * d0 + d1 * d1 + d2 * d2;
     }
 
     /**
      * Compute square of distance from point x, y, z to center of this Block
      */
-    public double distanceSqToCenter(double xIn, double yIn, double zIn)
-    {
-        double d0 = (double)this.getX() + 0.5D - xIn;
-        double d1 = (double)this.getY() + 0.5D - yIn;
-        double d2 = (double)this.getZ() + 0.5D - zIn;
+    public double distanceSqToCenter(double xIn, double yIn, double zIn) {
+        double d0 = (double) this.getX() + 0.5D - xIn;
+        double d1 = (double) this.getY() + 0.5D - yIn;
+        double d2 = (double) this.getZ() + 0.5D - zIn;
         return d0 * d0 + d1 * d1 + d2 * d2;
     }
 
     /**
      * Calculate squared distance to the given Vector
      */
-    public double distanceSq(Vec3 to)
-    {
-        return this.distanceSq((double)to.xCoord, (double)to.yCoord, (double)to.zCoord);
+    public double distanceSq(Vec3 to) {
+        return this.distanceSq((double) to.xCoord, (double) to.yCoord, (double) to.zCoord);
     }
 
-    public double distanceSq(BlockPos to)
-    {
-        return this.distanceSq((double)to.getX(), (double)to.getY(), (double)to.getZ());
+    public double distanceSq(BlockPos to) {
+        return this.distanceSq((double) to.getX(), (double) to.getY(), (double) to.getZ());
     }
 
-    public double squareDistanceTo(Vec3 vec)
-    {
+    public double squareDistanceTo(Vec3 vec) {
         double d0 = vec.xCoord - this.x;
         double d1 = vec.yCoord - this.y;
         double d2 = vec.zCoord - this.z;
         return d0 * d0 + d1 * d1 + d2 * d2;
     }
 
-    public double squareDistanceTo(double xIn, double yIn, double zIn)
-    {
+    public double squareDistanceTo(double xIn, double yIn, double zIn) {
         double d0 = xIn - this.x;
         double d1 = yIn - this.y;
         double d2 = zIn - this.z;
@@ -465,6 +451,7 @@ public class BlockPos {
             };
         }
     }
+
     public static AxisAlignedBB AABBFix(AxisAlignedBB aabb) {
         double tmp;
         if (aabb.minX > aabb.maxX) {

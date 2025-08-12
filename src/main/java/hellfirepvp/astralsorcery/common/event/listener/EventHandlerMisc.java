@@ -8,15 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.event.listener;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import hellfirepvp.astralsorcery.common.util.SwordSharpenHelper;
+import java.util.LinkedList;
+import java.util.List;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 
-
-import java.util.LinkedList;
-import java.util.List;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import hellfirepvp.astralsorcery.common.util.SwordSharpenHelper;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,10 +31,10 @@ public class EventHandlerMisc {
     public void onToolTip(ItemTooltipEvent event) {
         List<String> toolTip = event.toolTip;
         ItemStack stack = event.itemStack;
-        if(SwordSharpenHelper.isSwordSharpened(stack)) {
+        if (SwordSharpenHelper.isSwordSharpened(stack)) {
             LinkedList<String> mod = new LinkedList<>();
             mod.addAll(toolTip);
-            if(mod.size() >= 2) {
+            if (mod.size() >= 2) {
                 mod.add(1, I18n.format("misc.sword.sharpened"));
             } else {
                 mod.add(I18n.format("misc.sword.sharpened"));
@@ -44,22 +44,24 @@ public class EventHandlerMisc {
         }
     }
 
-    //Player CAP stuffs.
+    // Player CAP stuffs.
 
-    /*@SubscribeEvent
-    public void onAttach(AttachCapabilitiesEvent<Entity> event) {
-        if(event.getObject() instanceof EntityPlayer) {
-            event.addCapability(new ResourceLocation(AstralSorcery.MODID, "constellationperks"), new IPlayerCapabilityPerks.Provider());
-        }
-    }
-
-    @SubscribeEvent
-    public void onClone(PlayerEvent.Clone event) {
-        IPlayerCapabilityPerks current = PlayerPerkHelper.getPerks(event.entityPlayer);
-        IPlayerCapabilityPerks cloned = PlayerPerkHelper.getPerks(event.entityPlayer);
-        if(cloned != null && current != null) {
-            cloned.updatePerks(current.getAttunedConstellation(), current.getCurrentPlayerPerks());
-        }
-    }*/
+    /*
+     * @SubscribeEvent
+     * public void onAttach(AttachCapabilitiesEvent<Entity> event) {
+     * if(event.getObject() instanceof EntityPlayer) {
+     * event.addCapability(new ResourceLocation(AstralSorcery.MODID, "constellationperks"), new
+     * IPlayerCapabilityPerks.Provider());
+     * }
+     * }
+     * @SubscribeEvent
+     * public void onClone(PlayerEvent.Clone event) {
+     * IPlayerCapabilityPerks current = PlayerPerkHelper.getPerks(event.entityPlayer);
+     * IPlayerCapabilityPerks cloned = PlayerPerkHelper.getPerks(event.entityPlayer);
+     * if(cloned != null && current != null) {
+     * cloned.updatePerks(current.getAttunedConstellation(), current.getCurrentPlayerPerks());
+     * }
+     * }
+     */
 
 }

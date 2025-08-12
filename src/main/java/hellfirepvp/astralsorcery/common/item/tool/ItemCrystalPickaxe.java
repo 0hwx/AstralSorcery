@@ -8,18 +8,18 @@
 
 package hellfirepvp.astralsorcery.common.item.tool;
 
+import java.util.List;
+
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,7 +33,7 @@ public class ItemCrystalPickaxe extends ItemCrystalToolBase {
     public ItemCrystalPickaxe() {
         super(3);
         setDamageVsEntity(5F);
-//        setAttackSpeed(-1F);
+        // setAttackSpeed(-1F);
         setUnlocalizedName("ItemCrystalPickaxe");
         setHarvestLevel("pickaxe", 3);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
@@ -49,8 +49,7 @@ public class ItemCrystalPickaxe extends ItemCrystalToolBase {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IIconRegister register)
-    {
+    public void registerIcons(IIconRegister register) {
         this.itemIcon = register.registerIcon("astralsorcery:crystal_pickaxe");
     }
 

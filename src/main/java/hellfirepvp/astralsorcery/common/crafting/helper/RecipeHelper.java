@@ -8,6 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.crafting.helper;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryCrafting;
@@ -17,16 +23,9 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -46,6 +45,7 @@ public class RecipeHelper {
     }
 
     public static class ShapelessHandleOreRecipe extends ShapelessOreRecipe {
+
         protected ItemStack output = null;
         protected ArrayList<Object> input = new ArrayList<>();
 
@@ -69,9 +69,9 @@ public class RecipeHelper {
                     input.add(new ItemStack((Block) in));
                 } else if (in instanceof String) {
                     input.add(OreDictionary.getOres((String) in));
-                /*
-                 * ADDED CLAUSE TO ALLOW FOR MULTIPLE ITEMSTACK DEFINITIONS
-                 */
+                    /*
+                     * ADDED CLAUSE TO ALLOW FOR MULTIPLE ITEMSTACK DEFINITIONS
+                     */
                 } else if (in instanceof List) {
                     input.add(in);
                 } else {
@@ -177,11 +177,11 @@ public class RecipeHelper {
             return this.input;
         }
 
-//        @Override
-//        public ItemStack[] getRemainingItems(InventoryCrafting inv) //getRecipeLeftovers
-//        {
-//            return ForgeHooks.defaultRecipeGetRemainingItems(inv);
-//        }
+        // @Override
+        // public ItemStack[] getRemainingItems(InventoryCrafting inv) //getRecipeLeftovers
+        // {
+        // return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+        // }
     }
 
     public static class ShapedHandleOreRecipe extends ShapedOreRecipe {
@@ -195,22 +195,22 @@ public class RecipeHelper {
         private int height = 0;
         private boolean mirrored = true;
 
-//        public ShapedHandleOreRecipe(Block result, Object... recipe) {
-//            this(new ItemStack(result), recipe);
-//        }
-//
-//        public ShapedHandleOreRecipe(Item result, Object... recipe) {
-//            this(new ItemStack(result), recipe);
-//        }
+        // public ShapedHandleOreRecipe(Block result, Object... recipe) {
+        // this(new ItemStack(result), recipe);
+        // }
+        //
+        // public ShapedHandleOreRecipe(Item result, Object... recipe) {
+        // this(new ItemStack(result), recipe);
+        // }
 
         public ShapedHandleOreRecipe(ItemStack result, Object... recipe) {
-            super(result.copy(), "R", 'R', new ItemStack(Blocks.stone)); //Placeholder
+            super(result.copy(), "R", 'R', new ItemStack(Blocks.stone)); // Placeholder
             output = null;
             input = null;
             height = 0;
             width = 0;
             mirrored = true;
-            //Resetting done.
+            // Resetting done.
 
             output = result.copy();
 
@@ -267,9 +267,9 @@ public class RecipeHelper {
                     itemMap.put(chr, new ItemStack((Block) in, 1, OreDictionary.WILDCARD_VALUE));
                 } else if (in instanceof String) {
                     itemMap.put(chr, OreDictionary.getOres((String) in));
-                /*
-                 * ADDED CLAUSE TO ALLOW FOR MULTIPLE ITEMSTACK DEFINITIONS
-                 */
+                    /*
+                     * ADDED CLAUSE TO ALLOW FOR MULTIPLE ITEMSTACK DEFINITIONS
+                     */
                 } else if (in instanceof List) {
                     itemMap.put(chr, in);
                 } else {
@@ -411,10 +411,10 @@ public class RecipeHelper {
             return this.input;
         }
 
-//        @Override
-//        public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-//            return ForgeHooks.defaultRecipeGetRemainingItems(inv);
-//        }
+        // @Override
+        // public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+        // return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+        // }
 
     }
 

@@ -8,11 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.util.data;
 
-import hellfirepvp.astralsorcery.common.util.ItemUtils;
-import net.minecraft.item.ItemStack;
-
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import net.minecraft.item.ItemStack;
+
+import hellfirepvp.astralsorcery.common.util.ItemUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -38,10 +39,10 @@ public class OreDictUniqueStackList extends LinkedList<ItemStack> {
                 }
             }
         } else {
-            if(!(o instanceof ItemStack)) return false;
+            if (!(o instanceof ItemStack)) return false;
             ItemStack stack = (ItemStack) o;
             while (it.hasNext()) {
-                if(ItemUtils.matchStackLoosely(it.next(), stack)) {
+                if (ItemUtils.matchStackLoosely(it.next(), stack)) {
                     return true;
                 }
             }

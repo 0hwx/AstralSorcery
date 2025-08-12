@@ -8,10 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.util.struct;
 
-import hellfirepvp.astralsorcery.common.block.BlockStructural;
-import hellfirepvp.astralsorcery.common.item.ISpecialStackDescriptor;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.BlockStateCheck;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.item.Item;
@@ -20,16 +24,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.fluids.BlockFluidBase;
-import net.minecraftforge.fluids.BlockFluidFinite;
 
-import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import hellfirepvp.astralsorcery.common.block.BlockStructural;
+import hellfirepvp.astralsorcery.common.item.ISpecialStackDescriptor;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.BlockStateCheck;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -44,7 +44,8 @@ public class BlockArray {
 
     protected Map<BlockPos, TileEntityCallback> tileCallbacks = new HashMap<>();
     protected Map<BlockPos, BlockInformation> pattern = new HashMap<>();
-    private Vec3 min = Vec3.createVectorHelper(0, 0, 0), max = Vec3.createVectorHelper(0, 0, 0), size = Vec3.createVectorHelper(0, 0, 0);
+    private Vec3 min = Vec3.createVectorHelper(0, 0, 0), max = Vec3.createVectorHelper(0, 0, 0),
+        size = Vec3.createVectorHelper(0, 0, 0);
 
     public void addBlock(int x, int y, int z, @Nonnull Block block) {
         addBlock(new BlockPos(x, y, z), block);
@@ -96,25 +97,26 @@ public class BlockArray {
     }
 
     private void updateSize(BlockPos addedPos) {
-        if(addedPos.getX() < min.xCoord) {
+        if (addedPos.getX() < min.xCoord) {
             min = Vec3.createVectorHelper(addedPos.getX(), min.yCoord, min.zCoord);
         }
-        if(addedPos.getX() > max.xCoord) {
+        if (addedPos.getX() > max.xCoord) {
             max = Vec3.createVectorHelper(addedPos.getX(), max.yCoord, max.zCoord);
         }
-        if(addedPos.getY() < min.yCoord) {
+        if (addedPos.getY() < min.yCoord) {
             min = Vec3.createVectorHelper(min.xCoord, addedPos.getY(), min.zCoord);
         }
-        if(addedPos.getY() > max.yCoord) {
+        if (addedPos.getY() > max.yCoord) {
             max = Vec3.createVectorHelper(max.xCoord, addedPos.getY(), max.zCoord);
         }
-        if(addedPos.getZ() < min.zCoord) {
+        if (addedPos.getZ() < min.zCoord) {
             min = Vec3.createVectorHelper(min.xCoord, min.yCoord, addedPos.getZ());
         }
-        if(addedPos.getZ() > max.zCoord) {
+        if (addedPos.getZ() > max.zCoord) {
             max = Vec3.createVectorHelper(max.xCoord, max.yCoord, addedPos.getZ());
         }
-        size = Vec3.createVectorHelper(max.xCoord - min.xCoord + 1, max.yCoord - min.yCoord + 1, max.zCoord - min.zCoord + 1);
+        size = Vec3
+            .createVectorHelper(max.xCoord - min.xCoord + 1, max.yCoord - min.yCoord + 1, max.zCoord - min.zCoord + 1);
     }
 
     public Map<BlockPos, BlockInformation> getPattern() {
@@ -129,24 +131,25 @@ public class BlockArray {
         addBlockCube(block, new BlockStateCheck.Meta(block, 0), ox, oy, oz, tx, ty, tz);
     }
 
-    public void addBlockCube(@Nonnull Block state, BlockStateCheck match, int ox, int oy, int oz, int tx, int ty, int tz) {
+    public void addBlockCube(@Nonnull Block state, BlockStateCheck match, int ox, int oy, int oz, int tx, int ty,
+        int tz) {
         int lx, ly, lz;
         int hx, hy, hz;
-        if(ox < tx) {
+        if (ox < tx) {
             lx = ox;
             hx = tx;
         } else {
             lx = tx;
             hx = ox;
         }
-        if(oy < ty) {
+        if (oy < ty) {
             ly = oy;
             hy = ty;
         } else {
             ly = ty;
             hy = oy;
         }
-        if(oz < tz) {
+        if (oz < tz) {
             lz = oz;
             hz = tz;
         } else {
@@ -170,17 +173,17 @@ public class BlockArray {
             BlockPos at = center.add(entry.getKey());
             Block block = info.type;
             int meta = info.metadata;
-            world.setBlock(at.getX(), at.getY(), at.getZ(),block, meta, 3);
+            world.setBlock(at.getX(), at.getY(), at.getZ(), block, meta, 3);
             result.put(at, block);
 
-            if(block instanceof BlockLiquid) {
+            if (block instanceof BlockLiquid) {
                 world.notifyBlocksOfNeighborChange(at.getX(), at.getY(), at.getZ(), block);
             }
 
             TileEntity placed = world.getTileEntity(at.getX(), at.getY(), at.getZ());
-            if(tileCallbacks.containsKey(entry.getKey())) {
+            if (tileCallbacks.containsKey(entry.getKey())) {
                 TileEntityCallback callback = tileCallbacks.get(entry.getKey());
-                if(callback.isApplicable(placed)) {
+                if (callback.isApplicable(placed)) {
                     callback.onPlace(world, at, placed);
                 }
             }
@@ -193,31 +196,37 @@ public class BlockArray {
         for (BlockInformation info : pattern.values()) {
             int meta = info.metadata;
             ItemStack s = null;
-            if(info.type instanceof BlockFluidBase) {
-//                s = BlockFluidFinite.getFilledBucket(ForgeModContainer.getInstance().universalBucket, ((BlockFluidBase) info.type).getFluid());
-            } else if(info.type instanceof BlockStructural) {
+            if (info.type instanceof BlockFluidBase) {
+                // s = BlockFluidFinite.getFilledBucket(ForgeModContainer.getInstance().universalBucket,
+                // ((BlockFluidBase) info.type).getFluid());
+            } else if (info.type instanceof BlockStructural) {
                 continue;
-                //Block otherState = info.state.getValue(BlockStructural.BLOCK_TYPE).getblock();
-                //Item i = Item.getItemFromBlock(otherState.getBlock());
-                //if(i == null) continue;
-                //s = new ItemStack(i, 1, otherState.getBlock().getMeta(otherState));
-            } else if(info.type instanceof ISpecialStackDescriptor) {
-                s = ((ISpecialStackDescriptor) info.type).getDecriptor(info.type);//todo check
+                // Block otherState = info.state.getValue(BlockStructural.BLOCK_TYPE).getblock();
+                // Item i = Item.getItemFromBlock(otherState.getBlock());
+                // if(i == null) continue;
+                // s = new ItemStack(i, 1, otherState.getBlock().getMeta(otherState));
+            } else if (info.type instanceof ISpecialStackDescriptor) {
+                s = ((ISpecialStackDescriptor) info.type).getDecriptor(info.type);// todo check
             } else {
                 Item i = Item.getItemFromBlock(info.type);
-                if(i == null) continue;
+                if (i == null) continue;
                 s = new ItemStack(i, 1, meta);
             }
-            if(s != null) {
+            if (s != null) {
                 boolean found = false;
                 for (ItemStack stack : out) {
-                    if(stack.getItem().getUnlocalizedName().equals(s.getItem().getUnlocalizedName()) && stack.getItemDamage() == s.getItemDamage()) {
+                    if (stack.getItem()
+                        .getUnlocalizedName()
+                        .equals(
+                            s.getItem()
+                                .getUnlocalizedName())
+                        && stack.getItemDamage() == s.getItemDamage()) {
                         stack.stackSize++;
                         found = true;
                         break;
                     }
                 }
-                if(!found) {
+                if (!found) {
                     out.add(s);
                 }
             }

@@ -8,19 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk;
 
-import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.common.data.config.entry.ConfigEntry;
-import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import hellfirepvp.astralsorcery.common.event.listener.EventHandlerServer;
+import java.util.List;
+import java.util.Random;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+
+import com.google.common.collect.Lists;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import java.util.List;
-import java.util.Random;
+import hellfirepvp.astralsorcery.common.data.config.entry.ConfigEntry;
+import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
+import hellfirepvp.astralsorcery.common.event.listener.EventHandlerServer;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -92,23 +94,26 @@ public abstract class ConstellationPerk extends ConfigEntry {
     }
 
     public final boolean isCooldownActiveForPlayer(EntityPlayer player) {
-        return EventHandlerServer.perkCooldowns.hasList(player) &&
-                EventHandlerServer.perkCooldowns.getOrCreateList(player).contains(getId());
+        return EventHandlerServer.perkCooldowns.hasList(player)
+            && EventHandlerServer.perkCooldowns.getOrCreateList(player)
+                .contains(getId());
     }
 
     public final void setCooldownActiveForPlayer(EntityPlayer player, int cooldownTicks) {
-        EventHandlerServer.perkCooldowns.getOrCreateList(player).setOrAddTimeout(cooldownTicks, getId());
+        EventHandlerServer.perkCooldowns.getOrCreateList(player)
+            .setOrAddTimeout(cooldownTicks, getId());
     }
 
     public final int getActiveCooldownForPlayer(EntityPlayer player) {
-        if(!EventHandlerServer.perkCooldowns.hasList(player)) {
+        if (!EventHandlerServer.perkCooldowns.hasList(player)) {
             return -1;
         }
-        return EventHandlerServer.perkCooldowns.getOrCreateList(player).getTimeout(getId());
+        return EventHandlerServer.perkCooldowns.getOrCreateList(player)
+            .getTimeout(getId());
     }
 
     public final void addAlignmentCharge(EntityPlayer player, double charge) {
-        if(!player.getEntityWorld().isRemote) {
+        if (!player.getEntityWorld().isRemote) {
             ResearchManager.modifyAlignmentCharge(player, charge);
         }
     }
@@ -135,19 +140,22 @@ public abstract class ConstellationPerk extends ConfigEntry {
 
         /**
          * Called when a Player attacks some LivingEntityBase.
-         * Calls {@link #onEntityAttack(net.minecraft.entity.player.EntityPlayer, net.minecraft.entity.EntityLivingBase, float)}
+         * Calls
+         * {@link #onEntityAttack(net.minecraft.entity.player.EntityPlayer, net.minecraft.entity.EntityLivingBase, float)}
          */
         ENTITY_ATTACK,
 
         /**
          * Called when a EntityLivingBase gets knockbacked by a player's attack.
-         * Calls {@link #onEntityKnockback(net.minecraft.entity.player.EntityPlayer, net.minecraft.entity.EntityLivingBase)}
+         * Calls
+         * {@link #onEntityKnockback(net.minecraft.entity.player.EntityPlayer, net.minecraft.entity.EntityLivingBase)}
          */
         ENTITY_KNOCKBACK,
 
         /**
          * Called when a Player attack kills an EntityLivingBase.
-         * Calls {@link #onEntityKilled(net.minecraft.entity.player.EntityPlayer, net.minecraft.entity.EntityLivingBase)}
+         * Calls
+         * {@link #onEntityKilled(net.minecraft.entity.player.EntityPlayer, net.minecraft.entity.EntityLivingBase)}
          */
         ENTITY_KILL,
 
@@ -159,7 +167,8 @@ public abstract class ConstellationPerk extends ConfigEntry {
 
         /**
          * Gets called on each player's tick.
-         * Calls {@link #onPlayerTick(EntityPlayer, Side)} (net.minecraft.entity.player.EntityPlayer, net.minecraftforge.fml.relauncher.Side)}
+         * Calls {@link #onPlayerTick(EntityPlayer, Side)} (net.minecraft.entity.player.EntityPlayer,
+         * net.minecraftforge.fml.relauncher.Side)}
          */
         PLAYER_TICK
 

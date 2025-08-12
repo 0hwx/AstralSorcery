@@ -1,5 +1,21 @@
 package hellfirepvp.astralsorcery.common.block;
 
+import java.awt.Color;
+import java.util.Random;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBook;
+import net.minecraft.item.ItemPotion;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
@@ -14,24 +30,6 @@ import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBook;
-import net.minecraft.item.ItemPotion;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -42,13 +40,14 @@ import java.util.Random;
  */
 public class BlockMapDrawingTable extends BlockContainer {
 
-    private static final AxisAlignedBB drawingTableBox = AxisAlignedBB.getBoundingBox(-1.0 / 2.0, 0, -1.0 / 2.0, 3.0 / 2.0, 3.0 / 2.0, 3.0 / 2.0);
+    private static final AxisAlignedBB drawingTableBox = AxisAlignedBB
+        .getBoundingBox(-1.0 / 2.0, 0, -1.0 / 2.0, 3.0 / 2.0, 3.0 / 2.0, 3.0 / 2.0);
 
     public BlockMapDrawingTable() {
         super(Material.rock);
         setBlockName("BlockMapDrawingTable");
         setHardness(2F);
-//        setSoundType(SoundType.WOOD);
+        // setSoundType(SoundType.WOOD);
         setResistance(15F);
         setHarvestLevel("axe", 1);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
@@ -59,18 +58,21 @@ public class BlockMapDrawingTable extends BlockContainer {
     public void randomDisplayTick(World worldIn, int x, int y, int z, Random rand) {
         for (int i = 0; i < rand.nextInt(2) + 1; i++) {
             Vector3 offset = new Vector3(-6.0 / 16.0, 1.505, -6.0 / 16.0);
-            if(rand.nextBoolean()) {
+            if (rand.nextBoolean()) {
                 offset.addX(26.0 / 16.0);
             }
             int random = rand.nextInt(6);
             offset.addZ(random * (5.0 / 16.0));
-            if(random > 2) {
-                offset.addZ(1.0 / 16.0D); //Gap in the middle..
+            if (random > 2) {
+                offset.addZ(1.0 / 16.0D); // Gap in the middle..
             }
-            offset.add(rand.nextFloat() * 0.1, 0, rand.nextFloat() * 0.1).add(x,y,z);
+            offset.add(rand.nextFloat() * 0.1, 0, rand.nextFloat() * 0.1)
+                .add(x, y, z);
             EntityFXFacingParticle p = EffectHelper.genericFlareParticle(offset.getX(), offset.getY(), offset.getZ());
-            p.scale(rand.nextFloat() * 0.1F + 0.15F).enableAlphaFade(EntityComplexFX.AlphaFunction.FADE_OUT);
-            p.gravity(0.004F).setMaxAge(rand.nextInt(30) + 35);
+            p.scale(rand.nextFloat() * 0.1F + 0.15F)
+                .enableAlphaFade(EntityComplexFX.AlphaFunction.FADE_OUT);
+            p.gravity(0.004F)
+                .setMaxAge(rand.nextInt(30) + 35);
             switch (random) {
                 case 0:
                     p.setColor(new Color(0xFF0800));
@@ -95,42 +97,48 @@ public class BlockMapDrawingTable extends BlockContainer {
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX,
+        float hitY, float hitZ) {
         if (!worldIn.isRemote) {
             ItemStack held = player.getHeldItem();
-            BlockPos pos = new BlockPos(x,y,z);
+            BlockPos pos = new BlockPos(x, y, z);
             TileMapDrawingTable tm = MiscUtils.getTileAt(worldIn, pos, TileMapDrawingTable.class, true);
             if (tm != null) {
-                if(player.isSneaking()) {
-                    if(tm.getSlotIn() != null && tm.getSlotIn().getItem() != null) {
+                if (player.isSneaking()) {
+                    if (tm.getSlotIn() != null && tm.getSlotIn()
+                        .getItem() != null) {
                         ItemUtils.dropItem(worldIn, player.posX, player.posY, player.posZ, tm.getSlotIn());
                         tm.putSlotIn(null);
                         return true;
                     }
-                    if(tm.getSlotGlassLens() != null && tm.getSlotGlassLens().getItem() != null) {
+                    if (tm.getSlotGlassLens() != null && tm.getSlotGlassLens()
+                        .getItem() != null) {
                         ItemUtils.dropItem(worldIn, player.posX, player.posY, player.posZ, tm.getSlotGlassLens());
                         tm.putGlassLens(null);
                         return true;
                     }
                 } else {
-                    if(held != null && held.getItem() != null) {
-                        if(held.getItem() instanceof ItemCraftingComponent) {
+                    if (held != null && held.getItem() != null) {
+                        if (held.getItem() instanceof ItemCraftingComponent) {
                             if (held.getItemDamage() == ItemCraftingComponent.MetaType.PARCHMENT.getMeta()) {
                                 int remaining = tm.addParchment(held.stackSize);
                                 if (remaining < held.stackSize) {
-                                    worldIn.playSound(x, y, z, Sounds.bookFlip.toString(), 1F, 1F,false);
+                                    worldIn.playSound(x, y, z, Sounds.bookFlip.toString(), 1F, 1F, false);
                                     if (!player.capabilities.isCreativeMode) {
                                         held.stackSize = remaining;
                                         if (held.stackSize <= 0) {
-                                            player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                                            player.inventory
+                                                .setInventorySlotContents(player.inventory.currentItem, null);
                                         } else {
-                                            player.inventory.setInventorySlotContents(player.inventory.currentItem, held);
+                                            player.inventory
+                                                .setInventorySlotContents(player.inventory.currentItem, held);
                                         }
                                     }
                                 }
                             }
-                        } else if(held.getItem() instanceof ItemInfusedGlass) {
-                            if (tm.getSlotGlassLens() == null || tm.getSlotGlassLens().getItem() ==  null) {
+                        } else if (held.getItem() instanceof ItemInfusedGlass) {
+                            if (tm.getSlotGlassLens() == null || tm.getSlotGlassLens()
+                                .getItem() == null) {
                                 tm.putGlassLens(held);
                                 if (!player.capabilities.isCreativeMode) {
                                     held.stackSize--;
@@ -141,46 +149,55 @@ public class BlockMapDrawingTable extends BlockContainer {
                                     }
                                 }
                             }
-                        } else if((held.getItem() instanceof ItemBook || held.isItemEnchantable()) &&
-                                (tm.getSlotIn() == null || tm.getSlotIn().getItem() == null)) {
-                            tm.putSlotIn(ItemUtils.copyStackWithSize(held, 1));
-                            if(!player.capabilities.isCreativeMode) {
-                                held.stackSize--;
-                                if(held.stackSize <= 0) {
-                                    player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
-                                } else {
-                                    player.inventory.setInventorySlotContents(player.inventory.currentItem, held);
-                                }
-                            }
-                        } else if(held.getItem() instanceof ItemPotion potion && potion.getEffects(held).isEmpty() &&
-                                (tm.getSlotIn() == null || tm.getSlotIn().getItem() == null)) {
-                            tm.putSlotIn(held);
-                            if(!player.capabilities.isCreativeMode) {
-                                held.stackSize--;
-                                if(held.stackSize <= 0) {
-                                    player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
-                                } else {
-                                    player.inventory.setInventorySlotContents(player.inventory.currentItem, held);
-                                }
-                            }
-                        }
+                        } else if ((held.getItem() instanceof ItemBook || held.isItemEnchantable())
+                            && (tm.getSlotIn() == null || tm.getSlotIn()
+                                .getItem() == null)) {
+                                    tm.putSlotIn(ItemUtils.copyStackWithSize(held, 1));
+                                    if (!player.capabilities.isCreativeMode) {
+                                        held.stackSize--;
+                                        if (held.stackSize <= 0) {
+                                            player.inventory
+                                                .setInventorySlotContents(player.inventory.currentItem, null);
+                                        } else {
+                                            player.inventory
+                                                .setInventorySlotContents(player.inventory.currentItem, held);
+                                        }
+                                    }
+                                } else
+                            if (held.getItem() instanceof ItemPotion potion && potion.getEffects(held)
+                                .isEmpty()
+                                && (tm.getSlotIn() == null || tm.getSlotIn()
+                                    .getItem() == null)) {
+                                        tm.putSlotIn(held);
+                                        if (!player.capabilities.isCreativeMode) {
+                                            held.stackSize--;
+                                            if (held.stackSize <= 0) {
+                                                player.inventory
+                                                    .setInventorySlotContents(player.inventory.currentItem, null);
+                                            } else {
+                                                player.inventory
+                                                    .setInventorySlotContents(player.inventory.currentItem, held);
+                                            }
+                                        }
+                                    }
                     }
                 }
             }
         } else {
-            if(!player.isSneaking()) {
+            if (!player.isSneaking()) {
                 ItemStack held = player.getHeldItem();
                 if (held != null && held.getItem() != null) {
-                    if((held.getItem() instanceof ItemCraftingComponent &&
-                            (held.getItemDamage() == ItemCraftingComponent.MetaType.PARCHMENT.getMeta()))
-                            || held.getItem() instanceof ItemInfusedGlass
-                            || held.isItemEnchantable()
-                            || held.getItem() instanceof ItemBook
-                            || (held.getItem() instanceof ItemPotion potion && potion.getEffects(held).isEmpty())) {
+                    if ((held.getItem() instanceof ItemCraftingComponent
+                        && (held.getItemDamage() == ItemCraftingComponent.MetaType.PARCHMENT.getMeta()))
+                        || held.getItem() instanceof ItemInfusedGlass
+                        || held.isItemEnchantable()
+                        || held.getItem() instanceof ItemBook
+                        || (held.getItem() instanceof ItemPotion potion && potion.getEffects(held)
+                            .isEmpty())) {
                         return true;
                     }
                 }
-                AstralSorcery.proxy.openGui(CommonProxy.EnumGuiId.MAP_DRAWING, player, worldIn, x,y,z);
+                AstralSorcery.proxy.openGui(CommonProxy.EnumGuiId.MAP_DRAWING, player, worldIn, x, y, z);
             }
         }
         return true;
@@ -188,9 +205,9 @@ public class BlockMapDrawingTable extends BlockContainer {
 
     @Override
     public void breakBlock(World worldIn, int x, int y, int z, Block blockBroken, int meta) {
-        BlockPos pos = new BlockPos(x,y,z);
+        BlockPos pos = new BlockPos(x, y, z);
         TileMapDrawingTable tm = MiscUtils.getTileAt(worldIn, pos, TileMapDrawingTable.class, true);
-        if(tm != null) {
+        if (tm != null) {
             tm.dropContents();
         }
 

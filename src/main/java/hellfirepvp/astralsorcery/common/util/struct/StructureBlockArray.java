@@ -8,12 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.util.struct;
 
+import java.util.Map;
 
-import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
-import java.util.Map;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -26,7 +26,7 @@ public class StructureBlockArray extends BlockArray {
 
     public Map<BlockPos, Block> placeInWorld(World world, BlockPos center, PastPlaceProcessor processor) {
         Map<BlockPos, Block> result = super.placeInWorld(world, center);
-        if(processor != null) {
+        if (processor != null) {
             for (Map.Entry<BlockPos, Block> entry : result.entrySet())
                 processor.process(world, entry.getKey(), entry.getValue());
         }

@@ -1,24 +1,26 @@
 package hellfirepvp.astralsorcery.client.util;
 
+import java.awt.Color;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
+import org.lwjgl.opengl.GL11;
+
 import cpw.mods.fml.relauncher.Side;
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.sky.RenderAstralSkybox;
 import hellfirepvp.astralsorcery.common.base.CelestialGatewaySystem;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -53,8 +55,9 @@ public class UIGateway {
         List<BlockPos> sameDimensionPositions = system.getGatewaysForWorld(world, Side.CLIENT);
         gatherStars(ui, world.provider.dimensionId, sameDimensionPositions, true, sphereRadius);
 
-        for (Map.Entry<Integer, List<BlockPos>> entries : system.getGatewayCache(Side.CLIENT).entrySet()) {
-            if(entries.getKey() == dimid) continue;
+        for (Map.Entry<Integer, List<BlockPos>> entries : system.getGatewayCache(Side.CLIENT)
+            .entrySet()) {
+            if (entries.getKey() == dimid) continue;
             List<BlockPos> otherPositions = entries.getValue();
             gatherStars(ui, entries.getKey(), otherPositions, false, sphereRadius);
         }
@@ -66,31 +69,35 @@ public class UIGateway {
     public GatewayEntry findMatchingEntry(float yaw, float pitch) {
         float matchAccurancy = 4;
         for (GatewayEntry entry : gatewayEntries) {
-            if(Math.abs(entry.pitch - pitch) < matchAccurancy &&
-                    (Math.abs(entry.yaw - yaw) <= matchAccurancy || Math.abs(entry.yaw - yaw - 360F) <= matchAccurancy)) {
+            if (Math.abs(entry.pitch - pitch) < matchAccurancy && (Math.abs(entry.yaw - yaw) <= matchAccurancy
+                || Math.abs(entry.yaw - yaw - 360F) <= matchAccurancy)) {
                 return entry;
             }
         }
         return null;
     }
 
-    private static void gatherStars(UIGateway gateway, int dimId, List<BlockPos> otherPositions, boolean sameWorld, double sphereRadius) {
+    private static void gatherStars(UIGateway gateway, int dimId, List<BlockPos> otherPositions, boolean sameWorld,
+        double sphereRadius) {
         Vector3 gatePosition = gateway.getPos();
         for (BlockPos other : otherPositions) {
             Vector3 otherPos = new Vector3(other);
-            if(sameWorld && otherPos.distance(gatePosition) < 16) continue;
+            if (sameWorld && otherPos.distance(gatePosition) < 16) continue;
 
-            Vector3 direction = otherPos.subtract(gatePosition).normalize().multiply(sphereRadius);
+            Vector3 direction = otherPos.subtract(gatePosition)
+                .normalize()
+                .multiply(sphereRadius);
             GatewayEntry potentialEntry = new GatewayEntry(other, dimId, direction);
-            if(sameWorld) {
+            if (sameWorld) {
                 boolean mayAdd = true;
                 for (GatewayEntry entry : gateway.gatewayEntries) {
-                    if(Math.abs(entry.pitch - potentialEntry.pitch) < 25 &&
-                            (Math.abs(entry.yaw - potentialEntry.yaw) <= 25 || Math.abs(entry.yaw - potentialEntry.yaw - 360F) <= 25)) {
+                    if (Math.abs(entry.pitch - potentialEntry.pitch) < 25
+                        && (Math.abs(entry.yaw - potentialEntry.yaw) <= 25
+                            || Math.abs(entry.yaw - potentialEntry.yaw - 360F) <= 25)) {
                         mayAdd = false;
                     }
                 }
-                if(mayAdd) {
+                if (mayAdd) {
                     gateway.gatewayEntries.add(potentialEntry);
                 }
             } else {
@@ -99,27 +106,32 @@ public class UIGateway {
                 seed |= ((long) other.getY()) << 24;
                 seed |= ((long) other.getZ());
                 Random rand = new Random(seed);
-                direction = Vector3.positiveYRandom(rand).normalize().multiply(sphereRadius);
+                direction = Vector3.positiveYRandom(rand)
+                    .normalize()
+                    .multiply(sphereRadius);
                 potentialEntry = new GatewayEntry(other, dimId, direction);
                 int tries = 30;
                 boolean foundSpace = false;
                 while (!foundSpace && tries > 0) {
                     boolean mayAdd = true;
                     for (GatewayEntry entry : gateway.gatewayEntries) {
-                        if(Math.abs(entry.pitch - potentialEntry.pitch) < 10 &&
-                                (Math.abs(entry.yaw - potentialEntry.yaw) <= 10 || Math.abs(entry.yaw - potentialEntry.yaw - 360F) <= 10)) {
+                        if (Math.abs(entry.pitch - potentialEntry.pitch) < 10
+                            && (Math.abs(entry.yaw - potentialEntry.yaw) <= 10
+                                || Math.abs(entry.yaw - potentialEntry.yaw - 360F) <= 10)) {
                             mayAdd = false;
                         }
                     }
-                    if(mayAdd) {
+                    if (mayAdd) {
                         foundSpace = true;
                     } else {
-                        direction = Vector3.positiveYRandom(rand).normalize().multiply(sphereRadius);
+                        direction = Vector3.positiveYRandom(rand)
+                            .normalize()
+                            .multiply(sphereRadius);
                         potentialEntry = new GatewayEntry(other, dimId, direction);
                     }
                     tries--;
                 }
-                if(foundSpace) {
+                if (foundSpace) {
                     gateway.gatewayEntries.add(potentialEntry);
                 }
             }
@@ -127,10 +139,10 @@ public class UIGateway {
     }
 
     public void renderIntoWorld(float pticks) {
-        if(Minecraft.getMinecraft().thePlayer == null) return;
+        if (Minecraft.getMinecraft().thePlayer == null) return;
 
         double dst = new Vector3(origin).distance(new Vector3(Minecraft.getMinecraft().thePlayer));
-        if(dst > 3) return;
+        if (dst > 3) return;
         float alpha = 1F - ((float) (dst / 2D));
         alpha = MathHelper.clamp_float(alpha, 0F, 1F);
         Color c = new Color(0xF0BD00);
@@ -153,29 +165,45 @@ public class UIGateway {
         RenderAstralSkybox.TEX_STAR_1.bind();
 
         Tessellator tess = Tessellator.instance;
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
         tess.startDrawingQuads();
         for (int i = 0; i < 300; i++) {
-            Vector3 dir = Vector3.random(rand).normalize().multiply(radius);
+            Vector3 dir = Vector3.random(rand)
+                .normalize()
+                .multiply(radius);
             float a = RenderConstellation.conCFlicker(ClientScheduler.getClientTick(), pticks, rand.nextInt(7) + 6);
             a *= alpha;
 
-            RenderingUtils.renderFacingFullQuadVB(tess,
-                    origin.getX() + dir.getX(),
-                    origin.getY() + dir.getY(),
-                    origin.getZ() + dir.getZ(),
-                    pticks, 0.07F, 0, 1F, 1F, 1F, a);
+            RenderingUtils.renderFacingFullQuadVB(
+                tess,
+                origin.getX() + dir.getX(),
+                origin.getY() + dir.getY(),
+                origin.getZ() + dir.getZ(),
+                pticks,
+                0.07F,
+                0,
+                1F,
+                1F,
+                1F,
+                a);
         }
         for (GatewayEntry entry : gatewayEntries) {
             float a = RenderConstellation.conCFlicker(ClientScheduler.getClientTick(), pticks, rand.nextInt(7) + 6);
             a = 0.4F + (0.6F * a);
             a = (a * alpha);
-            RenderingUtils.renderFacingFullQuadVB(tess,
-                    origin.getX() + entry.relativePos.getX(),
-                    origin.getY() + entry.relativePos.getY(),
-                    origin.getZ() + entry.relativePos.getZ(),
-                    pticks, 0.16F, 0, red, green, blue, a);
+            RenderingUtils.renderFacingFullQuadVB(
+                tess,
+                origin.getX() + entry.relativePos.getX(),
+                origin.getY() + entry.relativePos.getY(),
+                origin.getZ() + entry.relativePos.getZ(),
+                pticks,
+                0.16F,
+                0,
+                red,
+                green,
+                blue,
+                a);
         }
         RenderingUtils.getVertexData(tess);
         tess.draw();
@@ -186,21 +214,21 @@ public class UIGateway {
 
     public static class GatewayEntry {
 
-        //Used for transfer
+        // Used for transfer
         public final BlockPos originalBlockPos;
         public final int originalDimId;
 
-        //Used for drawing
+        // Used for drawing
         public final Vector3 relativePos;
 
-        //Used for matching
+        // Used for matching
         private final float yaw, pitch;
 
         private GatewayEntry(BlockPos originalBlockPos, int originalDimId, Vector3 relativePos) {
             this.originalBlockPos = originalBlockPos;
             this.originalDimId = originalDimId;
             this.relativePos = relativePos.clone();
-            if(this.relativePos.getY() < 0) {
+            if (this.relativePos.getY() < 0) {
                 this.relativePos.setY(0);
             }
 

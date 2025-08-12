@@ -8,7 +8,19 @@
 
 package hellfirepvp.astralsorcery.common.item.block;
 
+import java.util.List;
+import java.util.Optional;
+
+import net.minecraft.block.Block;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumRarity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+
 import com.mojang.realmsclient.gui.ChatFormatting;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.block.network.BlockCollectorCrystalBase;
@@ -22,16 +34,6 @@ import hellfirepvp.astralsorcery.common.item.base.ItemHighlighted;
 import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
-import net.minecraft.block.Block;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumRarity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -68,18 +70,20 @@ public class ItemCollectorCrystal extends ItemBlockCustomName implements ItemHig
     @Override
     public EnumRarity getRarity(ItemStack stack) {
         BlockCollectorCrystalBase.CollectorCrystalType type = getType(stack);
-        if(type == BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL) {
+        if (type == BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL) {
             return RegistryItems.rarityCelestial;
         }
         return super.getRarity(stack);
     }
 
     public static void setType(ItemStack stack, BlockCollectorCrystalBase.CollectorCrystalType type) {
-        NBTHelper.getPersistentData(stack).setInteger("collectorType", type.ordinal());
+        NBTHelper.getPersistentData(stack)
+            .setInteger("collectorType", type.ordinal());
     }
 
     public static BlockCollectorCrystalBase.CollectorCrystalType getType(ItemStack stack) {
-        return BlockCollectorCrystalBase.CollectorCrystalType.values()[NBTHelper.getPersistentData(stack).getInteger("collectorType")];
+        return BlockCollectorCrystalBase.CollectorCrystalType.values()[NBTHelper.getPersistentData(stack)
+            .getInteger("collectorType")];
     }
 
     public static void setConstellation(ItemStack stack, IWeakConstellation constellation) {
@@ -95,15 +99,25 @@ public class ItemCollectorCrystal extends ItemBlockCustomName implements ItemHig
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
         CrystalProperties prop = CrystalProperties.getCrystalProperties(stack);
         BlockCollectorCrystalBase.CollectorCrystalType type = ItemCollectorCrystal.getType(stack);
-        Optional<Boolean> missing = CrystalProperties.addPropertyTooltip(prop, tooltip, type == BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL ? CrystalProperties.MAX_SIZE_CELESTIAL : CrystalProperties.MAX_SIZE_ROCK);
+        Optional<Boolean> missing = CrystalProperties.addPropertyTooltip(
+            prop,
+            tooltip,
+            type == BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL
+                ? CrystalProperties.MAX_SIZE_CELESTIAL
+                : CrystalProperties.MAX_SIZE_ROCK);
 
-        if(missing.isPresent()) {
+        if (missing.isPresent()) {
             ProgressionTier tier = ResearchManager.clientProgress.getTierReached();
             IWeakConstellation c = ItemCollectorCrystal.getConstellation(stack);
-            if(c != null) {
-                if(EnumGatedKnowledge.COLLECTOR_TYPE.canSee(tier) && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
-                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.collect.type") + " " + ChatFormatting.BLUE + I18n.format(c.getUnlocalizedName()));
-                } else if(!missing.get()) {
+            if (c != null) {
+                if (EnumGatedKnowledge.COLLECTOR_TYPE.canSee(tier)
+                    && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
+                    tooltip.add(
+                        ChatFormatting.GRAY + I18n.format("crystal.collect.type")
+                            + " "
+                            + ChatFormatting.BLUE
+                            + I18n.format(c.getUnlocalizedName()));
+                } else if (!missing.get()) {
                     tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
                 }
             }

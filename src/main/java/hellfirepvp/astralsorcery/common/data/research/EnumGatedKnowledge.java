@@ -9,17 +9,17 @@
 package hellfirepvp.astralsorcery.common.data.research;
 
 /**
-* This class is part of the Astral Sorcery Mod
-* The complete source code for this mod can be found on github.
-* Class: EnumGatedKnowledge
-* Created by HellFirePvP
-* Date: 01.08.2016 / 22:31
-*/
+ * This class is part of the Astral Sorcery Mod
+ * The complete source code for this mod can be found on github.
+ * Class: EnumGatedKnowledge
+ * Created by HellFirePvP
+ * Date: 01.08.2016 / 22:31
+ */
 public enum EnumGatedKnowledge {
 
-    //WAND_TYPE(ProgressionTier.ATTUNEMENT),
+    // WAND_TYPE(ProgressionTier.ATTUNEMENT),
 
-    //Specifically rock and celestial crystal items
+    // Specifically rock and celestial crystal items
     CRYSTAL_SIZE(ProgressionTier.BASIC_CRAFT),
     CRYSTAL_PURITY(ProgressionTier.BASIC_CRAFT),
     CRYSTAL_COLLECT(ProgressionTier.BASIC_CRAFT),
@@ -29,7 +29,7 @@ public enum EnumGatedKnowledge {
     COLLECTOR_CRYSTAL(ProgressionTier.CONSTELLATION_CRAFT),
     COLLECTOR_TYPE(ProgressionTier.CONSTELLATION_CRAFT);
 
-    //RITUAL_PL_BEACON(ProgressionTier.NETWORKING);
+    // RITUAL_PL_BEACON(ProgressionTier.NETWORKING);
 
     private final ProgressionTier capability;
 

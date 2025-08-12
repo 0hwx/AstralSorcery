@@ -8,12 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.starlight;
 
+import javax.annotation.Nonnull;
+
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 import hellfirepvp.astralsorcery.common.starlight.transmission.ITransmissionReceiver;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-
-
-import javax.annotation.Nonnull;
 
 /**
  * This class is part of the Astral Sorcery Mod

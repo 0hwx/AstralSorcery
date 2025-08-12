@@ -8,6 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.starlight.transmission.registry;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import net.minecraftforge.common.MinecraftForge;
+
 import hellfirepvp.astralsorcery.common.event.StarlightNetworkEvent;
 import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 import hellfirepvp.astralsorcery.common.starlight.transmission.base.SimplePrismTransmissionNode;
@@ -20,11 +27,6 @@ import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
 import hellfirepvp.astralsorcery.common.tile.TileTreeBeacon;
 import hellfirepvp.astralsorcery.common.tile.TileWell;
-import net.minecraftforge.common.MinecraftForge;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -51,7 +53,8 @@ public class TransmissionClassRegistry {
     }
 
     public static void register(TransmissionProvider provider) {
-        if(providerMap.containsKey(provider.getIdentifier())) throw new RuntimeException("Already registered identifier TransmissionProvider: " + provider.getIdentifier());
+        if (providerMap.containsKey(provider.getIdentifier())) throw new RuntimeException(
+            "Already registered identifier TransmissionProvider: " + provider.getIdentifier());
         providerMap.put(provider.getIdentifier(), provider);
     }
 
@@ -59,7 +62,7 @@ public class TransmissionClassRegistry {
         register(new SimpleTransmissionNode.Provider());
         register(new SimplePrismTransmissionNode.Provider());
         register(new SimpleTransmissionSourceNode.Provider());
-        //register(new SimpleTransmissionReceiver.Provider());
+        // register(new SimpleTransmissionReceiver.Provider());
 
         register(new CrystalTransmissionNode.Provider());
         register(new CrystalPrismTransmissionNode.Provider());

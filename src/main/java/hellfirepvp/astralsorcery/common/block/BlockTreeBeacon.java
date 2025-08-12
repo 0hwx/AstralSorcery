@@ -8,14 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import hellfirepvp.astralsorcery.common.block.network.BlockStarlightNetwork;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.tile.TileTreeBeacon;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+
+import hellfirepvp.astralsorcery.common.block.network.BlockStarlightNetwork;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.tile.TileTreeBeacon;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -26,14 +26,15 @@ import net.minecraft.world.World;
  */
 public class BlockTreeBeacon extends BlockStarlightNetwork {
 
-    private static final AxisAlignedBB box = AxisAlignedBB.getBoundingBox(3D / 16D, 0D, 3D / 16D, 13D / 16D, 1D, 13D / 16D);
+    private static final AxisAlignedBB box = AxisAlignedBB
+        .getBoundingBox(3D / 16D, 0D, 3D / 16D, 13D / 16D, 1D, 13D / 16D);
 
     public BlockTreeBeacon() {
         super("BlockTreeBeacon", Material.rock);
         setHardness(1.0F);
         setResistance(10.0F);
         setHarvestLevel("pickaxe", 1);
-//        setSoundType(SoundType.PLANT);
+        // setSoundType(SoundType.PLANT);
         setLightLevel(0.7F);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
     }

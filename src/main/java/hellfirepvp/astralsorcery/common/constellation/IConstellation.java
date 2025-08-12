@@ -8,15 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.constellation;
 
+import java.awt.Color;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.nbt.NBTTagCompound;
+
 import hellfirepvp.astralsorcery.common.constellation.star.StarConnection;
 import hellfirepvp.astralsorcery.common.constellation.star.StarLocation;
 import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
-import net.minecraft.nbt.NBTTagCompound;
-
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -28,7 +30,7 @@ import java.util.List;
 public interface IConstellation {
 
     static final Color major = new Color(40, 67, 204);
-    static final Color weak  = new Color(67, 44, 176);
+    static final Color weak = new Color(67, 44, 176);
     static final Color minor = new Color(93, 25, 127);
 
     /**
@@ -64,15 +66,14 @@ public interface IConstellation {
     public Color getConstellationColor();
 
     default public Color getTierRenderColor() {
-        if(this instanceof IMinorConstellation) {
+        if (this instanceof IMinorConstellation) {
             return minor;
         }
-        if(this instanceof IMajorConstellation) {
+        if (this instanceof IMajorConstellation) {
             return major;
         }
         return weak;
     }
-
 
     default public boolean canDiscover(PlayerProgress progress) {
         return true;

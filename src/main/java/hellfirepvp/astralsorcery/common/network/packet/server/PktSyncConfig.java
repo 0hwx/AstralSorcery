@@ -8,16 +8,6 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.data.config.Config;
-import hellfirepvp.astralsorcery.common.data.config.Sync;
-import hellfirepvp.astralsorcery.common.util.data.Tuple;
-import io.netty.buffer.ByteBuf;
-
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -29,6 +19,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.common.data.config.Config;
+import hellfirepvp.astralsorcery.common.data.config.Sync;
+import hellfirepvp.astralsorcery.common.util.data.Tuple;
+import io.netty.buffer.ByteBuf;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -46,7 +45,7 @@ public class PktSyncConfig implements IMessage, IMessageHandler<PktSyncConfig, I
         int count = buf.readByte();
         fields = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            fields.add(new SyncTuple(null, null)); //Empty init
+            fields.add(new SyncTuple(null, null)); // Empty init
         }
 
         for (int i = 0; i < count; i++) {
@@ -60,8 +59,7 @@ public class PktSyncConfig implements IMessage, IMessageHandler<PktSyncConfig, I
                 key = new DataInputStream(in).readUTF();
                 Object value = new ObjectInputStream(in).readObject();
                 tuple = new SyncTuple(key, value);
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) {}
 
             if (tuple == null) {
                 fields = null;
@@ -83,13 +81,11 @@ public class PktSyncConfig implements IMessage, IMessageHandler<PktSyncConfig, I
                 try {
                     new DataOutputStream(byteStream).writeUTF(f.getName());
                     new ObjectOutputStream(byteStream).writeObject(f.get(null));
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
                 bufferedFieldContents.add(byteStream.toByteArray());
                 try {
                     byteStream.close();
-                } catch (IOException ignored) {
-                }
+                } catch (IOException ignored) {}
             }
         }
 

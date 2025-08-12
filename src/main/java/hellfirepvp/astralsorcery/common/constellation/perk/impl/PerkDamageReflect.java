@@ -8,13 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.config.Configuration;
+
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -34,9 +35,9 @@ public class PerkDamageReflect extends ConstellationPerk {
 
     @Override
     public float onEntityHurt(EntityPlayer hurt, DamageSource source, float dmgIn) {
-        if(rand.nextInt(reflectChance) == 0) {
+        if (rand.nextInt(reflectChance) == 0) {
             Entity cause = source.getEntity();
-            if(cause != null && cause instanceof EntityLivingBase) {
+            if (cause != null && cause instanceof EntityLivingBase) {
                 cause.attackEntityFrom(DamageSource.causePlayerDamage(hurt), dmgIn * reflectPerc);
             }
         }
@@ -50,8 +51,20 @@ public class PerkDamageReflect extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        reflectChance = cfg.getInt(getKey() + "ReflectChance", getConfigurationSection(), reflectChance, 1, 5000, "Defines the chance that a incoming attack (if it can be resolved to an attacker) can be reflected (random.nextInt(chance) == 0 check)");
-        reflectPerc = cfg.getFloat(getKey() + "ReflectPercentage", getConfigurationSection(), reflectPerc, 0.001F, 1F, "Defines the percentage of damage that the attacker will also take upon attacking the player.");
+        reflectChance = cfg.getInt(
+            getKey() + "ReflectChance",
+            getConfigurationSection(),
+            reflectChance,
+            1,
+            5000,
+            "Defines the chance that a incoming attack (if it can be resolved to an attacker) can be reflected (random.nextInt(chance) == 0 check)");
+        reflectPerc = cfg.getFloat(
+            getKey() + "ReflectPercentage",
+            getConfigurationSection(),
+            reflectPerc,
+            0.001F,
+            1F,
+            "Defines the percentage of damage that the attacker will also take upon attacking the player.");
 
         reflectChance = Math.max(1, reflectChance);
         reflectPerc = MathHelper.clamp_float(reflectPerc, 0.001F, 1F);

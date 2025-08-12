@@ -8,15 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.base;
 
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.event.FMLInterModComms;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.event.FMLInterModComms;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -66,14 +66,14 @@ public enum Mods {
         FMLInterModComms.sendMessage(this.modId, message, value);
     }
 
-//    public void sendIMC(String message, ResourceLocation value) {
-//        FMLInterModComms.sendMessage(this.modId, message, value);
-//    }
+    // public void sendIMC(String message, ResourceLocation value) {
+    // FMLInterModComms.sendMessage(this.modId, message, value);
+    // }
 
     @Nullable
     public static Class<?> getGCPlayerClass() {
-        if(GALACTICRAFT_CORE.isPresent()) {
-            if(gcPlayerClass == null) {
+        if (GALACTICRAFT_CORE.isPresent()) {
+            if (gcPlayerClass == null) {
                 try {
                     gcPlayerClass = Class.forName("micdoodle8.mods.galacticraft.core.entities.player.GCEntityPlayerMP");
                 } catch (Exception ignored) {}

@@ -31,7 +31,8 @@ public class Tuple<K, V> {
         if (o == null || getClass() != o.getClass()) return false;
 
         Tuple tuple = (Tuple) o;
-        return (key == null ? tuple.key == null : key.equals(tuple.key)) && (value == null ? tuple.value == null : value.equals(tuple.value));
+        return (key == null ? tuple.key == null : key.equals(tuple.key))
+            && (value == null ? tuple.value == null : value.equals(tuple.value));
     }
 
     @Override
@@ -43,9 +44,6 @@ public class Tuple<K, V> {
 
     @Override
     public String toString() {
-        return "Tuple{" +
-                "key=" + key +
-                ", value=" + value +
-                '}';
+        return "Tuple{" + "key=" + key + ", value=" + value + '}';
     }
 }

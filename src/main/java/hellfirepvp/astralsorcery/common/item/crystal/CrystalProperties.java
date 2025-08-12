@@ -8,30 +8,34 @@
 
 package hellfirepvp.astralsorcery.common.item.crystal;
 
-import hellfirepvp.astralsorcery.common.data.research.EnumGatedKnowledge;
-import hellfirepvp.astralsorcery.common.data.research.ProgressionTier;
-import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import com.mojang.realmsclient.gui.ChatFormatting;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
-
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import org.lwjgl.input.Keyboard;
+
+import com.mojang.realmsclient.gui.ChatFormatting;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.data.research.EnumGatedKnowledge;
+import hellfirepvp.astralsorcery.common.data.research.ProgressionTier;
+import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+
 /**
-* This class is part of the Astral Sorcery Mod
-* The complete source code for this mod can be found on github.
-* Class: CrystalProperties
-* Created by HellFirePvP
-* Date: 01.08.2016 / 22:21
-*/
+ * This class is part of the Astral Sorcery Mod
+ * The complete source code for this mod can be found on github.
+ * Class: CrystalProperties
+ * Created by HellFirePvP
+ * Date: 01.08.2016 / 22:21
+ */
 public class CrystalProperties {
 
     private static final Random rand = new Random();
@@ -39,11 +43,14 @@ public class CrystalProperties {
     public static final int MAX_SIZE_ROCK = 400;
     public static final int MAX_SIZE_CELESTIAL = 900;
     private static final CrystalProperties MAXED_ROCK_PROPERTIES = new CrystalProperties(MAX_SIZE_ROCK, 100, 100);
-    private static final CrystalProperties MAXED_CELESTIAL_PROPERTIES = new CrystalProperties(MAX_SIZE_CELESTIAL, 100, 100);
+    private static final CrystalProperties MAXED_CELESTIAL_PROPERTIES = new CrystalProperties(
+        MAX_SIZE_CELESTIAL,
+        100,
+        100);
 
-    protected int size; //(theoretically) 0 to X
-    protected int purity; //0 to 100 where 100 being completely pure.
-    protected int collectiveCapability; //0 to 100 where 100 being best collection rate.
+    protected int size; // (theoretically) 0 to X
+    protected int purity; // 0 to 100 where 100 being completely pure.
+    protected int collectiveCapability; // 0 to 100 where 100 being best collection rate.
 
     public CrystalProperties(int size, int purity, int collectiveCapability) {
         this.size = size;
@@ -78,21 +85,28 @@ public class CrystalProperties {
     }
 
     public static CrystalProperties createStructural() {
-        int size = Math.min(CrystalProperties.MAX_SIZE_ROCK, (CrystalProperties.MAX_SIZE_ROCK / 2) + rand.nextInt(CrystalProperties.MAX_SIZE_ROCK / 2));
+        int size = Math.min(
+            CrystalProperties.MAX_SIZE_ROCK,
+            (CrystalProperties.MAX_SIZE_ROCK / 2) + rand.nextInt(CrystalProperties.MAX_SIZE_ROCK / 2));
         int purity = 60 + rand.nextInt(41);
         int collect = 45 + rand.nextInt(56);
         return new CrystalProperties(size, purity, collect);
     }
 
     public static CrystalProperties createRandomRock() {
-        int size = Math.max(1, (rand.nextInt(CrystalProperties.MAX_SIZE_ROCK) + rand.nextInt(CrystalProperties.MAX_SIZE_ROCK)) / 2);
+        int size = Math.max(
+            1,
+            (rand.nextInt(CrystalProperties.MAX_SIZE_ROCK) + rand.nextInt(CrystalProperties.MAX_SIZE_ROCK)) / 2);
         int purity = (rand.nextInt(101) + rand.nextInt(101)) / 2;
         int collect = 5 + rand.nextInt(26);
         return new CrystalProperties(size, purity, collect);
     }
 
     public static CrystalProperties createRandomCelestial() {
-        int size = Math.max(1, (rand.nextInt(CrystalProperties.MAX_SIZE_CELESTIAL) + rand.nextInt(CrystalProperties.MAX_SIZE_CELESTIAL)) / 2);
+        int size = Math.max(
+            1,
+            (rand.nextInt(CrystalProperties.MAX_SIZE_CELESTIAL) + rand.nextInt(CrystalProperties.MAX_SIZE_CELESTIAL))
+                / 2);
         int purity = 40 + rand.nextInt(61);
         int collect = 50 + rand.nextInt(26);
         return new CrystalProperties(size, purity, collect);
@@ -112,7 +126,8 @@ public class CrystalProperties {
     }
 
     @SideOnly(Side.CLIENT)
-    public static Optional<Boolean> addPropertyTooltip(CrystalProperties prop, List<String> tooltip, boolean extended, int maxSize) {
+    public static Optional<Boolean> addPropertyTooltip(CrystalProperties prop, List<String> tooltip, boolean extended,
+        int maxSize) {
         return addPropertyTooltip(prop, tooltip, extended, ResearchManager.clientProgress.getTierReached(), maxSize);
     }
 
@@ -121,36 +136,52 @@ public class CrystalProperties {
      *
      * @return Optional boolean.
      *
-     * Missing value = no significant information was added
-     * False = The player misses some knowledge.
-     * True = Everything has been displayed.
+     *         Missing value = no significant information was added
+     *         False = The player misses some knowledge.
+     *         True = Everything has been displayed.
      */
     @SideOnly(Side.CLIENT)
-    public static Optional<Boolean> addPropertyTooltip(CrystalProperties prop, List<String> tooltip, boolean extended, ProgressionTier tier, int maxSize) {
+    public static Optional<Boolean> addPropertyTooltip(CrystalProperties prop, List<String> tooltip, boolean extended,
+        ProgressionTier tier, int maxSize) {
         if (prop != null) {
             if (extended) {
                 boolean missing = false;
-                if(EnumGatedKnowledge.CRYSTAL_SIZE.canSee(tier)) {
-                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.size") + ": " + (prop.getSize() == maxSize ? ChatFormatting.GOLD : ChatFormatting.BLUE) + prop.getSize());
+                if (EnumGatedKnowledge.CRYSTAL_SIZE.canSee(tier)) {
+                    tooltip.add(
+                        ChatFormatting.GRAY + I18n.format("crystal.size")
+                            + ": "
+                            + (prop.getSize() == maxSize ? ChatFormatting.GOLD : ChatFormatting.BLUE)
+                            + prop.getSize());
                 } else {
                     missing = true;
                 }
-                if(EnumGatedKnowledge.CRYSTAL_PURITY.canSee(tier)) {
-                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.purity") + ": " + (prop.getPurity() == 100 ? ChatFormatting.GOLD : ChatFormatting.BLUE) + prop.getPurity() + "%");
+                if (EnumGatedKnowledge.CRYSTAL_PURITY.canSee(tier)) {
+                    tooltip.add(
+                        ChatFormatting.GRAY + I18n.format("crystal.purity")
+                            + ": "
+                            + (prop.getPurity() == 100 ? ChatFormatting.GOLD : ChatFormatting.BLUE)
+                            + prop.getPurity()
+                            + "%");
                 } else {
                     missing = true;
                 }
-                if(EnumGatedKnowledge.CRYSTAL_COLLECT.canSee(tier)) {
-                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.collectivity") + ": " + (prop.getCollectiveCapability() == 100 ? ChatFormatting.GOLD : ChatFormatting.BLUE) + prop.getCollectiveCapability() + "%");
+                if (EnumGatedKnowledge.CRYSTAL_COLLECT.canSee(tier)) {
+                    tooltip.add(
+                        ChatFormatting.GRAY + I18n.format("crystal.collectivity")
+                            + ": "
+                            + (prop.getCollectiveCapability() == 100 ? ChatFormatting.GOLD : ChatFormatting.BLUE)
+                            + prop.getCollectiveCapability()
+                            + "%");
                 } else {
                     missing = true;
                 }
-                if(missing) {
+                if (missing) {
                     tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
                 }
                 return Optional.of(missing);
             } else {
-                tooltip.add(ChatFormatting.DARK_GRAY + ChatFormatting.ITALIC.toString() + I18n.format("misc.moreInformation"));
+                tooltip.add(
+                    ChatFormatting.DARK_GRAY + ChatFormatting.ITALIC.toString() + I18n.format("misc.moreInformation"));
                 return Optional.empty();
             }
         }
@@ -170,8 +201,7 @@ public class CrystalProperties {
         int collectToAdd = 1 + rand.nextInt(2);
         copy.size = size - grind;
         copy.collectiveCapability = Math.min(100, collectiveCapability + collectToAdd);
-        if(copy.size <= 0)
-            return null;
+        if (copy.size <= 0) return null;
         return copy;
     }
 

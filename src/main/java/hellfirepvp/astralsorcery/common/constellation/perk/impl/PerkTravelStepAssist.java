@@ -8,13 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
-import hellfirepvp.astralsorcery.common.network.PacketChannel;
-import hellfirepvp.astralsorcery.common.network.packet.server.PktSyncStepAssist;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.config.Configuration;
+
 import cpw.mods.fml.relauncher.Side;
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
+import hellfirepvp.astralsorcery.common.network.PacketChannel;
+import hellfirepvp.astralsorcery.common.network.packet.server.PktSyncStepAssist;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,15 +32,15 @@ public class PerkTravelStepAssist extends ConstellationPerk {
 
     @Override
     public void onPlayerTick(EntityPlayer player, Side side) {
-        if(side == Side.SERVER) {
-            if(!isCooldownActiveForPlayer(player)) {
+        if (side == Side.SERVER) {
+            if (!isCooldownActiveForPlayer(player)) {
                 player.stepHeight += 0.5F;
                 setCooldownActiveForPlayer(player, 20);
 
                 PktSyncStepAssist sync = new PktSyncStepAssist(player.stepHeight);
                 PacketChannel.CHANNEL.sendTo(sync, (EntityPlayerMP) player);
             } else {
-                if(player.stepHeight < 1.1F) {
+                if (player.stepHeight < 1.1F) {
                     player.stepHeight = 1.1F;
 
                     PktSyncStepAssist sync = new PktSyncStepAssist(player.stepHeight);
@@ -52,7 +53,7 @@ public class PerkTravelStepAssist extends ConstellationPerk {
     @Override
     public void onTimeout(EntityPlayer player) {
         player.stepHeight -= 0.5F;
-        if(player.stepHeight < 0.6F) {
+        if (player.stepHeight < 0.6F) {
             player.stepHeight = 0.6F;
         }
 

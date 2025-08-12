@@ -8,12 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.auxiliary.link;
 
-import hellfirepvp.astralsorcery.common.util.BlockPos;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.List;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -22,7 +24,7 @@ import java.util.List;
  * Created by HellFirePvP
  * Date: 03.08.2016 / 17:18
  */
-//Interface for linking a TileEntity, which should implement this interface, to any other block for whatever reason.
+// Interface for linking a TileEntity, which should implement this interface, to any other block for whatever reason.
 public interface ILinkableTile {
 
     /**
@@ -75,7 +77,7 @@ public interface ILinkableTile {
      * and this tile's onSelect()
      *
      * @param player the player trying to create the link.
-     * @param other the other block this tile is supposed to link to.
+     * @param other  the other block this tile is supposed to link to.
      * @return true, if and only if a allowed/correct link can be created, false otherwise
      */
     public boolean tryLink(EntityPlayer player, BlockPos other);
@@ -84,8 +86,9 @@ public interface ILinkableTile {
      * Called when a player shift-right-clicks a block that is linked to this tile.
      *
      * @param player the player trying to undo the link.
-     * @param other the other block this tile has a link to.
-     * @return true, if the link got removed, which, in case this is actually linked to the given block, should always happen
+     * @param other  the other block this tile has a link to.
+     * @return true, if the link got removed, which, in case this is actually linked to the given block, should always
+     *         happen
      */
     public boolean tryUnlink(EntityPlayer player, BlockPos other);
 

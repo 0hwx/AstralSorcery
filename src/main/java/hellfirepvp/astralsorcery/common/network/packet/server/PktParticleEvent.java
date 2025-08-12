@@ -8,28 +8,37 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
+import net.minecraft.client.Minecraft;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.block.BlockCustomOre;
-import hellfirepvp.astralsorcery.common.constellation.effect.aoe.*;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectAevitas;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectDiscidia;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectFornax;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectHorologium;
+import hellfirepvp.astralsorcery.common.constellation.effect.aoe.CEffectOctans;
 import hellfirepvp.astralsorcery.common.entities.EntityFlare;
 import hellfirepvp.astralsorcery.common.entities.EntityItemStardust;
 import hellfirepvp.astralsorcery.common.item.tool.ItemWand;
 import hellfirepvp.astralsorcery.common.item.wand.ItemArchitectWand;
 import hellfirepvp.astralsorcery.common.potion.PotionCheatDeath;
 import hellfirepvp.astralsorcery.common.starlight.network.handlers.BlockTransmutationHandler;
-import hellfirepvp.astralsorcery.common.tile.*;
+import hellfirepvp.astralsorcery.common.tile.TileAltar;
+import hellfirepvp.astralsorcery.common.tile.TileCelestialCrystals;
+import hellfirepvp.astralsorcery.common.tile.TileMapDrawingTable;
+import hellfirepvp.astralsorcery.common.tile.TileTreeBeacon;
+import hellfirepvp.astralsorcery.common.tile.TileWell;
 import hellfirepvp.astralsorcery.common.tile.network.TileCollectorCrystal;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.RaytraceAssist;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.effect.CelestialStrike;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -92,18 +101,25 @@ public class PktParticleEvent implements IMessage, IMessageHandler<PktParticleEv
         try {
             ParticleEventType type = ParticleEventType.values()[message.typeOrdinal];
             EventAction trigger = type.getTrigger(ctx.side);
-            if(trigger != null) {
+            if (trigger != null) {
                 triggerClientside(trigger, message);
             }
         } catch (Exception exc) {
-            AstralSorcery.log.warn("Error executing ParticleEventType " + message.typeOrdinal + " at " + xCoord + ", " + yCoord + ", " + zCoord);
+            AstralSorcery.log.warn(
+                "Error executing ParticleEventType " + message.typeOrdinal
+                    + " at "
+                    + xCoord
+                    + ", "
+                    + yCoord
+                    + ", "
+                    + zCoord);
         }
         return null;
     }
 
     @SideOnly(Side.CLIENT)
     private void triggerClientside(EventAction trigger, PktParticleEvent message) {
-        if(Minecraft.getMinecraft().theWorld == null) return;
+        if (Minecraft.getMinecraft().theWorld == null) return;
         AstralSorcery.proxy.scheduleClientside(() -> trigger.trigger(message));
     }
 
@@ -113,7 +129,7 @@ public class PktParticleEvent implements IMessage, IMessageHandler<PktParticleEv
 
     public static enum ParticleEventType {
 
-        //DEFINE EVENT TRIGGER IN THE FCKING HUGE SWITCH STATEMENT DOWN TEHRE.
+        // DEFINE EVENT TRIGGER IN THE FCKING HUGE SWITCH STATEMENT DOWN TEHRE.
         COLLECTOR_BURST,
         CELESTIAL_CRYSTAL_BURST,
         CELESTIAL_CRYSTAL_FORM,
@@ -134,13 +150,13 @@ public class PktParticleEvent implements IMessage, IMessageHandler<PktParticleEv
         CE_ACCEL_TILE,
         CE_DMG_ENTITY,
         CE_WATER_FISH,
-        //CE_TREE_VORTEX,
+        // CE_TREE_VORTEX,
 
         FLARE_PROC,
         RT_DEBUG;
 
-        //GOD I HATE THIS PART
-        //But i can't do this in the ctor because server-client stuffs.
+        // GOD I HATE THIS PART
+        // But i can't do this in the ctor because server-client stuffs.
         @SideOnly(Side.CLIENT)
         private static EventAction getClientTrigger(ParticleEventType type) {
             switch (type) {
@@ -191,7 +207,7 @@ public class PktParticleEvent implements IMessage, IMessageHandler<PktParticleEv
         }
 
         public EventAction getTrigger(Side side) {
-            if(!side.isClient()) return null;
+            if (!side.isClient()) return null;
             return getClientTrigger(this);
         }
 

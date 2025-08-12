@@ -8,6 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes;
 
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.light.EffectLightbeam;
 import hellfirepvp.astralsorcery.common.crafting.IAccessibleRecipe;
@@ -19,19 +25,14 @@ import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import java.util.Random;
 
 /**
-* This class is part of the Astral Sorcery Mod
-* The complete source code for this mod can be found on github.
-* Class: DiscoveryRecipe
-* Created by HellFirePvP
-* Date: 25.09.2016 / 23:58
-*/
+ * This class is part of the Astral Sorcery Mod
+ * The complete source code for this mod can be found on github.
+ * Class: DiscoveryRecipe
+ * Created by HellFirePvP
+ * Date: 25.09.2016 / 23:58
+ */
 public class DiscoveryRecipe extends AbstractAltarRecipe implements IGatedRecipe.Progression {
 
     protected DiscoveryRecipe(TileAltar.AltarLevel neededLevel, IAccessibleRecipe recipe) {
@@ -61,11 +62,16 @@ public class DiscoveryRecipe extends AbstractAltarRecipe implements IGatedRecipe
     public void onCraftClientTick(TileAltar altar, ActiveCraftingTask.CraftingState state, long tick, Random rand) {
         super.onCraftClientTick(altar, state, tick, rand);
 
-        if(state == ActiveCraftingTask.CraftingState.ACTIVE) {
-            if(rand.nextInt(14) == 0) {
+        if (state == ActiveCraftingTask.CraftingState.ACTIVE) {
+            if (rand.nextInt(14) == 0) {
                 Vector3 from = new Vector3(altar).add(0.5, 0.3, 0.5);
                 MiscUtils.applyRandomOffset(from, rand, 0.4F);
-                EffectLightbeam lightbeam = EffectHandler.getInstance().lightbeam(from.clone().addY(4 + rand.nextInt(2)), from, 1);
+                EffectLightbeam lightbeam = EffectHandler.getInstance()
+                    .lightbeam(
+                        from.clone()
+                            .addY(4 + rand.nextInt(2)),
+                        from,
+                        1);
                 lightbeam.setMaxAge(64);
             }
         }

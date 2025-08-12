@@ -8,14 +8,13 @@
 
 package hellfirepvp.astralsorcery.client.util.item;
 
-import net.minecraft.client.Minecraft;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.IItemRenderer;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -32,10 +31,10 @@ public class ItemRendererFilteredTESR implements IItemRenderer {
         renderMap.put(stackMeta, new TEISRProperties(tesr, renderTile));
     }
 
-//    @Override
-//    public void render(ItemStack stack) {
-//
-//    }
+    // @Override
+    // public void render(ItemStack stack) {
+    //
+    // }
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -49,7 +48,7 @@ public class ItemRendererFilteredTESR implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-        if(renderMap.containsKey(item.getItemDamage())) {
+        if (renderMap.containsKey(item.getItemDamage())) {
             TEISRProperties prop = renderMap.get(item.getItemDamage());
             prop.tesr.renderTileEntityAt(prop.renderTile, 0, 0, 0, 0);
         }

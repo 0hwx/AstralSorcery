@@ -8,21 +8,26 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect;
 
-import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.EntityUtils;
-import net.minecraft.entity.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.event.ForgeEventFactory;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.EntityUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -50,21 +55,22 @@ public class GenListEntries {
         public static PelotrioSpawnListEntry createEntry(World world, BlockPos pos) {
             BiomeGenBase b = world.getBiomeGenForCoords(pos.getX(), pos.getZ());
             List<BiomeGenBase.SpawnListEntry> applicable = new LinkedList<>();
-            if(ConstellationSkyHandler.getInstance().isNight(world)) {
+            if (ConstellationSkyHandler.getInstance()
+                .isNight(world)) {
                 applicable.addAll(b.getSpawnableList(EnumCreatureType.monster));
             } else {
                 applicable.addAll(b.getSpawnableList(EnumCreatureType.creature));
             }
-            if(applicable.isEmpty()) {
-                return null; //Duh.
+            if (applicable.isEmpty()) {
+                return null; // Duh.
             }
             Collections.shuffle(applicable);
             BiomeGenBase.SpawnListEntry entry = applicable.get(world.rand.nextInt(applicable.size()));
             Class<? extends EntityLivingBase> applicableClass = entry.entityClass;
-//            ResourceLocation key = EntityList.getEntityString(applicableClass);
-//            if(key != null && EntityUtils.canEntitySpawnHere(world, pos, key, true)) {
-//                return new PelotrioSpawnListEntry(pos, key);
-//            }
+            // ResourceLocation key = EntityList.getEntityString(applicableClass);
+            // if(key != null && EntityUtils.canEntitySpawnHere(world, pos, key, true)) {
+            // return new PelotrioSpawnListEntry(pos, key);
+            // }
             return null;
         }
 
@@ -81,23 +87,29 @@ public class GenListEntries {
         }
 
         public void spawn(World world) {
-            if(entityName != null && EntityUtils.canEntitySpawnHere(world, getPos(), entityName, true)) {
+            if (entityName != null && EntityUtils.canEntitySpawnHere(world, getPos(), entityName, true)) {
                 Entity entity = EntityList.createEntityByName(entityName.toString(), world);
-                if(entity != null) {
+                if (entity != null) {
                     BlockPos at = getPos();
-                    entity.setLocationAndAngles(at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, world.rand.nextFloat() * 360.0F, 0.0F);
-                    if(entity instanceof EntityLiving) {
-//                        if (!ForgeEventFactory.doSpecialSpawn((EntityLiving) entity, world, at.getX() + 0.5F, at.getY() + 0.5F, at.getZ() + 0.5F)) {
-//                            ((EntityLiving) entity).onInitialSpawn(world.getDifficultyForLocation(at), null);
-//                        }
-//                        if(!((EntityLiving) entity).isNotColliding()) {
-//                            entity.setDead();
-//                            return;
-//                        }
+                    entity.setLocationAndAngles(
+                        at.getX() + 0.5,
+                        at.getY() + 0.5,
+                        at.getZ() + 0.5,
+                        world.rand.nextFloat() * 360.0F,
+                        0.0F);
+                    if (entity instanceof EntityLiving) {
+                        // if (!ForgeEventFactory.doSpecialSpawn((EntityLiving) entity, world, at.getX() + 0.5F,
+                        // at.getY() + 0.5F, at.getZ() + 0.5F)) {
+                        // ((EntityLiving) entity).onInitialSpawn(world.getDifficultyForLocation(at), null);
+                        // }
+                        // if(!((EntityLiving) entity).isNotColliding()) {
+                        // entity.setDead();
+                        // return;
+                        // }
                     }
                     world.spawnEntityInWorld(entity);
                     world.playAuxSFX(2004, (int) entity.posX, (int) entity.posY, (int) entity.posZ, 0);
-//                    world.playEvent(2004, entity.getPosition(), 0);
+                    // world.playEvent(2004, entity.getPosition(), 0);
                 }
             }
         }
@@ -173,7 +185,8 @@ public class GenListEntries {
 
     }
 
-    public static class PosDefinedTuple<K extends NBTBase, V extends NBTBase> implements CEffectPositionListGen.CEffectGenListEntry {
+    public static class PosDefinedTuple<K extends NBTBase, V extends NBTBase>
+        implements CEffectPositionListGen.CEffectGenListEntry {
 
         private final BlockPos pos;
         public K key;

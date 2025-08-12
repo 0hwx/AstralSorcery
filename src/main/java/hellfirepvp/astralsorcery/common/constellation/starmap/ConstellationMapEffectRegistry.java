@@ -1,14 +1,16 @@
 package hellfirepvp.astralsorcery.common.constellation.starmap;
 
-import hellfirepvp.astralsorcery.common.constellation.IConstellation;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.potion.Potion;
-
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.potion.Potion;
+
+import hellfirepvp.astralsorcery.common.constellation.IConstellation;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -26,7 +28,8 @@ public class ConstellationMapEffectRegistry {
         return effectRegistry.get(c);
     }
 
-    public static MapEffect registerMapEffect(IConstellation c, Collection<EnchantmentMapEffect> enchantmentEffects, Collection<PotionMapEffect> potionEffects) {
+    public static MapEffect registerMapEffect(IConstellation c, Collection<EnchantmentMapEffect> enchantmentEffects,
+        Collection<PotionMapEffect> potionEffects) {
         MapEffect me = new MapEffect(enchantmentEffects, potionEffects);
         effectRegistry.put(c, me);
         return me;

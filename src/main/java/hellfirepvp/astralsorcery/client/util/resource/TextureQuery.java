@@ -32,7 +32,7 @@ public class TextureQuery {
 
     @SideOnly(Side.CLIENT)
     public BindableResource resolve() {
-        if(resolvedResource == null) {
+        if (resolvedResource == null) {
             resolvedResource = AssetLibrary.loadTexture(location, name);
         }
         return (BindableResource) resolvedResource;

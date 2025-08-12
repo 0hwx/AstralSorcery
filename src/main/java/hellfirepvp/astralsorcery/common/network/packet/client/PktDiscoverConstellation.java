@@ -8,6 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.client;
 
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.constellation.IConstellation;
@@ -15,13 +23,6 @@ import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -34,8 +35,7 @@ public class PktDiscoverConstellation implements IMessage, IMessageHandler<PktDi
 
     private String discoveredConstellation;
 
-    public PktDiscoverConstellation() {
-    }
+    public PktDiscoverConstellation() {}
 
     public PktDiscoverConstellation(String discoveredConstellation) {
         this.discoveredConstellation = discoveredConstellation;
@@ -58,12 +58,13 @@ public class PktDiscoverConstellation implements IMessage, IMessageHandler<PktDi
             AstralSorcery.log.info("Received unknown constellation from client: " + message.discoveredConstellation);
         } else {
             PlayerProgress prog = ResearchManager.getProgress(ctx.getServerHandler().playerEntity, Side.SERVER);
-            if(prog != null && received.canDiscover(prog)) {
+            if (prog != null && received.canDiscover(prog)) {
                 ResearchManager.discoverConstellation(received, ctx.getServerHandler().playerEntity);
                 ctx.getServerHandler().playerEntity.addChatMessage(
-                        new ChatComponentTranslation("progress.discover.constellation.chat",
-                                new ChatComponentTranslation(message.discoveredConstellation)
-                                        .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GRAY)))
+                    new ChatComponentTranslation(
+                        "progress.discover.constellation.chat",
+                        new ChatComponentTranslation(message.discoveredConstellation)
+                            .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GRAY)))
                                 .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.BLUE)));
             }
         }

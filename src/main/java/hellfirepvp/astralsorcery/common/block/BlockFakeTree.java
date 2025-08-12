@@ -8,30 +8,28 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import hellfirepvp.astralsorcery.client.effect.EffectHelper;
-import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
-import hellfirepvp.astralsorcery.client.util.RenderingUtils;
-import hellfirepvp.astralsorcery.common.tile.TileFakeTree;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.MiscUtils;
+import java.awt.Color;
+import java.util.Random;
+
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.Random;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.client.effect.EffectHelper;
+import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
+import hellfirepvp.astralsorcery.client.util.RenderingUtils;
+import hellfirepvp.astralsorcery.common.tile.TileFakeTree;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.MiscUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -43,7 +41,7 @@ import java.util.Random;
 public class BlockFakeTree extends BlockContainer {
 
     public BlockFakeTree() {
-//        Material.BARRIER -> (new Material(MapColor.airColor).setRequiresTool().setImmovableMobility());
+        // Material.BARRIER -> (new Material(MapColor.airColor).setRequiresTool().setImmovableMobility());
         super(Material.air);
         setBlockName("BlockFakeTree");
         setBlockUnbreakable();
@@ -56,7 +54,7 @@ public class BlockFakeTree extends BlockContainer {
     public boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
         BlockPos pos = new BlockPos(x, y, z);
         TileFakeTree tft = MiscUtils.getTileAt(world, pos, TileFakeTree.class, false);
-        if(tft != null && tft.getFakedState() != null) {
+        if (tft != null && tft.getFakedState() != null) {
             RenderingUtils.playBlockBreakParticles(pos, tft.getFakedState());
         }
         return true;
@@ -67,51 +65,53 @@ public class BlockFakeTree extends BlockContainer {
     public void randomDisplayTick(World worldIn, int x, int y, int z, Random rand) {
         BlockPos pos = new BlockPos(x, y, z);
         TileFakeTree tft = MiscUtils.getTileAt(worldIn, pos, TileFakeTree.class, false);
-        if(tft != null && tft.getReference() == null) return;
-        if(rand.nextInt(20) == 0) {
+        if (tft != null && tft.getReference() == null) return;
+        if (rand.nextInt(20) == 0) {
             EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    pos.getX() + rand.nextFloat(),
-                    pos.getY() + rand.nextFloat(),
-                    pos.getZ() + rand.nextFloat());
+                pos.getX() + rand.nextFloat(),
+                pos.getY() + rand.nextFloat(),
+                pos.getZ() + rand.nextFloat());
             p.motion(0, 0, 0);
-            p.scale(0.45F).setColor(new Color(63, 255, 63)).setMaxAge(65);
+            p.scale(0.45F)
+                .setColor(new Color(63, 255, 63))
+                .setMaxAge(65);
         }
     }
 
-//    @Override
-//    public SoundType getSoundType(Block state, World world, BlockPos pos, @Nullable Entity entity) {
-//        TileFakeTree tft = MiscUtils.getTileAt(world, pos, TileFakeTree.class, true);
-//        if(tft != null && tft.getFakedState() != null) {
-//            Block fake = tft.getFakedState();
-//            return fake.getBlock().getSoundType(fake, world, pos, entity);
-//        }
-//        return super.getSoundType(state, world, pos, entity);
-//    }
+    // @Override
+    // public SoundType getSoundType(Block state, World world, BlockPos pos, @Nullable Entity entity) {
+    // TileFakeTree tft = MiscUtils.getTileAt(world, pos, TileFakeTree.class, true);
+    // if(tft != null && tft.getFakedState() != null) {
+    // Block fake = tft.getFakedState();
+    // return fake.getBlock().getSoundType(fake, world, pos, entity);
+    // }
+    // return super.getSoundType(state, world, pos, entity);
+    // }
 
     @Override
     public int getRenderType() {
         return 1;
     }
 
-//    @Override
-//    public BlockRenderLayer getBlockLayer() {
-//        return BlockRenderLayer.TRANSLUCENT;
-//    }
-//
-//    @Override
-//    public boolean isFullyOpaque() {
-//        return false;
-//    }
+    // @Override
+    // public BlockRenderLayer getBlockLayer() {
+    // return BlockRenderLayer.TRANSLUCENT;
+    // }
+    //
+    // @Override
+    // public boolean isFullyOpaque() {
+    // return false;
+    // }
 
     @Override
     public boolean isBlockNormalCube() {
         return false;
     }
 
-//    @Override
-//    public boolean isTranslucent() {
-//        return true;
-//    }
+    // @Override
+    // public boolean isTranslucent() {
+    // return true;
+    // }
 
     @Override
     public boolean isOpaqueCube() {
@@ -153,8 +153,9 @@ public class BlockFakeTree extends BlockContainer {
         BlockPos pos = new BlockPos(x, y, z);
         TileFakeTree tft = MiscUtils.getTileAt(world, pos, TileFakeTree.class, true);
         try {
-            if(tft != null && tft.getFakedState() != null) {
-                return tft.getFakedState().getPickBlock(target, world, pos.getX(), pos.getY(), pos.getZ(), player);
+            if (tft != null && tft.getFakedState() != null) {
+                return tft.getFakedState()
+                    .getPickBlock(target, world, pos.getX(), pos.getY(), pos.getZ(), player);
             }
         } catch (Exception ignored) {}
         return null;

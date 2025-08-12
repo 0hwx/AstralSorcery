@@ -8,12 +8,6 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import hellfirepvp.astralsorcery.common.entities.EntityIlluminationSpark;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +15,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.entities.EntityIlluminationSpark;
+import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -42,14 +43,15 @@ public class ItemIlluminationPowder extends Item {
             return stack;
         }
         worldIn.spawnEntityInWorld(new EntityIlluminationSpark(worldIn, player));
-        if(!player.capabilities.isCreativeMode) {
+        if (!player.capabilities.isCreativeMode) {
             stack.stackSize--;
         }
         return stack;
     }
 
     @Override
-   public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+    public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, int x, int y, int z, int side,
+        float hitX, float hitY, float hitZ) {
         if (stack == null || stack.getItem() == null || worldIn.isRemote) {
             return false;
         }
@@ -58,14 +60,24 @@ public class ItemIlluminationPowder extends Item {
         if (!block.isReplaceable(worldIn, pos.getX(), pos.getY(), pos.getZ())) {
             pos = pos.offset(ForgeDirection.getOrientation(side));
         }
-        if(playerIn.canPlayerEdit(pos.getX(), pos.getY(), pos.getZ(), side, stack) && worldIn.canPlaceEntityOnSide(BlocksAS.blockVolatileLight, pos.getX(), pos.getY(), pos.getZ(), true, side, playerIn, stack)) {
+        if (playerIn.canPlayerEdit(pos.getX(), pos.getY(), pos.getZ(), side, stack) && worldIn.canPlaceEntityOnSide(
+            BlocksAS.blockVolatileLight,
+            pos.getX(),
+            pos.getY(),
+            pos.getZ(),
+            true,
+            side,
+            playerIn,
+            stack)) {
             if (worldIn.setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.blockVolatileLight)) {
-//                SoundType soundtype = worldIn.getBlockState(pos).getBlock().getSoundType(worldIn.getBlockState(pos), worldIn, pos, playerIn);
-//                worldIn.playSound(playerIn, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                if(!playerIn.capabilities.isCreativeMode) {
+                // SoundType soundtype = worldIn.getBlockState(pos).getBlock().getSoundType(worldIn.getBlockState(pos),
+                // worldIn, pos, playerIn);
+                // worldIn.playSound(playerIn, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS,
+                // (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+                if (!playerIn.capabilities.isCreativeMode) {
                     stack.stackSize--;
                 }
-                if(stack.stackSize <= 0) {
+                if (stack.stackSize <= 0) {
                     playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
                 }
             }
@@ -75,8 +87,7 @@ public class ItemIlluminationPowder extends Item {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IIconRegister register)
-    {
+    public void registerIcons(IIconRegister register) {
         this.itemIcon = register.registerIcon("astralsorcery:illumdust");
     }
 }

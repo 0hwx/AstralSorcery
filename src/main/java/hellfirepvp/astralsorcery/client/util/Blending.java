@@ -41,8 +41,8 @@ public enum Blending {
         GL11.glBlendFunc(sfactor, dfactor);
     }
 
-//    public void applyStateManager() {
-//        GlStateManager.blendFunc(sfactor, dfactor);
-//    }
+    // public void applyStateManager() {
+    // GlStateManager.blendFunc(sfactor, dfactor);
+    // }
 
 }

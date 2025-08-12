@@ -8,19 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.util.data;
 
-
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import static net.minecraftforge.common.util.ForgeDirection.*;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static net.minecraftforge.common.util.ForgeDirection.EAST;
-import static net.minecraftforge.common.util.ForgeDirection.NORTH;
-import static net.minecraftforge.common.util.ForgeDirection.SOUTH;
-import static net.minecraftforge.common.util.ForgeDirection.WEST;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -44,7 +40,7 @@ public class DirectionalLayerBlockDiscoverer {
 
     public LinkedList<BlockPos> discoverApplicableBlocks() {
         LinkedList<BlockPos> visited = new LinkedList<>();
-        //LinkedList<BlockPos> validCache = new LinkedList<>();
+        // LinkedList<BlockPos> validCache = new LinkedList<>();
 
         int xPos = start.getX();
         int yPos = start.getY();
@@ -53,13 +49,12 @@ public class DirectionalLayerBlockDiscoverer {
         tryAdd(start, visited);
 
         ForgeDirection dir = NORTH;
-        while ( Math.abs(currentPos.getX() - xPos) <= rad &&
-                Math.abs(currentPos.getY() - yPos) <= rad &&
-                Math.abs(currentPos.getZ() - zPos) <= rad) {
+        while (Math.abs(currentPos.getX() - xPos) <= rad && Math.abs(currentPos.getY() - yPos) <= rad
+            && Math.abs(currentPos.getZ() - zPos) <= rad) {
             currentPos = currentPos.offset(dir, stepWidth);
             tryAdd(currentPos, visited);
             ForgeDirection tryDirNext = rotateY(dir);
-            if(!visited.contains(currentPos.offset(tryDirNext, stepWidth))) {
+            if (!visited.contains(currentPos.offset(tryDirNext, stepWidth))) {
                 dir = tryDirNext;
             }
         }
@@ -68,14 +63,13 @@ public class DirectionalLayerBlockDiscoverer {
     }
 
     private void tryAdd(BlockPos at, List<BlockPos> visited) {
-        if(!visited.contains(at)) {
+        if (!visited.contains(at)) {
             visited.add(at);
         }
     }
-    public ForgeDirection rotateY(ForgeDirection dir)
-    {
-        switch (dir)
-        {
+
+    public ForgeDirection rotateY(ForgeDirection dir) {
+        switch (dir) {
             case NORTH:
                 return EAST;
             case EAST:

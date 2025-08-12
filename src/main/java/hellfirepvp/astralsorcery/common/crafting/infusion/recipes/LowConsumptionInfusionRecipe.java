@@ -8,8 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.crafting.infusion.recipes;
 
-import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import net.minecraft.item.ItemStack;
+
+import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 
 /**
  * This class is part of the Astral Sorcery Mod

@@ -8,9 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.common.base.Mods;
-import hellfirepvp.astralsorcery.common.integrations.ModIntegrationBotania;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,8 +33,10 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
-import javax.annotation.Nullable;
-import java.util.*;
+import com.google.common.collect.Lists;
+
+import hellfirepvp.astralsorcery.common.base.Mods;
+import hellfirepvp.astralsorcery.common.integrations.ModIntegrationBotania;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -42,7 +50,7 @@ public class ItemUtils {
     private static final Random rand = new Random();
 
     public static EntityItem dropItem(World world, double x, double y, double z, ItemStack stack) {
-        if(world.isRemote) return null;
+        if (world.isRemote) return null;
         EntityItem ei = new EntityItem(world, x, y, z, stack);
         ei.motionX = 0;
         ei.motionY = 0;
@@ -51,8 +59,9 @@ public class ItemUtils {
         ei.delayBeforeCanPickup = 10;
         return ei;
     }
+
     public static EntityItem dropItemNaturally(World world, double x, double y, double z, ItemStack stack) {
-        if(world.isRemote) return null;
+        if (world.isRemote) return null;
         EntityItem ei = new EntityItem(world, x, y, z, stack);
         applyRandomDropOffset(ei);
         world.spawnEntityInWorld(ei);
@@ -69,8 +78,8 @@ public class ItemUtils {
     @Nullable
     public static ItemStack createBlockStack(Block block) {
         Item i = Item.getItemFromBlock(block);
-        if(i == null) return null;
-        int meta = block.damageDropped(0);//todo check this
+        if (i == null) return null;
+        int meta = block.damageDropped(0);// todo check this
         return new ItemStack(i, 1, meta);
     }
 
@@ -79,19 +88,18 @@ public class ItemUtils {
         Block b = Block.getBlockFromItem(stack.getItem());
         if (b == Blocks.air) return null;
         return b;
-//        try {
-//            return b.getStateFromMeta(stack.getMetadata());
-//        } catch (Exception exc) {
-//            return b.getDefaultState();
-//        }
+        // try {
+        // return b.getStateFromMeta(stack.getMetadata());
+        // } catch (Exception exc) {
+        // return b.getDefaultState();
+        // }
     }
 
     public static Collection<ItemStack> scanInventoryFor(IInventory handler, Item i) {
         List<ItemStack> out = new LinkedList<>();
         for (int j = 0; j < handler.getSizeInventory(); j++) {
             ItemStack s = handler.getStackInSlot(j);
-            if(s != null && s.getItem() != null && s.getItem() == i)
-                out.add(copyStackWithSize(s, s.stackSize));
+            if (s != null && s.getItem() != null && s.getItem() == i) out.add(copyStackWithSize(s, s.stackSize));
         }
         return out;
     }
@@ -100,7 +108,8 @@ public class ItemUtils {
         return findItemsInInventory(handler, match, strict);
     }
 
-    public static Collection<ItemStack> findItemsInPlayerInventory(EntityPlayer player, ItemStack match, boolean strict) {
+    public static Collection<ItemStack> findItemsInPlayerInventory(EntityPlayer player, ItemStack match,
+        boolean strict) {
         return findItemsInInventory(player.inventory, match, strict);
     }
 
@@ -115,7 +124,8 @@ public class ItemUtils {
         return stacksOut;
     }
 
-    public static Map<Integer, ItemStack> findItemsIndexedInInventory(IInventory handler, ItemStack match, boolean strict) {
+    public static Map<Integer, ItemStack> findItemsIndexedInInventory(IInventory handler, ItemStack match,
+        boolean strict) {
         Map<Integer, ItemStack> stacksOut = new HashMap<>();
         for (int j = 0; j < handler.getSizeInventory(); j++) {
             ItemStack s = handler.getStackInSlot(j);
@@ -126,8 +136,9 @@ public class ItemUtils {
         return stacksOut;
     }
 
-    public static boolean consumeFromPlayerInventory(EntityPlayer player, ItemStack requestingItemStack, ItemStack toConsume, boolean simulate) {
-        if(toConsume == null || toConsume.getItem() == null) return false; //Uh....
+    public static boolean consumeFromPlayerInventory(EntityPlayer player, ItemStack requestingItemStack,
+        ItemStack toConsume, boolean simulate) {
+        if (toConsume == null || toConsume.getItem() == null) return false; // Uh....
 
         int consumed = 0;
         if (Mods.BOTANIA.isPresent()) {
@@ -137,7 +148,8 @@ public class ItemUtils {
                 int meta = b.damageDropped(requestingItemStack.getItemDamage());
 
                 for (int i = 0; i < toConsume.stackSize; i++) {
-                    ItemStack res = ModIntegrationBotania.requestFromInventory(player, requestingItemStack, b, meta, simulate);
+                    ItemStack res = ModIntegrationBotania
+                        .requestFromInventory(player, requestingItemStack, b, meta, simulate);
                     if (res != null && res.getItem() != null) {
                         consumed++;
                     }
@@ -145,7 +157,8 @@ public class ItemUtils {
             }
         }
         ItemStack tryConsume = copyStackWithSize(toConsume, toConsume.stackSize - consumed);
-        return tryConsume == null || tryConsume.getItem() == null || consumeFromInventory(player.inventory, tryConsume, simulate);
+        return tryConsume == null || tryConsume.getItem() == null
+            || consumeFromInventory(player.inventory, tryConsume, simulate);
     }
 
     public static boolean tryConsumeFromInventory(IInventory handler, ItemStack toConsume, boolean simulate) {
@@ -154,17 +167,17 @@ public class ItemUtils {
 
     public static boolean consumeFromInventory(IInventory handler, ItemStack toConsume, boolean simulate) {
         Map<Integer, ItemStack> contents = findItemsIndexedInInventory(handler, toConsume, false);
-        if(contents.isEmpty()) return false;
+        if (contents.isEmpty()) return false;
 
         int cAmt = toConsume.stackSize;
         for (int slot : contents.keySet()) {
             ItemStack inSlot = contents.get(slot);
             int toRemove = cAmt > inSlot.stackSize ? inSlot.stackSize : cAmt;
             cAmt -= toRemove;
-            if(!simulate) {
+            if (!simulate) {
                 handler.setInventorySlotContents(slot, copyStackWithSize(inSlot, inSlot.stackSize - toRemove));
             }
-            if(cAmt <= 0) {
+            if (cAmt <= 0) {
                 break;
             }
         }
@@ -172,10 +185,10 @@ public class ItemUtils {
     }
 
     public static void dropInventory(IInventory handle, World worldIn, BlockPos pos) {
-        if(worldIn.isRemote) return;
+        if (worldIn.isRemote) return;
         for (int i = 0; i < handle.getSizeInventory(); i++) {
             ItemStack stack = handle.getStackInSlot(i);
-            if(stack == null) continue;
+            if (stack == null) continue;
             dropItemNaturally(worldIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
         }
     }
@@ -185,25 +198,28 @@ public class ItemUtils {
     }
 
     public static ItemStack drainFluidFromItem(ItemStack stack, FluidStack fluidStack, boolean doDrain) {
-        return stack; //FluidUtil.tryEmptyContainer(stack, FluidHandlerVoid.INSTANCE, fluidStack.amount, null, doDrain);
+        return stack; // FluidUtil.tryEmptyContainer(stack, FluidHandlerVoid.INSTANCE, fluidStack.amount, null,
+                      // doDrain);
     }
 
-    /*public static void decrStackInInventory(ItemStack[] stacks, int slot) {
-        if(slot < 0 || slot >= stacks.length) return;
-        ItemStack st = stacks[slot];
-        if(st == null) return;
-        st.stackSize--;
-        if(st.stackSize <= 0) {
-            stacks[slot] = null;
-        }
-    }*/
+    /*
+     * public static void decrStackInInventory(ItemStack[] stacks, int slot) {
+     * if(slot < 0 || slot >= stacks.length) return;
+     * ItemStack st = stacks[slot];
+     * if(st == null) return;
+     * st.stackSize--;
+     * if(st.stackSize <= 0) {
+     * stacks[slot] = null;
+     * }
+     * }
+     */
 
     public static void decrStackInInventory(IInventory handler, int slot) {
-        if(slot < 0 || slot >= handler.getSizeInventory()) return;
+        if (slot < 0 || slot >= handler.getSizeInventory()) return;
         ItemStack st = handler.getStackInSlot(slot);
-        if(st == null) return;
+        if (st == null) return;
         st.stackSize--;
-        if(st.stackSize <= 0) {
+        if (st.stackSize <= 0) {
             handler.setInventorySlotContents(slot, null);
         }
     }
@@ -214,7 +230,7 @@ public class ItemUtils {
 
     public static boolean tryPlaceItemInInventory(ItemStack stack, ISidedInventory handler, int start, int end) {
         ItemStack toAdd = stack.copy();
-        if(!hasInventorySpace(toAdd, handler, start, end)) return false;
+        if (!hasInventorySpace(toAdd, handler, start, end)) return false;
         int max = stack.getMaxStackSize();
 
         for (int i = start; i < end; i++) {
@@ -226,12 +242,11 @@ public class ItemUtils {
                 return true;
             } else {
                 if (stackEqualsNonNBT(stack, in) && matchTags(stack, in)) {
-                    int space = max-in.stackSize;
+                    int space = max - in.stackSize;
                     int added = Math.min(stack.stackSize, space);
                     stack.stackSize -= added;
                     handler.getStackInSlot(i).stackSize += added;
-                    if (stack.stackSize <= 0)
-                        return true;
+                    if (stack.stackSize <= 0) return true;
                 }
             }
         }
@@ -247,7 +262,7 @@ public class ItemUtils {
                 size -= max;
             } else {
                 if (stackEqualsNonNBT(stack, in) && matchTags(stack, in)) {
-                    int space = max-in.stackSize;
+                    int space = max - in.stackSize;
                     size -= space;
                 }
             }
@@ -256,24 +271,21 @@ public class ItemUtils {
     }
 
     public static boolean stackEqualsNonNBT(ItemStack stack, ItemStack other) {
-        if (stack == null && other == null)
-            return true;
-        if (stack == null || other == null || stack.getItem() == null || other.getItem() == null)
-            return false;
+        if (stack == null && other == null) return true;
+        if (stack == null || other == null || stack.getItem() == null || other.getItem() == null) return false;
         Item sItem = stack.getItem();
         Item oItem = other.getItem();
-        if(sItem.getHasSubtypes() || oItem.getHasSubtypes()) {
-            return sItem.equals(other.getItem()) &&
-                    (stack.getItemDamage() == other.getItemDamage() ||
-                    stack.getItemDamage() == OreDictionary.WILDCARD_VALUE ||
-                    other.getItemDamage() == OreDictionary.WILDCARD_VALUE);
+        if (sItem.getHasSubtypes() || oItem.getHasSubtypes()) {
+            return sItem.equals(other.getItem()) && (stack.getItemDamage() == other.getItemDamage()
+                || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE
+                || other.getItemDamage() == OreDictionary.WILDCARD_VALUE);
         } else {
             return sItem.equals(other.getItem());
         }
     }
 
     public static ItemStack copyStackWithSize(ItemStack stack, int amount) {
-        if(stack == null || stack.getItem() == null || amount <= 0) return null;
+        if (stack == null || stack.getItem() == null || amount <= 0) return null;
         ItemStack s = stack.copy();
         s.stackSize = amount;
         return s;
@@ -283,7 +295,7 @@ public class ItemUtils {
         namePart = namePart.toLowerCase();
         List<String> oreNames = getOreDictNames(stack);
         for (String s : oreNames) {
-            if(s.contains(namePart)) return true;
+            if (s.contains(namePart)) return true;
         }
         return false;
     }
@@ -296,7 +308,9 @@ public class ItemUtils {
     private static List<String> getOreDictNames(ItemStack stack) {
         List<String> out = Lists.newArrayList();
         for (int id : OreDictionary.getOreIDs(stack)) {
-            out.add(OreDictionary.getOreName(id).toLowerCase());
+            out.add(
+                OreDictionary.getOreName(id)
+                    .toLowerCase());
         }
         return out;
     }
@@ -310,21 +324,20 @@ public class ItemUtils {
     }
 
     public static boolean matchStacks(ItemStack stack, ItemStack other) {
-        if(!ItemStack.areItemStacksEqual(stack, other)) return false;
+        if (!ItemStack.areItemStacksEqual(stack, other)) return false;
         return ItemStack.areItemStackTagsEqual(stack, other);
     }
 
     public static boolean matchStackLoosely(ItemStack stack, ItemStack other) {
-        if(stack == null) return other == null;
+        if (stack == null) return other == null;
         return stack.isItemEqual(other);
     }
 
     public static boolean matchesOreDict(String oreDictKey, ItemStack other) {
         List<ItemStack> stacks = OreDictionary.getOres(oreDictKey);
         for (ItemStack stack : stacks) {
-            if(stack == null) continue;
-            if(matchStackLoosely(stack, other))
-                return true;
+            if (stack == null) continue;
+            if (matchStackLoosely(stack, other)) return true;
         }
         return false;
     }

@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network;
 
-import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
-import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
-import io.netty.buffer.ByteBuf;
+import java.awt.Color;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import java.awt.*;
+import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
+import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
+import io.netty.buffer.ByteBuf;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,7 +34,8 @@ public class WellRecipeAdd implements SerializeableRecipe {
 
     WellRecipeAdd() {}
 
-    public WellRecipeAdd(ItemStack inStack, Fluid fluidOut, float productionMultiplier, float shatterMultiplier, int colorHex) {
+    public WellRecipeAdd(ItemStack inStack, Fluid fluidOut, float productionMultiplier, float shatterMultiplier,
+        int colorHex) {
         this.inStack = inStack;
         this.fluidOut = fluidOut;
         this.productionMultiplier = productionMultiplier;
@@ -66,12 +68,22 @@ public class WellRecipeAdd implements SerializeableRecipe {
 
     @Override
     public void applyServer() {
-        CraftingAccessManager.addMTLiquefaction(this.inStack, this.fluidOut, this.productionMultiplier, this.shatterMultiplier, new Color(this.colorHex));
+        CraftingAccessManager.addMTLiquefaction(
+            this.inStack,
+            this.fluidOut,
+            this.productionMultiplier,
+            this.shatterMultiplier,
+            new Color(this.colorHex));
     }
 
     @Override
     public void applyClient() {
-        CraftingAccessManager.addMTLiquefaction(this.inStack, this.fluidOut, this.productionMultiplier, this.shatterMultiplier, new Color(this.colorHex));
+        CraftingAccessManager.addMTLiquefaction(
+            this.inStack,
+            this.fluidOut,
+            this.productionMultiplier,
+            this.shatterMultiplier,
+            new Color(this.colorHex));
     }
 
 }

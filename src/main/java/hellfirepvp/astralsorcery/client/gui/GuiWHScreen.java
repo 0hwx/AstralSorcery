@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.client.gui;
 
-import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
+import java.awt.Point;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
+
 import org.lwjgl.input.Mouse;
 
-import java.awt.*;
-import java.io.IOException;
+import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -72,11 +73,13 @@ public abstract class GuiWHScreen extends GuiScreen {
     protected void keyTyped(char typedChar, int keyCode) {
         super.keyTyped(typedChar, keyCode);
 
-        if(keyCode == Minecraft.getMinecraft().gameSettings.keyBindInventory.getKeyCode()) {
-            Minecraft.getMinecraft().displayGuiScreen(null);
+        if (keyCode == Minecraft.getMinecraft().gameSettings.keyBindInventory.getKeyCode()) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(null);
 
-            if(Minecraft.getMinecraft().currentScreen == null) {
-                Minecraft.getMinecraft().setIngameFocus();
+            if (Minecraft.getMinecraft().currentScreen == null) {
+                Minecraft.getMinecraft()
+                    .setIngameFocus();
             }
         }
     }
@@ -85,29 +88,33 @@ public abstract class GuiWHScreen extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        if(mouseButton == 1 && !handleRightClickClose(mouseX, mouseY)) {
-            Minecraft.getMinecraft().displayGuiScreen(null);
+        if (mouseButton == 1 && !handleRightClickClose(mouseX, mouseY)) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(null);
 
-            if(Minecraft.getMinecraft().currentScreen == null) {
-                Minecraft.getMinecraft().setIngameFocus();
+            if (Minecraft.getMinecraft().currentScreen == null) {
+                Minecraft.getMinecraft()
+                    .setIngameFocus();
             }
         }
     }
 
     /**
-     * @return false if rightclick is not handled any other way and allow for close. true to deny rightclick close and handle otherwise;
+     * @return false if rightclick is not handled any other way and allow for close. true to deny rightclick close and
+     *         handle otherwise;
      */
     protected boolean handleRightClickClose(int mouseX, int mouseY) {
         return false;
     }
 
     public Point getCurrentMousePoint() {
-        int guiMouseX =          Mouse.getEventX() * width  / mc.displayWidth;
+        int guiMouseX = Mouse.getEventX() * width / mc.displayWidth;
         int guiMouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
         return new Point(guiMouseX, guiMouseY);
     }
 
-    protected void drawTexturedRectAtCurrentPos(double width, double height, float uFrom, float vFrom, float uWidth, float vWidth) {
+    protected void drawTexturedRectAtCurrentPos(double width, double height, float uFrom, float vFrom, float uWidth,
+        float vWidth) {
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
         tess.addVertexWithUV(0, 0 + height, zLevel, uFrom, vFrom + vWidth);
@@ -115,13 +122,13 @@ public abstract class GuiWHScreen extends GuiScreen {
         tess.addVertexWithUV(0 + width, 0, zLevel, uFrom + uWidth, vFrom);
         tess.addVertexWithUV(0, 0, zLevel, uFrom, vFrom);
         tess.draw();
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(0,         0 + height, zLevel).tex(uFrom,          vFrom + vWidth).endVertex();
-//        vb.pos(0 + width, 0 + height, zLevel).tex(uFrom + uWidth, vFrom + vWidth).endVertex();
-//        vb.pos(0 + width, 0,          zLevel).tex(uFrom + uWidth, vFrom)         .endVertex();
-//        vb.pos(0,         0,          zLevel).tex(uFrom,          vFrom)         .endVertex();
-//        tes.draw();
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(0, 0 + height, zLevel).tex(uFrom, vFrom + vWidth).endVertex();
+        // vb.pos(0 + width, 0 + height, zLevel).tex(uFrom + uWidth, vFrom + vWidth).endVertex();
+        // vb.pos(0 + width, 0, zLevel).tex(uFrom + uWidth, vFrom) .endVertex();
+        // vb.pos(0, 0, zLevel).tex(uFrom, vFrom) .endVertex();
+        // tes.draw();
     }
 
     protected void drawTexturedRectAtCurrentPos(double width, double height) {
@@ -132,13 +139,13 @@ public abstract class GuiWHScreen extends GuiScreen {
         tess.addVertexWithUV(0 + width, 0, zLevel, 1, 0);
         tess.addVertexWithUV(0, 0, zLevel, 0, 0);
         tess.draw();
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(0,         0 + height, zLevel).tex(0, 1).endVertex();
-//        vb.pos(0 + width, 0 + height, zLevel).tex(1, 1).endVertex();
-//        vb.pos(0 + width, 0,          zLevel).tex(1, 0).endVertex();
-//        vb.pos(0,         0,          zLevel).tex(0, 0).endVertex();
-//        tes.draw();
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(0, 0 + height, zLevel).tex(0, 1).endVertex();
+        // vb.pos(0 + width, 0 + height, zLevel).tex(1, 1).endVertex();
+        // vb.pos(0 + width, 0, zLevel).tex(1, 0).endVertex();
+        // vb.pos(0, 0, zLevel).tex(0, 0).endVertex();
+        // tes.draw();
     }
 
     protected void drawRectDetailed(float offsetX, float offsetY, float width, float height) {
@@ -149,13 +156,13 @@ public abstract class GuiWHScreen extends GuiScreen {
         tess.addVertexWithUV(offsetX + width, offsetY, zLevel, 1, 0);
         tess.addVertexWithUV(offsetX, offsetY, zLevel, 0, 0);
         tess.draw();
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
-//        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
-//        tes.draw();
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(offsetX, offsetY + height, zLevel).tex(0, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY, zLevel).tex(1, 0).endVertex();
+        // vb.pos(offsetX, offsetY, zLevel).tex(0, 0).endVertex();
+        // tes.draw();
     }
 
     protected void drawRect(int offsetX, int offsetY, int width, int height) {
@@ -166,13 +173,13 @@ public abstract class GuiWHScreen extends GuiScreen {
         tess.addVertexWithUV(offsetX + width, offsetY, zLevel, 1, 0);
         tess.addVertexWithUV(offsetX, offsetY, zLevel, 0, 0);
         tess.draw();
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
-//        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
-//        tes.draw();
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(offsetX, offsetY + height, zLevel).tex(0, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY, zLevel).tex(1, 0).endVertex();
+        // vb.pos(offsetX, offsetY, zLevel).tex(0, 0).endVertex();
+        // tes.draw();
     }
 
 }

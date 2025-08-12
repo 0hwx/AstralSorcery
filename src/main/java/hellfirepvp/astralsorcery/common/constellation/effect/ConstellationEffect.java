@@ -8,6 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect;
 
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
@@ -18,14 +27,6 @@ import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ILocatable;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-
-import javax.annotation.Nullable;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -40,7 +41,7 @@ public abstract class ConstellationEffect extends ConfigEntry {
 
     private final IWeakConstellation constellation;
 
-    //Always null on client.
+    // Always null on client.
     protected final ILocatable origin;
 
     public ConstellationEffect(@Nullable ILocatable origin, IWeakConstellation constellation, String cfgName) {
@@ -66,22 +67,26 @@ public abstract class ConstellationEffect extends ConfigEntry {
         return false;
     }
 
-    //Once per TE client tick
+    // Once per TE client tick
     @SideOnly(Side.CLIENT)
-    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal,  float percEffectVisibility, boolean extendedEffects) {}
+    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility,
+        boolean extendedEffects) {}
 
-    //May be executed multiple times per tick
-    //Even if this effect can handle multiple effects per tick, it is still possible that this method is called.
-    public abstract boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect, @Nullable IMinorConstellation possibleTraitEffect);
+    // May be executed multiple times per tick
+    // Even if this effect can handle multiple effects per tick, it is still possible that this method is called.
+    public abstract boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect,
+        @Nullable IMinorConstellation possibleTraitEffect);
 
-    //May be executed multiple times per tick
-    public abstract boolean playTraitEffect(World world, BlockPos pos, IMinorConstellation traitType, float traitStrength);
+    // May be executed multiple times per tick
+    public abstract boolean playTraitEffect(World world, BlockPos pos, IMinorConstellation traitType,
+        float traitStrength);
 
-    //Should handle multiple executions at once ('times' executions)
-    public boolean playMainEffectMultiple(World world, BlockPos pos, int times, boolean mayDoTraitEffect, @Nullable IMinorConstellation possibleTraitEffect) {
+    // Should handle multiple executions at once ('times' executions)
+    public boolean playMainEffectMultiple(World world, BlockPos pos, int times, boolean mayDoTraitEffect,
+        @Nullable IMinorConstellation possibleTraitEffect) {
         boolean changed = false;
         for (int i = 0; i < times; i++) {
-            if(playMainEffect(world, pos, 1, mayDoTraitEffect, possibleTraitEffect)) changed = true;
+            if (playMainEffect(world, pos, 1, mayDoTraitEffect, possibleTraitEffect)) changed = true;
         }
         return changed;
     }
@@ -89,7 +94,7 @@ public abstract class ConstellationEffect extends ConfigEntry {
     public boolean playTraitEffectMultiple(World world, BlockPos pos, IMinorConstellation traitType, int times) {
         boolean changed = false;
         for (int i = 0; i < times; i++) {
-            if(playTraitEffect(world, pos, traitType, 1)) changed = true;
+            if (playTraitEffect(world, pos, traitType, 1)) changed = true;
         }
         return changed;
     }
@@ -97,8 +102,8 @@ public abstract class ConstellationEffect extends ConfigEntry {
     @Nullable
     public TileRitualPedestal getPedestal(World world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos.getX(), pos.getY(), pos.getZ());
-        if(te == null) return null;
-        if(te instanceof TileRitualLink) {
+        if (te == null) return null;
+        if (te instanceof TileRitualLink) {
             TileRitualLink link = (TileRitualLink) te;
             pos = new BlockPos(link.xCoord, link.yCoord, link.zCoord);
             return MiscUtils.getTileAt(world, pos, TileRitualPedestal.class, false);
@@ -115,7 +120,7 @@ public abstract class ConstellationEffect extends ConfigEntry {
     @Nullable
     public EntityPlayer getOwningPlayerInWorld(World world, BlockPos pos) {
         TileRitualPedestal pedestal = getPedestal(world, pos);
-        if(pedestal != null) {
+        if (pedestal != null) {
             return pedestal.getOwningPlayerInWorld(world);
         }
         return null;

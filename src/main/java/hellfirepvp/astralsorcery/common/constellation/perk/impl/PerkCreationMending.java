@@ -8,11 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
+
 import cpw.mods.fml.relauncher.Side;
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,10 +32,10 @@ public class PerkCreationMending extends ConstellationPerk {
 
     @Override
     public void onPlayerTick(EntityPlayer player, Side side) {
-        if(side == Side.SERVER) {
+        if (side == Side.SERVER) {
             for (ItemStack armor : player.getLastActiveItems()) {
-                if(rand.nextInt(chanceToRepair) != 0) continue;
-                if(armor != null && armor.isItemStackDamageable() && armor.isItemDamaged()) {
+                if (rand.nextInt(chanceToRepair) != 0) continue;
+                if (armor != null && armor.isItemStackDamageable() && armor.isItemDamaged()) {
                     armor.setItemDamage(armor.getItemDamage() - 1);
                     addAlignmentCharge(player, 0.2);
                 }
@@ -49,7 +50,13 @@ public class PerkCreationMending extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        chanceToRepair = cfg.getInt(getKey() + "ChanceForRepair", getConfigurationSection(), 400, 10, 4000, "Sets the chance (Random.nextInt(chance) == 0) to try to see if a piece of armor on the player that is damageable and damaged can be repaired");
+        chanceToRepair = cfg.getInt(
+            getKey() + "ChanceForRepair",
+            getConfigurationSection(),
+            400,
+            10,
+            4000,
+            "Sets the chance (Random.nextInt(chance) == 0) to try to see if a piece of armor on the player that is damageable and damaged can be repaired");
     }
 
 }

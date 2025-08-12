@@ -8,6 +8,31 @@
 
 package hellfirepvp.astralsorcery.client.event;
 
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
+import java.util.zip.GZIPInputStream;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.model.obj.WavefrontObject;
+
+import org.lwjgl.opengl.GL11;
+
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -19,7 +44,6 @@ import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
 import hellfirepvp.astralsorcery.client.gui.GuiJournalPerkMap;
 import hellfirepvp.astralsorcery.client.gui.journal.GuiScreenJournal;
-import hellfirepvp.astralsorcery.client.sky.RenderRiftSkybox;
 import hellfirepvp.astralsorcery.client.sky.RenderSkybox;
 import hellfirepvp.astralsorcery.client.util.Blending;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
@@ -33,45 +57,19 @@ import hellfirepvp.astralsorcery.client.util.resource.SpriteSheetResource;
 import hellfirepvp.astralsorcery.common.constellation.charge.PlayerChargeHandler;
 import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
 import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerkLevelManager;
-import hellfirepvp.astralsorcery.common.data.DataWorldSkyHandlers;
-import hellfirepvp.astralsorcery.common.data.SyncDataHolder;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.event.ClientKeyboardInputEvent;
 import hellfirepvp.astralsorcery.common.item.ItemAlignmentChargeRevealer;
+import hellfirepvp.astralsorcery.common.item.ItemHandRender;
 import hellfirepvp.astralsorcery.common.item.ItemHudRender;
 import hellfirepvp.astralsorcery.common.item.tool.ItemSkyResonator;
-import hellfirepvp.astralsorcery.common.item.ItemHandRender;
 import hellfirepvp.astralsorcery.common.lib.Sounds;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.SkyCollectionHelper;
 import hellfirepvp.astralsorcery.common.util.SoundHelper;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.MouseEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.client.model.obj.WavefrontObject;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
-import java.util.zip.GZIPInputStream;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -82,9 +80,12 @@ import java.util.zip.GZIPInputStream;
  */
 public class ClientRenderEventHandler {
 
-    private static final BindableResource texChargeFrame = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "hud_charge_frame");
-    private static final BindableResource texChargeCharge = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "hud_charge_charge");
-    public static final BindableResource texHUDItemFrame = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "hud_item_frame");
+    private static final BindableResource texChargeFrame = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "hud_charge_frame");
+    private static final BindableResource texChargeCharge = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "hud_charge_charge");
+    public static final BindableResource texHUDItemFrame = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "hud_item_frame");
 
     private static final Map<ItemHudRender, ItemStackHudRenderInstance> ongoingItemRenders = new HashMap<>();
 
@@ -93,7 +94,7 @@ public class ClientRenderEventHandler {
     private static final float visibilityChange = 1F / ((float) fadeTicks);
 
     private static int chargePermRevealTicks = 0;
-    private static float visibilityPermCharge = 0F; //0F-1F
+    private static float visibilityPermCharge = 0F; // 0F-1F
 
     private static int chargeTempRevealTicks = 0;
     private static float visibilityTempCharge = 0F;
@@ -102,15 +103,15 @@ public class ClientRenderEventHandler {
     @SideOnly(Side.CLIENT)
     public void onRender(RenderWorldLastEvent event) {
         World world = Minecraft.getMinecraft().theWorld;
-        if(Config.constellationSkyDimWhitelist.contains(world.provider.dimensionId)) {
+        if (Config.constellationSkyDimWhitelist.contains(world.provider.dimensionId)) {
             if (!(world.provider.getSkyRenderer() instanceof RenderSkybox)) {
                 world.provider.setSkyRenderer(new RenderSkybox(world, world.provider.getSkyRenderer()));
             }
         }
 
-
         playHandAndHudRenders(Minecraft.getMinecraft().thePlayer.getHeldItem(), event.partialTicks);
-//        playHandAndHudRenders(Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.OFF_HAND), EnumHand.OFF_HAND, event.getPartialTicks());
+        // playHandAndHudRenders(Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.OFF_HAND), EnumHand.OFF_HAND,
+        // event.getPartialTicks());
     }
 
     @SubscribeEvent
@@ -119,9 +120,9 @@ public class ClientRenderEventHandler {
         if (event.gui instanceof GuiScreenJournal) {
             SoundHelper.playSoundClient(Sounds.bookFlip, 1F, 1F);
         }
-        if (Minecraft.getMinecraft().currentScreen != null &&
-                Minecraft.getMinecraft().currentScreen instanceof GuiScreenJournal &&
-                (event.gui == null || !(event.gui instanceof GuiScreenJournal))) {
+        if (Minecraft.getMinecraft().currentScreen != null
+            && Minecraft.getMinecraft().currentScreen instanceof GuiScreenJournal
+            && (event.gui == null || !(event.gui instanceof GuiScreenJournal))) {
             SoundHelper.playSoundClient(Sounds.bookClose, 1F, 1F);
         }
     }
@@ -149,35 +150,37 @@ public class ClientRenderEventHandler {
     public void onTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END && Minecraft.getMinecraft().thePlayer != null) {
             playItemEffects(Minecraft.getMinecraft().thePlayer.getHeldItem());
-//            playItemEffects(Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.OFF_HAND));
+            // playItemEffects(Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.OFF_HAND));
 
-            if(Minecraft.getMinecraft().currentScreen != null && Minecraft.getMinecraft().currentScreen instanceof GuiJournalPerkMap) {
+            if (Minecraft.getMinecraft().currentScreen != null
+                && Minecraft.getMinecraft().currentScreen instanceof GuiJournalPerkMap) {
                 requestPermChargeReveal(20);
             }
             chargePermRevealTicks--;
             chargeTempRevealTicks--;
 
-            if((chargePermRevealTicks - fadeTicks) < 0) {
-                if(visibilityPermCharge > 0) {
+            if ((chargePermRevealTicks - fadeTicks) < 0) {
+                if (visibilityPermCharge > 0) {
                     visibilityPermCharge = Math.max(0, visibilityPermCharge - visibilityChange);
                 }
             } else {
-                if(visibilityPermCharge < 1) {
+                if (visibilityPermCharge < 1) {
                     visibilityPermCharge = Math.min(1, visibilityPermCharge + visibilityChange);
                 }
             }
 
-            if((chargeTempRevealTicks - fadeTicks) < 0) {
-                if(visibilityTempCharge > 0) {
+            if ((chargeTempRevealTicks - fadeTicks) < 0) {
+                if (visibilityTempCharge > 0) {
                     visibilityTempCharge = Math.max(0, visibilityTempCharge - visibilityChange);
                 }
             } else {
-                if(visibilityTempCharge < 1) {
+                if (visibilityTempCharge < 1) {
                     visibilityTempCharge = Math.min(1, visibilityTempCharge + visibilityChange);
                 }
             }
 
-            Iterator<Map.Entry<ItemHudRender, ItemStackHudRenderInstance>> iterator = ongoingItemRenders.entrySet().iterator();
+            Iterator<Map.Entry<ItemHudRender, ItemStackHudRenderInstance>> iterator = ongoingItemRenders.entrySet()
+                .iterator();
             while (iterator.hasNext()) {
                 Map.Entry<ItemHudRender, ItemStackHudRenderInstance> entry = iterator.next();
                 ItemStackHudRenderInstance instance = entry.getValue();
@@ -197,17 +200,17 @@ public class ClientRenderEventHandler {
     @SideOnly(Side.CLIENT)
     private void tickTimeFreezeEffects() {
         World w = Minecraft.getMinecraft().theWorld;
-//        if(w != null && w.provider != null) {
-//            List<TimeStopEffectHelper> effects =
-//                ((DataTimeFreezeEffects) SyncDataHolder.getData(Side.CLIENT, SyncDataHolder.DATA_TIME_FREEZE_EFFECTS))
-//                    .client_getTimeStopEffects(w);
-//
-//            if(effects != null) {
-//                for (TimeStopEffectHelper helper : effects) {
-//                    helper.playClientTickEffect();
-//                }
-//            }
-//        }
+        // if(w != null && w.provider != null) {
+        // List<TimeStopEffectHelper> effects =
+        // ((DataTimeFreezeEffects) SyncDataHolder.getData(Side.CLIENT, SyncDataHolder.DATA_TIME_FREEZE_EFFECTS))
+        // .client_getTimeStopEffects(w);
+        //
+        // if(effects != null) {
+        // for (TimeStopEffectHelper helper : effects) {
+        // helper.playClientTickEffect();
+        // }
+        // }
+        // }
     }
 
     @SideOnly(Side.CLIENT)
@@ -220,7 +223,11 @@ public class ClientRenderEventHandler {
             if (i instanceof ItemHudRender) {
                 if (((ItemHudRender) i).hasFadeIn()) {
                     if (!ongoingItemRenders.containsKey(i)) {
-                        ongoingItemRenders.put((ItemHudRender) i, new ItemStackHudRenderInstance(inHand, 1F / ((float) ((ItemHudRender) i).getFadeInTicks())));
+                        ongoingItemRenders.put(
+                            (ItemHudRender) i,
+                            new ItemStackHudRenderInstance(
+                                inHand,
+                                1F / ((float) ((ItemHudRender) i).getFadeInTicks())));
                     }
                     ItemStackHudRenderInstance instance = ongoingItemRenders.get(i);
                     instance.active = true;
@@ -235,10 +242,12 @@ public class ClientRenderEventHandler {
         if (inHand != null && inHand.getItem() != null) {
             Item i = inHand.getItem();
             if (i instanceof ItemAlignmentChargeRevealer) {
-                if(((ItemAlignmentChargeRevealer) i).shouldReveal(ItemAlignmentChargeRevealer.ChargeType.PERM, inHand)) {
+                if (((ItemAlignmentChargeRevealer) i)
+                    .shouldReveal(ItemAlignmentChargeRevealer.ChargeType.PERM, inHand)) {
                     requestPermChargeReveal(20);
                 }
-                if(((ItemAlignmentChargeRevealer) i).shouldReveal(ItemAlignmentChargeRevealer.ChargeType.TEMP, inHand)) {
+                if (((ItemAlignmentChargeRevealer) i)
+                    .shouldReveal(ItemAlignmentChargeRevealer.ChargeType.TEMP, inHand)) {
                     requestTempChargeReveal(20);
                 }
             }
@@ -258,15 +267,18 @@ public class ClientRenderEventHandler {
 
     @SideOnly(Side.CLIENT)
     private void spawnSurfaceParticles() {
-        if (!ConstellationSkyHandler.getInstance().getSeedIfPresent(Minecraft.getMinecraft().theWorld).isPresent()) return;
+        if (!ConstellationSkyHandler.getInstance()
+            .getSeedIfPresent(Minecraft.getMinecraft().theWorld)
+            .isPresent()) return;
 
-        float nightPerc = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(Minecraft.getMinecraft().theWorld);
+        float nightPerc = ConstellationSkyHandler.getInstance()
+            .getCurrentDaytimeDistribution(Minecraft.getMinecraft().theWorld);
         if (nightPerc >= 0.05) {
             Color c = new Color(0, 6, 58);
-            BlockPos center = new BlockPos(Minecraft.getMinecraft().thePlayer).getPosition(); //Minecraft.getMinecraft().Player.getPosition();
+            BlockPos center = new BlockPos(Minecraft.getMinecraft().thePlayer).getPosition(); // Minecraft.getMinecraft().Player.getPosition();
             int offsetX = center.getX();
             int offsetZ = center.getZ();
-//            BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain(center);
+            // BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain(center);
 
             for (int xx = -30; xx <= 30; xx++) {
                 for (int zz = -30; zz <= 30; zz++) {
@@ -275,32 +287,43 @@ public class ClientRenderEventHandler {
                     int z = offsetZ + zz;
                     int y = Minecraft.getMinecraft().theWorld.getTopSolidOrLiquidBlock(x, z);
 
-//                    BlockPos top = Minecraft.getMinecraft().theWorld.getTopSolidOrLiquidBlock(offsetX + xx,  offsetZ + zz);
+                    // BlockPos top = Minecraft.getMinecraft().theWorld.getTopSolidOrLiquidBlock(offsetX + xx, offsetZ +
+                    // zz);
                     BlockPos top = new BlockPos(x, y, z);
-                    //Can be force unwrapped since statement 2nd Line prevents non-present values.
-                    Float opF = SkyCollectionHelper.getSkyNoiseDistributionClient(Minecraft.getMinecraft().theWorld, top).get();
+                    // Can be force unwrapped since statement 2nd Line prevents non-present values.
+                    Float opF = SkyCollectionHelper
+                        .getSkyNoiseDistributionClient(Minecraft.getMinecraft().theWorld, top)
+                        .get();
 
                     float fPerc = (float) Math.pow((opF - 0.4F) * 1.65F, 2);
                     if (opF >= 0.4F && rand.nextFloat() <= fPerc) {
                         if (rand.nextFloat() <= fPerc && rand.nextInt(6) == 0) {
-                            EffectHelper.genericFlareParticle(top.getX() + rand.nextFloat(), top.getY() + 0.15, top.getZ() + rand.nextFloat())
-                                    .scale(4F)
-                                    .setColor(c)
-                                    .enableAlphaFade(EntityComplexFX.AlphaFunction.PYRAMID)
-                                    .gravity(0.004)
-                                    .setAlphaMultiplier(nightPerc * fPerc);
+                            EffectHelper
+                                .genericFlareParticle(
+                                    top.getX() + rand.nextFloat(),
+                                    top.getY() + 0.15,
+                                    top.getZ() + rand.nextFloat())
+                                .scale(4F)
+                                .setColor(c)
+                                .enableAlphaFade(EntityComplexFX.AlphaFunction.PYRAMID)
+                                .gravity(0.004)
+                                .setAlphaMultiplier(nightPerc * fPerc);
                             if (opF >= 0.8F && rand.nextInt(3) == 0) {
-                                EffectHelper.genericFlareParticle(top.getX() + rand.nextFloat(), top.getY() + 0.15, top.getZ() + rand.nextFloat())
-                                        .scale(0.3F)
-                                        .setColor(Color.WHITE)
-                                        .gravity(0.01)
-                                        .setAlphaMultiplier(nightPerc);
+                                EffectHelper
+                                    .genericFlareParticle(
+                                        top.getX() + rand.nextFloat(),
+                                        top.getY() + 0.15,
+                                        top.getZ() + rand.nextFloat())
+                                    .scale(0.3F)
+                                    .setColor(Color.WHITE)
+                                    .gravity(0.01)
+                                    .setAlphaMultiplier(nightPerc);
                             }
                         }
                     }
                 }
             }
-//            pos.release();
+            // pos.release();
         }
     }
 
@@ -308,57 +331,75 @@ public class ClientRenderEventHandler {
     @SideOnly(Side.CLIENT)
     public void onOverlay(RenderGameOverlayEvent.Post event) {
         if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
-            if(visibilityTempCharge > 0) {
+            if (visibilityTempCharge > 0) {
                 Minecraft mc = Minecraft.getMinecraft();
                 SpriteSheetResource ssr = SpriteLibrary.spriteCharge;
-                ssr.getResource().bind();
+                ssr.getResource()
+                    .bind();
 
                 ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
                 int width = res.getScaledWidth();
                 int height = res.getScaledHeight();
                 int barWidth = 194;
                 int offsetLeft = width / 2 - barWidth / 2;
-                int offsetTop = height + 3 - 54; //*sigh* vanilla
+                int offsetTop = height + 3 - 54; // *sigh* vanilla
 
-//                GL11.glEnable(GL_BLEND);
-//                GL11.glDisable(GL11.GL_ALPHA_TEST);
+                // GL11.glEnable(GL_BLEND);
+                // GL11.glDisable(GL11.GL_ALPHA_TEST);
                 GL11.glEnable(GL11.GL_BLEND);
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                 Tuple<Double, Double> uvPos = ssr.getUVOffset(ClientScheduler.getClientTick());
 
-                float percFilled = Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode ? 1F : PlayerChargeHandler.instance.clientCharge;
+                float percFilled = Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode ? 1F
+                    : PlayerChargeHandler.instance.clientCharge;
                 double uLength = ssr.getULength() * percFilled;
 
-//                GL11.glColor4f(1F, 1F, 1F, visibilityTempCharge);
+                // GL11.glColor4f(1F, 1F, 1F, visibilityTempCharge);
                 GL11.glColor4f(1F, 1F, 1F, visibilityTempCharge);
                 Tessellator tess = Tessellator.instance;
-//                VertexBuffer vb = tes.getBuffer();
-//                vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+                // VertexBuffer vb = tes.getBuffer();
+                // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
                 tess.startDrawingQuads();
                 tess.addVertexWithUV(offsetLeft, offsetTop + 27, 10, uvPos.key, uvPos.value + ssr.getVLength());
-                tess.addVertexWithUV(offsetLeft + barWidth * percFilled, offsetTop + 27, 10, uvPos.key + uLength, uvPos.value + ssr.getVLength());
-                tess.addVertexWithUV(offsetLeft + barWidth * percFilled, offsetTop, 10, uvPos.key + uLength, uvPos.value);
+                tess.addVertexWithUV(
+                    offsetLeft + barWidth * percFilled,
+                    offsetTop + 27,
+                    10,
+                    uvPos.key + uLength,
+                    uvPos.value + ssr.getVLength());
+                tess.addVertexWithUV(
+                    offsetLeft + barWidth * percFilled,
+                    offsetTop,
+                    10,
+                    uvPos.key + uLength,
+                    uvPos.value);
                 tess.addVertexWithUV(offsetLeft, offsetTop, 10, uvPos.key, uvPos.value);
-//                vb.pos(offsetLeft, offsetTop + 27, 10).tex(uvPos.key, uvPos.value + ssr.getVLength()).endVertex();
-//                vb.pos(offsetLeft + barWidth * percFilled, offsetTop + 27, 10).tex(uvPos.key + uLength, uvPos.value + ssr.getVLength()).endVertex();
-//                vb.pos(offsetLeft + barWidth * percFilled, offsetTop, 10).tex(uvPos.key + uLength, uvPos.value).endVertex();
-//                vb.pos(offsetLeft, offsetTop, 10).tex(uvPos.key, uvPos.value).endVertex();
+                // vb.pos(offsetLeft, offsetTop + 27, 10).tex(uvPos.key, uvPos.value + ssr.getVLength()).endVertex();
+                // vb.pos(offsetLeft + barWidth * percFilled, offsetTop + 27, 10).tex(uvPos.key + uLength, uvPos.value +
+                // ssr.getVLength()).endVertex();
+                // vb.pos(offsetLeft + barWidth * percFilled, offsetTop, 10).tex(uvPos.key + uLength,
+                // uvPos.value).endVertex();
+                // vb.pos(offsetLeft, offsetTop, 10).tex(uvPos.key, uvPos.value).endVertex();
                 tess.draw();
                 GL11.glEnable(GL11.GL_ALPHA_TEST);
-//                GL11.glEnable(GL11.GL_ALPHA_TEST);
+                // GL11.glEnable(GL11.GL_ALPHA_TEST);
 
                 TextureHelper.refreshTextureBindState();
             }
 
-            if(visibilityPermCharge > 0) {
+            if (visibilityPermCharge > 0) {
                 renderAlignmentChargeOverlay(event.partialTicks);
             }
             if (!ongoingItemRenders.isEmpty()) {
-                for (Map.Entry<ItemHudRender, ItemStackHudRenderInstance> entry : new HashSet<>(ongoingItemRenders.entrySet())) {
-                    if (!entry.getKey().hasFadeIn()) {
-                        entry.getKey().onRenderInHandHUD(entry.getValue().stack, 1F, event.partialTicks);
+                for (Map.Entry<ItemHudRender, ItemStackHudRenderInstance> entry : new HashSet<>(
+                    ongoingItemRenders.entrySet())) {
+                    if (!entry.getKey()
+                        .hasFadeIn()) {
+                        entry.getKey()
+                            .onRenderInHandHUD(entry.getValue().stack, 1F, event.partialTicks);
                     } else {
-                        entry.getKey().onRenderInHandHUD(entry.getValue().stack, entry.getValue().visibility, event.partialTicks);
+                        entry.getKey()
+                            .onRenderInHandHUD(entry.getValue().stack, entry.getValue().visibility, event.partialTicks);
                     }
                 }
             }
@@ -399,7 +440,7 @@ public class ClientRenderEventHandler {
         texChargeFrame.bind();
         GL11.glColor4f(1F, 1F, 1F, visibilityPermCharge * 0.9F);
 
-        //Draw hud itself
+        // Draw hud itself
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
         tess.addVertexWithUV(offsetX, offsetY + height, 10, 0, 1);
@@ -407,15 +448,15 @@ public class ClientRenderEventHandler {
         tess.addVertexWithUV(offsetX + width, offsetY, 10, 1, 0);
         tess.addVertexWithUV(offsetX, offsetY, 10, 0, 0);
         tess.draw();
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(offsetX, offsetY + height, 10).tex(0, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY + height, 10).tex(1, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY, 10).tex(1, 0).endVertex();
-//        vb.pos(offsetX, offsetY, 10).tex(0, 0).endVertex();
-//        tes.draw();
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(offsetX, offsetY + height, 10).tex(0, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY + height, 10).tex(1, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY, 10).tex(1, 0).endVertex();
+        // vb.pos(offsetX, offsetY, 10).tex(0, 0).endVertex();
+        // tes.draw();
 
-        //Draw charge
+        // Draw charge
         float filled = ConstellationPerkLevelManager.getPercToNextLevel(ResearchManager.clientProgress);
         height = 78F;
         offsetY = 27.5F + (1F - filled) * height;
@@ -429,16 +470,16 @@ public class ClientRenderEventHandler {
         tess.addVertexWithUV(offsetX + width, offsetY, 10, 1, 1F - filled);
         tess.addVertexWithUV(offsetX, offsetY, 10, 0, 1F - filled);
         tess.draw();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(offsetX, offsetY + height, 10).tex(0, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY + height, 10).tex(1, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY, 10).tex(1, 1F - filled).endVertex();
-//        vb.pos(offsetX, offsetY, 10).tex(0, 1F - filled).endVertex();
-//        tes.draw();
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(offsetX, offsetY + height, 10).tex(0, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY + height, 10).tex(1, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY, 10).tex(1, 1F - filled).endVertex();
+        // vb.pos(offsetX, offsetY, 10).tex(0, 1F - filled).endVertex();
+        // tes.draw();
 
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         TextureHelper.refreshTextureBindState();
-        //Draw level
+        // Draw level
         int level = ResearchManager.clientProgress.getAlignmentLevel();
         GL11.glColor4f(0.86F, 0.86F, 0.86F, visibilityPermCharge);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -464,7 +505,8 @@ public class ClientRenderEventHandler {
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void onKey(ClientKeyboardInputEvent event) {
-        if (ClientCameraManager.getInstance().hasActiveTransformer()) {
+        if (ClientCameraManager.getInstance()
+            .hasActiveTransformer()) {
             event.setCanceled(true);
         }
     }
@@ -472,7 +514,8 @@ public class ClientRenderEventHandler {
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void onMouse(MouseEvent event) {
-        if (ClientCameraManager.getInstance().hasActiveTransformer()) {
+        if (ClientCameraManager.getInstance()
+            .hasActiveTransformer()) {
             event.setCanceled(true);
         }
     }
@@ -481,7 +524,13 @@ public class ClientRenderEventHandler {
         ResourceLocation mod = new ResourceLocation(AstralSorcery.MODID + ":models/obj/modelAssec.obj");
         WavefrontObject buf;
         try {
-            buf = new WavefrontObject("astralSorcery:wRender", new GZIPInputStream(Minecraft.getMinecraft().getResourceManager().getResource(mod).getInputStream()));
+            buf = new WavefrontObject(
+                "astralSorcery:wRender",
+                new GZIPInputStream(
+                    Minecraft.getMinecraft()
+                        .getResourceManager()
+                        .getResource(mod)
+                        .getInputStream()));
         } catch (Exception exc) {
             buf = null;
         }
@@ -497,30 +546,34 @@ public class ClientRenderEventHandler {
     public void onRender(RenderPlayerEvent.Post event) {
         if (event.entityPlayer == null) return;
         if (obj == null) return;
-        if (event.entityPlayer.getUniqueID().hashCode() != 1529485240) return;
+        if (event.entityPlayer.getUniqueID()
+            .hashCode() != 1529485240) return;
 
         GL11.glColor4f(1F, 1F, 1F, 1F);
 
         GL11.glPushMatrix();;
-//        GL11.glTranslatef(event.getX(), event.getY(), event.getZ()); // todo check this
+        // GL11.glTranslatef(event.getX(), event.getY(), event.getZ()); // todo check this
         Minecraft.getMinecraft().renderEngine.bindTexture(tex);
         boolean f = event.entityPlayer.capabilities.isFlying;
         double ma = f ? 15 : 5;
-        double r = (ma * (Math.abs((ClientScheduler.getClientTick() % 80) - 40) / 40D)) +
-                ((65 - ma) * Math.max(0, Math.min(1, new Vector3(event.entityPlayer.motionX, 0, event.entityPlayer.motionZ).length())));
-        float rot = RenderingUtils.interpolateRotation(event.entityPlayer.prevRenderYawOffset, event.entityPlayer.renderYawOffset, event.partialRenderTick);
+        double r = (ma * (Math.abs((ClientScheduler.getClientTick() % 80) - 40) / 40D)) + ((65 - ma) * Math
+            .max(0, Math.min(1, new Vector3(event.entityPlayer.motionX, 0, event.entityPlayer.motionZ).length())));
+        float rot = RenderingUtils.interpolateRotation(
+            event.entityPlayer.prevRenderYawOffset,
+            event.entityPlayer.renderYawOffset,
+            event.partialRenderTick);
         GL11.glRotatef(180F - rot, 0F, 1F, 0F);
         GL11.glScaled(0.07, 0.07, 0.07);
         GL11.glTranslated(0, 5.5, 0.7 - (((float) (r / ma)) * (f ? 0.5D : 0.2D)));
-        if(dList == -1) {
+        if (dList == -1) {
             dList = GLAllocation.generateDisplayLists(2);
             GL11.glNewList(dList, GL11.GL_COMPILE);
-//            obj.renderOnly(true, "wR");
-            obj.renderOnly( "wR");
+            // obj.renderOnly(true, "wR");
+            obj.renderOnly("wR");
             GL11.glEndList();
             GL11.glNewList(dList + 1, GL11.GL_COMPILE);
-//            obj.renderOnly(true, "wL");
-            obj.renderOnly( "wL");
+            // obj.renderOnly(true, "wL");
+            obj.renderOnly("wL");
             GL11.glEndList();
         }
 

@@ -8,19 +8,20 @@
 
 package hellfirepvp.astralsorcery.common.data.world.data;
 
-import hellfirepvp.astralsorcery.common.data.world.CachedWorldData;
-import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import hellfirepvp.astralsorcery.common.data.world.CachedWorldData;
+import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -47,7 +48,7 @@ public class RockCrystalBuffer extends CachedWorldData {
             for (int zz = -rad; zz <= rad; zz++) {
                 ChunkCoordIntPair other = new ChunkCoordIntPair(center.chunkXPos + xx, center.chunkZPos + zz);
                 List<BlockPos> saved = crystalPositions.get(other);
-                if(saved != null) {
+                if (saved != null) {
                     out.addAll(saved);
                 }
             }
@@ -58,10 +59,11 @@ public class RockCrystalBuffer extends CachedWorldData {
     public void addOre(BlockPos pos) {
         ChunkCoordIntPair ch = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         synchronized (lock) {
-            if(!crystalPositions.containsKey(ch)) {
+            if (!crystalPositions.containsKey(ch)) {
                 crystalPositions.put(ch, new LinkedList<>());
             }
-            crystalPositions.get(ch).add(pos);
+            crystalPositions.get(ch)
+                .add(pos);
         }
 
         markDirty();
@@ -69,17 +71,19 @@ public class RockCrystalBuffer extends CachedWorldData {
 
     public void removeOre(BlockPos pos) {
         ChunkCoordIntPair ch = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
-        if(!crystalPositions.containsKey(ch)) return;
+        if (!crystalPositions.containsKey(ch)) return;
         boolean removed;
         synchronized (lock) {
-            removed = crystalPositions.get(ch).remove(pos);
-            if(crystalPositions.get(ch).size() == 0) {
+            removed = crystalPositions.get(ch)
+                .remove(pos);
+            if (crystalPositions.get(ch)
+                .size() == 0) {
                 crystalPositions.remove(ch);
                 removed = true;
             }
         }
 
-        if(removed) {
+        if (removed) {
             markDirty();
         }
     }
@@ -91,7 +95,7 @@ public class RockCrystalBuffer extends CachedWorldData {
         }
 
         Map<ChunkCoordIntPair, List<BlockPos>> work = new HashMap<>();
-        if(nbt.hasKey("crystalList")) {
+        if (nbt.hasKey("crystalList")) {
             NBTTagList list = nbt.getTagList("crystalList", 10);
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound chList = list.getCompoundTagAt(i);

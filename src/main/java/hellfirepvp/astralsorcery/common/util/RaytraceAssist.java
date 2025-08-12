@@ -8,26 +8,26 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-import hellfirepvp.astralsorcery.client.effect.EffectHelper;
-import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
-import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
-import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.client.effect.EffectHelper;
+import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
+import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
+import hellfirepvp.astralsorcery.common.util.data.Vector3;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class RaytraceAssist {
 
-    //-1 is wildcard
+    // -1 is wildcard
     private static final Map<Block, List<Integer>> passable = new HashMap<>();
 
     private static final double STEP_WIDTH = 0.05;
@@ -73,49 +73,56 @@ public class RaytraceAssist {
     public void setCollectEntities(double additionalCollectRadius) {
         this.collectEntities = true;
         this.collectBox = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0);
-        this.collectBox = this.collectBox.expand(additionalCollectRadius,additionalCollectRadius,additionalCollectRadius);
+        this.collectBox = this.collectBox
+            .expand(additionalCollectRadius, additionalCollectRadius, additionalCollectRadius);
     }
 
     public boolean isClear(World world) {
         Vector3 aim = start.vectorFromHereTo(target);
-        Vector3 stepAim = aim.clone().normalize().multiply(STEP_WIDTH);
+        Vector3 stepAim = aim.clone()
+            .normalize()
+            .multiply(STEP_WIDTH);
         double distance = aim.length();
         Vector3 prevVec = start.clone();
         for (double distancePart = STEP_WIDTH; distancePart <= distance; distancePart += STEP_WIDTH) {
-            Vector3 stepVec = prevVec.clone().add(stepAim);
+            Vector3 stepVec = prevVec.clone()
+                .add(stepAim);
             BlockPos at = stepVec.toBlockPos();
 
-            if(collectEntities) {
-                List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, collectBox.offset(stepVec.getX(), stepVec.getY(), stepVec.getZ()));
+            if (collectEntities) {
+                List<Entity> entities = world.getEntitiesWithinAABB(
+                    Entity.class,
+                    collectBox.offset(stepVec.getX(), stepVec.getY(), stepVec.getZ()));
                 for (Entity b : entities) {
-                    if(!collected.contains(b.getEntityId())) {
+                    if (!collected.contains(b.getEntityId())) {
                         collected.add(b.getEntityId());
                     }
                 }
             }
 
-            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(at.chunkX(), at.chunkZ()))) {
-                if(!isStartEnd(at) && !world.isAirBlock(at.getX(), at.getY(), at.getZ())) {
+            if (MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(at.chunkX(), at.chunkZ()))) {
+                if (!isStartEnd(at) && !world.isAirBlock(at.getX(), at.getY(), at.getZ())) {
                     int state = world.getBlockMetadata(at.getX(), at.getY(), at.getZ());
-                    if(!isAllowed(state)) {
+                    if (!isAllowed(state)) {
                         hit = at;
                         return false;
                     }
                 }
             }
 
-            /* Tried often enough. doesn't work properly for whatever reason.
-            RayTraceResult rtr = world.rayTraceBlocks(prevVec.toVec3d(), stepVec.toVec3d());
-
-            if(rtr != null && rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
-                BlockPos hit = rtr.getBlockPos();
-                if(!isStartEnd(hit)) {
-                    Block state = world.getBlockState(hit);
-                    if(!isAllowed(state)) {
-                        return false;
-                    }
-                }
-            }*/
+            /*
+             * Tried often enough. doesn't work properly for whatever reason.
+             * RayTraceResult rtr = world.rayTraceBlocks(prevVec.toVec3d(), stepVec.toVec3d());
+             * if(rtr != null && rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
+             * BlockPos hit = rtr.getBlockPos();
+             * if(!isStartEnd(hit)) {
+             * Block state = world.getBlockState(hit);
+             * if(!isAllowed(state)) {
+             * return false;
+             * }
+             * }
+             * }
+             */
 
             prevVec = stepVec;
         }
@@ -130,7 +137,7 @@ public class RaytraceAssist {
         List<Entity> entities = new LinkedList<>();
         for (Integer id : collected) {
             Entity e = world.getEntityByID(id);
-            if(e != null && !e.isDead) {
+            if (e != null && !e.isDead) {
                 entities.add(e);
             }
         }
@@ -139,9 +146,9 @@ public class RaytraceAssist {
 
     private boolean isAllowed(int meta) {
         List<Integer> accepted = passable.get(meta);
-        if(accepted != null) {
-            if(accepted.size() == 1 && accepted.get(0) == -1) return true;
-            if(accepted.contains(meta)) return true;
+        if (accepted != null) {
+            if (accepted.size() == 1 && accepted.get(0) == -1) return true;
+            if (accepted.contains(meta)) return true;
         }
         return false;
     }
@@ -152,7 +159,7 @@ public class RaytraceAssist {
 
     public static void addPassable(Block b, Integer... stateMetas) {
         List<Integer> passStates = new ArrayList<>();
-        if(stateMetas == null || stateMetas.length == 0) {
+        if (stateMetas == null || stateMetas.length == 0) {
             passStates.add(-1);
         } else {
             Collections.addAll(passStates, stateMetas);
@@ -171,7 +178,8 @@ public class RaytraceAssist {
     public static void playDebug(PktParticleEvent event) {
         Vector3 pos = event.getVec();
         EntityFXFacingParticle p = EffectHelper.genericFlareParticle(pos.getX(), pos.getY(), pos.getZ());
-        p.gravity(0.004).scale(0.05F);
+        p.gravity(0.004)
+            .scale(0.05F);
     }
 
 }

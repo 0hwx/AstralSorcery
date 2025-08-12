@@ -8,6 +8,15 @@
 
 package hellfirepvp.astralsorcery.client.render.tile;
 
+import java.awt.Color;
+import java.util.List;
+
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.tileentity.TileEntity;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.models.base.ASlens;
 import hellfirepvp.astralsorcery.client.models.base.ASlens_color;
 import hellfirepvp.astralsorcery.client.util.Blending;
@@ -18,13 +27,6 @@ import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.tile.network.TileCrystalLens;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -36,18 +38,20 @@ import java.util.List;
 public class TESRLens extends TileEntitySpecialRenderer {
 
     private static final ASlens modelLensPart = new ASlens();
-    private static final BindableResource texLensPart = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MODELS, "base/lens");
+    private static final BindableResource texLensPart = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.MODELS, "base/lens");
 
     private static final ASlens_color modelLensColoredFrame = new ASlens_color();
-    private static final BindableResource texLensColorFrame = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MODELS, "lens/lens_color");
+    private static final BindableResource texLensColorFrame = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.MODELS, "lens/lens_color");
 
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
         TileCrystalLens te = (TileCrystalLens) tile;
         List<BlockPos> linked = te.getLinkedPositions();
-        float yaw = 0; //Degree
-        float pitch = 0; //Degree
-        if(!linked.isEmpty() && linked.size() == 1) {
+        float yaw = 0; // Degree
+        float pitch = 0; // Degree
+        if (!linked.isEmpty() && linked.size() == 1) {
             BlockPos to = linked.get(0);
             BlockPos from = te.getTrPos();
             Vector3 dir = new Vector3(to).subtract(new Vector3(from));
@@ -70,7 +74,7 @@ public class TESRLens extends TileEntitySpecialRenderer {
         GL11.glRotated(180, 1, 0, 0);
         GL11.glRotated(yaw % 360, 0, 1, 0);
         renderHandle(yaw, pitch);
-        if(te.getLensColor() != null) {
+        if (te.getLensColor() != null) {
             GL11.glRotated(180, 0, 1, 0);
             Color c = te.getLensColor().wrappedColor;
             GL11.glColor4f(c.getRed() / 255F, c.getGreen() / 255F, c.getBlue() / 255F, 1F);
@@ -89,7 +93,7 @@ public class TESRLens extends TileEntitySpecialRenderer {
 
     private void renderHandle(float yaw, float pitch) {
 
-         GL11.glPushMatrix();
+        GL11.glPushMatrix();
         GL11.glRotatef(-30.0F, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(165.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();

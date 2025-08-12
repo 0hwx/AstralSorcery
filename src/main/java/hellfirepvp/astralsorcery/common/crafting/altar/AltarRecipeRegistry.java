@@ -8,7 +8,19 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.item.ItemStack;
+
 import com.google.common.collect.Lists;
+
 import hellfirepvp.astralsorcery.common.crafting.altar.recipes.AttunementRecipe;
 import hellfirepvp.astralsorcery.common.crafting.altar.recipes.ConstellationRecipe;
 import hellfirepvp.astralsorcery.common.crafting.altar.recipes.DiscoveryRecipe;
@@ -17,10 +29,6 @@ import hellfirepvp.astralsorcery.common.crafting.helper.AbstractCacheableRecipe;
 import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
-import java.util.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -37,17 +45,19 @@ public class AltarRecipeRegistry {
 
     private static Map<TileAltar.AltarLevel, List<AbstractAltarRecipe>> localFallbackCache = new HashMap<>();
 
-    //NEVER call this. this should only get called once at post init to compile all recipes for fast access.
-    //After this is called, changes to recipe registry might break stuff.
+    // NEVER call this. this should only get called once at post init to compile all recipes for fast access.
+    // After this is called, changes to recipe registry might break stuff.
     public static void compileRecipes() {
         compiledRecipeArray = null;
 
         int totalNeeded = 0;
         for (TileAltar.AltarLevel level : recipes.keySet()) {
-            totalNeeded += recipes.get(level).size();
+            totalNeeded += recipes.get(level)
+                .size();
         }
         for (TileAltar.AltarLevel level : mtRecipes.keySet()) {
-            totalNeeded += mtRecipes.get(level).size();
+            totalNeeded += mtRecipes.get(level)
+                .size();
         }
 
         int i = 0;
@@ -69,25 +79,27 @@ public class AltarRecipeRegistry {
     }
 
     public static void cacheLocalRecipes() {
-        if(localFallbackCache.isEmpty()) {
+        if (localFallbackCache.isEmpty()) {
             for (TileAltar.AltarLevel al : TileAltar.AltarLevel.values()) {
                 localFallbackCache.put(al, new LinkedList<>());
-                localFallbackCache.get(al).addAll(recipes.get(al));
+                localFallbackCache.get(al)
+                    .addAll(recipes.get(al));
             }
         }
     }
 
     public static void loadFromFallback() {
-        if(!localFallbackCache.isEmpty()) {
+        if (!localFallbackCache.isEmpty()) {
             for (TileAltar.AltarLevel al : TileAltar.AltarLevel.values()) {
-                recipes.get(al).addAll(localFallbackCache.get(al));
+                recipes.get(al)
+                    .addAll(localFallbackCache.get(al));
             }
         }
     }
 
     @Nullable
     public static AbstractAltarRecipe getRecipe(int id) {
-        if(id < 0 || id >= compiledRecipeArray.length) return null;
+        if (id < 0 || id >= compiledRecipeArray.length) return null;
         return compiledRecipeArray[id];
     }
 
@@ -95,8 +107,10 @@ public class AltarRecipeRegistry {
      * Returns the Recipe that was removed if successful.
      */
     @Nullable
-    public static AbstractAltarRecipe removeFindRecipeByOutputAndLevel(ItemStack output, TileAltar.AltarLevel altarLevel) {
-        Iterator<AbstractAltarRecipe> iterator = recipes.get(altarLevel).iterator();
+    public static AbstractAltarRecipe removeFindRecipeByOutputAndLevel(ItemStack output,
+        TileAltar.AltarLevel altarLevel) {
+        Iterator<AbstractAltarRecipe> iterator = recipes.get(altarLevel)
+            .iterator();
         while (iterator.hasNext()) {
             AbstractAltarRecipe rec = iterator.next();
             ItemStack out = rec.getOutputForMatching();
@@ -134,8 +148,9 @@ public class AltarRecipeRegistry {
 
     public static <T extends AbstractAltarRecipe> T registerAltarRecipe(T recipe) {
         TileAltar.AltarLevel level = recipe.getNeededLevel();
-        recipes.get(level).add(recipe);
-        if(CraftingAccessManager.hasCompletedSetup()) {
+        recipes.get(level)
+            .add(recipe);
+        if (CraftingAccessManager.hasCompletedSetup()) {
             CraftingAccessManager.compile();
         }
         return recipe;
@@ -148,13 +163,14 @@ public class AltarRecipeRegistry {
         return cache;
     }
 
-
     @Nullable
     public static AbstractAltarRecipe findMatchingRecipe(TileAltar ta, boolean ignoreStarlightRequirement) {
         TileAltar.AltarLevel lowestAllowed = TileAltar.AltarLevel.DISCOVERY;
-        for (int i = ta.getAltarLevel().ordinal(); i >= 0; i--) {
+        for (int i = ta.getAltarLevel()
+            .ordinal(); i >= 0; i--) {
             TileAltar.AltarLevel lvl = TileAltar.AltarLevel.values()[i];
-            if(lvl.getMatcher().mbAllowsForCrafting(ta)) {
+            if (lvl.getMatcher()
+                .mbAllowsForCrafting(ta)) {
                 lowestAllowed = lvl;
                 break;
             }
@@ -162,36 +178,38 @@ public class AltarRecipeRegistry {
         for (int i = lowestAllowed.ordinal(); i >= 0; i--) {
             TileAltar.AltarLevel lvl = TileAltar.AltarLevel.values()[i];
             List<AbstractAltarRecipe> validRecipes = recipes.get(lvl);
-            if(validRecipes != null) {
+            if (validRecipes != null) {
                 for (AbstractAltarRecipe rec : validRecipes) {
-                    if(rec.matches(ta, ta.getInventoryHandler(), ignoreStarlightRequirement)) {
+                    if (rec.matches(ta, ta.getInventoryHandler(), ignoreStarlightRequirement)) {
                         return rec;
                     }
                 }
             }
             validRecipes = mtRecipes.get(lvl);
-            if(validRecipes != null) {
+            if (validRecipes != null) {
                 for (AbstractAltarRecipe rec : validRecipes) {
-                    if(rec.matches(ta, ta.getInventoryHandler(), ignoreStarlightRequirement)) {
+                    if (rec.matches(ta, ta.getInventoryHandler(), ignoreStarlightRequirement)) {
                         return rec;
                     }
                 }
             }
         }
         return null;
-        /*List<TileAltar.AltarLevel> levels = new ArrayList<>();
-        List<AbstractAltarRecipe> validRecipes = new LinkedList<>();
-        for (int i = 0; i < level.ordinal() + 1; i++) {
-            levels.add(TileAltar.AltarLevel.values()[i]);
-        }
-        for (TileAltar.AltarLevel valid : levels) {
-            validRecipes.addAll(recipes.get(valid));
-        }
-        for (AbstractAltarRecipe recipe : validRecipes) {
-            if(recipe.matches(ta)) {
-                return recipe;
-            }
-        }*/
+        /*
+         * List<TileAltar.AltarLevel> levels = new ArrayList<>();
+         * List<AbstractAltarRecipe> validRecipes = new LinkedList<>();
+         * for (int i = 0; i < level.ordinal() + 1; i++) {
+         * levels.add(TileAltar.AltarLevel.values()[i]);
+         * }
+         * for (TileAltar.AltarLevel valid : levels) {
+         * validRecipes.addAll(recipes.get(valid));
+         * }
+         * for (AbstractAltarRecipe recipe : validRecipes) {
+         * if(recipe.matches(ta)) {
+         * return recipe;
+         * }
+         * }
+         */
     }
 
     static {

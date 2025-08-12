@@ -1,16 +1,16 @@
 package hellfirepvp.astralsorcery.common.util;
 
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import java.util.LinkedList;
+import java.util.List;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
-
-import java.util.LinkedList;
-import java.util.List;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,8 +33,9 @@ public class BlockDropCaptureAssist {
         if (event.entity instanceof EntityItem && capturing) {
             ItemStack stack = ((EntityItem) event.entity).getEntityItem();
             event.setCanceled(true);
-            if(!expectCaptureStone) {
-                if(stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).field_150939_a.equals(Blocks.stone)) {
+            if (!expectCaptureStone) {
+                if (stack.getItem() instanceof ItemBlock
+                    && ((ItemBlock) stack.getItem()).field_150939_a.equals(Blocks.stone)) {
                     event.entity.setDead();
                     return;
                 }
@@ -45,7 +46,7 @@ public class BlockDropCaptureAssist {
     }
 
     public static void startCapturing(boolean expectStone) {
-        if(capturing) {
+        if (capturing) {
             throw new IllegalStateException("Tried to start capturing stacks while already capturing itemstacks... ?");
         }
         capturing = true;

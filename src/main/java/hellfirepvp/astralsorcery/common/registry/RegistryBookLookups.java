@@ -8,6 +8,16 @@
 
 package hellfirepvp.astralsorcery.common.registry;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.gui.journal.GuiJournalPages;
@@ -16,14 +26,6 @@ import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.data.research.ResearchNode;
 import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -39,11 +41,12 @@ public class RegistryBookLookups {
     @Nullable
     public static LookupInfo tryGetPage(EntityPlayer querying, Side side, ItemStack search) {
         for (ItemStack compare : lookupMap.keySet()) {
-            if(ItemUtils.stackEqualsNonNBT(search, compare)) {
+            if (ItemUtils.stackEqualsNonNBT(search, compare)) {
                 LookupInfo info = lookupMap.get(compare);
                 PlayerProgress prog = ResearchManager.getProgress(querying, side);
-                if(prog != null) {
-                    if(prog.getResearchProgression().contains(info.neededKnowledge) && info.node.canSee(prog)) {
+                if (prog != null) {
+                    if (prog.getResearchProgression()
+                        .contains(info.neededKnowledge) && info.node.canSee(prog)) {
                         return info;
                     }
                 }
@@ -54,16 +57,19 @@ public class RegistryBookLookups {
 
     @SideOnly(Side.CLIENT)
     public static void openLookupJournalPage(LookupInfo info) {
-        if(info == null) return;
+        if (info == null) return;
 
         GuiScreen current = Minecraft.getMinecraft().currentScreen;
-        if(current instanceof GuiJournalPages) {
-            if(((GuiJournalPages) current).getResearchNode().equals(info.node)) return;
+        if (current instanceof GuiJournalPages) {
+            if (((GuiJournalPages) current).getResearchNode()
+                .equals(info.node)) return;
         }
-        Minecraft.getMinecraft().displayGuiScreen(new GuiJournalPages(current, info.node, info.pageIndex));
+        Minecraft.getMinecraft()
+            .displayGuiScreen(new GuiJournalPages(current, info.node, info.pageIndex));
     }
 
-    public static void registerItemLookup(ItemStack stack, ResearchNode parentNode, int nodePage, ResearchProgression neededProgression) {
+    public static void registerItemLookup(ItemStack stack, ResearchNode parentNode, int nodePage,
+        ResearchProgression neededProgression) {
         lookupMap.put(stack, new LookupInfo(parentNode, nodePage, neededProgression));
     }
 

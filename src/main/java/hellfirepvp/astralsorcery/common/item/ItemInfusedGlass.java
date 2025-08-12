@@ -1,9 +1,9 @@
 package hellfirepvp.astralsorcery.common.item;
 
-import hellfirepvp.astralsorcery.common.constellation.IConstellation;
-import hellfirepvp.astralsorcery.common.constellation.starmap.ActiveStarMap;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
@@ -12,13 +12,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import com.mojang.realmsclient.gui.ChatFormatting;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
 import org.lwjgl.input.Keyboard;
 
-import javax.annotation.Nullable;
-import java.util.List;
+import com.mojang.realmsclient.gui.ChatFormatting;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.constellation.IConstellation;
+import hellfirepvp.astralsorcery.common.constellation.starmap.ActiveStarMap;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -36,7 +40,7 @@ public class ItemInfusedGlass extends Item {
         setUnlocalizedName("ItemInfusedGlass");
     }
 
-    //isEnchantable in 1.11.2 - that's also a better name for this method...
+    // isEnchantable in 1.11.2 - that's also a better name for this method...
     @Override
     public boolean isItemTool(ItemStack stack) {
         return true;
@@ -54,11 +58,11 @@ public class ItemInfusedGlass extends Item {
 
     @Override
     public void setDamage(ItemStack stack, int damage) {
-        if(damage < getDamage(stack)) return;
+        if (damage < getDamage(stack)) return;
         int lvl = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
-        if(lvl > 0) {
+        if (lvl > 0) {
             for (int i = 0; i < lvl; i++) {
-                if(itemRand.nextFloat() > 0.7) {
+                if (itemRand.nextFloat() > 0.7) {
                     return;
                 }
             }
@@ -75,17 +79,18 @@ public class ItemInfusedGlass extends Item {
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
         ActiveStarMap map = getMapEngravingInformations(stack);
-        if(map != null) {
-            if(Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54)) {
-                for(IConstellation c : map.getConstellations()) {
+        if (map != null) {
+            if (Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54)) {
+                for (IConstellation c : map.getConstellations()) {
                     String out = ChatFormatting.GRAY + "- " + ChatFormatting.BLUE + I18n.format(c.getUnlocalizedName());
-                    if(playerIn.capabilities.isCreativeMode) {
+                    if (playerIn.capabilities.isCreativeMode) {
                         out += ChatFormatting.LIGHT_PURPLE + " (Creative) " + (int) (map.getPercentage(c) * 100) + "%";
                     }
                     tooltip.add(out);
                 }
             } else {
-                tooltip.add(ChatFormatting.DARK_GRAY + ChatFormatting.ITALIC.toString() + I18n.format("misc.moreInformation"));
+                tooltip.add(
+                    ChatFormatting.DARK_GRAY + ChatFormatting.ITALIC.toString() + I18n.format("misc.moreInformation"));
             }
             tooltip.add("");
         }
@@ -94,27 +99,27 @@ public class ItemInfusedGlass extends Item {
     @Override
     public String getUnlocalizedName(ItemStack stack) {
         ActiveStarMap map = getMapEngravingInformations(stack);
-        if(map != null) {
+        if (map != null) {
             return super.getUnlocalizedName(stack) + ".active";
         }
         return super.getUnlocalizedName(stack);
     }
 
     public static void setMapEngravingInformations(ItemStack infusedGlassStack, ActiveStarMap map) {
-        NBTHelper.getPersistentData(infusedGlassStack).setTag("map", map.serialize());
+        NBTHelper.getPersistentData(infusedGlassStack)
+            .setTag("map", map.serialize());
     }
 
     @Nullable
     public static ActiveStarMap getMapEngravingInformations(ItemStack infusedGlassStack) {
         NBTTagCompound tag = NBTHelper.getPersistentData(infusedGlassStack);
-        if(!tag.hasKey("map")) return null;
+        if (!tag.hasKey("map")) return null;
         return ActiveStarMap.deserialize(tag.getCompoundTag("map"));
     }
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IIconRegister register)
-    {
+    public void registerIcons(IIconRegister register) {
         this.itemIcon = register.registerIcon("astralsorcery:glass_infused");
     }
 

@@ -8,7 +8,27 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes;
 
+import java.awt.Color;
+import java.util.List;
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+
 import com.google.common.collect.Lists;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
@@ -30,25 +50,6 @@ import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -59,16 +60,9 @@ import java.util.Random;
  */
 public class TraitRecipe extends ConstellationRecipe implements ICraftingProgress {
 
-    public static final BlockPos[] offsetRelays = new BlockPos[] {
-            new BlockPos(0, 0, 3),
-            new BlockPos(2, 0, 2),
-            new BlockPos(3, 0, 0),
-            new BlockPos(2, 0, -2),
-            new BlockPos(0, 0, -3),
-            new BlockPos(-2, 0, -2),
-            new BlockPos(-3, 0, 0),
-            new BlockPos(-2, 0, 2)
-    };
+    public static final BlockPos[] offsetRelays = new BlockPos[] { new BlockPos(0, 0, 3), new BlockPos(2, 0, 2),
+        new BlockPos(3, 0, 0), new BlockPos(2, 0, -2), new BlockPos(0, 0, -3), new BlockPos(-2, 0, -2),
+        new BlockPos(-3, 0, 0), new BlockPos(-2, 0, 2) };
 
     private List<ItemHandle> additionallyRequiredStacks = Lists.newLinkedList();
     private IConstellation requiredConstellation = null;
@@ -152,9 +146,10 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
     }
 
     @Override
-    public boolean tryProcess(TileAltar altar, ActiveCraftingTask runningTask, NBTTagCompound craftingData, int activeCraftingTick) {
+    public boolean tryProcess(TileAltar altar, ActiveCraftingTask runningTask, NBTTagCompound craftingData,
+        int activeCraftingTick) {
         List<CraftingFocusStack> stacks = collectCurrentStacks(craftingData);
-        if(!matchFocusStacks(altar, stacks)) {
+        if (!matchFocusStacks(altar, stacks)) {
             return false;
         }
 
@@ -164,17 +159,17 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
         int cttPart = part / required;
         for (int i = 0; i < required; i++) {
             int timing = (i * cttPart) + offset;
-            if(activeCraftingTick >= timing) {
+            if (activeCraftingTick >= timing) {
                 CraftingFocusStack found = null;
                 for (CraftingFocusStack stack : stacks) {
-                    if(stack.stackIndex == i) {
+                    if (stack.stackIndex == i) {
                         found = stack;
                         break;
                     }
                 }
-                if(found == null) {
+                if (found == null) {
                     BlockPos next = findUnusedRelay(altar, stacks);
-                    if(next != null) {
+                    if (next != null) {
                         CraftingFocusStack stack = new CraftingFocusStack(i, next);
                         stacks.add(stack);
                         storeCurrentStacks(craftingData, stacks);
@@ -187,12 +182,13 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
     }
 
     @Override
-    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler, boolean ignoreStarlightRequirement) {
+    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler,
+        boolean ignoreStarlightRequirement) {
         IConstellation req = getRequiredConstellation();
-        if(req != null) {
+        if (req != null) {
             IConstellation focus = altar.getFocusedConstellation();
-            if(focus != null) {
-                if(!req.equals(focus)) return false;
+            if (focus != null) {
+                if (!req.equals(focus)) return false;
             }
         }
         return super.matches(altar, invHandler, ignoreStarlightRequirement);
@@ -203,74 +199,89 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
     public ResearchProgression getRequiredProgression() {
         return ResearchProgression.RADIANCE;
     }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void onCraftClientTick(TileAltar altar, ActiveCraftingTask.CraftingState state, long tick, Random rand) {
         super.onCraftClientTick(altar, state, tick, rand);
 
         ActiveCraftingTask act = altar.getActiveCraftingTask();
-        if(act != null) {
+        if (act != null) {
             List<CraftingFocusStack> stacks = collectCurrentStacks(act.getCraftingData());
             for (CraftingFocusStack stack : stacks) {
-                if(stack.stackIndex < 0 || stack.stackIndex >= additionallyRequiredStacks.size()) continue; //Duh
+                if (stack.stackIndex < 0 || stack.stackIndex >= additionallyRequiredStacks.size()) continue; // Duh
 
                 ItemHandle required = additionallyRequiredStacks.get(stack.stackIndex);
                 BlockPos pos = new BlockPos(altar.xCoord, altar.yCoord, altar.zCoord);
-                TileAttunementRelay tar = MiscUtils.getTileAt(altar.getWorldObj(), pos.add(stack.offset), TileAttunementRelay.class, true);
-                if(tar != null) { //If it's null then the server messed up or we're desynced..
-                    ItemStack found = tar.getInventoryHandler().getStackInSlot(0);
-                    if(found != null && found.getItem() != null && required.matchCrafting(found)) {
+                TileAttunementRelay tar = MiscUtils
+                    .getTileAt(altar.getWorldObj(), pos.add(stack.offset), TileAttunementRelay.class, true);
+                if (tar != null) { // If it's null then the server messed up or we're desynced..
+                    ItemStack found = tar.getInventoryHandler()
+                        .getStackInSlot(0);
+                    if (found != null && found.getItem() != null && required.matchCrafting(found)) {
                         Color c = ItemColorizationHelper.getDominantColorFromItemStack(found);
-                        if(c == null) {
+                        if (c == null) {
                             c = BlockCollectorCrystal.CollectorCrystalType.CELESTIAL_CRYSTAL.displayColor;
                         }
-                        if(ClientScheduler.getClientTick() % 35 == 0) {
-                            EffectLightbeam beam = EffectHandler.getInstance().lightbeam(
+                        if (ClientScheduler.getClientTick() % 35 == 0) {
+                            EffectLightbeam beam = EffectHandler.getInstance()
+                                .lightbeam(
                                     new Vector3(tar).add(0.5, 0.1, 0.5),
                                     new Vector3(altar).add(0.5, 4.5, 0.5),
                                     0.8);
                             beam.setColorOverlay(c);
                         }
-                        if(rand.nextBoolean()) {
+                        if (rand.nextBoolean()) {
                             Vector3 at = new Vector3(tar);
                             at.add(rand.nextFloat() * 0.8 + 0.1, 0, rand.nextFloat() * 0.8 + 0.1);
-                            EntityFXFacingParticle p = EffectHelper.genericFlareParticle(at.getX(), at.getY(), at.getZ());
+                            EntityFXFacingParticle p = EffectHelper
+                                .genericFlareParticle(at.getX(), at.getY(), at.getZ());
                             p.setAlphaMultiplier(0.7F);
                             p.setMaxAge((int) (30 + rand.nextFloat() * 50));
-                            p.gravity(0.01).scale(0.3F + rand.nextFloat() * 0.1F);
+                            p.gravity(0.01)
+                                .scale(0.3F + rand.nextFloat() * 0.1F);
                             p.setColor(c);
-                            if(rand.nextInt(3) == 0) {
-                                p.gravity(0.004).scale(0.1F + rand.nextFloat() * 0.1F);
+                            if (rand.nextInt(3) == 0) {
+                                p.gravity(0.004)
+                                    .scale(0.1F + rand.nextFloat() * 0.1F);
                                 p.setColor(Color.WHITE);
                             }
                         }
                     } else {
                         List<ItemStack> stacksApplicable = required.getApplicableItemsForRender();
-                        if(stacksApplicable.size() > 0) {
+                        if (stacksApplicable.size() > 0) {
                             int mod = (int) (ClientScheduler.getClientTick() % (stacksApplicable.size() * 60));
-                            ItemStack element = stacksApplicable.get(MathHelper.floor_double(
-                                    MathHelper.clamp_double(stacksApplicable.size() * (mod / (stacksApplicable.size() * 60)), 0, stacksApplicable.size() - 1)));
+                            ItemStack element = stacksApplicable.get(
+                                MathHelper.floor_double(
+                                    MathHelper.clamp_double(
+                                        stacksApplicable.size() * (mod / (stacksApplicable.size() * 60)),
+                                        0,
+                                        stacksApplicable.size() - 1)));
                             Color c = ItemColorizationHelper.getDominantColorFromItemStack(element);
-                            if(c == null) {
+                            if (c == null) {
                                 c = BlockCollectorCrystal.CollectorCrystalType.CELESTIAL_CRYSTAL.displayColor;
                             }
-                            if(ClientScheduler.getClientTick() % 35 == 0) {
-                                EffectLightbeam beam = EffectHandler.getInstance().lightbeam(
+                            if (ClientScheduler.getClientTick() % 35 == 0) {
+                                EffectLightbeam beam = EffectHandler.getInstance()
+                                    .lightbeam(
                                         new Vector3(tar).add(0.5, 0.1, 0.5),
                                         new Vector3(altar).add(0.5, 4.5, 0.5),
                                         0.8);
                                 beam.setColorOverlay(c);
                             }
-                            if(rand.nextBoolean()) {
+                            if (rand.nextBoolean()) {
                                 Vector3 at = new Vector3(tar);
                                 at.add(rand.nextFloat() * 0.8 + 0.1, 0, rand.nextFloat() * 0.8 + 0.1);
-                                EntityFXFacingParticle p = EffectHelper.genericFlareParticle(at.getX(), at.getY(), at.getZ());
+                                EntityFXFacingParticle p = EffectHelper
+                                    .genericFlareParticle(at.getX(), at.getY(), at.getZ());
                                 p.setAlphaMultiplier(0.7F);
                                 p.setMaxAge((int) (30 + rand.nextFloat() * 50));
-                                p.gravity(0.01).scale(0.3F + rand.nextFloat() * 0.1F);
+                                p.gravity(0.01)
+                                    .scale(0.3F + rand.nextFloat() * 0.1F);
                                 p.setColor(c);
-                                if(rand.nextInt(3) == 0) {
-                                    p.gravity(0.004).scale(0.1F + rand.nextFloat() * 0.1F);
+                                if (rand.nextInt(3) == 0) {
+                                    p.gravity(0.004)
+                                        .scale(0.1F + rand.nextFloat() * 0.1F);
                                     p.setColor(Color.WHITE);
                                 }
                             }
@@ -286,12 +297,13 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
         List<BlockPos> eligableRelayOffsets = Lists.newLinkedList();
         for (int xx = -3; xx <= 3; xx++) {
             for (int zz = -3; zz <= 3; zz++) {
-                if(xx == 0 && zz == 0) continue; //Not that it matters tho
+                if (xx == 0 && zz == 0) continue; // Not that it matters tho
 
                 BlockPos offset = new BlockPos(xx, 0, zz);
                 BlockPos pos = new BlockPos(center.xCoord, center.yCoord, center.zCoord);
-                TileAttunementRelay tar = MiscUtils.getTileAt(center.getWorldObj(), pos.add(offset), TileAttunementRelay.class, true);
-                if(tar != null) {
+                TileAttunementRelay tar = MiscUtils
+                    .getTileAt(center.getWorldObj(), pos.add(offset), TileAttunementRelay.class, true);
+                if (tar != null) {
                     eligableRelayOffsets.add(offset);
                 }
             }
@@ -299,7 +311,7 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
         for (CraftingFocusStack stack : found) {
             eligableRelayOffsets.remove(stack.offset);
         }
-        if(eligableRelayOffsets.size() <= 0) {
+        if (eligableRelayOffsets.size() <= 0) {
             return null;
         }
         return eligableRelayOffsets.get(center.getWorldObj().rand.nextInt(eligableRelayOffsets.size()));
@@ -308,15 +320,17 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
     protected boolean matchFocusStacks(TileAltar altar, List<CraftingFocusStack> stacks) {
         for (CraftingFocusStack stack : stacks) {
             int index = stack.stackIndex;
-            if(index < 0 || index >= additionallyRequiredStacks.size()) continue;
+            if (index < 0 || index >= additionallyRequiredStacks.size()) continue;
             ItemHandle required = additionallyRequiredStacks.get(index);
             BlockPos pos = new BlockPos(altar.xCoord, altar.yCoord, altar.zCoord);
-            TileAttunementRelay relay = MiscUtils.getTileAt(altar.getWorldObj(), pos.add(stack.offset), TileAttunementRelay.class, true);
-            if(relay == null) {
+            TileAttunementRelay relay = MiscUtils
+                .getTileAt(altar.getWorldObj(), pos.add(stack.offset), TileAttunementRelay.class, true);
+            if (relay == null) {
                 return false;
             }
-            ItemStack in = relay.getInventoryHandler().getStackInSlot(0);
-            if(in == null || in.getItem() == null || !required.matchCrafting(in)) {
+            ItemStack in = relay.getInventoryHandler()
+                .getStackInSlot(0);
+            if (in == null || in.getItem() == null || !required.matchCrafting(in)) {
                 return false;
             }
         }
@@ -348,7 +362,7 @@ public class TraitRecipe extends ConstellationRecipe implements ICraftingProgres
 
     protected static class CraftingFocusStack {
 
-        protected final Integer stackIndex; //Index of required stack
+        protected final Integer stackIndex; // Index of required stack
         protected final BlockPos offset;
 
         protected CraftingFocusStack(Integer stackIndex, BlockPos offset) {

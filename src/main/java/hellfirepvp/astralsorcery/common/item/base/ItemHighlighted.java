@@ -8,9 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.item.base;
 
-import net.minecraft.item.ItemStack;
+import java.awt.Color;
 
-import java.awt.*;
+import net.minecraft.item.ItemStack;
 
 /**
  * This class is part of the Astral Sorcery Mod

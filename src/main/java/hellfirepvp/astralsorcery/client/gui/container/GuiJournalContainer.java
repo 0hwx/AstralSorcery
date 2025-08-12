@@ -8,15 +8,16 @@
 
 package hellfirepvp.astralsorcery.client.gui.container;
 
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
+
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.container.ContainerJournal;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -27,7 +28,8 @@ import net.minecraft.item.ItemStack;
  */
 public class GuiJournalContainer extends GuiContainer {
 
-    private static BindableResource texJournalContainer = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiJStorageBook");
+    private static BindableResource texJournalContainer = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiJStorageBook");
 
     public GuiJournalContainer(InventoryPlayer playerInv, ItemStack journal, int journalIndex) {
         super(new ContainerJournal(playerInv, journal, journalIndex));
@@ -55,13 +57,13 @@ public class GuiJournalContainer extends GuiContainer {
         tess.addVertexWithUV(offsetX + width, offsetY, zLevel, 1, 0);
         tess.addVertexWithUV(offsetX, offsetY, zLevel, 0, 0);
         tess.draw();
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
-//        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
-//        tes.draw();
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(offsetX, offsetY + height, zLevel).tex(0, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY, zLevel).tex(1, 0).endVertex();
+        // vb.pos(offsetX, offsetY, zLevel).tex(0, 0).endVertex();
+        // tes.draw();
     }
 
 }

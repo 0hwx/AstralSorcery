@@ -8,6 +8,8 @@
 
 package hellfirepvp.astralsorcery.client.util;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
@@ -18,8 +20,6 @@ import net.minecraft.stats.StatFileWriter;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
-
-import javax.annotation.Nullable;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -47,10 +47,10 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
         delegate.setPlayerCapabilities(player);
     }
 
-//    @Override
-//    public boolean isSpectator() {
-//        return delegate.isSpectator();
-//    }
+    // @Override
+    // public boolean isSpectator() {
+    // return delegate.isSpectator();
+    // }
 
     @Override
     public void setGameType(WorldSettings.GameType type) {
@@ -74,7 +74,7 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
 
     @Override
     public void clickBlock(int x, int y, int z, int side) {
-         delegate.clickBlock(x, y, z, side);
+        delegate.clickBlock(x, y, z, side);
     }
 
     @Override
@@ -97,10 +97,10 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
         delegate.updateController();
     }
 
-//    @Override
-//    public boolean getIsHittingBlock() {
-//        return delegate.getIsHittingBlock();
-//    }
+    // @Override
+    // public boolean getIsHittingBlock() {
+    // return delegate.getIsHittingBlock();
+    // }
 
     @Override
     public boolean sendUseItem(EntityPlayer player, World worldIn, ItemStack stack) {
@@ -108,7 +108,8 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
     }
 
     @Override
-    public boolean onPlayerRightClick(EntityPlayer player, World worldIn, @Nullable ItemStack stack, int x, int y, int z, int side, Vec3 hitVector){
+    public boolean onPlayerRightClick(EntityPlayer player, World worldIn, @Nullable ItemStack stack, int x, int y,
+        int z, int side, Vec3 hitVector) {
         return delegate.onPlayerRightClick(player, worldIn, stack, x, y, z, side, hitVector);
     }
 
@@ -127,10 +128,11 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
         return delegate.interactWithEntitySendPacket(player, target);
     }
 
-//    @Override
-//    public EnumActionResult interactWithEntity(EntityPlayer player, Entity target, RayTraceResult raytrace, @Nullable ItemStack heldItem, EnumHand hand) {
-//        return delegate.interactWithEntity(player, target, raytrace, heldItem, hand);
-//    }
+    // @Override
+    // public EnumActionResult interactWithEntity(EntityPlayer player, Entity target, RayTraceResult raytrace, @Nullable
+    // ItemStack heldItem, EnumHand hand) {
+    // return delegate.interactWithEntity(player, target, raytrace, heldItem, hand);
+    // }
 
     @Override
     public ItemStack windowClick(int windowId, int slotId, int mouseButton, int type, EntityPlayer player) {
@@ -177,23 +179,23 @@ public class ExtendedChainingPlayerController extends PlayerControllerMP {
         return delegate.func_110738_j();
     }
 
-//    @Override
-//    public boolean isSpectatorMode() {
-//        return delegate.isSpectatorMode();
-//    }
+    // @Override
+    // public boolean isSpectatorMode() {
+    // return delegate.isSpectatorMode();
+    // }
 
     @Override
     public boolean extendedReach() {
         return delegate.extendedReach();
     }
 
-//    @Override
-//    public GameType getCurrentGameType() {
-//        return delegate.getCurrentGameType();
-//    }
-//
-//    @Override
-//    public void pickItem(int index) {
-//        delegate.pickItem(index);
-//    }
+    // @Override
+    // public GameType getCurrentGameType() {
+    // return delegate.getCurrentGameType();
+    // }
+    //
+    // @Override
+    // public void pickItem(int index) {
+    // delegate.pickItem(index);
+    // }
 }

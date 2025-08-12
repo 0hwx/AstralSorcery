@@ -8,6 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.crafting.infusion.recipes;
 
+import java.awt.Color;
+import java.util.Random;
+
+import net.minecraft.item.ItemStack;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
@@ -18,12 +25,6 @@ import hellfirepvp.astralsorcery.common.tile.TileStarlightInfuser;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.item.ItemStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import java.awt.*;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -51,19 +52,29 @@ public class BasicInfusionRecipe extends AbstractInfusionRecipe {
     public void onCraftClientTick(TileStarlightInfuser infuser, long tick, Random rand) {
         super.onCraftClientTick(infuser, tick, rand);
 
-        if(rand.nextInt(10) == 0) {
+        if (rand.nextInt(10) == 0) {
             Vector3 from = new Vector3(infuser).add(0.5, 0.3, 0.5);
             MiscUtils.applyRandomOffset(from, rand, 0.4F);
-            EffectLightbeam lightbeam = EffectHandler.getInstance().lightbeam(from.clone().addY(4 + rand.nextInt(2)), from, 1);
+            EffectLightbeam lightbeam = EffectHandler.getInstance()
+                .lightbeam(
+                    from.clone()
+                        .addY(4 + rand.nextInt(2)),
+                    from,
+                    1);
             lightbeam.setMaxAge(64);
         }
 
-        BlockPos randPos = TileStarlightInfuser.offsetsLiquidStarlight[rand.nextInt(TileStarlightInfuser.offsetsLiquidStarlight.length)];
+        BlockPos randPos = TileStarlightInfuser.offsetsLiquidStarlight[rand
+            .nextInt(TileStarlightInfuser.offsetsLiquidStarlight.length)];
         Vector3 from = new Vector3(infuser).add(randPos.getX(), randPos.getY(), randPos.getZ());
         from.add(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
-        Vector3 dir = new Vector3(infuser).add(0.5, 1.6, 0.5).subtract(from);
+        Vector3 dir = new Vector3(infuser).add(0.5, 1.6, 0.5)
+            .subtract(from);
         EntityFXFacingParticle p = EffectHelper.genericFlareParticle(from.getX(), from.getY(), from.getZ());
-        p.setColor(Color.WHITE).scale(0.2F + rand.nextFloat() * 0.1F).gravity(0.004).motion(dir.getX() / 40D, dir.getY() / 40D, dir.getZ() / 40D);
+        p.setColor(Color.WHITE)
+            .scale(0.2F + rand.nextFloat() * 0.1F)
+            .gravity(0.004)
+            .motion(dir.getX() / 40D, dir.getY() / 40D, dir.getZ() / 40D);
     }
 
 }

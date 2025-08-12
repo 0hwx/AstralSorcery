@@ -8,15 +8,18 @@
 
 package hellfirepvp.astralsorcery.common.item.base;
 
-import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
-import net.minecraft.item.ItemStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
+import java.util.Random;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Random;
+
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -42,9 +45,11 @@ public interface IGrindable {
         GL11.glTranslated(0.55, 0.75, 0.6);
         GL11.glRotated(125, 1, 0, 0);
         GL11.glRotated(180, 0, 0, 1);
-        /*GL11.glRotated(180, 0, 1, 0);
-        GL11.glRotated(35, 1, 0, 0);
-        GL11.glRotated(15, 0, 0, 1);*/
+        /*
+         * GL11.glRotated(180, 0, 1, 0);
+         * GL11.glRotated(35, 1, 0, 0);
+         * GL11.glRotated(15, 0, 0, 1);
+         */
     }
 
     public static class GrindResult {
@@ -86,10 +91,10 @@ public interface IGrindable {
 
     public static enum ResultType {
 
-        SUCCESS, //Successfully grinded something
-        ITEMCHANGE, //Successfully grinded something, other item now on the grindstone
-        FAIL_SILENT, //Did nothing, but nothing went wrong. just.. uuuh.. nothing.
-        FAIL_BREAK_ITEM //The item broke while grinding.
+        SUCCESS, // Successfully grinded something
+        ITEMCHANGE, // Successfully grinded something, other item now on the grindstone
+        FAIL_SILENT, // Did nothing, but nothing went wrong. just.. uuuh.. nothing.
+        FAIL_BREAK_ITEM // The item broke while grinding.
 
     }
 

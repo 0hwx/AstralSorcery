@@ -18,7 +18,7 @@ import net.minecraft.potion.PotionEffect;
 public class EnchantmentNightVision extends EnchantmentPlayerWornTick {
 
     public EnchantmentNightVision() {
-        super("as.nightvision", 100,1, EnumEnchantmentType.armor_head);
+        super("as.nightvision", 100, 1, EnumEnchantmentType.armor_head);
     }
 
     @Override
@@ -28,8 +28,9 @@ public class EnchantmentNightVision extends EnchantmentPlayerWornTick {
 
     @Override
     public void func_151368_a(EntityLivingBase user, Entity target, int level) {
-        if(target instanceof EntityLivingBase) {
-            ((EntityLivingBase) target).addPotionEffect(new PotionEffect(Potion.nightVision.getId(), 300, level - 1, true));
+        if (target instanceof EntityLivingBase) {
+            ((EntityLivingBase) target)
+                .addPotionEffect(new PotionEffect(Potion.nightVision.getId(), 300, level - 1, true));
         }
     }
 

@@ -8,11 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.registry.multiblock;
 
-import hellfirepvp.astralsorcery.common.block.BlockBlackMarble;
-import hellfirepvp.astralsorcery.common.block.BlockMarble;
+import net.minecraft.block.Block;
+
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
-import net.minecraft.block.Block;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -29,21 +28,24 @@ public class MultiblockStarlightRelay extends PatternBlockArray {
 
     private void load() {
         Block marble = BlocksAS.blockMarble;
-        Block chiseled = marble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
-        Block arch = marble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
-        Block sooty = BlocksAS.blockBlackMarble;//.getDefaultState().withProperty(BlockBlackMarble.BLACK_MARBLE_TYPE, BlockBlackMarble.BlackMarbleBlockType.RAW);
+        Block chiseled = marble;// .getDefaultState().withProperty(BlockMarble.MARBLE_TYPE,
+                                // BlockMarble.MarbleBlockType.CHISELED);
+        Block arch = marble;// .getDefaultState().withProperty(BlockMarble.MARBLE_TYPE,
+                            // BlockMarble.MarbleBlockType.ARCH);
+        Block sooty = BlocksAS.blockBlackMarble;// .getDefaultState().withProperty(BlockBlackMarble.BLACK_MARBLE_TYPE,
+                                                // BlockBlackMarble.BlackMarbleBlockType.RAW);
 
-        addBlock(0, 0, 0, BlocksAS.attunementRelay);//.getDefaultState());
+        addBlock(0, 0, 0, BlocksAS.attunementRelay);// .getDefaultState());
 
         addBlock(-1, -1, -1, chiseled);
-        addBlock( 1, -1, -1, chiseled);
-        addBlock( 1, -1,  1, chiseled);
-        addBlock(-1, -1,  1, chiseled);
+        addBlock(1, -1, -1, chiseled);
+        addBlock(1, -1, 1, chiseled);
+        addBlock(-1, -1, 1, chiseled);
 
-        addBlock(-1, -1,  0, arch);
-        addBlock( 1, -1,  0, arch);
-        addBlock( 0, -1,  1, arch);
-        addBlock( 0, -1, -1, arch);
+        addBlock(-1, -1, 0, arch);
+        addBlock(1, -1, 0, arch);
+        addBlock(0, -1, 1, arch);
+        addBlock(0, -1, -1, arch);
         addBlock(0, -1, 0, sooty);
     }
 

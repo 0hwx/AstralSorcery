@@ -8,7 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.world;
 
-import hellfirepvp.astralsorcery.common.data.DataWorldSkyHandlers;
+import java.util.Random;
+
+import net.minecraft.world.World;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.config.Configuration;
+
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.data.config.entry.WorldGenEntry;
 import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
@@ -16,12 +21,6 @@ import hellfirepvp.astralsorcery.common.data.world.data.StructureGenBuffer;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.struct.StructureBlockArray;
 import hellfirepvp.astralsorcery.common.world.structure.WorldGenAttributeStructure;
-import net.minecraft.world.World;
-import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.config.Configuration;
-import cpw.mods.fml.relauncher.Side;
-
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,14 +34,17 @@ public abstract class WorldGenAttributeCommon extends WorldGenAttribute {
     protected final WorldGenEntry cfgEntry;
     private final boolean onlyGenerateInSkyDimensions;
 
-    public WorldGenAttributeCommon(int attributeVersion, boolean onlyGenerateInSkyDimensions, String entry, BiomeDictionary.Type... types) {
+    public WorldGenAttributeCommon(int attributeVersion, boolean onlyGenerateInSkyDimensions, String entry,
+        BiomeDictionary.Type... types) {
         this(attributeVersion, 140, onlyGenerateInSkyDimensions, entry, types);
     }
 
-    public WorldGenAttributeCommon(int attributeVersion, int defaultChance, boolean onlyGenerateInSkyDimensions, String entry, BiomeDictionary.Type... types) {
+    public WorldGenAttributeCommon(int attributeVersion, int defaultChance, boolean onlyGenerateInSkyDimensions,
+        String entry, BiomeDictionary.Type... types) {
         super(attributeVersion);
         this.onlyGenerateInSkyDimensions = onlyGenerateInSkyDimensions;
         this.cfgEntry = new WorldGenEntry(entry, defaultChance, types) {
+
             @Override
             public void loadFromConfig(Configuration cfg) {
                 super.loadFromConfig(cfg);
@@ -54,14 +56,14 @@ public abstract class WorldGenAttributeCommon extends WorldGenAttribute {
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world) {
-        if(canGenerateAtAll(chunkX, chunkZ, world, random)) {
+        if (canGenerateAtAll(chunkX, chunkZ, world, random)) {
             BlockPos pos = getGenerationPosition(chunkX, chunkZ, world, random);
             tryGenerateAtPosition(pos, world, random);
         }
     }
 
     public void tryGenerateAtPosition(BlockPos pos, World world, Random random) {
-        if(fulfillsSpecificConditions(pos, world, random)) {
+        if (fulfillsSpecificConditions(pos, world, random)) {
             generate(pos, world, random);
         }
     }
@@ -75,16 +77,19 @@ public abstract class WorldGenAttributeCommon extends WorldGenAttribute {
     public abstract BlockPos getGenerationPosition(int chX, int chZ, World world, Random rand);
 
     public boolean canGenerateAtAll(int chX, int chZ, World world, Random rand) {
-        if(!cfgEntry.shouldGenerate()) return false;
-        if(onlyGenerateInSkyDimensions && !Config.worldGenDimWhitelist.contains(world.provider.dimensionId)) return false;
+        if (!cfgEntry.shouldGenerate()) return false;
+        if (onlyGenerateInSkyDimensions && !Config.worldGenDimWhitelist.contains(world.provider.dimensionId))
+            return false;
         double chanceMultiplier = 1F;
-        if(Config.respectIdealDistances && this instanceof WorldGenAttributeStructure) {
+        if (Config.respectIdealDistances && this instanceof WorldGenAttributeStructure) {
             StructureGenBuffer.StructureType type = ((WorldGenAttributeStructure) this).getStructureType();
             StructureGenBuffer buf = WorldCacheManager.getOrLoadData(world, WorldCacheManager.SaveKey.STRUCTURE_GEN);
             BlockPos pos = new BlockPos(chX * 16, 0, chZ * 16);
-            double dst = buf.getDstToClosest(type, new BlockPos(pos.getX(), world.getTopSolidOrLiquidBlock(pos.getX(), pos.getZ()), pos.getZ()));
-            if(dst != -1) {
-                if(dst < 32) {
+            double dst = buf.getDstToClosest(
+                type,
+                new BlockPos(pos.getX(), world.getTopSolidOrLiquidBlock(pos.getX(), pos.getZ()), pos.getZ()));
+            if (dst != -1) {
+                if (dst < 32) {
                     return false;
                 }
                 double ideal = ((WorldGenAttributeStructure) this).getIdealDistance();

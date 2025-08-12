@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.crafting;
 
+import javax.annotation.Nonnull;
+
+import net.minecraft.entity.player.EntityPlayer;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
-import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -38,12 +39,14 @@ public interface IGatedRecipe {
 
         default public boolean hasProgressionServer(EntityPlayer player) {
             PlayerProgress progress = ResearchManager.getProgress(player);
-            return progress != null && progress.getResearchProgression().contains(getRequiredProgression());
+            return progress != null && progress.getResearchProgression()
+                .contains(getRequiredProgression());
         }
 
         @SideOnly(Side.CLIENT)
         default public boolean hasProgressionClient() {
-            return ResearchManager.clientProgress.getResearchProgression().contains(getRequiredProgression());
+            return ResearchManager.clientProgress.getResearchProgression()
+                .contains(getRequiredProgression());
         }
 
     }

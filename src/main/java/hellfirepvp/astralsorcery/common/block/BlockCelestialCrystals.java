@@ -8,17 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.common.block.network.IBlockStarlightRecipient;
-import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
-import hellfirepvp.astralsorcery.common.item.ItemCraftingComponent;
-import hellfirepvp.astralsorcery.common.item.crystal.base.ItemRockCrystalBase;
-import hellfirepvp.astralsorcery.common.network.PacketChannel;
-import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.tile.TileCelestialCrystals;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.MiscUtils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -34,13 +27,22 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import com.google.common.collect.Lists;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.block.network.IBlockStarlightRecipient;
+import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
+import hellfirepvp.astralsorcery.common.item.ItemCraftingComponent;
+import hellfirepvp.astralsorcery.common.item.crystal.base.ItemRockCrystalBase;
+import hellfirepvp.astralsorcery.common.network.PacketChannel;
+import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.tile.TileCelestialCrystals;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.MiscUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -59,8 +61,9 @@ public class BlockCelestialCrystals extends BlockContainer implements IBlockStar
     public static AxisAlignedBB bbStage3 = AxisAlignedBB.getBoundingBox(0.1, 0.0, 0.1, 0.9, 0.6, 0.9);
     public static AxisAlignedBB bbStage4 = AxisAlignedBB.getBoundingBox(0.1, 0.0, 0.1, 0.9, 0.7, 0.9);
 
-//    public static int STAGE = PropertyInteger.create("stage", 0, 4);
-    public static final int STAGE = 4;  // Maximum stage value (from 0 to 4)
+    // public static int STAGE = PropertyInteger.create("stage", 0, 4);
+    public static final int STAGE = 4; // Maximum stage value (from 0 to 4)
+
     public BlockCelestialCrystals() {
         super(Material.rock);
         setBlockName("BlockCelestialCrystals");
@@ -68,15 +71,15 @@ public class BlockCelestialCrystals extends BlockContainer implements IBlockStar
         setHarvestLevel("pickaxe", 2);
         setResistance(30.0F);
         setLightLevel(0.4F);
-setStepSound(soundTypeStone);
+        setStepSound(soundTypeStone);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
-//        setDefaultState(this.blockState.getBaseState().withProperty(STAGE, 0));
+        // setDefaultState(this.blockState.getBaseState().withProperty(STAGE, 0));
     }
 
-//    @Override
-//    public boolean causesSuffocation() {
-//        return false;
-//    }
+    // @Override
+    // public boolean causesSuffocation() {
+    // return false;
+    // }
 
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
@@ -117,37 +120,42 @@ setStepSound(soundTypeStone);
     @Override
     public boolean canPlaceBlockAt(World worldIn, int x, int y, int z) {
         boolean replaceable = super.canPlaceBlockAt(worldIn, x, y, z);
-        if(replaceable) {
+        if (replaceable) {
             BlockPos down = new BlockPos(x, y, z).down();
-            if(!worldIn.isSideSolid(down.getX(), down.getY(), down.getZ(), ForgeDirection.UP))
-                replaceable = false;
+            if (!worldIn.isSideSolid(down.getX(), down.getY(), down.getZ(), ForgeDirection.UP)) replaceable = false;
         }
         return replaceable;
     }
 
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
-        return super.getPickBlock(target, world, x, y, z, player); //Waila fix. wtf. why waila. why.
+        return super.getPickBlock(target, world, x, y, z, player); // Waila fix. wtf. why waila. why.
     }
 
     @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
         List<ItemStack> drops = Lists.newLinkedList();
         drops.add(ItemCraftingComponent.MetaType.STARDUST.asStack());
         BlockPos pos = new BlockPos(x, y, z);
         int stage = MathHelper.clamp_int(metadata, 0, STAGE);
         switch (stage) {
             case 4:
-                if(world != null && world instanceof World && checkSafety((World) world, pos)) {
-                    if(fortune > 0 || rand.nextInt(2) == 0) {
+                if (world != null && world instanceof World && checkSafety((World) world, pos)) {
+                    if (fortune > 0 || rand.nextInt(2) == 0) {
                         drops.add(ItemCraftingComponent.MetaType.STARDUST.asStack());
                     }
                     drops.add(ItemRockCrystalBase.createRandomCelestialCrystal());
-                    Block down = world.getBlock(pos.down().getX(), pos.down().getY(), pos.down().getZ());
-                    if(down instanceof BlockCustomOre &&
-                            down.damageDropped(metadata) == (BlockCustomOre.OreType.STARMETAL.getMeta()) &&
-                            rand.nextInt(3) == 0) {
-                        drops.add(ItemRockCrystalBase.createRandomCelestialCrystal()); //Lucky~~
+                    Block down = world.getBlock(
+                        pos.down()
+                            .getX(),
+                        pos.down()
+                            .getY(),
+                        pos.down()
+                            .getZ());
+                    if (down instanceof BlockCustomOre
+                        && down.damageDropped(metadata) == (BlockCustomOre.OreType.STARMETAL.getMeta())
+                        && rand.nextInt(3) == 0) {
+                        drops.add(ItemRockCrystalBase.createRandomCelestialCrystal()); // Lucky~~
                     }
                 }
                 break;
@@ -161,13 +169,27 @@ setStepSound(soundTypeStone);
     }
 
     @Override
-    public void receiveStarlight(World world, Random rand, BlockPos pos, IWeakConstellation starlightType, double amount) {
+    public void receiveStarlight(World world, Random rand, BlockPos pos, IWeakConstellation starlightType,
+        double amount) {
         TileCelestialCrystals tile = MiscUtils.getTileAt(world, pos, TileCelestialCrystals.class, false);
-        if(tile != null) {
+        if (tile != null) {
             tile.tryGrowth(0.5);
-            Block down = world.getBlock(pos.down().getX(), pos.down().getY(), pos.down().getZ());
-            int meta = world.getBlockMetadata(pos.down().getX(), pos.down().getY(), pos.down().getZ());
-            if(down instanceof BlockCustomOre && down.damageDropped(meta) == BlockCustomOre.OreType.STARMETAL.getMeta()) {
+            Block down = world.getBlock(
+                pos.down()
+                    .getX(),
+                pos.down()
+                    .getY(),
+                pos.down()
+                    .getZ());
+            int meta = world.getBlockMetadata(
+                pos.down()
+                    .getX(),
+                pos.down()
+                    .getY(),
+                pos.down()
+                    .getZ());
+            if (down instanceof BlockCustomOre
+                && down.damageDropped(meta) == BlockCustomOre.OreType.STARMETAL.getMeta()) {
                 tile.tryGrowth(0.3);
             }
         }
@@ -176,23 +198,23 @@ setStepSound(soundTypeStone);
     @Override
     public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
         worldIn.setBlockMetadataWithNotify(x, y, z, stack.getItemDamage(), 2);
-//        state.withProperty(STAGE, stack.getItemDamage());
+        // state.withProperty(STAGE, stack.getItemDamage());
     }
 
-//    @Override
-//    public int getMeta(Block state) {
-//        return state.getValue(STAGE);
-//    }
-//
-//    @Override
-//    public Block getStateFromMeta(int meta) {
-//        return getDefaultState().withProperty(STAGE, meta);
-//    }
-//
-//    @Override
-//    public int damageDropped(Block state) {
-//        return getMeta(state);
-//    }
+    // @Override
+    // public int getMeta(Block state) {
+    // return state.getValue(STAGE);
+    // }
+    //
+    // @Override
+    // public Block getStateFromMeta(int meta) {
+    // return getDefaultState().withProperty(STAGE, meta);
+    // }
+    //
+    // @Override
+    // public int damageDropped(Block state) {
+    // return getMeta(state);
+    // }
 
     @Override
     public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
@@ -203,7 +225,7 @@ setStepSound(soundTypeStone);
     public void onNeighborBlockChange(World worldIn, int x, int y, int z, Block neighbor) {
         BlockPos down = new BlockPos(x, y, z).down();
         Block downState = worldIn.getBlock(down.getX(), down.getY(), down.getZ());
-        if(!downState.isSideSolid(worldIn, down.getX(), down.getY(), down.getZ(), ForgeDirection.UP)) {
+        if (!downState.isSideSolid(worldIn, down.getX(), down.getY(), down.getZ(), ForgeDirection.UP)) {
             dropBlockAsItem(worldIn, x, y, z, worldIn.getBlockMetadata(x, y, z), 0);
             breakBlock(worldIn, x, y, z, downState, worldIn.getBlockMetadata(down.getX(), down.getY(), down.getZ()));
             worldIn.setBlockToAir(x, y, z);
@@ -214,9 +236,12 @@ setStepSound(soundTypeStone);
     public void breakBlock(World worldIn, int x, int y, int z, Block blockBroken, int meta) {
         BlockPos pos = new BlockPos(x, y, z);
         TileCelestialCrystals te = MiscUtils.getTileAt(worldIn, pos, TileCelestialCrystals.class, true);
-        if(te != null && !worldIn.isRemote) {
-            PktParticleEvent event = new PktParticleEvent(PktParticleEvent.ParticleEventType.CELESTIAL_CRYSTAL_BURST,
-                    pos.getX(), pos.getY(), pos.getZ());
+        if (te != null && !worldIn.isRemote) {
+            PktParticleEvent event = new PktParticleEvent(
+                PktParticleEvent.ParticleEventType.CELESTIAL_CRYSTAL_BURST,
+                pos.getX(),
+                pos.getY(),
+                pos.getZ());
             PacketChannel.CHANNEL.sendToAllAround(event, PacketChannel.pointFromPos(worldIn, pos, 32));
         }
         super.breakBlock(worldIn, x, y, z, blockBroken, meta);
@@ -232,15 +257,15 @@ setStepSound(soundTypeStone);
         return false;
     }
 
-//    @Override
-//    protected BlockStateContainer createBlockState() {
-//        return new BlockStateContainer(this, STAGE);
-//    }
-//
-//    @Override
-//    public EnumBlockRenderType getRenderType(Block state) {
-//        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
-//    }
+    // @Override
+    // protected BlockStateContainer createBlockState() {
+    // return new BlockStateContainer(this, STAGE);
+    // }
+    //
+    // @Override
+    // public EnumBlockRenderType getRenderType(Block state) {
+    // return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+    // }
 
     @Override
     public boolean hasTileEntity() {

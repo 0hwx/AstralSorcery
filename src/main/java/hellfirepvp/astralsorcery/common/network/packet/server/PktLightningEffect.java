@@ -8,18 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
-import hellfirepvp.astralsorcery.client.effect.EffectHandler;
-import hellfirepvp.astralsorcery.client.effect.light.EffectLightning;
-import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import io.netty.buffer.ByteBuf;
+import java.awt.Color;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import java.awt.*;
-import java.awt.color.ColorSpace;
+import hellfirepvp.astralsorcery.client.effect.EffectHandler;
+import hellfirepvp.astralsorcery.client.effect.light.EffectLightning;
+import hellfirepvp.astralsorcery.common.util.data.Vector3;
+import io.netty.buffer.ByteBuf;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -49,7 +48,7 @@ public class PktLightningEffect implements IMessage, IMessageHandler<PktLightnin
     public void fromBytes(ByteBuf buf) {
         from = Vector3.fromBytes(buf);
         to = Vector3.fromBytes(buf);
-        if(buf.readBoolean()) {
+        if (buf.readBoolean()) {
             float[] colorComponents = new float[4];
             for (int i = 0; i < colorComponents.length; i++) {
                 colorComponents[i] = buf.readFloat();
@@ -63,7 +62,7 @@ public class PktLightningEffect implements IMessage, IMessageHandler<PktLightnin
         from.toBytes(buf);
         to.toBytes(buf);
         buf.writeBoolean(colorOverlay != null);
-        if(colorOverlay != null) {
+        if (colorOverlay != null) {
             for (float color : colorOverlay.getComponents(new float[4])) {
                 buf.writeFloat(color);
             }
@@ -78,8 +77,9 @@ public class PktLightningEffect implements IMessage, IMessageHandler<PktLightnin
 
     @SideOnly(Side.CLIENT)
     private void playLightningEffect(PktLightningEffect p) {
-        EffectLightning lightning = EffectHandler.getInstance().lightning(p.from, p.to);
-        if(p.colorOverlay != null) {
+        EffectLightning lightning = EffectHandler.getInstance()
+            .lightning(p.from, p.to);
+        if (p.colorOverlay != null) {
             lightning.setOverlayColor(p.colorOverlay);
         }
     }

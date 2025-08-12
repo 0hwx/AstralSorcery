@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.client;
 
-import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.world.WorldProvider;
 import net.minecraftforge.common.DimensionManager;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
+import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
+import io.netty.buffer.ByteBuf;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -58,11 +59,12 @@ public class PktRequestSeed implements IMessage, IMessageHandler<PktRequestSeed,
 
     @Override
     public PktRequestSeed onMessage(PktRequestSeed message, MessageContext ctx) {
-        if(ctx.side == Side.SERVER) {
+        if (ctx.side == Side.SERVER) {
             WorldProvider mgr = DimensionManager.getProvider(message.dimId);
             return new PktRequestSeed(message.session, message.dimId).seed(mgr.getSeed());
         } else {
-            ConstellationSkyHandler.getInstance().updateSeedCache(message.dimId, message.session, message.seed);
+            ConstellationSkyHandler.getInstance()
+                .updateSeedCache(message.dimId, message.session, message.seed);
         }
         return null;
     }

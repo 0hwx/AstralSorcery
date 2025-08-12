@@ -8,14 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.registry;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.util.SoundUtils;
-import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.sound.SoundEvent;
-
 import static hellfirepvp.astralsorcery.common.lib.Sounds.*;
+
+import net.minecraft.util.ResourceLocation;
+
+import hellfirepvp.astralsorcery.AstralSorcery;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,30 +32,32 @@ public class RegistrySounds {
         bookFlip = new ResourceLocation(AstralSorcery.MODID, "sounds/book_turn2");
     }
 
-    /*private static <T extends SoundEvent> T registerSound(String jsonName, SoundCategory predefinedCategory) {
-        ResourceLocation res = new ResourceLocation(AstralSorcery.MODID, jsonName);
-        SoundUtils.LoopableSoundEvent se = new SoundUtils.LoopableSoundEvent(res, predefinedCategory);
-        se.setRegistryName(res);
-        return registerSound((T) se);
-    }*/
+    /*
+     * private static <T extends SoundEvent> T registerSound(String jsonName, SoundCategory predefinedCategory) {
+     * ResourceLocation res = new ResourceLocation(AstralSorcery.MODID, jsonName);
+     * SoundUtils.LoopableSoundEvent se = new SoundUtils.LoopableSoundEvent(res, predefinedCategory);
+     * se.setRegistryName(res);
+     * return registerSound((T) se);
+     * }
+     */
 
-//    private static <T extends SoundEvent> T registerSound(String jsonName, SoundCategory predefinedCategory) {
-//        ResourceLocation res = new ResourceLocation(AstralSorcery.MODID, jsonName);
-//        SoundUtils.CategorizedSoundEvent se = new SoundUtils.CategorizedSoundEvent(res, predefinedCategory);
-//        se.setRegistryName(res);
-//        return registerSound((T) se);
-//    }
-//
-//    private static <T extends SoundEvent> T registerSound(String jsonName) {
-//        ResourceLocation res = new ResourceLocation(AstralSorcery.MODID, jsonName);
-//        SoundEvent se = new SoundEvent(res);
-//        se.setRegistryName(res);
-//        return registerSound((T) se);
-//    }
-//
-//    private static <T extends SoundEvent> T registerSound(T soundEvent) {
-//        GameRegistry.register(soundEvent);
-//        return soundEvent;
-//    }
+    // private static <T extends SoundEvent> T registerSound(String jsonName, SoundCategory predefinedCategory) {
+    // ResourceLocation res = new ResourceLocation(AstralSorcery.MODID, jsonName);
+    // SoundUtils.CategorizedSoundEvent se = new SoundUtils.CategorizedSoundEvent(res, predefinedCategory);
+    // se.setRegistryName(res);
+    // return registerSound((T) se);
+    // }
+    //
+    // private static <T extends SoundEvent> T registerSound(String jsonName) {
+    // ResourceLocation res = new ResourceLocation(AstralSorcery.MODID, jsonName);
+    // SoundEvent se = new SoundEvent(res);
+    // se.setRegistryName(res);
+    // return registerSound((T) se);
+    // }
+    //
+    // private static <T extends SoundEvent> T registerSound(T soundEvent) {
+    // GameRegistry.register(soundEvent);
+    // return soundEvent;
+    // }
 
 }

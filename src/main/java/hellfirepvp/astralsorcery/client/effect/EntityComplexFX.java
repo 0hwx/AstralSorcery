@@ -8,12 +8,13 @@
 
 package hellfirepvp.astralsorcery.client.effect;
 
+import java.util.function.Function;
+
+import net.minecraft.entity.Entity;
+
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.common.util.EntityUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.entity.Entity;
-
-import java.util.function.Function;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -107,7 +108,8 @@ public abstract class EntityComplexFX implements IComplexEffect {
 
     public static interface RenderOffsetController {
 
-        public Vector3 changeRenderPosition(EntityComplexFX fx, Vector3 currentRenderPos, Vector3 currentMotion, float pTicks);
+        public Vector3 changeRenderPosition(EntityComplexFX fx, Vector3 currentRenderPos, Vector3 currentMotion,
+            float pTicks);
 
     }
 
@@ -134,7 +136,8 @@ public abstract class EntityComplexFX implements IComplexEffect {
             @Override
             public Vector3 updateMotion(T fx, Vector3 motion) {
                 if (target.isDead) return motion;
-                EntityUtils.applyVortexMotion((v) -> positionFunction.apply(fx), motion::add, new Vector3(target), 256, 1);
+                EntityUtils
+                    .applyVortexMotion((v) -> positionFunction.apply(fx), motion::add, new Vector3(target), 256, 1);
                 return motion.multiply(0.9);
             }
 
@@ -151,7 +154,7 @@ public abstract class EntityComplexFX implements IComplexEffect {
             @Override
             public float getScale(T fx, float pTicks, float scaleIn) {
                 float prevAge = Math.max(0F, ((float) fx.getAge() - 1)) / ((float) fx.getMaxAge());
-                float currAge = Math.max(0F, ((float) fx.getAge()))     / ((float) fx.getMaxAge());
+                float currAge = Math.max(0F, ((float) fx.getAge())) / ((float) fx.getMaxAge());
                 return (float) (scaleIn * (1 - (RenderingUtils.interpolate(prevAge, currAge, pTicks))));
             }
 

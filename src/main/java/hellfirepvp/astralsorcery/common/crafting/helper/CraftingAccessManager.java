@@ -8,9 +8,19 @@
 
 package hellfirepvp.astralsorcery.common.crafting.helper;
 
+import java.awt.Color;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+
 import hellfirepvp.astralsorcery.common.base.LightOreTransmutations;
 import hellfirepvp.astralsorcery.common.base.Mods;
-import hellfirepvp.astralsorcery.common.base.OreTypes;
 import hellfirepvp.astralsorcery.common.base.WellLiquefaction;
 import hellfirepvp.astralsorcery.common.crafting.altar.AbstractAltarRecipe;
 import hellfirepvp.astralsorcery.common.crafting.altar.AltarRecipeRegistry;
@@ -18,15 +28,6 @@ import hellfirepvp.astralsorcery.common.crafting.infusion.AbstractInfusionRecipe
 import hellfirepvp.astralsorcery.common.crafting.infusion.InfusionRecipeRegistry;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
-
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -58,7 +59,7 @@ public class CraftingAccessManager {
     }
 
     public static void clearModifications() {
-        //Unregister changes from JEI
+        // Unregister changes from JEI
         removeAll(InfusionRecipeRegistry.mtRecipes);
         removeAll(LightOreTransmutations.mtTransmutations);
         removeAll(WellLiquefaction.mtLiquefactions.values());
@@ -66,7 +67,7 @@ public class CraftingAccessManager {
             removeAll(AltarRecipeRegistry.mtRecipes.get(al));
         }
 
-        //Clear dirty maps
+        // Clear dirty maps
         InfusionRecipeRegistry.mtRecipes.clear();
         InfusionRecipeRegistry.recipes.clear();
         LightOreTransmutations.mtTransmutations.clear();
@@ -74,22 +75,22 @@ public class CraftingAccessManager {
         AltarRecipeRegistry.mtRecipes.clear();
         AltarRecipeRegistry.recipes.clear();
 
-        //Add removed recipes back to JEI
+        // Add removed recipes back to JEI
         for (Object removedPreviously : lastReloadRemovedRecipes) {
             addRecipe(removedPreviously);
         }
         lastReloadRemovedRecipes.clear();
 
-        //Setup registry maps again
+        // Setup registry maps again
         for (TileAltar.AltarLevel al : TileAltar.AltarLevel.values()) {
             AltarRecipeRegistry.mtRecipes.put(al, new LinkedList<>());
             AltarRecipeRegistry.recipes.put(al, new LinkedList<>());
         }
 
-        //Loading default configurations how it'd be without Minetweaker
+        // Loading default configurations how it'd be without Minetweaker
         InfusionRecipeRegistry.loadFromFallback();
         AltarRecipeRegistry.loadFromFallback();
-//        OreTypes.loadFromFallback();
+        // OreTypes.loadFromFallback();
         LightOreTransmutations.loadFromFallback();
         WellLiquefaction.loadFromFallback();
     }
@@ -101,7 +102,8 @@ public class CraftingAccessManager {
 
     public static void registerMTAltarRecipe(AbstractAltarRecipe recipe) {
         TileAltar.AltarLevel al = recipe.getNeededLevel();
-        AltarRecipeRegistry.mtRecipes.get(al).add(recipe);
+        AltarRecipeRegistry.mtRecipes.get(al)
+            .add(recipe);
         addRecipe(recipe);
     }
 
@@ -116,8 +118,13 @@ public class CraftingAccessManager {
     public static void addMTTransmutation(ItemStack in, ItemStack out, double cost) {
         Block stateIn = ItemUtils.createBlockState(in);
         Block stateOut = ItemUtils.createBlockState(out);
-        if(stateIn != null && stateOut != null) {
-            LightOreTransmutations.Transmutation tr = new LightOreTransmutations.Transmutation(stateIn, stateOut, in, out, cost);
+        if (stateIn != null && stateOut != null) {
+            LightOreTransmutations.Transmutation tr = new LightOreTransmutations.Transmutation(
+                stateIn,
+                stateOut,
+                in,
+                out,
+                cost);
             tr = LightOreTransmutations.registerTransmutation(tr);
             if (tr != null) {
                 addRecipe(tr);
@@ -130,11 +137,17 @@ public class CraftingAccessManager {
         markForRemoval(LightOreTransmutations.tryRemoveTransmutation(match, matchMeta));
     }
 
-    public static void addMTLiquefaction(ItemStack catalystIn, Fluid producedIn, float productionMultiplier, float shatterMultiplier, Color color) {
-        if(WellLiquefaction.getLiquefactionEntry(catalystIn) != null) {
+    public static void addMTLiquefaction(ItemStack catalystIn, Fluid producedIn, float productionMultiplier,
+        float shatterMultiplier, Color color) {
+        if (WellLiquefaction.getLiquefactionEntry(catalystIn) != null) {
             return;
         }
-        WellLiquefaction.LiquefactionEntry le = new WellLiquefaction.LiquefactionEntry(catalystIn, producedIn, productionMultiplier, shatterMultiplier, color);
+        WellLiquefaction.LiquefactionEntry le = new WellLiquefaction.LiquefactionEntry(
+            catalystIn,
+            producedIn,
+            productionMultiplier,
+            shatterMultiplier,
+            color);
         WellLiquefaction.mtLiquefactions.put(catalystIn, le);
         addRecipe(le);
     }
@@ -144,29 +157,27 @@ public class CraftingAccessManager {
     }
 
     /*
-     ******************************************
-     *           JEI interact
-     ******************************************
+     ****************************************** JEI interact
      */
     private static void addRecipe(Object o) {
-        if(!ignoreJEI && Mods.JEI.isPresent()) {
-//            ModIntegrationJEI.recipeRegistry.addRecipe(o);
+        if (!ignoreJEI && Mods.JEI.isPresent()) {
+            // ModIntegrationJEI.recipeRegistry.addRecipe(o);
         }
     }
 
     private static void removeAll(Collection objects) {
-        if(!ignoreJEI && Mods.JEI.isPresent()) {
+        if (!ignoreJEI && Mods.JEI.isPresent()) {
             for (Object o : objects) {
-//                ModIntegrationJEI.recipeRegistry.removeRecipe(o);
+                // ModIntegrationJEI.recipeRegistry.removeRecipe(o);
             }
         }
     }
 
     private static void markForRemoval(Object o) {
-        if(!ignoreJEI && o != null) {
+        if (!ignoreJEI && o != null) {
             lastReloadRemovedRecipes.add(o);
-            if(Mods.JEI.isPresent()) {
-//                ModIntegrationJEI.recipeRegistry.removeRecipe(o);
+            if (Mods.JEI.isPresent()) {
+                // ModIntegrationJEI.recipeRegistry.removeRecipe(o);
             }
         }
     }

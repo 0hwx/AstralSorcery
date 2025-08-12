@@ -8,16 +8,18 @@
 
 package hellfirepvp.astralsorcery.client.effect.compound;
 
-import hellfirepvp.astralsorcery.client.util.RenderingUtils;
-import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.MathHelper;
-import org.lwjgl.opengl.GL11;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.MathHelper;
+
+import org.lwjgl.opengl.GL11;
+
+import hellfirepvp.astralsorcery.client.util.RenderingUtils;
+import hellfirepvp.astralsorcery.common.util.data.Vector3;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,9 +37,12 @@ public class CompoundEffectSphere extends CompoundObjectEffect {
     private Vector3 offset;
     private Vector3 axis;
 
-    public CompoundEffectSphere(Vector3 centralPoint, Vector3 southNorthAxis, double sphereRadius, int fractionsSplit, int fractionsCircle) {
+    public CompoundEffectSphere(Vector3 centralPoint, Vector3 southNorthAxis, double sphereRadius, int fractionsSplit,
+        int fractionsCircle) {
         this.offset = centralPoint;
-        this.axis = southNorthAxis.clone().normalize().multiply(sphereRadius);
+        this.axis = southNorthAxis.clone()
+            .normalize()
+            .multiply(sphereRadius);
         fractionsSplit = MathHelper.clamp_int(fractionsSplit, 2, Integer.MAX_VALUE);
         fractionsCircle = MathHelper.clamp_int(fractionsCircle, 3, Integer.MAX_VALUE);
         buildFaces(fractionsSplit, fractionsCircle);
@@ -54,8 +59,9 @@ public class CompoundEffectSphere extends CompoundObjectEffect {
     }
 
     private void buildFaces(int fractionsSplit, int fractionsCircle) {
-        Vector3 centerPerp = axis.clone().perpendicular();
-        double degSplit =       180D / ((double) fractionsSplit);
+        Vector3 centerPerp = axis.clone()
+            .perpendicular();
+        double degSplit = 180D / ((double) fractionsSplit);
         double degCircleSplit = 360D / ((double) fractionsCircle);
         double degCircleOffsetShifted = degCircleSplit / 2D;
         boolean shift = false;
@@ -64,30 +70,34 @@ public class CompoundEffectSphere extends CompoundObjectEffect {
         Vector3 prev = axis.clone();
         Arrays.fill(prevArray, prev.clone());
         for (int i = 1; i <= fractionsSplit; i++) {
-            Vector3 splitVec = axis.clone().rotate(Math.toRadians(degSplit * i), centerPerp);
+            Vector3 splitVec = axis.clone()
+                .rotate(Math.toRadians(degSplit * i), centerPerp);
 
             Vector3[] circlePositions = new Vector3[fractionsCircle];
             for (int j = 0; j < fractionsCircle; j++) {
                 double deg = shift ? degCircleOffsetShifted : 0;
                 deg += degCircleSplit * j;
-                circlePositions[j] = splitVec.clone().rotate(Math.toRadians(deg), axis);
+                circlePositions[j] = splitVec.clone()
+                    .rotate(Math.toRadians(deg), axis);
             }
 
             for (int k = 0; k < fractionsCircle; k++) {
                 int prevIndex = shift ? k : k - 1;
-                if(prevIndex < 0) {
+                if (prevIndex < 0) {
                     prevIndex = fractionsCircle - 1;
                 }
                 int nextIndex = shift ? k + 1 : k;
-                if(nextIndex >= fractionsCircle) {
+                if (nextIndex >= fractionsCircle) {
                     nextIndex = 0;
                 }
-                sphereFaces.add(new SolidColorTriangleFace(prevArray[prevIndex], prevArray[nextIndex], circlePositions[k]));
+                sphereFaces
+                    .add(new SolidColorTriangleFace(prevArray[prevIndex], prevArray[nextIndex], circlePositions[k]));
                 int nextCircle = k + 1;
-                if(nextCircle >= fractionsCircle) {
+                if (nextCircle >= fractionsCircle) {
                     nextCircle = 0;
                 }
-                sphereFaces.add(new SolidColorTriangleFace(circlePositions[k], prevArray[nextIndex], circlePositions[nextCircle]));
+                sphereFaces.add(
+                    new SolidColorTriangleFace(circlePositions[k], prevArray[nextIndex], circlePositions[nextCircle]));
             }
 
             prevArray = circlePositions;
@@ -104,11 +114,11 @@ public class CompoundEffectSphere extends CompoundObjectEffect {
         RenderingUtils.removeStandartTranslationFromTESRMatrix(pTicks);
         GL11.glTranslated(offset.getX(), offset.getY(), offset.getZ());
         float alpha = 1F;
-        if(alphaFadeMaxDist != -1 && Minecraft.getMinecraft().thePlayer != null) {
+        if (alphaFadeMaxDist != -1 && Minecraft.getMinecraft().thePlayer != null) {
             Vector3 plVec = new Vector3(Minecraft.getMinecraft().thePlayer);
             double dst = plVec.distance(getPosition()) - 1.2;
             alpha *= 1D - (dst / alphaFadeMaxDist);
-            if(removeIfInvisible && alpha <= 0) {
+            if (removeIfInvisible && alpha <= 0) {
                 requestRemoval();
             }
             alpha = MathHelper.clamp_float(alpha, 0, 1);
@@ -128,7 +138,7 @@ public class CompoundEffectSphere extends CompoundObjectEffect {
 
     @Override
     public void tick() {
-        if(alphaFadeMaxDist == -1 || !removeIfInvisible) {
+        if (alphaFadeMaxDist == -1 || !removeIfInvisible) {
             super.tick();
         }
     }

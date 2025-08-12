@@ -1,8 +1,8 @@
 package hellfirepvp.astralsorcery.common.block;
 
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
+
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 
 /**
  * This class is part of the Astral Sorcery Mod

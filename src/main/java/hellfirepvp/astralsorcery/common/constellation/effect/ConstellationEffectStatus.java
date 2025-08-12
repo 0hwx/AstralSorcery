@@ -8,11 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect;
 
-import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
+import javax.annotation.Nullable;
+
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
+import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -21,10 +22,12 @@ import javax.annotation.Nullable;
  * Created by HellFirePvP
  * Date: 14.01.2018 / 21:23
  */
-//Interface for constellation effects that don't care how strong the starlight influx is, they just provide a certain status
+// Interface for constellation effects that don't care how strong the starlight influx is, they just provide a certain
+// status
 public interface ConstellationEffectStatus {
 
-    public abstract boolean runEffect(World world, BlockPos pos, boolean mayDoTraitEffect, @Nullable IMinorConstellation possibleTraitEffect);
+    public abstract boolean runEffect(World world, BlockPos pos, boolean mayDoTraitEffect,
+        @Nullable IMinorConstellation possibleTraitEffect);
 
     public abstract boolean runTraitEffect(World world, BlockPos pos, IMinorConstellation traitType);
 

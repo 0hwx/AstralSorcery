@@ -8,16 +8,16 @@
 
 package hellfirepvp.astralsorcery.common.tile.base;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -61,34 +61,35 @@ public class TileInventoryBase extends TileEntityTick {
         return facing == null || applicableSides.contains(facing);
     }
 
-//    @Override
-//    public boolean hasCapability(Capability<?> capability, ForgeDirection facing) {
-//        return hasHandlerForSide(facing) ? capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY : super.hasCapability(capability, facing);
-//    }
-//
-//    @Override
-//    public <T> T getCapability(Capability<T> capability, ForgeDirection facing) {
-//        if(hasHandlerForSide(facing)) {
-//            if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-//                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handle);
-//            }
-//        }
-//        return super.getCapability(capability, facing);
-//    }
+    // @Override
+    // public boolean hasCapability(Capability<?> capability, ForgeDirection facing) {
+    // return hasHandlerForSide(facing) ? capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY :
+    // super.hasCapability(capability, facing);
+    // }
+    //
+    // @Override
+    // public <T> T getCapability(Capability<T> capability, ForgeDirection facing) {
+    // if(hasHandlerForSide(facing)) {
+    // if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+    // return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handle);
+    // }
+    // }
+    // return super.getCapability(capability, facing);
+    // }
 
     @Override
     public void readCustomNBT(NBTTagCompound compound) {
         super.readCustomNBT(compound);
 
         this.handle = createNewItemHandler();
-//        this.handle.deserializeNBT(compound.getCompoundTag("inventory"));
+        // this.handle.deserializeNBT(compound.getCompoundTag("inventory"));
     }
 
     @Override
     public void writeCustomNBT(NBTTagCompound compound) {
         super.writeCustomNBT(compound);
 
-//        compound.setTag("inventory", this.handle.serializeNBT());
+        // compound.setTag("inventory", this.handle.serializeNBT());
     }
 
     public int getInventorySize() {
@@ -103,17 +104,17 @@ public class TileInventoryBase extends TileEntityTick {
             super(inv);
         }
 
-//        @Override
-//        public void setStackInSlot(int slot, ItemStack stack) {
-//            if(canInsertItem(slot, stack, getStackInSlot(slot))) {
-//                super.setStackInSlot(slot, stack);
-//            }
-//        }
+        // @Override
+        // public void setStackInSlot(int slot, ItemStack stack) {
+        // if(canInsertItem(slot, stack, getStackInSlot(slot))) {
+        // super.setStackInSlot(slot, stack);
+        // }
+        // }
 
         @Nonnull
         @Override
         public boolean canInsertItem(int aIndex, ItemStack aStack, int ordinalSide) {
-            if(!canInsertItem(aIndex, aStack, getStackInSlot(aIndex))) {
+            if (!canInsertItem(aIndex, aStack, getStackInSlot(aIndex))) {
                 return true;
             }
             return super.canInsertItem(aIndex, aStack, ordinalSide);
@@ -131,27 +132,27 @@ public class TileInventoryBase extends TileEntityTick {
 
         public ItemHandlerTile(TileInventoryBase inv) {
             super();
-//            super(inv.inventorySize);
+            // super(inv.inventorySize);
             this.tile = inv;
         }
 
-//        @Override
-//        public void onContentsChanged(int slot) {
-//            tile.onInventoryChanged(slot);
-//            tile.markForUpdate();
-//        }
-//
-//        public void clearInventory() {
-//            for (int i = 0; i < getSlots(); i++) {
-//                setStackInSlot(i, null);
-//                onContentsChanged(i);
-//            }
-//        }
-//
-//        @Override
-//        public int getStackLimit(int slot, ItemStack stack) {
-//            return super.getStackLimit(slot, stack);
-//        }
+        // @Override
+        // public void onContentsChanged(int slot) {
+        // tile.onInventoryChanged(slot);
+        // tile.markForUpdate();
+        // }
+        //
+        // public void clearInventory() {
+        // for (int i = 0; i < getSlots(); i++) {
+        // setStackInSlot(i, null);
+        // onContentsChanged(i);
+        // }
+        // }
+        //
+        // @Override
+        // public int getStackLimit(int slot, ItemStack stack) {
+        // return super.getStackLimit(slot, stack);
+        // }
 
         @Override
         public int getSizeInventory() {

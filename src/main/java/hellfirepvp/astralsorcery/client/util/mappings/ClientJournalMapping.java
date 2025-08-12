@@ -8,16 +8,16 @@
 
 package hellfirepvp.astralsorcery.client.util.mappings;
 
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.Map;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -47,8 +47,8 @@ public class ClientJournalMapping {
         BindableResource cloudRd = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "cloud3");
         map.put(ResearchProgression.RADIANCE, new JournalCluster(cloudRd, cloudRd, 5, -3, 8, -1));
 
-        //BindableResource cloudTr = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "cloud3");
-        //map.put(ResearchProgression.TRAIT_CRAFT, new JournalCluster(cloudTr, cloudTr, 0, 0, 2, 2));
+        // BindableResource cloudTr = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "cloud3");
+        // map.put(ResearchProgression.TRAIT_CRAFT, new JournalCluster(cloudTr, cloudTr, 0, 0, 2, 2));
     }
 
     public static JournalCluster getClusterMapping(ResearchProgression progression) {
@@ -61,14 +61,16 @@ public class ClientJournalMapping {
         public final Point boundary1, boundary2;
         public final int leftMost, rightMost, upperMost, lowerMost;
 
-        /** Keep in mind: negative coords are left upper side of the GUI
+        /**
+         * Keep in mind: negative coords are left upper side of the GUI
          *
-         *  uppermost = most negative Y, lowermost = most positive Y
-         *  leftmost =  most negative X, rightmost = most positive X
+         * uppermost = most negative Y, lowermost = most positive Y
+         * leftmost = most negative X, rightmost = most positive X
          *
-         *  A wrong definition doesn't affect size calculation, but rendering.
+         * A wrong definition doesn't affect size calculation, but rendering.
          */
-        public JournalCluster(BindableResource cloudTexture, BindableResource clusterBackgroundTexture, int leftMost, int upperMost, int rightMost, int lowerMost) {
+        public JournalCluster(BindableResource cloudTexture, BindableResource clusterBackgroundTexture, int leftMost,
+            int upperMost, int rightMost, int lowerMost) {
             this.cloudTexture = cloudTexture;
             this.clusterBackgroundTexture = clusterBackgroundTexture;
             this.leftMost = leftMost;

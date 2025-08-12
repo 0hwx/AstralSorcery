@@ -8,8 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
-import hellfirepvp.astralsorcery.common.tile.base.TileEntitySynchronized;
 import net.minecraft.nbt.NBTTagCompound;
+
+import hellfirepvp.astralsorcery.common.tile.base.TileEntitySynchronized;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -59,6 +60,7 @@ public class TileTelescope extends TileEntitySynchronized {
         public TelescopeRotation nextClockWise() {
             return values()[(ordinal() + 1) % values().length];
         }
+
         public TelescopeRotation nextCounterClockWise() {
             return values()[(ordinal() + 7) % values().length];
         }

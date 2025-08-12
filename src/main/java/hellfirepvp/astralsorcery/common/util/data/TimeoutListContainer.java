@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.util.data;
 
-import cpw.mods.fml.common.gameevent.TickEvent;
-import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
-
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import cpw.mods.fml.common.gameevent.TickEvent;
+import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -37,7 +38,7 @@ public class TimeoutListContainer<K, V> implements ITickHandler {
     public TimeoutListContainer(@Nullable ContainerTimeoutDelegate<K, V> delegate, TickEvent.Type... types) {
         this.tickTypes = EnumSet.noneOf(TickEvent.Type.class);
         for (TickEvent.Type type : types) {
-            if(type != null) this.tickTypes.add(type);
+            if (type != null) this.tickTypes.add(type);
         }
         this.delegate = delegate;
     }
@@ -48,7 +49,7 @@ public class TimeoutListContainer<K, V> implements ITickHandler {
 
     public TimeoutList<V> getOrCreateList(K key) {
         TimeoutList<V> list = timeoutListMap.get(key);
-        if(list == null) {
+        if (list == null) {
             list = new TimeoutList<>(new RedirectTimeoutDelegate<>(key, delegate));
             timeoutListMap.put(key, list);
         }
@@ -57,12 +58,13 @@ public class TimeoutListContainer<K, V> implements ITickHandler {
 
     @Override
     public void tick(TickEvent.Type type, Object... context) {
-        Iterator<Map.Entry<K, TimeoutList<V>>> it = timeoutListMap.entrySet().iterator();
+        Iterator<Map.Entry<K, TimeoutList<V>>> it = timeoutListMap.entrySet()
+            .iterator();
         while (it.hasNext()) {
             Map.Entry<K, TimeoutList<V>> entry = it.next();
             TimeoutList<V> list = entry.getValue();
             list.tick(type, context);
-            if(list.isEmpty()) {
+            if (list.isEmpty()) {
                 it.remove();
             }
         }
@@ -95,7 +97,7 @@ public class TimeoutListContainer<K, V> implements ITickHandler {
 
         @Override
         public void onTimeout(V object) {
-            if(delegate != null) {
+            if (delegate != null) {
                 delegate.onContainerTimeout(key, object);
             }
         }

@@ -1,15 +1,20 @@
 package hellfirepvp.astralsorcery.common.util.block;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.*;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.IFluidTank;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -18,7 +23,7 @@ import java.util.List;
  * Created by HellFirePvP
  * Date: 10.03.2017 / 16:36
  */
-public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHandler {
+public class PrecisionSingleFluidCapabilityTank implements IFluidTank, IFluidHandler {
 
     private double amount = 0;
     private int maxCapacity;
@@ -47,7 +52,7 @@ public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHa
         this.allowOutput = allowOutput;
     }
 
-    //returns min(toAdd, what can be added at most)
+    // returns min(toAdd, what can be added at most)
     public double getMaxAddable(double toAdd) {
         return Math.min(toAdd, maxCapacity - toAdd);
     }
@@ -56,7 +61,7 @@ public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHa
         return (int) Math.floor(Math.min(toDrain, amount));
     }
 
-    //leftover amount that could not be added
+    // leftover amount that could not be added
     public double addAmount(double amount) {
         if (this.fluid == null) return amount;
         double addable = getMaxAddable(amount);
@@ -64,7 +69,7 @@ public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHa
         return amount - addable;
     }
 
-    //returns amount drained
+    // returns amount drained
     public int drain(double amount) {
         if (this.fluid == null) return 0;
         int drainable = getMaxDrainable(amount);
@@ -99,11 +104,11 @@ public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHa
         return MathHelper.floor_double(amount);
     }
 
-//    @Nullable
-//    @Override
-//    public FluidStack getContents() {
-//        return getFluid();
-//    }
+    // @Nullable
+    // @Override
+    // public FluidStack getContents() {
+    // return getFluid();
+    // }
 
     @Override
     public int getCapacity() {
@@ -120,15 +125,15 @@ public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHa
         return this.allowOutput && this.amount > 0 && this.fluid != null;
     }
 
-//    @Override
-//    public boolean canFillFluidType(FluidStack fluidStack) {
-//        return canFill() && (this.fluid == null || fluidStack.getFluid().equals(this.fluid));
-//    }
-//
-//    @Override
-//    public boolean canDrainFluidType(FluidStack fluidStack) {
-//        return canDrain() && (this.fluid != null && fluidStack.getFluid().equals(this.fluid));
-//    }
+    // @Override
+    // public boolean canFillFluidType(FluidStack fluidStack) {
+    // return canFill() && (this.fluid == null || fluidStack.getFluid().equals(this.fluid));
+    // }
+    //
+    // @Override
+    // public boolean canDrainFluidType(FluidStack fluidStack) {
+    // return canDrain() && (this.fluid != null && fluidStack.getFluid().equals(this.fluid));
+    // }
 
     public float getPercentageFilled() {
         return (((float) amount) / ((float) maxCapacity));
@@ -146,10 +151,10 @@ public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHa
 
     @Override
     public int fill(FluidStack resource, boolean doFill) {
-//        if (!canFillFluidType(resource)) return 0;
+        // if (!canFillFluidType(resource)) return 0;
         int maxAdded = resource.amount;
         int addable = MathHelper.floor_double(getMaxAddable(maxAdded));
-        if(doFill) {
+        if (doFill) {
             addable = MathHelper.floor_double(maxAdded - addAmount(addable));
         }
         return addable;
@@ -158,14 +163,14 @@ public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHa
     @Nullable
     @Override
     public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-//        if (!canDrainFluidType(resource)) return null;
+        // if (!canDrainFluidType(resource)) return null;
         return drain(resource.amount, doDrain);
     }
 
     @Nullable
     @Override
     public FluidStack drain(int maxDrain, boolean doDrain) {
-//        if (!canDrain()) return null;
+        // if (!canDrain()) return null;
         int maxDrainable = getMaxDrainable(maxDrain);
         if (doDrain) {
             maxDrainable = drain(maxDrainable);
@@ -179,7 +184,7 @@ public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHa
         tag.setInteger("capacity", this.maxCapacity);
         tag.setBoolean("aIn", this.allowInput);
         tag.setBoolean("aOut", this.allowOutput);
-        if(this.fluid != null) {
+        if (this.fluid != null) {
             tag.setString("fluid", this.fluid.getName());
         }
         int[] sides = new int[accessibleSides.size()];
@@ -196,7 +201,7 @@ public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHa
         this.maxCapacity = tag.getInteger("capacity");
         this.allowInput = tag.getBoolean("aIn");
         this.allowOutput = tag.getBoolean("aOut");
-        if(tag.hasKey("fluid")) {
+        if (tag.hasKey("fluid")) {
             this.fluid = FluidRegistry.getFluid(tag.getString("fluid"));
         } else {
             this.fluid = null;
@@ -218,36 +223,34 @@ public class PrecisionSingleFluidCapabilityTank  implements IFluidTank, IFluidHa
     }
 
     public IFluidHandler getCapability(ForgeDirection facing) {
-        if(hasCapability(facing)) {
+        if (hasCapability(facing)) {
             return this;
         }
         return null;
     }
-
 
     @Override
     public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
         return 0;
     }
 
-//    @Override
-//    public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-//        return null;
-//    }
+    // @Override
+    // public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+    // return null;
+    // }
 
     @Override
     public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
         return null;
     }
 
+    // @Override
+    // public boolean canDrain(ForgeDirection from, Fluid fluid) {
+    // return false;
+    // }
 
-//    @Override
-//    public boolean canDrain(ForgeDirection from, Fluid fluid) {
-//        return false;
-//    }
-
-//    @Override
-//    public FluidTankInfo[] getTankInfo(ForgeDirection from) {
-//        return new FluidTankInfo[0];
-//    }
+    // @Override
+    // public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+    // return new FluidTankInfo[0];
+    // }
 }

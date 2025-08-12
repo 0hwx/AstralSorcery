@@ -1,19 +1,20 @@
 package hellfirepvp.astralsorcery.common.network.packet.client;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.gui.GuiMapDrawing;
 import hellfirepvp.astralsorcery.common.tile.TileMapDrawingTable;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -48,12 +49,12 @@ public class PktBurnParchment implements IMessage, IMessageHandler<PktBurnParchm
 
     @Override
     public PktBurnParchment onMessage(PktBurnParchment message, MessageContext ctx) {
-        if(ctx.side == Side.SERVER) {
+        if (ctx.side == Side.SERVER) {
             World world = DimensionManager.getWorld(message.dimId);
-            if(world != null) {
+            if (world != null) {
                 TileMapDrawingTable tmt = MiscUtils.getTileAt(world, message.tablePos, TileMapDrawingTable.class, true);
-                if(tmt != null) {
-                    if(tmt.burnParchment()) {
+                if (tmt != null) {
+                    if (tmt.burnParchment()) {
                         return new PktBurnParchment(-1, BlockPos.ORIGIN);
                     }
                 }
@@ -67,9 +68,10 @@ public class PktBurnParchment implements IMessage, IMessageHandler<PktBurnParchm
 
     @SideOnly(Side.CLIENT)
     private void closeTable() {
-        if(Minecraft.getMinecraft().currentScreen != null &&
-                Minecraft.getMinecraft().currentScreen instanceof GuiMapDrawing) {
-            Minecraft.getMinecraft().displayGuiScreen(null);
+        if (Minecraft.getMinecraft().currentScreen != null
+            && Minecraft.getMinecraft().currentScreen instanceof GuiMapDrawing) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(null);
         }
     }
 

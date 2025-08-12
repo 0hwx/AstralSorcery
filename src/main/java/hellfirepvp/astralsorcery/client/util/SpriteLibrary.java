@@ -22,24 +22,42 @@ import hellfirepvp.astralsorcery.client.util.resource.SpriteSheetResource;
  */
 public class SpriteLibrary {
 
-    private static final BindableResource texBurst1 = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "ceffect1");
-    private static final BindableResource texBurst2 = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "ceffect2");
-    private static final BindableResource texBurst3 = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "ceffect3");
-    private static final BindableResource flareActive = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "flarePerkActive");
-    private static final BindableResource flareInactive = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "flarePerkInactive");
-    private static final BindableResource flareActivateable = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "flarePerkActivateable");
-    private static final BindableResource flareActivate = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "unlock_perk");
-    private static final BindableResource texCraftBurst = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "burst1");
-    private static final BindableResource texCollectorBurst = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "burst2");
-    private static final BindableResource texLightbeam = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "lightbeam");
-    private static final BindableResource texHalo1 = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "halo1");
-    private static final BindableResource texHalo2 = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "halo2");
-    private static final BindableResource texStar1 = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "star1");
-    private static final BindableResource texStar2 = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "star2");
-    private static final BindableResource texFlare1 = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "flare1");
-    private static final BindableResource texCharge = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "charge");
-    private static final BindableResource texSpriteStarlight = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "starlight_store");
-    private static final BindableResource texLiquidStarlight = AssetLibrary.loadTexture(AssetLoader.TextureLocation.BLOCKS, "fluid/starlight_still");
+    private static final BindableResource texBurst1 = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "ceffect1");
+    private static final BindableResource texBurst2 = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "ceffect2");
+    private static final BindableResource texBurst3 = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "ceffect3");
+    private static final BindableResource flareActive = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "flarePerkActive");
+    private static final BindableResource flareInactive = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "flarePerkInactive");
+    private static final BindableResource flareActivateable = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "flarePerkActivateable");
+    private static final BindableResource flareActivate = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "unlock_perk");
+    private static final BindableResource texCraftBurst = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "burst1");
+    private static final BindableResource texCollectorBurst = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "burst2");
+    private static final BindableResource texLightbeam = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "lightbeam");
+    private static final BindableResource texHalo1 = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "halo1");
+    private static final BindableResource texHalo2 = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "halo2");
+    private static final BindableResource texStar1 = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "star1");
+    private static final BindableResource texStar2 = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "star2");
+    private static final BindableResource texFlare1 = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "flare1");
+    private static final BindableResource texCharge = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "charge");
+    private static final BindableResource texSpriteStarlight = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "starlight_store");
+    private static final BindableResource texLiquidStarlight = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.BLOCKS, "fluid/starlight_still");
 
     public static final SpriteSheetResource spriteStarlight = texSpriteStarlight.asSpriteSheet(16, 4);
     public static final SpriteSheetResource spriteLightbeam = texLightbeam.asSpriteSheet(4, 16);

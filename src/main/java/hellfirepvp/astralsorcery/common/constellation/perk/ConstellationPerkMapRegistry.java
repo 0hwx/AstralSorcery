@@ -8,12 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk;
 
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
-
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -27,8 +28,10 @@ public class ConstellationPerkMapRegistry {
     private static Map<IMajorConstellation, ConstellationPerkMap> registeredPerks = new HashMap<>();
 
     public static void registerPerkMap(IMajorConstellation constellation, ConstellationPerkMap perkMap) {
-        if(registeredPerks.containsKey(constellation)) {
-            AstralSorcery.log.info("[AstralSorcery] PerkMapRegistry already contains mapping for '" + constellation.getUnlocalizedName() + "' - overwriting...");
+        if (registeredPerks.containsKey(constellation)) {
+            AstralSorcery.log.info(
+                "[AstralSorcery] PerkMapRegistry already contains mapping for '" + constellation.getUnlocalizedName()
+                    + "' - overwriting...");
         }
         registeredPerks.put(constellation, perkMap);
     }

@@ -8,6 +8,22 @@
 
 package hellfirepvp.astralsorcery.common.item.crystal.base;
 
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import org.lwjgl.input.Keyboard;
+
+import com.mojang.realmsclient.gui.ChatFormatting;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.constellation.IConstellation;
 import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
@@ -18,18 +34,6 @@ import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.item.ItemConstellationFocus;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import com.mojang.realmsclient.gui.ChatFormatting;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -49,24 +53,34 @@ public abstract class ItemTunedCrystalBase extends ItemRockCrystalBase implement
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
         Optional<Boolean> out = addCrystalPropertyToolTip(stack, tooltip);
         boolean shift = Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54);
-        if(shift && out.isPresent()) {
+        if (shift && out.isPresent()) {
             ProgressionTier tier = ResearchManager.clientProgress.getTierReached();
 
             IWeakConstellation c = getMainConstellation(stack);
-            if(c != null) {
-                if(EnumGatedKnowledge.CRYSTAL_TUNE.canSee(tier) && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
-                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.attuned") + " " + ChatFormatting.BLUE + I18n.format(c.getUnlocalizedName()));
-                } else if(!out.get()) {
+            if (c != null) {
+                if (EnumGatedKnowledge.CRYSTAL_TUNE.canSee(tier)
+                    && ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) {
+                    tooltip.add(
+                        ChatFormatting.GRAY + I18n.format("crystal.attuned")
+                            + " "
+                            + ChatFormatting.BLUE
+                            + I18n.format(c.getUnlocalizedName()));
+                } else if (!out.get()) {
                     tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
                     out = Optional.of(true);
                 }
             }
 
             IMinorConstellation tr = getTrait(stack);
-            if(tr != null) {
-                if(EnumGatedKnowledge.CRYSTAL_TUNE.canSee(tier) && ResearchManager.clientProgress.hasConstellationDiscovered(tr.getUnlocalizedName())) {
-                    tooltip.add(ChatFormatting.GRAY + I18n.format("crystal.trait") + " " + ChatFormatting.BLUE + I18n.format(tr.getUnlocalizedName()));
-                } else if(!out.get()) {
+            if (tr != null) {
+                if (EnumGatedKnowledge.CRYSTAL_TUNE.canSee(tier)
+                    && ResearchManager.clientProgress.hasConstellationDiscovered(tr.getUnlocalizedName())) {
+                    tooltip.add(
+                        ChatFormatting.GRAY + I18n.format("crystal.trait")
+                            + " "
+                            + ChatFormatting.BLUE
+                            + I18n.format(tr.getUnlocalizedName()));
+                } else if (!out.get()) {
                     tooltip.add(ChatFormatting.GRAY + I18n.format("progress.missing.knowledge"));
                 }
             }

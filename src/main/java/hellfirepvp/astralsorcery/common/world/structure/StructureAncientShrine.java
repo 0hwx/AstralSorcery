@@ -8,14 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.world.structure;
 
+import java.util.Random;
+
+import net.minecraft.world.World;
+import net.minecraftforge.common.BiomeDictionary;
+
 import hellfirepvp.astralsorcery.common.data.world.data.StructureGenBuffer;
 import hellfirepvp.astralsorcery.common.lib.MultiBlockArrays;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.BiomeDictionary;
-
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -27,7 +27,13 @@ import java.util.Random;
 public class StructureAncientShrine extends WorldGenAttributeStructure {
 
     public StructureAncientShrine() {
-        super(0, "ancientShrine", () -> MultiBlockArrays.ancientShrine, StructureGenBuffer.StructureType.MOUNTAIN, BiomeDictionary.Type.MOUNTAIN, BiomeDictionary.Type.SNOWY);
+        super(
+            0,
+            "ancientShrine",
+            () -> MultiBlockArrays.ancientShrine,
+            StructureGenBuffer.StructureType.MOUNTAIN,
+            BiomeDictionary.Type.MOUNTAIN,
+            BiomeDictionary.Type.SNOWY);
         this.idealDistance = 512F;
     }
 
@@ -39,11 +45,11 @@ public class StructureAncientShrine extends WorldGenAttributeStructure {
 
     @Override
     public boolean fulfillsSpecificConditions(BlockPos pos, World world, Random random) {
-        if(!isApplicableBiome(world, pos)) return false;
-        if(!canSpawnShrineCorner(world, pos.add(-7, 0,  7))) return false;
-        if(!canSpawnShrineCorner(world, pos.add( 7, 0, -7))) return false;
-        if(!canSpawnShrineCorner(world, pos.add( 7, 0,  7))) return false;
-        if(!canSpawnShrineCorner(world, pos.add(-7, 0, -7))) return false;
+        if (!isApplicableBiome(world, pos)) return false;
+        if (!canSpawnShrineCorner(world, pos.add(-7, 0, 7))) return false;
+        if (!canSpawnShrineCorner(world, pos.add(7, 0, -7))) return false;
+        if (!canSpawnShrineCorner(world, pos.add(7, 0, 7))) return false;
+        if (!canSpawnShrineCorner(world, pos.add(-7, 0, -7))) return false;
         return true;
     }
 
@@ -51,25 +57,27 @@ public class StructureAncientShrine extends WorldGenAttributeStructure {
     public BlockPos getGenerationPosition(int chX, int chZ, World world, Random rand) {
         int rX = (chX * 16) + rand.nextInt(16) + 8;
         int rZ = (chZ * 16) + rand.nextInt(16) + 8;
-        int rY = world.getTopSolidOrLiquidBlock(rX,rZ);
+        int rY = world.getTopSolidOrLiquidBlock(rX, rZ);
         return new BlockPos(rX, rY, rZ);
     }
 
     private boolean canSpawnShrineCorner(World world, BlockPos pos) {
         int dY = world.getTopSolidOrLiquidBlock(pos.getX(), pos.getZ());
-        return dY >= cfgEntry.getMinY() && dY <= cfgEntry.getMaxY() && Math.abs(dY - pos.getY()) <= 6 && isApplicableBiome(world, pos);
+        return dY >= cfgEntry.getMinY() && dY <= cfgEntry.getMaxY()
+            && Math.abs(dY - pos.getY()) <= 6
+            && isApplicableBiome(world, pos);
     }
 
     private boolean isApplicableBiome(World world, BlockPos pos) {
-        if(cfgEntry.shouldIgnoreBiomeSpecifications()) return true;
+        if (cfgEntry.shouldIgnoreBiomeSpecifications()) return true;
 
-//        BiomeGenBase b = world.getBiomeGenForCoords(pos.getX(), pos.getZ());
-//        BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(b);
-//        if(types == null || types.length == 0) return false;
+        // BiomeGenBase b = world.getBiomeGenForCoords(pos.getX(), pos.getZ());
+        // BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(b);
+        // if(types == null || types.length == 0) return false;
         boolean applicable = false;
-//        for (BiomeDictionary.Type t : types) {
-//            if (cfgEntry.getTypes().contains(t)) applicable = true;
-//        }
+        // for (BiomeDictionary.Type t : types) {
+        // if (cfgEntry.getTypes().contains(t)) applicable = true;
+        // }
         return applicable;
     }
 }

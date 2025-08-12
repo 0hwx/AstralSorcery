@@ -1,18 +1,19 @@
 package hellfirepvp.astralsorcery.common.data.world.data;
 
-import hellfirepvp.astralsorcery.common.data.world.CachedWorldData;
-import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import hellfirepvp.astralsorcery.common.data.world.CachedWorldData;
+import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,7 +34,8 @@ public class StructureGenBuffer extends CachedWorldData {
     }
 
     public void markStructureGeneration(BlockPos pos, StructureType type) {
-        generatedStructures.get(type).add(pos);
+        generatedStructures.get(type)
+            .add(pos);
         markDirty();
     }
 
@@ -44,7 +46,7 @@ public class StructureGenBuffer extends CachedWorldData {
         int z = dstTo.getZ();
         for (BlockPos position : generatedStructures.get(type)) {
             double dst = position.getDistance(x, y, z);
-            if(dst < closest) {
+            if (dst < closest) {
                 closest = dst;
             }
         }
@@ -54,15 +56,20 @@ public class StructureGenBuffer extends CachedWorldData {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         for (StructureType type : StructureType.values()) {
-            generatedStructures.get(type).clear();
+            generatedStructures.get(type)
+                .clear();
         }
 
         for (StructureType type : StructureType.values()) {
-            NBTTagList list = compound.getTagList(type.name().toLowerCase(), Constants.NBT.TAG_COMPOUND);
+            NBTTagList list = compound.getTagList(
+                type.name()
+                    .toLowerCase(),
+                Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound cmp = list.getCompoundTagAt(i);
                 BlockPos pos = NBTUtils.readBlockPosFromNBT(cmp);
-                generatedStructures.get(type).add(pos);
+                generatedStructures.get(type)
+                    .add(pos);
             }
         }
     }
@@ -76,7 +83,10 @@ public class StructureGenBuffer extends CachedWorldData {
                 NBTUtils.writeBlockPosToNBT(pos, tag);
                 list.appendTag(tag);
             }
-            compound.setTag(type.name().toLowerCase(), list);
+            compound.setTag(
+                type.name()
+                    .toLowerCase(),
+                list);
         }
     }
 

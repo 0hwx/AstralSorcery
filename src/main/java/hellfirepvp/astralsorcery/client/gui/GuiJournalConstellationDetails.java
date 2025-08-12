@@ -8,6 +8,19 @@
 
 package hellfirepvp.astralsorcery.client.gui;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.gui.journal.GuiScreenJournal;
 import hellfirepvp.astralsorcery.client.gui.journal.page.IJournalPage;
@@ -18,18 +31,14 @@ import hellfirepvp.astralsorcery.client.util.TextureHelper;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
-import hellfirepvp.astralsorcery.common.constellation.*;
+import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
+import hellfirepvp.astralsorcery.common.constellation.IConstellation;
+import hellfirepvp.astralsorcery.common.constellation.IConstellationSpecialShowup;
+import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
+import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
+import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
+import hellfirepvp.astralsorcery.common.constellation.MoonPhase;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -40,8 +49,9 @@ import java.util.List;
  */
 public class GuiJournalConstellationDetails extends GuiScreenJournal {
 
-    //private static OverlayText.OverlayFontRenderer fontRenderer = new OverlayText.OverlayFontRenderer();
-    private static final BindableResource texArrow = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiJArrow");
+    // private static OverlayText.OverlayFontRenderer fontRenderer = new OverlayText.OverlayFontRenderer();
+    private static final BindableResource texArrow = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiJArrow");
 
     private IConstellation constellation;
     private GuiJournalConstellationCluster origin;
@@ -58,7 +68,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
         boolean has = false;
         for (String strConstellation : ResearchManager.clientProgress.getKnownConstellations()) {
             IConstellation ce = ConstellationRegistry.getConstellationByName(strConstellation);
-            if(ce != null && ce.equals(c)) {
+            if (ce != null && ce.equals(c)) {
                 has = true;
                 break;
             }
@@ -71,23 +81,25 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
     private void buildLines() {
         String unloc = constellation.getUnlocalizedName() + ".effect";
         String text = I18n.format(unloc);
-        if(unloc.equals(text)) return;
+        if (unloc.equals(text)) return;
 
         List<String> lines = new LinkedList<>();
         for (String segment : text.split("<NL>")) {
-            lines.addAll(Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(segment, IJournalPage.DEFAULT_WIDTH));
+            lines.addAll(
+                Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(segment, IJournalPage.DEFAULT_WIDTH));
             lines.add("");
         }
         locText.addAll(lines);
     }
 
     private void testPhases() {
-        if(constellation instanceof IWeakConstellation) {
+        if (constellation instanceof IWeakConstellation) {
             Collections.addAll(phases, MoonPhase.values());
-        } else if(constellation instanceof IMinorConstellation) {
-            //Why this way? To maintain phase-order.
+        } else if (constellation instanceof IMinorConstellation) {
+            // Why this way? To maintain phase-order.
             for (MoonPhase ph : MoonPhase.values()) {
-                if(((IMinorConstellation) constellation).getShowupMoonPhases().contains(ph)) {
+                if (((IMinorConstellation) constellation).getShowupMoonPhases()
+                    .contains(ph)) {
                     phases.add(ph);
                 }
             }
@@ -116,7 +128,8 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
     private void drawExtendedInformation() {
         float br = 0.8666F;
         GL11.glColor4f(br, br, br, 0.8F);
-        String info = I18n.format(constellation.getUnlocalizedInfo()).toUpperCase();
+        String info = I18n.format(constellation.getUnlocalizedInfo())
+            .toUpperCase();
         info = detailed ? info : "???";
         TextureHelper.refreshTextureBindState();
         FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
@@ -130,11 +143,11 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
         fr.drawString(info, 0, 0, 0xCCDDDDDD, true);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glPopMatrix();
-//        GL11.glColor4f(1F, 1F, 1F, 1F); // todo check
+        // GL11.glColor4f(1F, 1F, 1F, 1F); // todo check
         GL11.glColor4f(br, br, br, 0.8F);
         TextureHelper.refreshTextureBindState();
 
-        if(detailed && !locText.isEmpty()) {
+        if (detailed && !locText.isEmpty()) {
             int offsetX = 220, offsetY = 70;
             for (String s : locText) {
                 GL11.glPushMatrix();
@@ -143,36 +156,36 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
                 fr.drawString(s, 0, 0, 0xCCDDDDDD, true);
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
                 GL11.glPopMatrix();
-//                GL11.glColor4f(1F, 1F, 1F, 1F);
+                // GL11.glColor4f(1F, 1F, 1F, 1F);
                 GL11.glColor4f(br, br, br, 0.8F);
                 TextureHelper.refreshTextureBindState();
                 offsetY += 13;
             }
         }
 
-        /*texArrow.bind();
-        fontRenderer.font_size_multiplicator = 0.06F;
-        String pref = I18n.translateToLocal("constraint.description");
-        fontRenderer.drawString(pref, guiLeft + 228, guiTop + 60, zLevel, null, 0.7F, 0);
-
-        texArrow.bind();
-        fontRenderer.font_size_multiplicator = 0.05F;
-        SizeConstraint sc = constellation.getSizeConstraint();
-        String trSize = I18n.translateToLocal(sc.getUnlocalizedName());
-        fontRenderer.drawString("- " + trSize, guiLeft + 228, guiTop + 85, zLevel, null, 0.7F, 0);
-
-        List<RitualConstraint> constrList = constellation.getConstraints();
-        for (int i = 0; i < constrList.size(); i++) {
-            RitualConstraint cstr = constrList.get(i);
-            String str = I18n.translateToLocal(cstr.getUnlocalizedName());
-            texArrow.bind();
-            fontRenderer.font_size_multiplicator = 0.05F;
-            fontRenderer.drawString("- " + str, guiLeft + 228, guiTop + 107 + (i * 22), zLevel, null, 0.7F, 0);
-        }*/
+        /*
+         * texArrow.bind();
+         * fontRenderer.font_size_multiplicator = 0.06F;
+         * String pref = I18n.translateToLocal("constraint.description");
+         * fontRenderer.drawString(pref, guiLeft + 228, guiTop + 60, zLevel, null, 0.7F, 0);
+         * texArrow.bind();
+         * fontRenderer.font_size_multiplicator = 0.05F;
+         * SizeConstraint sc = constellation.getSizeConstraint();
+         * String trSize = I18n.translateToLocal(sc.getUnlocalizedName());
+         * fontRenderer.drawString("- " + trSize, guiLeft + 228, guiTop + 85, zLevel, null, 0.7F, 0);
+         * List<RitualConstraint> constrList = constellation.getConstraints();
+         * for (int i = 0; i < constrList.size(); i++) {
+         * RitualConstraint cstr = constrList.get(i);
+         * String str = I18n.translateToLocal(cstr.getUnlocalizedName());
+         * texArrow.bind();
+         * fontRenderer.font_size_multiplicator = 0.05F;
+         * fontRenderer.drawString("- " + str, guiLeft + 228, guiTop + 107 + (i * 22), zLevel, null, 0.7F, 0);
+         * }
+         */
     }
 
     private void drawPhaseInformation() {
-        if(constellation instanceof IConstellationSpecialShowup) {
+        if (constellation instanceof IConstellationSpecialShowup) {
             GL11.glDisable(GL11.GL_DEPTH_TEST);
             double scale = 1.8;
             TextureHelper.refreshTextureBindState();
@@ -185,7 +198,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
             GL11.glScaled(scale, scale, scale);
             fr.drawStringWithShadow("? ? ?", 0, 0, 0xCCDDDDDD);
             GL11.glPopMatrix();
-//            GL11.glColor4f(1, 1, 1, 1);
+            // GL11.glColor4f(1, 1, 1, 1);
             GL11.glColor4f(1, 1, 1, 1);
             TextureHelper.refreshTextureBindState();
             GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -198,7 +211,8 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
             int offsetY = 199 + guiTop;
             for (int i = 0; i < phases.size(); i++) {
                 MoonPhase ph = phases.get(i);
-                MoonPhaseRenderHelper.getMoonPhaseTexture(ph).bind();
+                MoonPhaseRenderHelper.getMoonPhaseTexture(ph)
+                    .bind();
                 drawRect(offsetX + (i * (size + 2)), offsetY, size, size);
             }
         }
@@ -207,7 +221,8 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
     private void drawConstellation() {
         float br = 0.866F;
         GL11.glColor4f(br, br, br, 0.8F);
-        String name = I18n.format(constellation.getUnlocalizedName()).toUpperCase();
+        String name = I18n.format(constellation.getUnlocalizedName())
+            .toUpperCase();
         TextureHelper.refreshTextureBindState();
         FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         double width = fr.getStringWidth(name);
@@ -219,13 +234,13 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
         fr.drawString(name, 0, 0, 0xCCDDDDDD, true);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glPopMatrix();
-//        GL11.glColor4f(1F, 1F, 1F, 1F);
+        // GL11.glColor4f(1F, 1F, 1F, 1F);
         GL11.glColor4f(br, br, br, 0.8F);
         TextureHelper.refreshTextureBindState();
         String dstInfo = "astralsorcery.journal.constellation.dst.";
-        if(constellation instanceof IMajorConstellation) {
+        if (constellation instanceof IMajorConstellation) {
             dstInfo += "major";
-        } else if(constellation instanceof IWeakConstellation) {
+        } else if (constellation instanceof IWeakConstellation) {
             dstInfo += "weak";
         } else {
             dstInfo += "minor";
@@ -243,18 +258,30 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
         fr.drawString(dstInfo, 0, 0, 0xCCDDDDDD, true);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glPopMatrix();
-//        GL11.glColor4f(1F, 1F, 1F, 1F);
+        // GL11.glColor4f(1F, 1F, 1F, 1F);
         GL11.glColor4f(br, br, br, 0.8F);
         TextureHelper.refreshTextureBindState();
 
         GL11.glEnable(GL11.GL_BLEND);
         Blending.DEFAULT.apply();
-        RenderConstellation.renderConstellationIntoGUI(new Color(0x00DDDDDD), constellation, guiLeft + 25, guiTop + 60, zLevel, 170, 170, 2F, new RenderConstellation.BrightnessFunction() {
-            @Override
-            public float getBrightness() {
-                return 0.5F;
-            }
-        }, true, false);
+        RenderConstellation.renderConstellationIntoGUI(
+            new Color(0x00DDDDDD),
+            constellation,
+            guiLeft + 25,
+            guiTop + 60,
+            zLevel,
+            170,
+            170,
+            2F,
+            new RenderConstellation.BrightnessFunction() {
+
+                @Override
+                public float getBrightness() {
+                    return 0.5F;
+                }
+            },
+            true,
+            false);
     }
 
     private void drawBackArrow(float partialTicks) {
@@ -265,7 +292,7 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
         GL11.glPushMatrix();
         GL11.glTranslated(rectBack.getX() + (width / 2), rectBack.getY() + (height / 2), 0);
         float uFrom = 0F, vFrom = 0.5F;
-        if(rectBack.contains(mouse)) {
+        if (rectBack.contains(mouse)) {
             uFrom = 0.5F;
             GL11.glScaled(1.1, 1.1, 1.1);
         } else {
@@ -284,23 +311,27 @@ public class GuiJournalConstellationDetails extends GuiScreenJournal {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        if(mouseButton != 0) return;
+        if (mouseButton != 0) return;
         Point p = new Point(mouseX, mouseY);
-        if(rectResearchBookmark != null && rectResearchBookmark.contains(p)) {
+        if (rectResearchBookmark != null && rectResearchBookmark.contains(p)) {
             GuiJournalProgression.resetJournal();
-            Minecraft.getMinecraft().displayGuiScreen(GuiJournalProgression.getJournalInstance());
+            Minecraft.getMinecraft()
+                .displayGuiScreen(GuiJournalProgression.getJournalInstance());
             return;
         }
-        if(rectConstellationBookmark != null && rectConstellationBookmark.contains(p)) {
-            Minecraft.getMinecraft().displayGuiScreen(GuiJournalConstellationCluster.getConstellationScreen());
+        if (rectConstellationBookmark != null && rectConstellationBookmark.contains(p)) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(GuiJournalConstellationCluster.getConstellationScreen());
             return;
         }
-        if(rectPerkMapBookmark != null && rectPerkMapBookmark.contains(p)) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiJournalPerkMap());
+        if (rectPerkMapBookmark != null && rectPerkMapBookmark.contains(p)) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(new GuiJournalPerkMap());
             return;
         }
-        if(rectBack != null && rectBack.contains(p)) {
-            Minecraft.getMinecraft().displayGuiScreen(origin);
+        if (rectBack != null && rectBack.contains(p)) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(origin);
         }
     }
 
