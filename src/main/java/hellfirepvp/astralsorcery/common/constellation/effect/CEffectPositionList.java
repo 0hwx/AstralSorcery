@@ -8,13 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect;
 
+import javax.annotation.Nullable;
+
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
-import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ILocatable;
-
-
-import javax.annotation.Nullable;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -25,7 +23,8 @@ import javax.annotation.Nullable;
  */
 public abstract class CEffectPositionList extends CEffectPositionListGen<GenListEntries.SimpleBlockPosEntry> {
 
-    public CEffectPositionList(@Nullable ILocatable origin, IWeakConstellation c, String cfgName, int searchRange, int maxCount, Verifier verifier) {
+    public CEffectPositionList(@Nullable ILocatable origin, IWeakConstellation c, String cfgName, int searchRange,
+        int maxCount, Verifier verifier) {
         super(origin, c, cfgName, searchRange, maxCount, verifier, GenListEntries.SimpleBlockPosEntry::new);
     }
 
@@ -36,7 +35,7 @@ public abstract class CEffectPositionList extends CEffectPositionListGen<GenList
     @Nullable
     public BlockPos getRandomPosition() {
         GenListEntries.SimpleBlockPosEntry entry = getRandomElementByChance(rand);
-        if(entry != null) {
+        if (entry != null) {
             return entry.getPos();
         }
         return null;

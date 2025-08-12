@@ -8,19 +8,20 @@
 
 package hellfirepvp.astralsorcery.common.base;
 
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.block.BlockCustomOre;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
-import hellfirepvp.astralsorcery.common.util.ItemUtils;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.util.ItemUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,28 +32,35 @@ import java.util.List;
  */
 public class LightOreTransmutations {
 
-    public static List<Transmutation> mtTransmutations = new LinkedList<>(); //Minetweaker cache
+    public static List<Transmutation> mtTransmutations = new LinkedList<>(); // Minetweaker cache
     private static List<Transmutation> registeredTransmutations = new LinkedList<>();
 
     private static List<Transmutation> localFallback = new LinkedList<>();
 
     public static void init() {
-//        registerTransmutation(new Transmutation(Blocks.MAGMA,Blocks.obsidian,400.0D));
-        registerTransmutation(new Transmutation(Blocks.sand,Blocks.clay,400.0D));
-        registerTransmutation(new Transmutation(Blocks.diamond_ore,  Blocks.emerald_ore, 1000.0D));
-        registerTransmutation(new Transmutation(Blocks.nether_wart,  Blocks.soul_sand, 200.0D));
-//        registerTransmutation(new Transmutation(Blocks.SEA_LANTERN.getDefaultState(),        Blocks.LAPIS_BLOCK.getDefaultState(),  200.0D));
-        registerTransmutation(new Transmutation(Blocks.sandstone,Blocks.end_stone, 200.0D));
-        registerTransmutation(new Transmutation(Blocks.netherrack,Blocks.nether_brick, 200.0D));
+        // registerTransmutation(new Transmutation(Blocks.MAGMA,Blocks.obsidian,400.0D));
+        registerTransmutation(new Transmutation(Blocks.sand, Blocks.clay, 400.0D));
+        registerTransmutation(new Transmutation(Blocks.diamond_ore, Blocks.emerald_ore, 1000.0D));
+        registerTransmutation(new Transmutation(Blocks.nether_wart, Blocks.soul_sand, 200.0D));
+        // registerTransmutation(new Transmutation(Blocks.SEA_LANTERN.getDefaultState(),
+        // Blocks.LAPIS_BLOCK.getDefaultState(), 200.0D));
+        registerTransmutation(new Transmutation(Blocks.sandstone, Blocks.end_stone, 200.0D));
+        registerTransmutation(new Transmutation(Blocks.netherrack, Blocks.nether_brick, 200.0D));
 
         registerTransmutation(new Transmutation(Blocks.iron_ore, BlocksAS.customOre, 100));
-        registerTransmutation(new Transmutation(Blocks.pumpkin, Blocks.cake, new ItemStack(Blocks.pumpkin), new ItemStack(Items.cake), 600.0D));
+        registerTransmutation(
+            new Transmutation(
+                Blocks.pumpkin,
+                Blocks.cake,
+                new ItemStack(Blocks.pumpkin),
+                new ItemStack(Items.cake),
+                600.0D));
 
         cacheLocalFallback();
     }
 
     private static void cacheLocalFallback() {
-        if(localFallback.isEmpty()) {
+        if (localFallback.isEmpty()) {
             localFallback.addAll(registeredTransmutations);
         }
     }
@@ -64,11 +72,11 @@ public class LightOreTransmutations {
 
     public static Transmutation tryRemoveTransmutation(ItemStack outRemove, boolean matchMeta) {
         Block b = Block.getBlockFromItem(outRemove.getItem());
-        if(b != null) {
+        if (b != null) {
             for (Transmutation tr : registeredTransmutations) {
-                if(tr.output.equals(b)) {
+                if (tr.output.equals(b)) {
 
-                    if(!matchMeta) { // || tr.output.getMeta(tr.output) == outRemove.getItemDamage()) {
+                    if (!matchMeta) { // || tr.output.getMeta(tr.output) == outRemove.getItemDamage()) {
                         registeredTransmutations.remove(tr);
                         return tr;
                     }
@@ -76,7 +84,7 @@ public class LightOreTransmutations {
             }
         }
         for (Transmutation tr : registeredTransmutations) {
-            if(tr.outStack != null && ItemUtils.matchStackLoosely(tr.outStack, outRemove)) {
+            if (tr.outStack != null && ItemUtils.matchStackLoosely(tr.outStack, outRemove)) {
                 registeredTransmutations.remove(tr);
                 return tr;
             }
@@ -84,24 +92,26 @@ public class LightOreTransmutations {
         return null;
     }
 
-    //Will return itself if successful.
+    // Will return itself if successful.
     @Nullable
     public static Transmutation registerTransmutation(Transmutation tr) {
         for (Transmutation t : registeredTransmutations) {
-            if(t.input.equals(tr.input)) {
-                AstralSorcery.log.warn("Tried to register Transmutation that has the same input as an already existing one.");
+            if (t.input.equals(tr.input)) {
+                AstralSorcery.log
+                    .warn("Tried to register Transmutation that has the same input as an already existing one.");
                 return null;
             }
         }
-        if(tr.input == null) {
+        if (tr.input == null) {
             AstralSorcery.log.warn("Tried to register Transmutation with null input - Skipping!");
             return null;
         }
-        if(tr.input.equals(Blocks.crafting_table)) {
-            AstralSorcery.log.warn("Cannot register Transmutation of iron workbench -> something. By default occupied by general crafting which is handled differently.");
+        if (tr.input.equals(Blocks.crafting_table)) {
+            AstralSorcery.log.warn(
+                "Cannot register Transmutation of iron workbench -> something. By default occupied by general crafting which is handled differently.");
             return null;
         }
-        if(tr.output == null) {
+        if (tr.output == null) {
             AstralSorcery.log.warn("Tried to register Transmutation with null output - Skipping!");
             return null;
         }
@@ -116,10 +126,10 @@ public class LightOreTransmutations {
     @Nullable
     public static Transmutation searchForTransmutation(Block tryStateIn) {
         for (Transmutation tr : registeredTransmutations) {
-            if(tr.input.equals(tryStateIn)) return tr;
+            if (tr.input.equals(tryStateIn)) return tr;
         }
         for (Transmutation tr : mtTransmutations) {
-            if(tr.input.equals(tryStateIn)) return tr;
+            if (tr.input.equals(tryStateIn)) return tr;
         }
         return null;
     }
@@ -139,7 +149,8 @@ public class LightOreTransmutations {
             this(input, output, null, null, cost);
         }
 
-        public Transmutation(Block input, Block output, @Nullable ItemStack inputDisplay, @Nullable ItemStack outputDisplay, double cost) {
+        public Transmutation(Block input, Block output, @Nullable ItemStack inputDisplay,
+            @Nullable ItemStack outputDisplay, double cost) {
             this.input = input;
             this.output = output;
             this.cost = cost;
@@ -157,7 +168,7 @@ public class LightOreTransmutations {
 
         @Nullable
         public ItemStack getOutputDisplayStack() {
-            if(outStack != null) {
+            if (outStack != null) {
                 return outStack.copy();
             }
             return ItemUtils.createBlockStack(output);

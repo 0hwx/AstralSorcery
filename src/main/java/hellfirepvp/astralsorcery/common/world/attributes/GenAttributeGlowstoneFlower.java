@@ -8,19 +8,16 @@
 
 package hellfirepvp.astralsorcery.common.world.attributes;
 
-import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.common.block.BlockCustomFlower;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.world.WorldGenAttributeCommon;
+import java.util.Random;
+
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.Collection;
-import java.util.Random;
+import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.world.WorldGenAttributeCommon;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -39,31 +36,36 @@ public class GenAttributeGlowstoneFlower extends WorldGenAttributeCommon {
     }
 
     private boolean isApplicableBiome(World world, BlockPos pos) {
-        if(cfgEntry.shouldIgnoreBiomeSpecifications()) return true;
+        if (cfgEntry.shouldIgnoreBiomeSpecifications()) return true;
 
-//        BiomeGenBase b = world.getBiomeGenForCoords(pos.getX(), pos.getZ());
-//        Collection<BiomeDictionary.Type> types = Lists.newArrayList(BiomeDictionary.getTypesForBiome(b));
-//        if(types.isEmpty()) return false;
+        // BiomeGenBase b = world.getBiomeGenForCoords(pos.getX(), pos.getZ());
+        // Collection<BiomeDictionary.Type> types = Lists.newArrayList(BiomeDictionary.getTypesForBiome(b));
+        // if(types.isEmpty()) return false;
         boolean applicable = false;
-//        for (BiomeDictionary.Type t : types) {
-//            if (cfgEntry.getTypes().contains(t)) applicable = true;
-//        }
+        // for (BiomeDictionary.Type t : types) {
+        // if (cfgEntry.getTypes().contains(t)) applicable = true;
+        // }
         return applicable;
     }
 
     @Override
     protected void loadAdditionalConfigEntries(Configuration cfg) {
-        ignoreSnowCondition = cfg.getBoolean("ignoreSnowCondition", cfgEntry.getConfigurationSection(), false, "Set this to true and the decorator will ignore the spawn-condition if snow is/can fall in the area.");
+        ignoreSnowCondition = cfg.getBoolean(
+            "ignoreSnowCondition",
+            cfgEntry.getConfigurationSection(),
+            false,
+            "Set this to true and the decorator will ignore the spawn-condition if snow is/can fall in the area.");
     }
 
     @Override
     public void generate(BlockPos pos, World world, Random rand) {
-        world.setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.customFlower);//.getDefaultState().withProperty(BlockCustomFlower.FLOWER_TYPE, BlockCustomFlower.FlowerType.GLOW_FLOWER));
-        if(!isGeneratingAdditional) {
+        world.setBlock(pos.getX(), pos.getY(), pos.getZ(), BlocksAS.customFlower);// .getDefaultState().withProperty(BlockCustomFlower.FLOWER_TYPE,
+                                                                                  // BlockCustomFlower.FlowerType.GLOW_FLOWER));
+        if (!isGeneratingAdditional) {
             isGeneratingAdditional = true;
             try {
                 for (int i = 0; i < 8; i++) {
-                    if(rand.nextInt(4) == 0) {
+                    if (rand.nextInt(4) == 0) {
                         tryGenerateAtPosition(randomOffset(world, pos, rand, 7), world, rand);
                     }
                 }
@@ -82,16 +84,31 @@ public class GenAttributeGlowstoneFlower extends WorldGenAttributeCommon {
 
     @Override
     public boolean fulfillsSpecificConditions(BlockPos pos, World world, Random random) {
-        return isApplicableBiome(world, pos) &&
-                pos.getY() >= cfgEntry.getMinY() && pos.getY() <= cfgEntry.getMaxY() &&
-                world.getBlock(pos.down().getX(), pos.down().getY(), pos.down().getZ()).isSideSolid(world, pos.down().getX(), pos.down().getY(), pos.down().getZ(), ForgeDirection.UP) &&
-                (ignoreSnowCondition || world.canSnowAtBody(pos.getX(), pos.getY(),pos.getZ(), true));
+        return isApplicableBiome(world, pos) && pos.getY() >= cfgEntry.getMinY()
+            && pos.getY() <= cfgEntry.getMaxY()
+            && world.getBlock(
+                pos.down()
+                    .getX(),
+                pos.down()
+                    .getY(),
+                pos.down()
+                    .getZ())
+                .isSideSolid(
+                    world,
+                    pos.down()
+                        .getX(),
+                    pos.down()
+                        .getY(),
+                    pos.down()
+                        .getZ(),
+                    ForgeDirection.UP)
+            && (ignoreSnowCondition || world.canSnowAtBody(pos.getX(), pos.getY(), pos.getZ(), true));
     }
 
     @Override
     public BlockPos getGenerationPosition(int chX, int chZ, World world, Random rand) {
-        int rX = (chX  * 16) + rand.nextInt(16) + 8;
-        int rZ = (chZ  * 16) + rand.nextInt(16) + 8;
+        int rX = (chX * 16) + rand.nextInt(16) + 8;
+        int rZ = (chZ * 16) + rand.nextInt(16) + 8;
         int rY = world.getPrecipitationHeight(rX, rZ);
         return new BlockPos(rX, rY, rZ);
     }

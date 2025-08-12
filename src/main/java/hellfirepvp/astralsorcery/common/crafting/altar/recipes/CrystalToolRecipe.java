@@ -8,6 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import net.minecraft.item.ItemStack;
+
 import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import hellfirepvp.astralsorcery.common.crafting.helper.AbstractCacheableRecipe;
 import hellfirepvp.astralsorcery.common.crafting.helper.ShapeMap;
@@ -16,11 +23,6 @@ import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
 import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
 import hellfirepvp.astralsorcery.common.item.tool.ItemCrystalToolBase;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -49,11 +51,13 @@ public class CrystalToolRecipe extends DiscoveryRecipe {
         List<CrystalProperties> prop = new LinkedList<>();
         for (ShapedRecipeSlot slot : positions) {
             ItemHandle handle = centralGridMap.get(slot);
-            if(handle == null) continue;
-            if(handle.getApplicableItems().size() != 1) continue; //Force it to be the crystal. and only the crystal.
-            ItemStack stack = handle.getApplicableItems().get(0);
+            if (handle == null) continue;
+            if (handle.getApplicableItems()
+                .size() != 1) continue; // Force it to be the crystal. and only the crystal.
+            ItemStack stack = handle.getApplicableItems()
+                .get(0);
             CrystalProperties c = CrystalProperties.getCrystalProperties(stack);
-            if(c == null) continue;
+            if (c == null) continue;
             prop.add(c);
         }
         ItemCrystalToolBase.setToolProperties(toolOut, ToolCrystalProperties.merge(prop));

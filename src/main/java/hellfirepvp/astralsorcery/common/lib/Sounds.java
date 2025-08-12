@@ -8,7 +8,6 @@
 
 package hellfirepvp.astralsorcery.common.lib;
 
-import hellfirepvp.astralsorcery.common.util.SoundUtils;
 import net.minecraft.util.ResourceLocation;
 
 /**

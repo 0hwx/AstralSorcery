@@ -8,8 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.crafting.helper;
 
-import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
-import hellfirepvp.astralsorcery.common.crafting.ShapedLightProximityRecipe;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,13 +22,9 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
+import hellfirepvp.astralsorcery.common.crafting.ShapedLightProximityRecipe;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -36,8 +37,8 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
 
     protected ShapeMap crafingShape = new ShapeMap();
 
-    //If set to true, forces the exact places specified in the craftingShape map.
-    //If set to false, the pattern the recipe is made of can be placed wherever in the 3x3 main grid.
+    // If set to true, forces the exact places specified in the craftingShape map.
+    // If set to false, the pattern the recipe is made of can be placed wherever in the 3x3 main grid.
     private boolean forceEmptySpaces = false;
 
     public ShapedRecipe(Block output) {
@@ -62,7 +63,7 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
 
     public ShapedRecipe addPart(ItemStack stack, ShapedRecipeSlot... slots) {
         ItemHandle handle = new ItemHandle(stack);
-        for(ShapedRecipeSlot slot : slots) {
+        for (ShapedRecipeSlot slot : slots) {
             crafingShape.put(slot, handle);
         }
         return this;
@@ -70,7 +71,7 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
 
     public ShapedRecipe addPart(FluidStack fluidStack, ShapedRecipeSlot... slots) {
         ItemHandle handle = new ItemHandle(fluidStack);
-        for(ShapedRecipeSlot slot : slots) {
+        for (ShapedRecipeSlot slot : slots) {
             crafingShape.put(slot, handle);
         }
         return this;
@@ -86,14 +87,14 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
 
     public ShapedRecipe addPart(String oreDictName, ShapedRecipeSlot... slots) {
         ItemHandle handle = new ItemHandle(oreDictName);
-        for(ShapedRecipeSlot slot : slots) {
+        for (ShapedRecipeSlot slot : slots) {
             crafingShape.put(slot, handle);
         }
         return this;
     }
 
     public ShapedRecipe addPart(ItemHandle handle, ShapedRecipeSlot... slots) {
-        for(ShapedRecipeSlot slot : slots) {
+        for (ShapedRecipeSlot slot : slots) {
             crafingShape.put(slot, handle);
         }
         return this;
@@ -106,18 +107,20 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
 
     @Override
     public void register() {
-        CraftingManager.getInstance().addRecipe(null, make());
+        CraftingManager.getInstance()
+            .addRecipe(null, make());
     }
 
     @Override
     public AccessibleRecipeAdapater make() {
-//        return new AccessibleRecipeAdapater(RecipeHelper.getShapedOredictRecipe(getOutput(), getNativeObjOutArray()), this);
+        // return new AccessibleRecipeAdapater(RecipeHelper.getShapedOredictRecipe(getOutput(), getNativeObjOutArray()),
+        // this);
         return null;
     }
 
     @Override
     public IRecipe makeNative() {
-//        return RecipeHelper.getShapedOredictRecipe(getOutput(), getNativeObjOutArray());
+        // return RecipeHelper.getShapedOredictRecipe(getOutput(), getNativeObjOutArray());
         return null;
     }
 
@@ -129,11 +132,26 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
         Counter c = new Counter();
         c.count = 0;
         Map<ItemHandle, Character> shapeCharacters = new HashMap<>();
-        String upperRow = refactorRow(ShapedRecipeSlot.UPPER_LEFT, ShapedRecipeSlot.UPPER_CENTER, ShapedRecipeSlot.UPPER_RIGHT, shapeCharacters, c);
-        String middleRow = refactorRow(ShapedRecipeSlot.LEFT, ShapedRecipeSlot.CENTER, ShapedRecipeSlot.RIGHT, shapeCharacters, c);
-        String lowerRow = refactorRow(ShapedRecipeSlot.LOWER_LEFT, ShapedRecipeSlot.LOWER_CENTER, ShapedRecipeSlot.LOWER_RIGHT, shapeCharacters, c);
-        if(forceEmptySpaces) {
-            int arrayLength = 3 + (shapeCharacters.size() * 2); //ForEach 1 ItemStack, 1 Character.
+        String upperRow = refactorRow(
+            ShapedRecipeSlot.UPPER_LEFT,
+            ShapedRecipeSlot.UPPER_CENTER,
+            ShapedRecipeSlot.UPPER_RIGHT,
+            shapeCharacters,
+            c);
+        String middleRow = refactorRow(
+            ShapedRecipeSlot.LEFT,
+            ShapedRecipeSlot.CENTER,
+            ShapedRecipeSlot.RIGHT,
+            shapeCharacters,
+            c);
+        String lowerRow = refactorRow(
+            ShapedRecipeSlot.LOWER_LEFT,
+            ShapedRecipeSlot.LOWER_CENTER,
+            ShapedRecipeSlot.LOWER_RIGHT,
+            shapeCharacters,
+            c);
+        if (forceEmptySpaces) {
+            int arrayLength = 3 + (shapeCharacters.size() * 2); // ForEach 1 ItemStack, 1 Character.
             Object[] recipeObjArray = new Object[arrayLength];
             recipeObjArray[0] = upperRow;
             recipeObjArray[1] = middleRow;
@@ -144,21 +162,27 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
         } else {
             String[] recipeTrimmed = trimRecipeStrings(upperRow, middleRow, lowerRow);
             int point = 0;
-            if(!recipeTrimmed[0].trim().isEmpty()) point++;
-            if(!recipeTrimmed[1].trim().isEmpty()) point++;
-            if(!recipeTrimmed[2].trim().isEmpty()) point++;
-            int arrayLength = point + (shapeCharacters.size() * 2); //ForEach 1 ItemStack, 1 Character.
+            if (!recipeTrimmed[0].trim()
+                .isEmpty()) point++;
+            if (!recipeTrimmed[1].trim()
+                .isEmpty()) point++;
+            if (!recipeTrimmed[2].trim()
+                .isEmpty()) point++;
+            int arrayLength = point + (shapeCharacters.size() * 2); // ForEach 1 ItemStack, 1 Character.
             Object[] recipeObjArray = new Object[arrayLength];
             int pointer = 0;
-            if(!recipeTrimmed[0].trim().isEmpty()) {
+            if (!recipeTrimmed[0].trim()
+                .isEmpty()) {
                 recipeObjArray[pointer] = recipeTrimmed[0];
                 pointer++;
             }
-            if(!recipeTrimmed[1].trim().isEmpty()) {
+            if (!recipeTrimmed[1].trim()
+                .isEmpty()) {
                 recipeObjArray[pointer] = recipeTrimmed[1];
                 pointer++;
             }
-            if(!recipeTrimmed[2].trim().isEmpty()) {
+            if (!recipeTrimmed[2].trim()
+                .isEmpty()) {
                 recipeObjArray[pointer] = recipeTrimmed[2];
             }
             addToArray(shapeCharacters, recipeObjArray, point);
@@ -173,9 +197,9 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
             boolean mayRemove = true;
             for (int j = 0; j < 3; j++) {
                 String str = out[j];
-                if(str.charAt(i) != ' ') mayRemove = false;
+                if (str.charAt(i) != ' ') mayRemove = false;
             }
-            if(mayRemove) {
+            if (mayRemove) {
                 cutIndices.add(i);
             }
         }
@@ -189,7 +213,7 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
         char[] out = new char[in.length - toRemove.size()];
         int outPointer = 0;
         for (int i = 0; i < in.length; i++) {
-            if(!toRemove.contains(i)) {
+            if (!toRemove.contains(i)) {
                 out[outPointer] = in[i];
                 outPointer++;
             }
@@ -211,7 +235,7 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
     }
 
     private void addToArray(Map<ItemHandle, Character> shapeCharacters, Object[] recipeObjArray, int arrayPointer) {
-        for(ItemHandle key : shapeCharacters.keySet()) {
+        for (ItemHandle key : shapeCharacters.keySet()) {
             Character value = shapeCharacters.get(key);
             recipeObjArray[arrayPointer] = value;
             arrayPointer++;
@@ -220,20 +244,22 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
         }
     }
 
-    private String refactorRow(ShapedRecipeSlot first, ShapedRecipeSlot second, ShapedRecipeSlot third, Map<ItemHandle, Character> characterMap, Counter craftingPointer) {
+    private String refactorRow(ShapedRecipeSlot first, ShapedRecipeSlot second, ShapedRecipeSlot third,
+        Map<ItemHandle, Character> characterMap, Counter craftingPointer) {
         StringBuilder builder = new StringBuilder();
-        if(append(first, builder, craftingPointer, characterMap)) craftingPointer.count++;
-        if(append(second, builder, craftingPointer, characterMap)) craftingPointer.count++;
-        if(append(third, builder, craftingPointer, characterMap)) craftingPointer.count++;
+        if (append(first, builder, craftingPointer, characterMap)) craftingPointer.count++;
+        if (append(second, builder, craftingPointer, characterMap)) craftingPointer.count++;
+        if (append(third, builder, craftingPointer, characterMap)) craftingPointer.count++;
         return builder.toString();
     }
 
-    private boolean append(ShapedRecipeSlot slot, StringBuilder builder, Counter craftingPointer, Map<ItemHandle, Character> characterMap) {
+    private boolean append(ShapedRecipeSlot slot, StringBuilder builder, Counter craftingPointer,
+        Map<ItemHandle, Character> characterMap) {
         boolean increment = false;
-        if(crafingShape.get(slot) != null) {
+        if (crafingShape.get(slot) != null) {
             ItemHandle firstStack = crafingShape.get(slot);
             Character toAdd;
-            if(characterMap.containsKey(firstStack)) {
+            if (characterMap.containsKey(firstStack)) {
                 toAdd = characterMap.get(firstStack);
             } else {
                 toAdd = refactorCraftingPointer(craftingPointer.count);
@@ -242,24 +268,33 @@ public class ShapedRecipe extends AbstractCacheableRecipe {
             }
             builder.append(toAdd);
         } else {
-            builder.append(" "); //Nothing.
+            builder.append(" "); // Nothing.
         }
         return increment;
     }
 
     private Character refactorCraftingPointer(int pointer) {
         switch (pointer) {
-            case 0: return 'A';
-            case 1: return 'B';
-            case 2: return 'C';
-            case 3: return 'D';
-            case 4: return 'E';
-            case 5: return 'F';
-            case 6: return 'G';
-            case 7: return 'H';
-            case 8: return 'I';
+            case 0:
+                return 'A';
+            case 1:
+                return 'B';
+            case 2:
+                return 'C';
+            case 3:
+                return 'D';
+            case 4:
+                return 'E';
+            case 5:
+                return 'F';
+            case 6:
+                return 'G';
+            case 7:
+                return 'H';
+            case 8:
+                return 'I';
         }
-        return null; //Only 9 crafting slots.
+        return null; // Only 9 crafting slots.
     }
 
     private class Counter {

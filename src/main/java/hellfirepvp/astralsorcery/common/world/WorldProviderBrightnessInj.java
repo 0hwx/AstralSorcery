@@ -8,8 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.world;
 
-import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
-import hellfirepvp.astralsorcery.common.constellation.distribution.WorldSkyHandler;
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -19,12 +19,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.client.IRenderHandler;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
+import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
+import hellfirepvp.astralsorcery.common.constellation.distribution.WorldSkyHandler;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -44,23 +44,24 @@ public class WorldProviderBrightnessInj extends WorldProvider {
     }
 
     private WorldSkyHandler getSkyHandler() {
-        return ConstellationSkyHandler.getInstance().getWorldHandler(parentWorld);
+        return ConstellationSkyHandler.getInstance()
+            .getWorldHandler(parentWorld);
     }
 
-//    @Override
-//    public DimensionType getDimensionType() {
-//        return parentOvrProvider.getDimensionType();
-//    }
+    // @Override
+    // public DimensionType getDimensionType() {
+    // return parentOvrProvider.getDimensionType();
+    // }
 
-//    @Override
-//    public IChunkProvider createChunkGenerator() {
-//        return parentOvrProvider.createChunkGenerator();
-//    }
+    // @Override
+    // public IChunkProvider createChunkGenerator() {
+    // return parentOvrProvider.createChunkGenerator();
+    // }
 
-//    @Override
-//    public WorldBorder createWorldBorder() {
-//        return parentOvrProvider.createWorldBorder();
-//    }
+    // @Override
+    // public WorldBorder createWorldBorder() {
+    // return parentOvrProvider.createWorldBorder();
+    // }
 
     @Override
     public boolean canCoordinateBeSpawn(int x, int z) {
@@ -93,8 +94,7 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.canDoLightning(chunk);
     }
 
-    public BiomeGenBase getBiomeGenForCoords(int x, int z)
-    {
+    public BiomeGenBase getBiomeGenForCoords(int x, int z) {
         return parentWorld.getBiomeGenForCoordsBody(x, z);
     }
 
@@ -103,20 +103,20 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.getRandomizedSpawnPoint();
     }
 
-//    @Override
-//    public BlockPos getSpawnCoordinate() {
-//        return parentOvrProvider.getSpawnCoordinate();
-//    }
+    // @Override
+    // public BlockPos getSpawnCoordinate() {
+    // return parentOvrProvider.getSpawnCoordinate();
+    // }
 
     @Override
     public ChunkCoordinates getSpawnPoint() {
         return parentOvrProvider.getSpawnPoint();
     }
 
-//    @Override
-//    public boolean getHasNoSky() {
-//        return parentOvrProvider.getHasNoSky();
-//    }
+    // @Override
+    // public boolean getHasNoSky() {
+    // return parentOvrProvider.getHasNoSky();
+    // }
 
     @Override
     public double getHorizon() {
@@ -127,10 +127,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
     @SideOnly(Side.CLIENT)
     public float getSunBrightness(float parTicks) {
         WorldSkyHandler handle = getSkyHandler();
-        if(handle != null) {
+        if (handle != null) {
             float sunBr = parentWorld.getSunBrightnessBody(parTicks);
             int eclTick = handle.solarEclipseTick;
-            if (eclTick >= ConstellationSkyHandler.SOLAR_ECLIPSE_HALF_DUR) { //fading out
+            if (eclTick >= ConstellationSkyHandler.SOLAR_ECLIPSE_HALF_DUR) { // fading out
                 eclTick -= ConstellationSkyHandler.SOLAR_ECLIPSE_HALF_DUR;
             } else {
                 eclTick = ConstellationSkyHandler.SOLAR_ECLIPSE_HALF_DUR - eclTick;
@@ -144,11 +144,11 @@ public class WorldProviderBrightnessInj extends WorldProvider {
     @Override
     public float getSunBrightnessFactor(float parTicks) {
         WorldSkyHandler handle = getSkyHandler();
-        if(handle != null) {
+        if (handle != null) {
             if (handle.dayOfSolarEclipse && handle.solarEclipse) {
                 float sunBr = parentWorld.getSunBrightnessFactor(parTicks);
                 int eclTick = handle.solarEclipseTick;
-                if (eclTick >= ConstellationSkyHandler.SOLAR_ECLIPSE_HALF_DUR) { //fading out
+                if (eclTick >= ConstellationSkyHandler.SOLAR_ECLIPSE_HALF_DUR) { // fading out
                     eclTick -= ConstellationSkyHandler.SOLAR_ECLIPSE_HALF_DUR;
                 } else {
                     eclTick = ConstellationSkyHandler.SOLAR_ECLIPSE_HALF_DUR - eclTick;
@@ -180,10 +180,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.getStarBrightness(par1);
     }
 
-//    @Override
-//    public float[] getLightBrightnessTable() {
-//        return parentOvrProvider.getLightBrightnessTable();
-//    }
+    // @Override
+    // public float[] getLightBrightnessTable() {
+    // return parentOvrProvider.getLightBrightnessTable();
+    // }
 
     @Override
     public int getActualHeight() {
@@ -195,10 +195,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.getAverageGroundLevel();
     }
 
-//    @Override
-//    public int getDimension() {
-//        return parentOvrProvider.getDimension();
-//    }
+    // @Override
+    // public int getDimension() {
+    // return parentOvrProvider.getDimension();
+    // }
 
     @Override
     public int getHeight() {
@@ -255,10 +255,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.getWelcomeMessage();
     }
 
-//    @Override
-//    public Vec3d getCloudColor(float partialTicks) {
-//        return parentOvrProvider.getCloudColor(partialTicks);
-//    }
+    // @Override
+    // public Vec3d getCloudColor(float partialTicks) {
+    // return parentOvrProvider.getCloudColor(partialTicks);
+    // }
 
     @Override
     public Vec3 getFogColor(float p_76562_1_, float p_76562_2_) {
@@ -270,10 +270,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.getSkyColor(cameraEntity, partialTicks);
     }
 
-//    @Override
-//    public boolean canDropChunk(int x, int z) {
-//        return parentOvrProvider.canDropChunk(x, z);
-//    }
+    // @Override
+    // public boolean canDropChunk(int x, int z) {
+    // return parentOvrProvider.canDropChunk(x, z);
+    // }
 
     @Override
     public boolean canBlockFreeze(int x, int y, int z, boolean byWater) {
@@ -305,10 +305,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.isSkyColored();
     }
 
-//    @Override
-//    public ICapabilityProvider initCapabilities() {
-//        return parentOvrProvider.initCapabilities();
-//    }
+    // @Override
+    // public ICapabilityProvider initCapabilities() {
+    // return parentOvrProvider.initCapabilities();
+    // }
 
     @Override
     public void setCloudRenderer(IRenderHandler renderer) {
@@ -320,10 +320,10 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         parentOvrProvider.resetRainAndThunder();
     }
 
-//    @Override
-//    public void onPlayerRemoved(EntityPlayerMP player) {
-//        parentOvrProvider.onPlayerRemoved(player);
-//    }
+    // @Override
+    // public void onPlayerRemoved(EntityPlayerMP player) {
+    // parentOvrProvider.onPlayerRemoved(player);
+    // }
 
     @Override
     public void setSkyRenderer(IRenderHandler skyRenderer) {
@@ -335,15 +335,15 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         parentOvrProvider.setWeatherRenderer(renderer);
     }
 
-//    @Override
-//    public boolean doesWaterVaporize() {
-//        return parentOvrProvider.doesWaterVaporize();
-//    }
+    // @Override
+    // public boolean doesWaterVaporize() {
+    // return parentOvrProvider.doesWaterVaporize();
+    // }
 
     @Override
     public boolean isDaytime() {
         WorldSkyHandler handle = getSkyHandler();
-        if(handle != null) {
+        if (handle != null) {
             if (handle.dayOfSolarEclipse && handle.solarEclipse) {
                 return true;
             }
@@ -376,20 +376,20 @@ public class WorldProviderBrightnessInj extends WorldProvider {
         return parentOvrProvider.isBlockHighHumidity(x, y, z);
     }
 
-//    @Override
-//    public void onWorldUpdateEntities() {
-//        parentOvrProvider.onWorldUpdateEntities();
-//    }
-//
-//    @Override
-//    public void onWorldSave() {
-//        parentOvrProvider.onWorldSave();
-//    }
-//
-//    @Override
-//    public void onPlayerAdded(EntityPlayerMP player) {
-//        parentOvrProvider.onPlayerAdded(player);
-//    }
+    // @Override
+    // public void onWorldUpdateEntities() {
+    // parentOvrProvider.onWorldUpdateEntities();
+    // }
+    //
+    // @Override
+    // public void onWorldSave() {
+    // parentOvrProvider.onWorldSave();
+    // }
+    //
+    // @Override
+    // public void onPlayerAdded(EntityPlayerMP player) {
+    // parentOvrProvider.onPlayerAdded(player);
+    // }
 
     @Override
     public void setSpawnPoint(int x, int y, int z) {

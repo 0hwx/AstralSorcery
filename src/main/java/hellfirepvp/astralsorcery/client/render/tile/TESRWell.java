@@ -8,11 +8,6 @@
 
 package hellfirepvp.astralsorcery.client.render.tile;
 
-import hellfirepvp.astralsorcery.client.util.Blending;
-import hellfirepvp.astralsorcery.client.util.RenderingUtils;
-import hellfirepvp.astralsorcery.client.util.TextureHelper;
-import hellfirepvp.astralsorcery.common.tile.TileWell;
-import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -22,8 +17,14 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.opengl.GL11;
+
+import hellfirepvp.astralsorcery.client.util.Blending;
+import hellfirepvp.astralsorcery.client.util.RenderingUtils;
+import hellfirepvp.astralsorcery.client.util.TextureHelper;
+import hellfirepvp.astralsorcery.common.tile.TileWell;
+import hellfirepvp.astralsorcery.common.util.data.Vector3;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -37,14 +38,15 @@ public class TESRWell extends TileEntitySpecialRenderer {
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
         TileWell te = (TileWell) tile;
-        ItemStack catalyst = te.getInventoryHandler().getStackInSlot(0);
-        if(catalyst != null) {
+        ItemStack catalyst = te.getInventoryHandler()
+            .getStackInSlot(0);
+        if (catalyst != null) {
             EntityItem ei = new EntityItem(Minecraft.getMinecraft().theWorld, 0, 0, 0, catalyst);
             ei.age = te.getTicksExisted();
             ei.hoverStart = 0;
             RenderManager.instance.func_147939_a(ei, x + 0.5, y + 0.8, z + 0.5, 0, partialTicks, true);
         }
-        if(te.getFluidAmount() > 0 && te.getHeldFluid() != null) {
+        if (te.getFluidAmount() > 0 && te.getHeldFluid() != null) {
             GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
             GL11.glEnable(GL11.GL_BLEND);
             Blending.DEFAULT.apply();
@@ -53,12 +55,24 @@ public class TESRWell extends TileEntitySpecialRenderer {
             RenderHelper.disableStandardItemLighting();
             Vector3 offset = new Vector3(te).add(0.5D, 0.32D, 0.5D);
             offset.addY(te.getPercFilled() * 0.6);
-            IIcon still = te.getHeldFluid().getStillIcon();
-            TextureAtlasSprite tas = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(still.toString());
-//            if(tas == null) Minecraft.getMinecraft().getTextureMapBlocks().missingImage;
+            IIcon still = te.getHeldFluid()
+                .getStillIcon();
+            TextureAtlasSprite tas = Minecraft.getMinecraft()
+                .getTextureMapBlocks()
+                .getTextureExtry(still.toString());
+            // if(tas == null) Minecraft.getMinecraft().getTextureMapBlocks().missingImage;
 
             TextureHelper.setActiveTextureToAtlasSprite();
-            RenderingUtils.renderAngleRotatedTexturedRect(offset, Vector3.RotAxis.Y_AXIS.clone(), Math.toRadians(45), 0.54, tas.getMinU(), tas.getMinV(), tas.getMaxU() - tas.getMinU(), tas.getMaxV() - tas.getMinV(), partialTicks);
+            RenderingUtils.renderAngleRotatedTexturedRect(
+                offset,
+                Vector3.RotAxis.Y_AXIS.clone(),
+                Math.toRadians(45),
+                0.54,
+                tas.getMinU(),
+                tas.getMinV(),
+                tas.getMaxU() - tas.getMinU(),
+                tas.getMaxV() - tas.getMinV(),
+                partialTicks);
             GL11.glEnable(GL11.GL_ALPHA_TEST);
             GL11.glDisable(GL11.GL_BLEND);
             GL11.glPopAttrib();

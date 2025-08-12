@@ -15,7 +15,6 @@ import hellfirepvp.astralsorcery.common.item.crystal.ItemCelestialCrystal;
 import hellfirepvp.astralsorcery.common.item.crystal.base.ItemRockCrystalBase;
 import hellfirepvp.astralsorcery.common.registry.RegistryAchievements;
 
-
 /**
  * This class is part of the Astral Sorcery Mod
  * The complete source code for this mod can be found on github.
@@ -27,12 +26,14 @@ public class EventHandlerAchievements {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPick(PlayerEvent.ItemPickupEvent event) {
-        if(!event.isCanceled()) {
-            if(event.pickedUp != null && event.pickedUp.getEntityItem() != null &&
-                    event.pickedUp.getEntityItem().getItem() instanceof ItemRockCrystalBase) {
-                event.player.addStat(RegistryAchievements.achvRockCrystal,1);
-                if(event.pickedUp.getEntityItem().getItem() instanceof ItemCelestialCrystal) {
-                    event.player.addStat(RegistryAchievements.achvCelestialCrystal,1);
+        if (!event.isCanceled()) {
+            if (event.pickedUp != null && event.pickedUp.getEntityItem() != null
+                && event.pickedUp.getEntityItem()
+                    .getItem() instanceof ItemRockCrystalBase) {
+                event.player.addStat(RegistryAchievements.achvRockCrystal, 1);
+                if (event.pickedUp.getEntityItem()
+                    .getItem() instanceof ItemCelestialCrystal) {
+                    event.player.addStat(RegistryAchievements.achvCelestialCrystal, 1);
                 }
             }
         }

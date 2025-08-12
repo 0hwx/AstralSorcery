@@ -1,14 +1,14 @@
 package hellfirepvp.astralsorcery.common.network.packet.server;
 
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.item.tool.ItemChargedCrystalAxe;
-import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import io.netty.buffer.ByteBuf;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.common.item.tool.ItemChargedCrystalAxe;
+import hellfirepvp.astralsorcery.common.util.data.Vector3;
+import io.netty.buffer.ByteBuf;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -73,11 +73,16 @@ public class PktDualParticleEvent implements IMessage, IMessageHandler<PktDualPa
         try {
             DualParticleEventType type = DualParticleEventType.values()[message.typeOrdinal];
             EventAction trigger = type.getTrigger(ctx.side);
-            if(trigger != null) {
+            if (trigger != null) {
                 trigger.trigger(message);
             }
         } catch (Exception exc) {
-            AstralSorcery.log.warn("Error executing DualParticleEventType " + message.typeOrdinal + " from " + getOriginVec() + " to " + getTargetVec());
+            AstralSorcery.log.warn(
+                "Error executing DualParticleEventType " + message.typeOrdinal
+                    + " from "
+                    + getOriginVec()
+                    + " to "
+                    + getTargetVec());
         }
         return null;
     }
@@ -104,7 +109,7 @@ public class PktDualParticleEvent implements IMessage, IMessageHandler<PktDualPa
         }
 
         public EventAction getTrigger(Side side) {
-            if(!side.isClient()) return null;
+            if (!side.isClient()) return null;
             return getClientTrigger(this);
         }
 

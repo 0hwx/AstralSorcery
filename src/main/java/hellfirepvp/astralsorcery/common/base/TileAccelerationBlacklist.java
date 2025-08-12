@@ -8,6 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.base;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.client.renderer.texture.ITickable;
+import net.minecraft.tileentity.TileEntity;
+
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.tile.TileAttunementAltar;
 import hellfirepvp.astralsorcery.common.tile.TileCelestialCrystals;
@@ -15,12 +23,6 @@ import hellfirepvp.astralsorcery.common.tile.TileFakeTree;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.tile.base.TileSourceBase;
 import hellfirepvp.astralsorcery.common.tile.base.TileTransmissionBase;
-import net.minecraft.client.renderer.texture.ITickable;
-import net.minecraft.tileentity.TileEntity;
-
-import javax.annotation.Nullable;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -36,41 +38,39 @@ public class TileAccelerationBlacklist {
     private static List<Class<?>> blacklistedClasses = new LinkedList<>();
 
     public static boolean canAccelerate(@Nullable TileEntity te) {
-        if(te == null) return false; //Nothing there.
-        if(!(te instanceof ITickable)) return false; //Uh nope.
+        if (te == null) return false; // Nothing there.
+        if (!(te instanceof ITickable)) return false; // Uh nope.
 
         Class<?> tClass = te.getClass();
         String className = tClass.getName();
         String lCClassName = className.toLowerCase();
         for (String pref : blacklistedPrefixes) {
-            if(lCClassName.startsWith(pref)) {
+            if (lCClassName.startsWith(pref)) {
                 return false;
             }
         }
         for (Class<?> tCl : blacklistedClasses) {
-            if(tCl.isAssignableFrom(tClass)) {
+            if (tCl.isAssignableFrom(tClass)) {
                 return false;
             }
         }
         return !erroredTiles.contains(tClass);
     }
 
-    //Specifically used if the tile crashed once when trying to accel it.
+    // Specifically used if the tile crashed once when trying to accel it.
     @Deprecated
     public static void errored(Class<?> teClass) {
-        if(!erroredTiles.contains(teClass)) {
+        if (!erroredTiles.contains(teClass)) {
             erroredTiles.add(teClass);
         }
     }
 
     public static void blacklistTileClassAndSubclasses(Class<?> tileClass) {
-        if(!blacklistedClasses.contains(tileClass))
-            blacklistedClasses.add(tileClass);
+        if (!blacklistedClasses.contains(tileClass)) blacklistedClasses.add(tileClass);
     }
 
     public static void blacklistTileClassNamePrefix(String prefix) {
-        if(!blacklistedPrefixes.contains(prefix.toLowerCase()))
-            blacklistedPrefixes.add(prefix.toLowerCase());
+        if (!blacklistedPrefixes.contains(prefix.toLowerCase())) blacklistedPrefixes.add(prefix.toLowerCase());
     }
 
     public static void init() {
@@ -82,8 +82,9 @@ public class TileAccelerationBlacklist {
         blacklistTileClassAndSubclasses(TileCelestialCrystals.class);
         blacklistTileClassAndSubclasses(TileFakeTree.class);
 
-        blacklistTileClassNamePrefix("appeng"); //I don't wanna run into issues that come from accelerating any network stuffs.
-        blacklistTileClassNamePrefix("raoulvdberge/refinedstorage"); //Same as AE stuff
+        blacklistTileClassNamePrefix("appeng"); // I don't wanna run into issues that come from accelerating any network
+                                                // stuffs.
+        blacklistTileClassNamePrefix("raoulvdberge/refinedstorage"); // Same as AE stuff
     }
 
 }

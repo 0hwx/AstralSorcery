@@ -8,8 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.common.constellation.effect.CEffectPositionListGen;
+import java.util.List;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.block.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -19,9 +22,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Random;
+import com.google.common.collect.Lists;
+
+import hellfirepvp.astralsorcery.common.constellation.effect.CEffectPositionListGen;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -30,29 +33,29 @@ import java.util.Random;
  * Created by HellFirePvP
  * Date: 08.11.2016 / 13:05
  */
-//Intended for mostly Server-Side use
+// Intended for mostly Server-Side use
 public class CropHelper {
 
     @Nullable
     public static GrowablePlant wrapPlant(World world, BlockPos pos) {
         Block block = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
-        if(block instanceof IGrowable) {
-            if(block instanceof BlockGrass) return null;
-            if(block instanceof BlockTallGrass) return null;
-            if(block instanceof BlockDoublePlant) return null;
+        if (block instanceof IGrowable) {
+            if (block instanceof BlockGrass) return null;
+            if (block instanceof BlockTallGrass) return null;
+            if (block instanceof BlockDoublePlant) return null;
             return new GrowableWrapper(pos);
         }
-        if(block.equals(Blocks.reeds)) {
-            if(isReedBase(world, pos)) {
+        if (block.equals(Blocks.reeds)) {
+            if (isReedBase(world, pos)) {
                 return new GrowableReedWrapper(pos);
             }
         }
-        if(block.equals(Blocks.cactus)) {
-            if(isCactusBase(world, pos)) {
+        if (block.equals(Blocks.cactus)) {
+            if (isCactusBase(world, pos)) {
                 return new GrowableCactusWrapper(pos);
             }
         }
-        if(block.equals(Blocks.nether_wart)) {
+        if (block.equals(Blocks.nether_wart)) {
             return new GrowableNetherwartWrapper(pos);
         }
         return null;
@@ -61,29 +64,49 @@ public class CropHelper {
     @Nullable
     public static HarvestablePlant wrapHarvestablePlant(World world, BlockPos pos) {
         GrowablePlant growable = wrapPlant(world, pos);
-        if(growable == null) return null; //Every plant has to be growable.
-        Block block = world.getBlock(growable.getPos().getX(), growable.getPos().getY(), growable.getPos().getZ());
-        if(block.equals(Blocks.reeds) && growable instanceof GrowableReedWrapper) {
+        if (growable == null) return null; // Every plant has to be growable.
+        Block block = world.getBlock(
+            growable.getPos()
+                .getX(),
+            growable.getPos()
+                .getY(),
+            growable.getPos()
+                .getZ());
+        if (block.equals(Blocks.reeds) && growable instanceof GrowableReedWrapper) {
             return (GrowableReedWrapper) growable;
         }
-        if(block.equals(Blocks.cactus) && growable instanceof GrowableCactusWrapper) {
+        if (block.equals(Blocks.cactus) && growable instanceof GrowableCactusWrapper) {
             return (GrowableCactusWrapper) growable;
         }
-        if(block.equals(Blocks.nether_wart) && growable instanceof GrowableNetherwartWrapper) {
+        if (block.equals(Blocks.nether_wart) && growable instanceof GrowableNetherwartWrapper) {
             return (GrowableNetherwartWrapper) growable;
         }
-        if(block instanceof IPlantable) {
+        if (block instanceof IPlantable) {
             return new HarvestableWrapper(pos);
         }
         return null;
     }
 
     private static boolean isReedBase(World world, BlockPos pos) {
-        return !world.getBlock(pos.down().getX(), pos.down().getY(), pos.down().getZ()).equals(Blocks.reeds);
+        return !world.getBlock(
+            pos.down()
+                .getX(),
+            pos.down()
+                .getY(),
+            pos.down()
+                .getZ())
+            .equals(Blocks.reeds);
     }
 
     private static boolean isCactusBase(World world, BlockPos pos) {
-        return !world.getBlock(pos.down().getX(), pos.down().getY(), pos.down().getZ()).equals(Blocks.cactus);
+        return !world.getBlock(
+            pos.down()
+                .getX(),
+            pos.down()
+                .getY(),
+            pos.down()
+                .getZ())
+            .equals(Blocks.cactus);
     }
 
     public static interface GrowablePlant extends CEffectPositionListGen.CEffectGenListEntry {
@@ -115,20 +138,25 @@ public class CropHelper {
         @Override
         public boolean canHarvest(World world) {
             Block at = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
-            if(!(at instanceof IGrowable)) return false;
+            if (!(at instanceof IGrowable)) return false;
             return !((IGrowable) at).func_149851_a(world, pos.getX(), pos.getY(), pos.getZ(), false);
         }
 
         @Override
         public List<ItemStack> harvestDropsAndReplant(World world, Random rand, int harvestFortune) {
             List<ItemStack> drops = Lists.newLinkedList();
-            if(canHarvest(world)) {
+            if (canHarvest(world)) {
                 BlockPos pos = getPos();
                 Block at = world.getBlock(getPos().getX(), getPos().getY(), getPos().getZ());
-                if(at instanceof IPlantable) {
-                    drops.addAll(at.getDrops(world, pos.getX(), pos.getY(), pos.getZ(), pos.getMetadata(world), harvestFortune));
+                if (at instanceof IPlantable) {
+                    drops.addAll(
+                        at.getDrops(world, pos.getX(), pos.getY(), pos.getZ(), pos.getMetadata(world), harvestFortune));
                     world.setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
-                    world.setBlock(pos.getX(), pos.getY(), pos.getZ(), ((IPlantable) at).getPlant(world, pos.getX(), pos.getY(), pos.getZ()));
+                    world.setBlock(
+                        pos.getX(),
+                        pos.getY(),
+                        pos.getZ(),
+                        ((IPlantable) at).getPlant(world, pos.getX(), pos.getY(), pos.getZ()));
                 }
             }
             return drops;
@@ -147,7 +175,9 @@ public class CropHelper {
 
         @Override
         public boolean isValid(World world, boolean forceChunkLoad) {
-            if(!forceChunkLoad && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(getPos().chunkX(), getPos().chunkZ()))) return true; //We stall until it's loaded.
+            if (!forceChunkLoad
+                && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(getPos().chunkX(), getPos().chunkZ())))
+                return true; // We stall until it's loaded.
             HarvestablePlant plant = wrapHarvestablePlant(world, getPos());
             return plant != null && plant instanceof HarvestableWrapper;
         }
@@ -155,14 +185,15 @@ public class CropHelper {
         @Override
         public boolean canGrow(World world) {
             Block at = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
-            return at instanceof IGrowable && ((IGrowable) at).func_149851_a(world, pos.getX(), pos.getY(), pos.getZ(), false);
+            return at instanceof IGrowable
+                && ((IGrowable) at).func_149851_a(world, pos.getX(), pos.getY(), pos.getZ(), false);
         }
 
         @Override
         public boolean tryGrow(World world, Random rand) {
             Block at = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
-            if(at instanceof IGrowable) {
-                if(((IGrowable) at).func_149851_a(world, pos.getX(), pos.getY(), pos.getZ(), false)) {
+            if (at instanceof IGrowable) {
+                if (((IGrowable) at).func_149851_a(world, pos.getX(), pos.getY(), pos.getZ(), false)) {
                     ((IGrowable) at).func_149853_b(world, rand, pos.getX(), pos.getY(), pos.getZ());
                     return true;
                 }
@@ -182,8 +213,10 @@ public class CropHelper {
 
         @Override
         public boolean isValid(World world, boolean forceChunkLoad) {
-            if(!forceChunkLoad && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ()))) return true; //We stall until it's loaded.
-            return world.getBlock(pos.getX(), pos.getY(), pos.getZ()).equals(Blocks.nether_wart);
+            if (!forceChunkLoad && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ())))
+                return true; // We stall until it's loaded.
+            return world.getBlock(pos.getX(), pos.getY(), pos.getZ())
+                .equals(Blocks.nether_wart);
         }
 
         @Override
@@ -195,10 +228,15 @@ public class CropHelper {
 
         @Override
         public boolean tryGrow(World world, Random rand) {
-            if(rand.nextBoolean()) {
+            if (rand.nextBoolean()) {
                 Block current = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
                 int metadata = world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
-                world.setBlock(pos.getX(), pos.getY(), pos.getZ(), current, (Math.min(3, metadata + 1)), 3); //world.setBlockState(pos, current.withProperty(BlockNetherWart.AGE, (Math.min(3, current.getValue(BlockNetherWart.AGE) + 1))), 3);
+                world.setBlock(pos.getX(), pos.getY(), pos.getZ(), current, (Math.min(3, metadata + 1)), 3); // world.setBlockState(pos,
+                                                                                                             // current.withProperty(BlockNetherWart.AGE,
+                                                                                                             // (Math.min(3,
+                                                                                                             // current.getValue(BlockNetherWart.AGE)
+                                                                                                             // + 1))),
+                                                                                                             // 3);
                 return true;
             }
             return false;
@@ -215,7 +253,8 @@ public class CropHelper {
         public List<ItemStack> harvestDropsAndReplant(World world, Random rand, int harvestFortune) {
             Block current = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
             int metadata = world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
-            List<ItemStack> drops = current.getDrops(world, pos.getX(), pos.getY(), pos.getZ(), metadata, harvestFortune);
+            List<ItemStack> drops = current
+                .getDrops(world, pos.getX(), pos.getY(), pos.getZ(), metadata, harvestFortune);
             world.setBlock(pos.getX(), pos.getY(), pos.getZ(), Blocks.nether_wart, 1, 3);
             return drops;
         }
@@ -243,7 +282,14 @@ public class CropHelper {
 
         @Override
         public boolean canHarvest(World world) {
-            return world.getBlock(pos.up().getX(), pos.up().getY(), pos.up().getZ()).equals(Blocks.cactus);
+            return world.getBlock(
+                pos.up()
+                    .getX(),
+                pos.up()
+                    .getY(),
+                pos.up()
+                    .getZ())
+                .equals(Blocks.cactus);
         }
 
         @Override
@@ -253,7 +299,7 @@ public class CropHelper {
                 BlockPos bp = pos.up(i);
                 Block at = world.getBlock(bp.getX(), bp.getY(), bp.getZ());
                 int meta = world.getBlockMetadata(bp.getX(), bp.getY(), bp.getZ());
-                if(at.equals(Blocks.cactus)) {
+                if (at.equals(Blocks.cactus)) {
                     drops.addAll(at.getDrops(world, bp.getX(), bp.getY(), bp.getZ(), meta, harvestFortune));
                     world.setBlockToAir(bp.getX(), bp.getY(), bp.getZ());
                 }
@@ -263,8 +309,10 @@ public class CropHelper {
 
         @Override
         public boolean isValid(World world, boolean forceChunkLoad) {
-            if(!forceChunkLoad && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ()))) return true; //We stall until it's loaded.
-            return world.getBlock(pos.getX(), pos.getY(), pos.getZ()).equals(Blocks.cactus);
+            if (!forceChunkLoad && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ())))
+                return true; // We stall until it's loaded.
+            return world.getBlock(pos.getX(), pos.getY(), pos.getZ())
+                .equals(Blocks.cactus);
         }
 
         @Override
@@ -272,7 +320,7 @@ public class CropHelper {
             BlockPos cache = pos;
             for (int i = 1; i < 3; i++) {
                 cache = cache.up();
-                if(world.isAirBlock(cache.getX(), cache.getY(), cache.getZ())) {
+                if (world.isAirBlock(cache.getX(), cache.getY(), cache.getZ())) {
                     return true;
                 }
             }
@@ -284,8 +332,8 @@ public class CropHelper {
             BlockPos cache = pos;
             for (int i = 1; i < 3; i++) {
                 cache = cache.up();
-                if(world.isAirBlock(cache.getX(), cache.getY(), cache.getZ())) {
-                    if(rand.nextBoolean()) {
+                if (world.isAirBlock(cache.getX(), cache.getY(), cache.getZ())) {
+                    if (rand.nextBoolean()) {
                         world.setBlock(cache.getX(), cache.getY(), cache.getZ(), Blocks.cactus);
                         return true;
                     } else {
@@ -319,7 +367,14 @@ public class CropHelper {
 
         @Override
         public boolean canHarvest(World world) {
-            return world.getBlock(pos.up().getX(), pos.up().getY(), pos.up().getZ()).equals(Blocks.reeds);
+            return world.getBlock(
+                pos.up()
+                    .getX(),
+                pos.up()
+                    .getY(),
+                pos.up()
+                    .getZ())
+                .equals(Blocks.reeds);
         }
 
         @Override
@@ -329,7 +384,7 @@ public class CropHelper {
                 BlockPos bp = pos.up(i);
                 Block at = world.getBlock(bp.getX(), bp.getY(), bp.getZ());
                 int meta = world.getBlockMetadata(bp.getX(), bp.getY(), bp.getZ());
-                if(at.equals(Blocks.reeds)) {
+                if (at.equals(Blocks.reeds)) {
                     drops.addAll(at.getDrops(world, bp.getX(), bp.getY(), bp.getZ(), meta, harvestFortune));
                     world.setBlockToAir(bp.getX(), bp.getY(), bp.getZ());
                 }
@@ -339,8 +394,10 @@ public class CropHelper {
 
         @Override
         public boolean isValid(World world, boolean forceChunkLoad) {
-            if(!forceChunkLoad && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ()))) return true; //We stall until it's loaded.
-            return world.getBlock(pos.getX(), pos.getY(), pos.getZ()).equals(Blocks.reeds);
+            if (!forceChunkLoad && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ())))
+                return true; // We stall until it's loaded.
+            return world.getBlock(pos.getX(), pos.getY(), pos.getZ())
+                .equals(Blocks.reeds);
         }
 
         @Override
@@ -348,7 +405,7 @@ public class CropHelper {
             BlockPos cache = pos;
             for (int i = 1; i < 3; i++) {
                 cache = cache.up();
-                if(world.isAirBlock(cache.getX(), cache.getY(), cache.getZ())) {
+                if (world.isAirBlock(cache.getX(), cache.getY(), cache.getZ())) {
                     return true;
                 }
             }
@@ -360,8 +417,8 @@ public class CropHelper {
             BlockPos cache = pos;
             for (int i = 1; i < 3; i++) {
                 cache = cache.up();
-                if(world.isAirBlock(cache.getX(), cache.getY(), cache.getZ())) {
-                    if(rand.nextBoolean()) {
+                if (world.isAirBlock(cache.getX(), cache.getY(), cache.getZ())) {
+                    if (rand.nextBoolean()) {
                         world.setBlock(cache.getX(), cache.getY(), cache.getZ(), Blocks.reeds);
                         return true;
                     } else {
@@ -406,7 +463,8 @@ public class CropHelper {
 
         @Override
         public boolean isValid(World world, boolean forceChunkLoad) {
-            if(!forceChunkLoad && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ()))) return true; //We stall until it's loaded.
+            if (!forceChunkLoad && !MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ())))
+                return true; // We stall until it's loaded.
             GrowablePlant res = wrapPlant(world, pos);
             return res != null && res instanceof GrowableWrapper;
         }
@@ -414,14 +472,16 @@ public class CropHelper {
         @Override
         public boolean canGrow(World world) {
             Block at = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
-            return at instanceof IGrowable && (((IGrowable) at).func_149851_a(world, pos.getX(), pos.getY(), pos.getZ(), false) || (at instanceof BlockStem && !stemHasCrop(world)));
+            return at instanceof IGrowable
+                && (((IGrowable) at).func_149851_a(world, pos.getX(), pos.getY(), pos.getZ(), false)
+                    || (at instanceof BlockStem && !stemHasCrop(world)));
         }
 
         private boolean stemHasCrop(World world) {
             for (ForgeDirection enumfacing : ForgeDirection.VALID_DIRECTIONS) {
                 BlockPos pos = this.pos.offset(enumfacing);
                 Block offset = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
-                if(offset.equals(Blocks.melon_block) || offset.equals(Blocks.pumpkin)) {
+                if (offset.equals(Blocks.melon_block) || offset.equals(Blocks.pumpkin)) {
                     return true;
                 }
             }
@@ -431,15 +491,17 @@ public class CropHelper {
         @Override
         public boolean tryGrow(World world, Random rand) {
             Block at = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
-            if(at instanceof IGrowable) {
-                if(((IGrowable) at).func_149851_a(world, pos.getX(), pos.getY(), pos.getZ(), false)) {
-                    if(!((IGrowable) at).func_149852_a(world, rand, pos.getX(), pos.getY(), pos.getZ())) {
-                        if(world.rand.nextInt(40) != 0) return true; //Returning true to say it could've been potentially grown - So this doesn't invalidate caches.
+            if (at instanceof IGrowable) {
+                if (((IGrowable) at).func_149851_a(world, pos.getX(), pos.getY(), pos.getZ(), false)) {
+                    if (!((IGrowable) at).func_149852_a(world, rand, pos.getX(), pos.getY(), pos.getZ())) {
+                        if (world.rand.nextInt(40) != 0) return true; // Returning true to say it could've been
+                                                                      // potentially grown - So this doesn't invalidate
+                                                                      // caches.
                     }
                     ((IGrowable) at).func_149853_b(world, rand, pos.getX(), pos.getY(), pos.getZ());
                     return true;
                 }
-                if(at instanceof BlockStem) {
+                if (at instanceof BlockStem) {
                     for (int i = 0; i < 10; i++) {
                         at.updateTick(world, pos.getX(), pos.getY(), pos.getZ(), rand);
                     }

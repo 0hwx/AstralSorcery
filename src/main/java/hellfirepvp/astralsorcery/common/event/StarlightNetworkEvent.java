@@ -12,7 +12,6 @@ import cpw.mods.fml.common.eventhandler.Event;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.SourceClassRegistry;
 import hellfirepvp.astralsorcery.common.starlight.transmission.registry.TransmissionClassRegistry;
 
-
 /**
  * This class is part of the Astral Sorcery Mod
  * The complete source code for this mod can be found on github.
@@ -20,7 +19,7 @@ import hellfirepvp.astralsorcery.common.starlight.transmission.registry.Transmis
  * Created by HellFirePvP
  * Date: 23.10.2016 / 22:34
  */
-//Use this in case you want to add transmission or source nodes to the starlight network system.
+// Use this in case you want to add transmission or source nodes to the starlight network system.
 public class StarlightNetworkEvent {
 
     public static class TransmissionRegister extends Event {

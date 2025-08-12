@@ -8,36 +8,35 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes;
 
-import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.client.effect.EffectHelper;
-import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
-import hellfirepvp.astralsorcery.common.constellation.IConstellation;
-import hellfirepvp.astralsorcery.common.crafting.IAccessibleRecipe;
-import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
-import hellfirepvp.astralsorcery.common.crafting.altar.ActiveCraftingTask;
-import hellfirepvp.astralsorcery.common.crafting.helper.AbstractCacheableRecipe;
-import hellfirepvp.astralsorcery.common.data.DataActiveCelestials;
-import hellfirepvp.astralsorcery.common.data.SyncDataHolder;
-import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
-import hellfirepvp.astralsorcery.common.tile.TileAltar;
-import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
-import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import hellfirepvp.astralsorcery.common.util.data.Vector3;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+
+import com.google.common.collect.Lists;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import hellfirepvp.astralsorcery.client.effect.EffectHelper;
+import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
+import hellfirepvp.astralsorcery.common.crafting.IAccessibleRecipe;
+import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
+import hellfirepvp.astralsorcery.common.crafting.altar.ActiveCraftingTask;
+import hellfirepvp.astralsorcery.common.crafting.helper.AbstractCacheableRecipe;
+import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
+import hellfirepvp.astralsorcery.common.tile.TileAltar;
+import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
+import hellfirepvp.astralsorcery.common.util.MiscUtils;
+import hellfirepvp.astralsorcery.common.util.data.Vector3;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -48,12 +47,8 @@ import java.util.Random;
  */
 public class ConstellationRecipe extends AttunementRecipe {
 
-    private static Vector3[] offsetPillars = new Vector3[] {
-            new Vector3( 4, 3,  4),
-            new Vector3(-4, 3,  4),
-            new Vector3( 4, 3, -4),
-            new Vector3(-4, 3, -4)
-    };
+    private static Vector3[] offsetPillars = new Vector3[] { new Vector3(4, 3, 4), new Vector3(-4, 3, 4),
+        new Vector3(4, 3, -4), new Vector3(-4, 3, -4) };
 
     private Map<ConstellationAtlarSlot, ItemHandle> matchStacks = new HashMap<>();
 
@@ -112,7 +107,7 @@ public class ConstellationRecipe extends AttunementRecipe {
     @Nonnull
     public List<ItemStack> getCstItems(ConstellationAtlarSlot slot) {
         ItemHandle handle = matchStacks.get(slot);
-        if(handle != null) {
+        if (handle != null) {
             return handle.getApplicableItems();
         }
         return Lists.newArrayList();
@@ -129,16 +124,17 @@ public class ConstellationRecipe extends AttunementRecipe {
     }
 
     @Override
-    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler, boolean ignoreStarlightRequirement) {
+    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler,
+        boolean ignoreStarlightRequirement) {
         for (ConstellationAtlarSlot slot : ConstellationAtlarSlot.values()) {
             ItemHandle expected = matchStacks.get(slot);
-            if(expected != null) {
+            if (expected != null) {
                 ItemStack altarItem = invHandler.getStackInSlot(slot.slotId);
-                if(!expected.matchCrafting(altarItem)) {
+                if (!expected.matchCrafting(altarItem)) {
                     return false;
                 }
             } else {
-                if(invHandler.getStackInSlot(slot.slotId) != null) return false;
+                if (invHandler.getStackInSlot(slot.slotId) != null) return false;
             }
         }
         return super.matches(altar, invHandler, ignoreStarlightRequirement);
@@ -149,15 +145,19 @@ public class ConstellationRecipe extends AttunementRecipe {
     public void onCraftClientTick(TileAltar altar, ActiveCraftingTask.CraftingState state, long tick, Random rand) {
         super.onCraftClientTick(altar, state, tick, rand);
 
-        if(state == ActiveCraftingTask.CraftingState.ACTIVE) {
+        if (state == ActiveCraftingTask.CraftingState.ACTIVE) {
             Vector3 altarVec = new Vector3(altar);
-            Vector3 thisAltar = altarVec.clone().add(0.5, 0.5, 0.5);
+            Vector3 thisAltar = altarVec.clone()
+                .add(0.5, 0.5, 0.5);
             for (int i = 0; i < 4; i++) {
                 Vector3 dir = offsetPillars[rand.nextInt(offsetPillars.length)].clone();
-                dir.multiply(rand.nextFloat()).add(thisAltar.clone());
+                dir.multiply(rand.nextFloat())
+                    .add(thisAltar.clone());
 
                 EntityFXFacingParticle particle = EffectHelper.genericFlareParticle(dir.getX(), dir.getY(), dir.getZ());
-                particle.setColor(MiscUtils.calcRandomConstellationColor(rand.nextFloat())).scale(0.2F + (0.2F * rand.nextFloat())).gravity(0.004);
+                particle.setColor(MiscUtils.calcRandomConstellationColor(rand.nextFloat()))
+                    .scale(0.2F + (0.2F * rand.nextFloat()))
+                    .gravity(0.004);
             }
         }
 

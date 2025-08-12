@@ -8,22 +8,22 @@
 
 package hellfirepvp.astralsorcery.common.integrations;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.relauncher.Side;
 import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
-import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.tweaks.*;
 import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network.SerializeableRecipe;
+import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.tweaks.*;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktSyncMinetweakerChanges;
 import minetweaker.MineTweakerAPI;
 import minetweaker.MineTweakerImplementationAPI;
 import minetweaker.util.IEventHandler;
-import cpw.mods.fml.relauncher.Side;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,16 +41,17 @@ public class ModIntegrationCrafttweaker {
 
     public void load() {
         MineTweakerAPI.registerClass(InfusionRecipe.class);
-//        MineTweakerAPI.registerClass(RitualMineralis.class);
+        // MineTweakerAPI.registerClass(RitualMineralis.class);
         MineTweakerAPI.registerClass(LightTransmutations.class);
         MineTweakerAPI.registerClass(AltarRecipe.class);
         MineTweakerAPI.registerClass(WellRecipe.class);
 
         MineTweakerImplementationAPI.onReloadEvent(AstralRecipeReloadHandlerPre.instance);
-//        MineTweakerImplementationAPI.onPostReload(AstralRecipeReloadHandlerPost.instance);
+        // MineTweakerImplementationAPI.onPostReload(AstralRecipeReloadHandlerPost.instance);
     }
 
-    private static class AstralRecipeReloadHandlerPre implements IEventHandler<MineTweakerImplementationAPI.ReloadEvent> {
+    private static class AstralRecipeReloadHandlerPre
+        implements IEventHandler<MineTweakerImplementationAPI.ReloadEvent> {
 
         static AstralRecipeReloadHandlerPre instance = new AstralRecipeReloadHandlerPre();
 
@@ -63,7 +64,8 @@ public class ModIntegrationCrafttweaker {
 
     }
 
-    private static class AstralRecipeReloadHandlerPost implements IEventHandler<MineTweakerImplementationAPI.ReloadEvent> {
+    private static class AstralRecipeReloadHandlerPost
+        implements IEventHandler<MineTweakerImplementationAPI.ReloadEvent> {
 
         static AstralRecipeReloadHandlerPost instance = new AstralRecipeReloadHandlerPost();
 
@@ -79,7 +81,9 @@ public class ModIntegrationCrafttweaker {
 
             CraftingAccessManager.compile();
 
-            if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && Loader.instance().hasReachedState(LoaderState.SERVER_ABOUT_TO_START)) {
+            if (FMLCommonHandler.instance()
+                .getEffectiveSide() == Side.SERVER && Loader.instance()
+                    .hasReachedState(LoaderState.SERVER_ABOUT_TO_START)) {
                 PacketChannel.CHANNEL.sendToAll(compileRecipeChangePacket());
             }
         }

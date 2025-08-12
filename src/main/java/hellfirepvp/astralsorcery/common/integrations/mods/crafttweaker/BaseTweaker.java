@@ -8,18 +8,18 @@
 
 package hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
+
 import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import minetweaker.MineTweakerAPI;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.liquid.ILiquidStack;
 import minetweaker.api.oredict.IOreDictEntry;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidStack;
-
-import javax.annotation.Nullable;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -32,7 +32,7 @@ public abstract class BaseTweaker {
 
     @Nullable
     public static ItemStack convertToItemStack(IItemStack stack) {
-        if(stack == null) {
+        if (stack == null) {
             return null;
         }
         Object objStack = stack.getInternal();
@@ -46,7 +46,7 @@ public abstract class BaseTweaker {
 
     @Nullable
     public static FluidStack convertToFluidStack(ILiquidStack stack, boolean capAndLimitToBuckets) {
-        if(stack == null) {
+        if (stack == null) {
             return null;
         }
         Object objStack = stack.getInternal();
@@ -55,8 +55,8 @@ public abstract class BaseTweaker {
             return null;
         } else {
             FluidStack flStack = (FluidStack) objStack;
-            if(capAndLimitToBuckets) {
-                flStack.amount = FluidContainerRegistry.BUCKET_VOLUME; //Only full buckets please...
+            if (capAndLimitToBuckets) {
+                flStack.amount = FluidContainerRegistry.BUCKET_VOLUME; // Only full buckets please...
             }
             return flStack;
         }
@@ -64,18 +64,18 @@ public abstract class BaseTweaker {
 
     @Nullable
     public static ItemHandle convertToHandle(IIngredient obj) {
-        if(obj == null) {
+        if (obj == null) {
             return null;
         }
-        if(obj instanceof IItemStack) {
+        if (obj instanceof IItemStack) {
             ItemStack ret = convertToItemStack((IItemStack) obj);
-            if(ret == null) return null;
+            if (ret == null) return null;
             return new ItemHandle(ret);
-        } else if(obj instanceof ILiquidStack) {
+        } else if (obj instanceof ILiquidStack) {
             FluidStack ret = convertToFluidStack((ILiquidStack) obj, true);
             if (ret == null) return null;
             return new ItemHandle(ret);
-        } else if(obj instanceof IOreDictEntry) {
+        } else if (obj instanceof IOreDictEntry) {
             return new ItemHandle(((IOreDictEntry) obj).getName());
         }
         return null;

@@ -8,16 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.starlight.network;
 
-import cpw.mods.fml.common.gameevent.TickEvent;
-import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
-import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
-import net.minecraft.world.World;
-
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.world.World;
+
+import cpw.mods.fml.common.gameevent.TickEvent;
+import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
+import hellfirepvp.astralsorcery.common.starlight.transmission.IPrismTransmissionNode;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,7 +42,7 @@ public class StarlightUpdateHandler implements ITickHandler {
     @Override
     public void tick(TickEvent.Type type, Object... context) {
         World world = (World) context[0];
-        if(world.isRemote) return;
+        if (world.isRemote) return;
 
         List<IPrismTransmissionNode> nodes = getNodes(world);
         synchronized (accessLock) {
@@ -54,7 +55,7 @@ public class StarlightUpdateHandler implements ITickHandler {
     private List<IPrismTransmissionNode> getNodes(World world) {
         int dimId = world.provider.dimensionId;
         List<IPrismTransmissionNode> nodes = updateRequired.get(dimId);
-        if(nodes == null) {
+        if (nodes == null) {
             nodes = new LinkedList<>();
             updateRequired.put(dimId, nodes);
         }

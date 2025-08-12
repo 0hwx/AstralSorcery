@@ -8,7 +8,6 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-
 /**
  * This class is part of the Astral Sorcery Mod
  * The complete source code for this mod can be found on github.
@@ -18,11 +17,9 @@ package hellfirepvp.astralsorcery.common.util;
  */
 public class OreDictAlias {
 
-    private static final String[] DYE_COLORS_BY_META = new String[] {
-            "dyeWhite", "dyeOrange", "dyeMagenta", "dyeLightBlue",
-            "dyeYellow", "dyeLime", "dyePink", "dyeGray",
-            "dyeLightGray", "dyeCyan", "dyePurple", "dyeBlue",
-            "dyeBrown", "dyeGreen", "dyeRed", "dyeBlack" };
+    private static final String[] DYE_COLORS_BY_META = new String[] { "dyeWhite", "dyeOrange", "dyeMagenta",
+        "dyeLightBlue", "dyeYellow", "dyeLime", "dyePink", "dyeGray", "dyeLightGray", "dyeCyan", "dyePurple", "dyeBlue",
+        "dyeBrown", "dyeGreen", "dyeRed", "dyeBlack" };
 
     public static String getDyeOreDict(EnumDyeColor color) {
         return DYE_COLORS_BY_META[color.getMetadata()];

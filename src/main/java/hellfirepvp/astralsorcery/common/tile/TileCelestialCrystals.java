@@ -8,6 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
+import java.util.Collection;
+import java.util.Random;
+
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXCrystalBurst;
@@ -23,13 +31,6 @@ import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.tile.base.TileSkybound;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import java.util.Collection;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -39,13 +40,14 @@ import java.util.Random;
  * Date: 15.09.2016 / 00:13
  */
 public class TileCelestialCrystals extends TileSkybound {
-    //Just in case you wonder. i do have a reason to control growth in the TileEntity other than just in the block itself.
+    // Just in case you wonder. i do have a reason to control growth in the TileEntity other than just in the block
+    // itself.
 
     private static final Random rand = new Random();
 
     public int getGrowth() {
         Block state = worldObj.getBlock(xCoord, yCoord, zCoord);
-        if(!(state instanceof BlockCelestialCrystals)) return 0;
+        if (!(state instanceof BlockCelestialCrystals)) return 0;
         return state.damageDropped(BlockCelestialCrystals.STAGE);
     }
 
@@ -53,14 +55,16 @@ public class TileCelestialCrystals extends TileSkybound {
     public void tick() {
         super.tick();
 
-        if(!worldObj.isRemote) {
+        if (!worldObj.isRemote) {
             double mul = 1;
             BlockPos down = new BlockPos(xCoord, yCoord, zCoord).down();
             Block downState = worldObj.getBlock(down.getX(), down.getY(), down.getZ());
-            if(downState == BlocksAS.customOre && (downState.getDamageValue(worldObj,xCoord,yCoord,zCoord) == BlockCustomOre.OreType.STARMETAL.getMeta())) {//getValue(BlockCustomOre.ORE_TYPE) == BlockCustomOre.OreType.STARMETAL) {
+            if (downState == BlocksAS.customOre && (downState.getDamageValue(worldObj, xCoord, yCoord, zCoord)
+                == BlockCustomOre.OreType.STARMETAL.getMeta())) {// getValue(BlockCustomOre.ORE_TYPE) ==
+                                                                 // BlockCustomOre.OreType.STARMETAL) {
                 mul *= 0.3;
 
-                if(rand.nextInt(300) == 0) {
+                if (rand.nextInt(300) == 0) {
                     BlockPos pos = new BlockPos(xCoord, yCoord, zCoord).down();
                     worldObj.setBlock(pos.getX(), pos.getY(), pos.getZ(), Blocks.iron_ore);
                 }
@@ -69,8 +73,8 @@ public class TileCelestialCrystals extends TileSkybound {
         } else {
             BlockPos pos = new BlockPos(xCoord, yCoord, zCoord).down();
             Block downState = worldObj.getBlock(pos.getX(), pos.getY(), pos.getZ());
-            if(downState == BlocksAS.customOre &&
-                downState.getDamageValue(worldObj,xCoord,yCoord,zCoord) == BlockCustomOre.OreType.STARMETAL.getMeta()) {
+            if (downState == BlocksAS.customOre && downState.getDamageValue(worldObj, xCoord, yCoord, zCoord)
+                == BlockCustomOre.OreType.STARMETAL.getMeta()) {
                 playStarmetalOreParticles();
             }
         }
@@ -79,11 +83,12 @@ public class TileCelestialCrystals extends TileSkybound {
     @SideOnly(Side.CLIENT)
     private void playStarmetalOreParticles() {
         BlockPos pos = new BlockPos(xCoord, yCoord, zCoord).down();
-        if(rand.nextInt(5) == 0) {
+        if (rand.nextInt(5) == 0) {
             EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    pos.getX()        + rand.nextFloat(),
-                    pos.down().getY() + rand.nextFloat(),
-                    pos.getZ()        + rand.nextFloat());
+                pos.getX() + rand.nextFloat(),
+                pos.down()
+                    .getY() + rand.nextFloat(),
+                pos.getZ() + rand.nextFloat());
             p.motion(0, rand.nextFloat() * 0.05, 0);
             p.scale(0.2F);
         }
@@ -91,12 +96,14 @@ public class TileCelestialCrystals extends TileSkybound {
 
     @SideOnly(Side.CLIENT)
     public static void breakParticles(PktParticleEvent event) {
-        BlockPos at = event.getVec().toBlockPos();
+        BlockPos at = event.getVec()
+            .toBlockPos();
         int id = 19;
         id ^= at.getX();
         id ^= at.getY();
         id ^= at.getZ();
-        EffectHandler.getInstance().registerFX(new EntityFXCrystalBurst(id, at.getX() + 0.5, at.getY() + 0.2, at.getZ() + 0.5, 1.5F));
+        EffectHandler.getInstance()
+            .registerFX(new EntityFXCrystalBurst(id, at.getX() + 0.5, at.getY() + 0.2, at.getZ() + 0.5, 1.5F));
     }
 
     @Override
@@ -105,22 +112,25 @@ public class TileCelestialCrystals extends TileSkybound {
     public void grow() {
         Block current = worldObj.getBlock(xCoord, yCoord, zCoord);
         int stage = current.damageDropped(BlockCelestialCrystals.STAGE);
-        if(stage < 4) {
+        if (stage < 4) {
             int next = BlocksAS.celestialCrystals.damageDropped(stage + 1);
-            worldObj.setBlock(xCoord, yCoord, zCoord, current, next,3);
+            worldObj.setBlock(xCoord, yCoord, zCoord, current, next, 3);
         }
     }
 
     public void tryGrowth(double mul) {
         int r = 24000;
-        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(worldObj);
-        if(doesSeeSky() && handle != null) {
-            double dstr = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(worldObj);
-            if(dstr > 0) {
-                Collection<IConstellation> activeConstellations =
-                        ((DataActiveCelestials) SyncDataHolder.getDataClient(SyncDataHolder.DATA_CONSTELLATIONS)).getActiveConstellations(worldObj.provider.dimensionId);
-                if(activeConstellations != null) {
-                    r = 9500; //If this dim has sky handling active.
+        WorldSkyHandler handle = ConstellationSkyHandler.getInstance()
+            .getWorldHandler(worldObj);
+        if (doesSeeSky() && handle != null) {
+            double dstr = ConstellationSkyHandler.getInstance()
+                .getCurrentDaytimeDistribution(worldObj);
+            if (dstr > 0) {
+                Collection<IConstellation> activeConstellations = ((DataActiveCelestials) SyncDataHolder
+                    .getDataClient(SyncDataHolder.DATA_CONSTELLATIONS))
+                        .getActiveConstellations(worldObj.provider.dimensionId);
+                if (activeConstellations != null) {
+                    r = 9500; // If this dim has sky handling active.
                 }
                 r *= (0.5 + ((1 - dstr) * 0.5));
             }
@@ -128,7 +138,7 @@ public class TileCelestialCrystals extends TileSkybound {
         r *= Math.abs(mul);
         r = Math.max(1, r);
 
-        if(worldObj.rand.nextInt(Math.max(r, 1)) == 0) {
+        if (worldObj.rand.nextInt(Math.max(r, 1)) == 0) {
             grow();
         }
     }

@@ -8,6 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect.aoe;
 
+import java.awt.*;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
@@ -24,16 +35,6 @@ import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ILocatable;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockStone;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import net.minecraftforge.common.config.Configuration;
-
-import javax.annotation.Nullable;
-import java.awt.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -59,37 +60,43 @@ public class CEffectMineralis extends CEffectPositionList {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility, boolean extendedEffects) {
-        if(rand.nextBoolean()) {
+    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility,
+        boolean extendedEffects) {
+        if (rand.nextBoolean()) {
             EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
                 pos.getX() + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5,
                 pos.getY() + rand.nextFloat() * 2 + 0.5,
                 pos.getZ() + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5);
-            p.motion(0, 0, 0).gravity(-0.01);
-            p.scale(0.45F).setColor(new Color(188, 188, 188)).setMaxAge(55);
+            p.motion(0, 0, 0)
+                .gravity(-0.01);
+            p.scale(0.45F)
+                .setColor(new Color(188, 188, 188))
+                .setMaxAge(55);
         }
     }
 
     @Override
-    public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect, @Nullable IMinorConstellation possibleTraitEffect) {
-        if(!enabled) return false;
+    public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect,
+        @Nullable IMinorConstellation possibleTraitEffect) {
+        if (!enabled) return false;
         percStrength *= potencyMultiplier;
-        if(percStrength < 1) {
-            if(world.rand.nextFloat() > percStrength) return false;
+        if (percStrength < 1) {
+            if (world.rand.nextFloat() > percStrength) return false;
         }
 
         boolean changed = false;
 
         GenListEntries.SimpleBlockPosEntry entry = getRandomElementByChance(rand);
-        if(entry != null) {
+        if (entry != null) {
             BlockPos sel = entry.getPos();
-            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(sel.chunkX(), sel.chunkZ()))) {
-                if(verifier.isValid(world, sel)) {
+            if (MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(sel.chunkX(), sel.chunkZ()))) {
+                if (verifier.isValid(world, sel)) {
                     ItemStack blockStack = OreTypes.RITUAL_MINERALIS.getRandomOre(rand);
-                    if(rand.nextInt(200_000) == 0) blockStack = new ItemStack(BlocksAS.customOre, 1, BlockCustomOre.OreType.STARMETAL.ordinal());
-                    if(blockStack != null) {
+                    if (rand.nextInt(200_000) == 0)
+                        blockStack = new ItemStack(BlocksAS.customOre, 1, BlockCustomOre.OreType.STARMETAL.ordinal());
+                    if (blockStack != null) {
                         Block state = ItemUtils.createBlockState(blockStack);
-                        if(state != null) {
+                        if (state != null) {
                             world.setBlock(sel.getX(), sel.getY(), sel.getZ(), state);
                         }
                     }
@@ -100,7 +107,7 @@ public class CEffectMineralis extends CEffectPositionList {
             }
         }
 
-        if(findNewPosition(world, pos)) changed = true;
+        if (findNewPosition(world, pos)) changed = true;
 
         return changed;
     }
@@ -112,10 +119,32 @@ public class CEffectMineralis extends CEffectPositionList {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        searchRange = cfg.getInt(getKey() + "Range", getConfigurationSection(), 14, 1, 32, "Defines the radius (in blocks) in which the ritual will search for cleanStone to generate ores into.");
-        maxCount = cfg.getInt(getKey() + "Count", getConfigurationSection(), 2, 1, 4000, "Defines the amount of block-positions the ritual can cache at max count");
-        enabled = cfg.getBoolean(getKey() + "Enabled", getConfigurationSection(), true, "Set to false to disable this ConstellationEffect.");
-        potencyMultiplier = cfg.getFloat(getKey() + "PotencyMultiplier", getConfigurationSection(), 1.0F, 0.01F, 100F, "Set the potency multiplier for this ritual effect. Will affect all ritual effects and their efficiency.");
+        searchRange = cfg.getInt(
+            getKey() + "Range",
+            getConfigurationSection(),
+            14,
+            1,
+            32,
+            "Defines the radius (in blocks) in which the ritual will search for cleanStone to generate ores into.");
+        maxCount = cfg.getInt(
+            getKey() + "Count",
+            getConfigurationSection(),
+            2,
+            1,
+            4000,
+            "Defines the amount of block-positions the ritual can cache at max count");
+        enabled = cfg.getBoolean(
+            getKey() + "Enabled",
+            getConfigurationSection(),
+            true,
+            "Set to false to disable this ConstellationEffect.");
+        potencyMultiplier = cfg.getFloat(
+            getKey() + "PotencyMultiplier",
+            getConfigurationSection(),
+            1.0F,
+            0.01F,
+            100F,
+            "Set the potency multiplier for this ritual effect. Will affect all ritual effects and their efficiency.");
     }
 
 }

@@ -8,9 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-import com.google.common.collect.Multimap;
-import hellfirepvp.astralsorcery.common.data.config.Config;
-import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.item.Item;
@@ -18,9 +19,10 @@ import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import com.google.common.collect.Multimap;
+
+import hellfirepvp.astralsorcery.common.data.config.Config;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,29 +37,35 @@ public class SwordSharpenHelper {
 
     public static final AttributeModifier MODIFIER_SHARPENED;
 
-    //API hook.
+    // API hook.
     public static List<Class<?>> otherSharpenableSwordSuperClasses = new LinkedList<>();
     public static List<String> blacklistedSharpenableSwordClassNames = new LinkedList<>();
 
     public static boolean isSwordSharpened(ItemStack stack) {
-        if(!isSharpenableItem(stack)) return false;
-        return NBTHelper.getData(stack).getBoolean("sharp");
+        if (!isSharpenableItem(stack)) return false;
+        return NBTHelper.getData(stack)
+            .getBoolean("sharp");
     }
 
     public static void setSwordSharpened(ItemStack stack) {
-        if(!isSharpenableItem(stack)) return;
-        NBTHelper.getData(stack).setBoolean("sharp", true);
+        if (!isSharpenableItem(stack)) return;
+        NBTHelper.getData(stack)
+            .setBoolean("sharp", true);
     }
 
     public static boolean canBeSharpened(ItemStack stack) {
-        if(stack == null || stack.getItem() == null) return false;
+        if (stack == null || stack.getItem() == null) return false;
         Item i = stack.getItem();
-        if(blacklistedSharpenableSwordClassNames.contains(i.getClass().getName())) return false;
+        if (blacklistedSharpenableSwordClassNames.contains(
+            i.getClass()
+                .getName()))
+            return false;
 
-        if(stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemAxe) return true;
-        Class<?> itemClass = stack.getItem().getClass();
+        if (stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemAxe) return true;
+        Class<?> itemClass = stack.getItem()
+            .getClass();
         for (Class<?> clazz : otherSharpenableSwordSuperClasses) {
-            if(clazz.isAssignableFrom(itemClass)) {
+            if (clazz.isAssignableFrom(itemClass)) {
                 return true;
             }
         }
@@ -65,17 +73,22 @@ public class SwordSharpenHelper {
     }
 
     public static boolean isSharpenableItem(ItemStack stack) {
-        return stack != null && stack.getItem() != null && (stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemAxe);
+        return stack != null && stack.getItem() != null
+            && (stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemAxe);
     }
 
     public static void applySharpenModifier(ItemStack stack, int slot, Multimap<String, AttributeModifier> map) {
-        if(isSwordSharpened(stack)){// && slot.equals(EntityEquipmentSlot.MAINHAND)) {
+        if (isSwordSharpened(stack)) {// && slot.equals(EntityEquipmentSlot.MAINHAND)) {
             map.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(), MODIFIER_SHARPENED);
         }
     }
 
     static {
-        MODIFIER_SHARPENED = new AttributeModifier(UUID.fromString("85967b31-db1c-43b9-8d0f-09bceb4e484b"), NAME_MODIFIER, Config.swordSharpMultiplier, 2);
+        MODIFIER_SHARPENED = new AttributeModifier(
+            UUID.fromString("85967b31-db1c-43b9-8d0f-09bceb4e484b"),
+            NAME_MODIFIER,
+            Config.swordSharpMultiplier,
+            2);
     }
 
 }

@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.config.Configuration;
+
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -30,10 +31,10 @@ public class PerkDefensiveDamageDodge extends ConstellationPerk {
 
     @Override
     public float onEntityHurt(EntityPlayer hurt, DamageSource source, float dmgIn) {
-        if(source.canHarmInCreative()) return dmgIn;
+        if (source.canHarmInCreative()) return dmgIn;
 
-        if(rand.nextInt(chanceDodgeDamage) == 0) {
-            addAlignmentCharge(hurt, 1 * Math.max(0 ,dmgIn));
+        if (rand.nextInt(chanceDodgeDamage) == 0) {
+            addAlignmentCharge(hurt, 1 * Math.max(0, dmgIn));
             return 0F;
         }
         return dmgIn;
@@ -46,7 +47,13 @@ public class PerkDefensiveDamageDodge extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        chanceDodgeDamage = cfg.getInt(getKey() + "DodgeChance", getConfigurationSection(), 20, 1, 1000, "Sets the chance the player has to completely avoid/dodge an attack");
+        chanceDodgeDamage = cfg.getInt(
+            getKey() + "DodgeChance",
+            getConfigurationSection(),
+            20,
+            1,
+            1000,
+            "Sets the chance the player has to completely avoid/dodge an attack");
     }
 
 }

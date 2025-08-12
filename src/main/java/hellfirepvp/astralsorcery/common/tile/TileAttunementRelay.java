@@ -8,6 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
+import java.awt.*;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
+
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
@@ -20,12 +28,6 @@ import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
-
-import javax.annotation.Nullable;
-import java.awt.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -50,7 +52,7 @@ public class TileAttunementRelay extends TileInventoryBase {
     public void updatePositionData(@Nullable BlockPos closestAltar, double dstSqOtherRelay) {
         this.linked = closestAltar;
         dstSqOtherRelay = Math.sqrt(dstSqOtherRelay);
-        if(dstSqOtherRelay <= 1E-4) {
+        if (dstSqOtherRelay <= 1E-4) {
             collectionMultiplier = 1F;
         } else {
             collectionMultiplier = 1F - ((float) (MathHelper.clamp_double(dstSqOtherRelay, 0, MAX_DST) / MAX_DST));
@@ -62,39 +64,40 @@ public class TileAttunementRelay extends TileInventoryBase {
     public void tick() {
         super.tick();
 
-        if((ticksExisted & 15) == 0) {
+        if ((ticksExisted & 15) == 0) {
             updateSkyState();
         }
 
-        if((ticksExisted & 31) == 0) {
+        if ((ticksExisted & 31) == 0) {
             updateMultBlock();
         }
 
         ItemStack slotted = getInventoryHandler().getStackInSlot(0);
-        if(!worldObj.isRemote) {
-            if(slotted != null) {
+        if (!worldObj.isRemote) {
+            if (slotted != null) {
                 BlockPos pos = new BlockPos(xCoord, yCoord, zCoord).up();
-                if(!worldObj.isAirBlock(pos.getX(), pos.getY(), pos.getZ())) {
+                if (!worldObj.isAirBlock(pos.getX(), pos.getY(), pos.getZ())) {
                     ItemStack in = getInventoryHandler().getStackInSlot(0);
                     ItemStack out = ItemUtils.copyStackWithSize(in, in.stackSize);
                     ItemUtils.dropItem(worldObj, pos.getX(), pos.getY(), pos.getZ(), out);
                     getInventoryHandler().setInventorySlotContents(0, null);
                 }
 
-                if(ItemUtils.matchStackLoosely(slotted, ItemCraftingComponent.MetaType.GLASS_LENS.asStack())) {
-                    if(linked != null) {
+                if (ItemUtils.matchStackLoosely(slotted, ItemCraftingComponent.MetaType.GLASS_LENS.asStack())) {
+                    if (linked != null) {
                         TileAltar ta = MiscUtils.getTileAt(worldObj, linked, TileAltar.class, true);
-                        if(ta == null) {
+                        if (ta == null) {
                             linked = null;
                             markForUpdate();
-                        } else if(hasMultiblock && doesSeeSky()) {
-                            WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(getWorldObj());
+                        } else if (hasMultiblock && doesSeeSky()) {
+                            WorldSkyHandler handle = ConstellationSkyHandler.getInstance()
+                                .getWorldHandler(getWorldObj());
                             int yLevel = pos.getY();
-                            if(handle != null && yLevel > 40) {
+                            if (handle != null && yLevel > 40) {
                                 double coll = 0.2;
 
                                 float dstr;
-                                if(yLevel > 140) {
+                                if (yLevel > 140) {
                                     dstr = 1F;
                                 } else {
                                     dstr = (yLevel - 40) / 100F;
@@ -102,7 +105,8 @@ public class TileAttunementRelay extends TileInventoryBase {
 
                                 coll *= dstr;
                                 coll *= collectionMultiplier;
-                                coll *= (0.2 + (0.8 * ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(getWorldObj())));
+                                coll *= (0.2 + (0.8 * ConstellationSkyHandler.getInstance()
+                                    .getCurrentDaytimeDistribution(getWorldObj())));
                                 ta.receiveStarlight(null, coll);
                             }
                         }
@@ -110,30 +114,37 @@ public class TileAttunementRelay extends TileInventoryBase {
                 }
             }
         } else {
-            if(slotted != null && hasMultiblock) {
-                if(ItemUtils.matchStackLoosely(slotted, ItemCraftingComponent.MetaType.GLASS_LENS.asStack())) {
-                    if(rand.nextInt(3) == 0) {
+            if (slotted != null && hasMultiblock) {
+                if (ItemUtils.matchStackLoosely(slotted, ItemCraftingComponent.MetaType.GLASS_LENS.asStack())) {
+                    if (rand.nextInt(3) == 0) {
                         Vector3 at = new Vector3(this);
                         at.add(rand.nextFloat() * 2.6 - 0.8, 0, rand.nextFloat() * 2.6 - 0.8);
                         EntityFXFacingParticle p = EffectHelper.genericFlareParticle(at.getX(), at.getY(), at.getZ());
                         p.setAlphaMultiplier(0.7F);
                         p.setMaxAge((int) (30 + rand.nextFloat() * 50));
-                        p.gravity(0.01).scale(0.3F + rand.nextFloat() * 0.1F);
-                        if(rand.nextBoolean()) {
+                        p.gravity(0.01)
+                            .scale(0.3F + rand.nextFloat() * 0.1F);
+                        if (rand.nextBoolean()) {
                             p.setColor(Color.WHITE);
                         }
                     }
 
-                    if(linked != null && doesSeeSky() && rand.nextInt(4) == 0) {
+                    if (linked != null && doesSeeSky() && rand.nextInt(4) == 0) {
                         Vector3 at = new Vector3(this);
-                        Vector3 dir = new Vector3(linked).subtract(new Vector3(this)).normalize().multiply(0.05);
-                        at.add(rand.nextFloat() * 0.4 + 0.3, rand.nextFloat() * 0.3 + 0.1, rand.nextFloat() * 0.4 + 0.3);
+                        Vector3 dir = new Vector3(linked).subtract(new Vector3(this))
+                            .normalize()
+                            .multiply(0.05);
+                        at.add(
+                            rand.nextFloat() * 0.4 + 0.3,
+                            rand.nextFloat() * 0.3 + 0.1,
+                            rand.nextFloat() * 0.4 + 0.3);
                         EntityFXFacingParticle p = EffectHelper.genericFlareParticle(at.getX(), at.getY(), at.getZ());
                         p.setAlphaMultiplier(0.7F);
                         p.motion(dir.getX(), dir.getY(), dir.getZ());
                         p.setMaxAge((int) (15 + rand.nextFloat() * 30));
-                        p.gravity(0.015).scale(0.2F + rand.nextFloat() * 0.04F);
-                        if(rand.nextBoolean()) {
+                        p.gravity(0.015)
+                            .scale(0.2F + rand.nextFloat() * 0.04F);
+                        if (rand.nextBoolean()) {
                             p.setColor(Color.WHITE);
                         }
                     }
@@ -146,7 +157,7 @@ public class TileAttunementRelay extends TileInventoryBase {
         boolean found = MultiBlockArrays.patternCollectorRelay.matches(worldObj, new BlockPos(xCoord, yCoord, zCoord));
         boolean update = hasMultiblock != found;
         this.hasMultiblock = found;
-        if(update) {
+        if (update) {
             markForUpdate();
         }
     }
@@ -155,7 +166,7 @@ public class TileAttunementRelay extends TileInventoryBase {
         boolean seesSky = worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord);
         boolean update = canSeeSky != seesSky;
         this.canSeeSky = seesSky;
-        if(update) {
+        if (update) {
             markForUpdate();
         }
     }
@@ -171,7 +182,7 @@ public class TileAttunementRelay extends TileInventoryBase {
         compound.setBoolean("seesSky", this.canSeeSky);
         compound.setBoolean("mbState", this.hasMultiblock);
         compound.setFloat("colMultiplier", this.collectionMultiplier);
-        if(linked != null) {
+        if (linked != null) {
             NBTTagCompound pos = new NBTTagCompound();
             NBTUtils.writeBlockPosToNBT(linked, pos);
             compound.setTag("linked", pos);
@@ -185,7 +196,7 @@ public class TileAttunementRelay extends TileInventoryBase {
         this.canSeeSky = compound.getBoolean("seesSky");
         this.hasMultiblock = compound.getBoolean("mbState");
         this.collectionMultiplier = compound.getFloat("colMultiplier");
-        if(compound.hasKey("linked")) {
+        if (compound.hasKey("linked")) {
             this.linked = NBTUtils.readBlockPosFromNBT(compound.getCompoundTag("linked"));
         } else {
             linked = null;

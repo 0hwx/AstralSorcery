@@ -8,12 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.entities;
 
-import hellfirepvp.astralsorcery.common.block.fluid.FluidBlockLiquidStarlight;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import hellfirepvp.astralsorcery.common.block.fluid.FluidBlockLiquidStarlight;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -25,12 +25,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 public interface EntityStarlightReacttant {
 
     default public boolean isInLiquidStarlight(Entity e) {
-        BlockPos at = new BlockPos(e).getPosition();//e.getPosition();
+        BlockPos at = new BlockPos(e).getPosition();// e.getPosition();
         Block state = e.worldObj.getBlock(at.getX(), at.getY(), at.getZ());
-        if(!(state instanceof FluidBlockLiquidStarlight)) {
+        if (!(state instanceof FluidBlockLiquidStarlight)) {
             return false;
         }
-        if(!((FluidBlockLiquidStarlight) state).isSourceBlock(e.worldObj, at.getX(), at.getY(), at.getZ())) {
+        if (!((FluidBlockLiquidStarlight) state).isSourceBlock(e.worldObj, at.getX(), at.getY(), at.getZ())) {
             return false;
         }
         BlockPos down = at.down();

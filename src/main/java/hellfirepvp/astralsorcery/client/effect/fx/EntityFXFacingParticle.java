@@ -8,20 +8,22 @@
 
 package hellfirepvp.astralsorcery.client.effect.fx;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.renderer.Tessellator;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.renderer.Tessellator;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nonnull;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -32,7 +34,8 @@ import java.util.List;
  */
 public class EntityFXFacingParticle extends EntityComplexFX {
 
-    public static final BindableResource staticFlareTex = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "flareStatic");
+    public static final BindableResource staticFlareTex = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "flareStatic");
 
     private double x, y, z;
     private double oldX, oldY, oldZ;
@@ -101,9 +104,9 @@ public class EntityFXFacingParticle extends EntityComplexFX {
     }
 
     public EntityFXFacingParticle setColor(Color color) {
-        colorRed   = ((float) color.getRed())   / 255F;
+        colorRed = ((float) color.getRed()) / 255F;
         colorGreen = ((float) color.getGreen()) / 255F;
-        colorBlue  = ((float) color.getBlue())  / 255F;
+        colorBlue = ((float) color.getBlue()) / 255F;
         return this;
     }
 
@@ -133,12 +136,12 @@ public class EntityFXFacingParticle extends EntityComplexFX {
         staticFlareTex.bind();
 
         Tessellator t = Tessellator.instance;
-//        VertexBuffer vb = t.getBuffer();
-//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        // VertexBuffer vb = t.getBuffer();
+        // vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
         t.startDrawingQuads();
 
         for (EntityFXFacingParticle particle : new ArrayList<>(particles)) {
-            if(particle == null) continue;
+            if (particle == null) continue;
             particle.renderFast(parTicks, t);
         }
 
@@ -151,21 +154,37 @@ public class EntityFXFacingParticle extends EntityComplexFX {
         GL11.glPopAttrib();
     }
 
-    //Vertex format: DefaultVertexFormats.POSITION_TEX_COLOR
-    //GL states have to be preinitialized.
+    // Vertex format: DefaultVertexFormats.POSITION_TEX_COLOR
+    // GL states have to be preinitialized.
     public void renderFast(float pTicks, Tessellator vbDrawing) {
         float alpha = fadeFunction.getAlpha(age, maxAge);
         alpha *= alphaMultiplier;
         double intX = RenderingUtils.interpolate(oldX, x, pTicks);
         double intY = RenderingUtils.interpolate(oldY, y, pTicks);
         double intZ = RenderingUtils.interpolate(oldZ, z, pTicks);
-        if(renderOffsetController != null) {
-            Vector3 result = renderOffsetController.changeRenderPosition(this, new Vector3(intX, intY, intZ), new Vector3(motionX, motionY - yGravity, motionZ), pTicks);
+        if (renderOffsetController != null) {
+            Vector3 result = renderOffsetController.changeRenderPosition(
+                this,
+                new Vector3(intX, intY, intZ),
+                new Vector3(motionX, motionY - yGravity, motionZ),
+                pTicks);
             intX = result.getX();
             intY = result.getY();
             intZ = result.getZ();
         }
-        RenderingUtils.renderFacingFullQuadVB(vbDrawing, intX, intY, intZ, pTicks, scale, 0, colorRed, colorGreen, colorBlue, alpha);}
+        RenderingUtils.renderFacingFullQuadVB(
+            vbDrawing,
+            intX,
+            intY,
+            intZ,
+            pTicks,
+            scale,
+            0,
+            colorRed,
+            colorGreen,
+            colorBlue,
+            alpha);
+    }
 
     @Override
     public void render(float pTicks) {
@@ -177,7 +196,17 @@ public class EntityFXFacingParticle extends EntityComplexFX {
         alpha *= alphaMultiplier;
         GL11.glColor4f(colorRed, colorGreen, colorBlue, alpha);
         staticFlareTex.bind();
-        RenderingUtils.renderFacingQuad(interpolate(oldX, x, pTicks), interpolate(oldY, y, pTicks), interpolate(oldZ, z, pTicks), pTicks, scale, 0, 0, 0, 1, 1);
+        RenderingUtils.renderFacingQuad(
+            interpolate(oldX, x, pTicks),
+            interpolate(oldY, y, pTicks),
+            interpolate(oldZ, z, pTicks),
+            pTicks,
+            scale,
+            0,
+            0,
+            0,
+            1,
+            1);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glDepthMask(true);

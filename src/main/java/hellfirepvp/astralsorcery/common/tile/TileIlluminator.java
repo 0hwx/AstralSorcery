@@ -8,6 +8,18 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.Random;
+
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.World;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.entities.EntityFlare;
@@ -17,17 +29,6 @@ import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.BlockStateCheck;
 import hellfirepvp.astralsorcery.common.util.data.DirectionalLayerBlockDiscoverer;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.EnumSkyBlock;
-import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import java.awt.*;
-import java.util.LinkedList;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -56,14 +57,14 @@ public class TileIlluminator extends TileSkybound {
         if (!playerPlaced) return;
 
         if (!worldObj.isRemote && doesSeeSky()) {
-            if(validPositions == null) recalculate();
-            if(rand.nextInt(3) == 0 && placeFlares()) {
+            if (validPositions == null) recalculate();
+            if (rand.nextInt(3) == 0 && placeFlares()) {
                 recalcRequested = true;
             }
             ticksUntilNext--;
-            if(ticksUntilNext <= 0) {
+            if (ticksUntilNext <= 0) {
                 ticksUntilNext = 180;
-                if(recalcRequested) {
+                if (recalcRequested) {
                     recalcRequested = false;
                     recalculate();
                 }
@@ -81,14 +82,12 @@ public class TileIlluminator extends TileSkybound {
 
     @SideOnly(Side.CLIENT)
     private void playEffects() {
-        if(Minecraft.isFancyGraphicsEnabled() || rand.nextInt(5) == 0) {
-            EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    xCoord + 0.5,
-                    yCoord + 0.5,
-                    zCoord + 0.5);
-            p.motion((rand.nextFloat() * 0.025F) * (rand.nextBoolean() ? 1 : -1),
-                    (rand.nextFloat() * 0.025F) * (rand.nextBoolean() ? 1 : -1),
-                    (rand.nextFloat() * 0.025F) * (rand.nextBoolean() ? 1 : -1));
+        if (Minecraft.isFancyGraphicsEnabled() || rand.nextInt(5) == 0) {
+            EntityFXFacingParticle p = EffectHelper.genericFlareParticle(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5);
+            p.motion(
+                (rand.nextFloat() * 0.025F) * (rand.nextBoolean() ? 1 : -1),
+                (rand.nextFloat() * 0.025F) * (rand.nextBoolean() ? 1 : -1),
+                (rand.nextFloat() * 0.025F) * (rand.nextBoolean() ? 1 : -1));
             p.scale(0.25F);
             switch (rand.nextInt(3)) {
                 case 0:
@@ -107,18 +106,20 @@ public class TileIlluminator extends TileSkybound {
     private boolean placeFlares() {
         boolean needsRecalc = false;
         for (LinkedList<BlockPos> list : validPositions) {
-            if(list.isEmpty()) {
+            if (list.isEmpty()) {
                 needsRecalc = true;
                 continue;
             }
             int index = rand.nextInt(list.size());
             BlockPos at = list.remove(index);
-            if(!needsRecalc && list.isEmpty()) needsRecalc = true;
+            if (!needsRecalc && list.isEmpty()) needsRecalc = true;
             at = at.add(rand.nextInt(5) - 2, rand.nextInt(13) - 6, rand.nextInt(5) - 2);
-            if(illuminatorCheck.isStateValid(worldObj, at, worldObj.getBlock(at.getX(), at.getY(), at.getZ()))) {
+            if (illuminatorCheck.isStateValid(worldObj, at, worldObj.getBlock(at.getX(), at.getY(), at.getZ()))) {
                 worldObj.setBlock(at.getX(), at.getY(), at.getZ(), BlocksAS.blockVolatileLight);
-                if(rand.nextInt(4) == 0) {
-                    EntityFlare.spawnAmbient(worldObj, new Vector3(this).add(-1 + rand.nextFloat() * 3, 0.6, -1 + rand.nextFloat() * 3));
+                if (rand.nextInt(4) == 0) {
+                    EntityFlare.spawnAmbient(
+                        worldObj,
+                        new Vector3(this).add(-1 + rand.nextFloat() * 3, 0.6, -1 + rand.nextFloat() * 3));
                 }
             }
         }
@@ -130,7 +131,11 @@ public class TileIlluminator extends TileSkybound {
         validPositions = new LinkedList[parts];
         for (int i = 1; i <= parts; i++) {
             int yLevel = (int) (((float) yCoord) * (((float) i) / ((float) parts)));
-            LinkedList<BlockPos> calcPositions = new DirectionalLayerBlockDiscoverer(worldObj, new BlockPos(xCoord, yLevel, zCoord), SEARCH_RADIUS, STEP_WIDTH).discoverApplicableBlocks();
+            LinkedList<BlockPos> calcPositions = new DirectionalLayerBlockDiscoverer(
+                worldObj,
+                new BlockPos(xCoord, yLevel, zCoord),
+                SEARCH_RADIUS,
+                STEP_WIDTH).discoverApplicableBlocks();
             validPositions[i - 1] = repeatList(calcPositions);
         }
     }
@@ -140,7 +145,7 @@ public class TileIlluminator extends TileSkybound {
     }
 
     private LinkedList<BlockPos> repeatList(LinkedList<BlockPos> list) {
-        LinkedList<BlockPos> rep =  new LinkedList<>();
+        LinkedList<BlockPos> rep = new LinkedList<>();
         for (int i = 0; i < 4; i++) {
             rep.addAll(list);
         }
@@ -170,7 +175,10 @@ public class TileIlluminator extends TileSkybound {
 
         @Override
         public boolean isStateValid(World world, BlockPos pos, Block state) {
-            return world.isAirBlock(pos.getX(), pos.getY(), pos.getZ()) && !world.canBlockSeeTheSky(pos.getX(), pos.getY(), pos.getZ()) && world.getFullBlockLightValue(pos.getX(), pos.getY(), pos.getZ()) < 8 && world.getSavedLightValue(EnumSkyBlock.Sky, pos.getX(), pos.getY(), pos.getZ()) < 6;
+            return world.isAirBlock(pos.getX(), pos.getY(), pos.getZ())
+                && !world.canBlockSeeTheSky(pos.getX(), pos.getY(), pos.getZ())
+                && world.getFullBlockLightValue(pos.getX(), pos.getY(), pos.getZ()) < 8
+                && world.getSavedLightValue(EnumSkyBlock.Sky, pos.getX(), pos.getY(), pos.getZ()) < 6;
         }
 
     }

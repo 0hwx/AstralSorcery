@@ -8,16 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
+import java.util.UUID;
+
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.BaseAttributeMap;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.config.Configuration;
-import cpw.mods.fml.relauncher.Side;
 
-import java.util.UUID;
+import cpw.mods.fml.relauncher.Side;
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -39,12 +40,12 @@ public class PerkTravelMovespeed extends ConstellationPerk {
 
     @Override
     public void onPlayerTick(EntityPlayer player, Side side) {
-        if(side == Side.SERVER) {
+        if (side == Side.SERVER) {
             BaseAttributeMap map = player.getAttributeMap();
             IAttributeInstance instance = map.getAttributeInstance(SharedMonsterAttributes.movementSpeed);
-//            if(!instance.hasModifier(modMovespeedIncrease)) {
-                instance.applyModifier(modMovespeedIncrease);
-//            }
+            // if(!instance.hasModifier(modMovespeedIncrease)) {
+            instance.applyModifier(modMovespeedIncrease);
+            // }
             addAlignmentCharge(player, 0.002);
             setCooldownActiveForPlayer(player, 20);
         }
@@ -54,9 +55,9 @@ public class PerkTravelMovespeed extends ConstellationPerk {
     public void onTimeout(EntityPlayer player) {
         BaseAttributeMap map = player.getAttributeMap();
         IAttributeInstance instance = map.getAttributeInstance(SharedMonsterAttributes.movementSpeed);
-//        if(instance.hasModifier(modMovespeedIncrease)) {
-            instance.removeModifier(modMovespeedIncrease);
-//        }
+        // if(instance.hasModifier(modMovespeedIncrease)) {
+        instance.removeModifier(modMovespeedIncrease);
+        // }
     }
 
     @Override
@@ -66,7 +67,13 @@ public class PerkTravelMovespeed extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        movespeedMultiplier = cfg.getFloat(getKey() + "SpeedMultipler", getConfigurationSection(), 0.2F, 0F, 5F, "Sets the movement-speed multiplier when the player has this perk.");
+        movespeedMultiplier = cfg.getFloat(
+            getKey() + "SpeedMultipler",
+            getConfigurationSection(),
+            0.2F,
+            0F,
+            5F,
+            "Sets the movement-speed multiplier when the player has this perk.");
         setupModifier();
     }
 

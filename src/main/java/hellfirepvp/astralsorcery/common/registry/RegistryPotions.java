@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.registry;
 
-import hellfirepvp.astralsorcery.common.potion.PotionBleed;
-import hellfirepvp.astralsorcery.common.potion.PotionCheatDeath;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.common.MinecraftForge;
+
+import hellfirepvp.astralsorcery.common.potion.PotionBleed;
+import hellfirepvp.astralsorcery.common.potion.PotionCheatDeath;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,7 +32,9 @@ public class RegistryPotions {
     }
 
     private static <T extends Potion> T registerPotion(T potion) {
-        potion.setPotionName(potion.getClass().getSimpleName());
+        potion.setPotionName(
+            potion.getClass()
+                .getSimpleName());
         MinecraftForge.EVENT_BUS.register(potion);
         return potion;
     }

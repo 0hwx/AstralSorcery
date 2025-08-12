@@ -8,13 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import hellfirepvp.astralsorcery.common.block.network.BlockStarlightNetwork;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.tile.TileCelestialOrrery;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
+import hellfirepvp.astralsorcery.common.block.network.BlockStarlightNetwork;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.tile.TileCelestialOrrery;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 public class BlockCelestialOrrery extends BlockStarlightNetwork {
 
     public BlockCelestialOrrery() {
-        super("BlockCelestialOrrery",Material.rock);
+        super("BlockCelestialOrrery", Material.rock);
         setHardness(0.5F);
         setHarvestLevel("axe", 1);
         setResistance(10F);

@@ -8,26 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
+import java.util.List;
+
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.BlockFluidBase;
 
-import java.util.LinkedList;
-import java.util.List;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -36,9 +31,9 @@ import java.util.List;
  * Created by HellFirePvP
  * Date: 22.05.2016 / 16:13
  */
-public class BlockMarble extends Block implements BlockCustomName{
+public class BlockMarble extends Block implements BlockCustomName {
 
-    //private static final int RAND_MOSS_CHANCE = 10;
+    // private static final int RAND_MOSS_CHANCE = 10;
     private IIcon[] icons = new IIcon[MarbleBlockType.values().length];
     private static IIcon[] iconPillar = new IIcon[6];
     private static IIcon[] iconPillarTop = new IIcon[6];
@@ -51,27 +46,29 @@ public class BlockMarble extends Block implements BlockCustomName{
         setHarvestLevel("pickaxe", 1);
         setResistance(3.0F);
         setStepSound(soundTypeStone);
-//        setTickRandomly(true);
+        // setTickRandomly(true);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
     }
 
     @Override
     public void getSubBlocks(Item item, CreativeTabs tab, List<ItemStack> list) {
         for (MarbleBlockType t : MarbleBlockType.values()) {
-//            if(!t.obtainableInCreative()) continue;
+            // if(!t.obtainableInCreative()) continue;
             list.add(new ItemStack(item, 1, t.getMeta()));
         }
     }
 
-    /*@Override
-    public void updateTick(World worldIn, int x, int y, int z, Random rand) {
-        if (!worldIn.isRemote && worldIn.isRaining() && rand.nextInt(RAND_MOSS_CHANCE) == 0) {
-            MarbleBlockType type = state.getValue(MARBLE_TYPE);
-            if (type.canTurnMossy() && worldIn.isRainingAt(pos)) {
-                worldIn.setBlockState(pos, state.withProperty(MARBLE_TYPE, type.getMossyEquivalent()), 3);
-            }
-        }
-    }*/
+    /*
+     * @Override
+     * public void updateTick(World worldIn, int x, int y, int z, Random rand) {
+     * if (!worldIn.isRemote && worldIn.isRaining() && rand.nextInt(RAND_MOSS_CHANCE) == 0) {
+     * MarbleBlockType type = state.getValue(MARBLE_TYPE);
+     * if (type.canTurnMossy() && worldIn.isRainingAt(pos)) {
+     * worldIn.setBlockState(pos, state.withProperty(MARBLE_TYPE, type.getMossyEquivalent()), 3);
+     * }
+     * }
+     * }
+     */
 
     @Override
     public int damageDropped(int meta) {
@@ -89,7 +86,7 @@ public class BlockMarble extends Block implements BlockCustomName{
     }
 
     @Override
-    public boolean func_149730_j() { //isFullBlock
+    public boolean func_149730_j() { // isFullBlock
         return false;
     }
 
@@ -98,10 +95,10 @@ public class BlockMarble extends Block implements BlockCustomName{
         return false;
     }
 
-//    @Override
-//    public boolean isFullyOpaque() {
-//        return true;
-//    }
+    // @Override
+    // public boolean isFullyOpaque() {
+    // return true;
+    // }
 
     @Override
     public String getIdentifierForMeta(int meta) {
@@ -111,8 +108,7 @@ public class BlockMarble extends Block implements BlockCustomName{
 
     @SideOnly(Side.CLIENT)
     @Override
-    public IIcon getIcon(IBlockAccess worldIn, int x, int y, int z, int side)
-    {
+    public IIcon getIcon(IBlockAccess worldIn, int x, int y, int z, int side) {
         int meta = worldIn.getBlockMetadata(x, y, z);
         MarbleBlockType marbleType = MarbleBlockType.values()[meta];
 
@@ -125,42 +121,33 @@ public class BlockMarble extends Block implements BlockCustomName{
             int PILLAR_META = MarbleBlockType.PILLAR.getMeta();
 
             // Only process this if the current block is a PILLAR, and above or below is also a PILLAR
-            if (blockAbove instanceof BlockMarble && blockBelow instanceof BlockMarble && metaAbove == metaBelow){
+            if (blockAbove instanceof BlockMarble && blockBelow instanceof BlockMarble && metaAbove == metaBelow) {
                 return iconPillar[side];
-            }
-            else if (blockBelow instanceof BlockMarble && metaBelow == PILLAR_META) {
-                return iconPillarTop[side];  // Use top texture if below is a pillar
-            }
-            else if (blockAbove instanceof BlockMarble && metaAbove == PILLAR_META) {
-                return iconPillarbottom[side];  // Use bottom texture if above is a pillar
+            } else if (blockBelow instanceof BlockMarble && metaBelow == PILLAR_META) {
+                return iconPillarTop[side]; // Use top texture if below is a pillar
+            } else if (blockAbove instanceof BlockMarble && metaAbove == PILLAR_META) {
+                return iconPillarbottom[side]; // Use bottom texture if above is a pillar
             }
         }
 
-        return this.getIcon(side, meta);  // Default icon for non-pillar blocks
+        return this.getIcon(side, meta); // Default icon for non-pillar blocks
     }
-
-
-
-
 
     @Override
     @SideOnly(Side.CLIENT)
-    public IIcon getIcon(int side, int meta)
-    {
+    public IIcon getIcon(int side, int meta) {
         MarbleBlockType marbleType = MarbleBlockType.values()[meta];
         if (marbleType == MarbleBlockType.PILLAR) {
-                return iconPillar[side];
-        } else  {
+            return iconPillar[side];
+        } else {
             // For non-pillar types, just return the default icon based on meta
             return icons[meta % icons.length];
         }
     }
 
-
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerBlockIcons(IIconRegister reg)
-    {
+    public void registerBlockIcons(IIconRegister reg) {
         // Register all textures for MarbleBlockType values
         for (MarbleBlockType type : MarbleBlockType.values()) {
             // Loop through all six sides of the block
@@ -174,7 +161,6 @@ public class BlockMarble extends Block implements BlockCustomName{
         }
     }
 
-
     public static enum MarbleBlockType {
 
         RAW(0),
@@ -185,14 +171,15 @@ public class BlockMarble extends Block implements BlockCustomName{
         ENGRAVED(5),
         RUNED(6);
 
-//        PILLAR_TOP(2),
-//        PILLAR_BOTTOM(2),;
+        // PILLAR_TOP(2),
+        // PILLAR_BOTTOM(2),;
 
-        //BRICKS_MOSSY,
-        //PILLAR_MOSSY,
-        //CRACK_MOSSY;
+        // BRICKS_MOSSY,
+        // PILLAR_MOSSY,
+        // CRACK_MOSSY;
 
         private final int meta;
+
         private MarbleBlockType(int meta) {
             this.meta = meta;
         }
@@ -202,7 +189,7 @@ public class BlockMarble extends Block implements BlockCustomName{
         }
 
         public Block asBlock() {
-            return BlocksAS.blockMarble;//.getStateFromMeta(meta);
+            return BlocksAS.blockMarble;// .getStateFromMeta(meta);
         }
 
         public int getMeta() {
@@ -216,7 +203,8 @@ public class BlockMarble extends Block implements BlockCustomName{
         public void Pillar(int i, IIconRegister reg) {
             if (i == 0 || i == 1) {
                 // Bottom or top side texture
-                iconPillar[i] = iconPillarTop[i] = iconPillarbottom[i] = reg.registerIcon("astralsorcery:marble_pillar_updown");
+                iconPillar[i] = iconPillarTop[i] = iconPillarbottom[i] = reg
+                    .registerIcon("astralsorcery:marble_pillar_updown");
             } else {
                 iconPillar[i] = reg.registerIcon("astralsorcery:marble_pillar");
                 iconPillarTop[i] = reg.registerIcon("astralsorcery:marble_pillar_side_top");
@@ -225,22 +213,23 @@ public class BlockMarble extends Block implements BlockCustomName{
             }
         }
 
-        /*public boolean canTurnMossy() {
-            return this == BRICKS || this == PILLAR || this == CRACKED;
-        }
-
-        public MarbleBlockType getMossyEquivalent() {
-            if(!canTurnMossy()) return null;
-            switch (this) {
-                case BRICKS:
-                    return BRICKS_MOSSY;
-                case PILLAR:
-                    return PILLAR_MOSSY;
-                case CRACKED:
-                    return CRACK_MOSSY;
-            }
-            return null;
-        }*/
+        /*
+         * public boolean canTurnMossy() {
+         * return this == BRICKS || this == PILLAR || this == CRACKED;
+         * }
+         * public MarbleBlockType getMossyEquivalent() {
+         * if(!canTurnMossy()) return null;
+         * switch (this) {
+         * case BRICKS:
+         * return BRICKS_MOSSY;
+         * case PILLAR:
+         * return PILLAR_MOSSY;
+         * case CRACKED:
+         * return CRACK_MOSSY;
+         * }
+         * return null;
+         * }
+         */
     }
 
 }

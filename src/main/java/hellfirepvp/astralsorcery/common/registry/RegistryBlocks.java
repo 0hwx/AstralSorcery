@@ -8,16 +8,22 @@
 
 package hellfirepvp.astralsorcery.common.registry;
 
-import cpw.mods.fml.client.registry.ClientRegistry;
+import static hellfirepvp.astralsorcery.common.lib.BlocksAS.*;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fluids.FluidRegistry;
+
 import cpw.mods.fml.common.registry.GameRegistry;
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.client.render.tile.TESRAttunementAltar;
 import hellfirepvp.astralsorcery.common.block.*;
 import hellfirepvp.astralsorcery.common.block.fluid.FluidBlockLiquidStarlight;
 import hellfirepvp.astralsorcery.common.block.fluid.FluidLiquidStarlight;
 import hellfirepvp.astralsorcery.common.block.network.BlockAltar;
 import hellfirepvp.astralsorcery.common.block.network.BlockAttunementAltar;
-import hellfirepvp.astralsorcery.common.block.network.BlockCelestialCollectorCrystal;
 import hellfirepvp.astralsorcery.common.block.network.BlockCollectorCrystal;
 import hellfirepvp.astralsorcery.common.block.network.BlockLens;
 import hellfirepvp.astralsorcery.common.block.network.BlockPrism;
@@ -27,25 +33,10 @@ import hellfirepvp.astralsorcery.common.item.block.ItemBlockAltar;
 import hellfirepvp.astralsorcery.common.item.block.ItemBlockCustomName;
 import hellfirepvp.astralsorcery.common.item.block.ItemBlockRitualPedestal;
 import hellfirepvp.astralsorcery.common.item.block.ItemCollectorCrystal;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
-import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.tile.*;
 import hellfirepvp.astralsorcery.common.tile.network.TileCollectorCrystal;
 import hellfirepvp.astralsorcery.common.tile.network.TileCrystalLens;
 import hellfirepvp.astralsorcery.common.tile.network.TileCrystalPrismLens;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeModContainer;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-
-import java.util.LinkedList;
-import java.util.List;
-
-import static hellfirepvp.astralsorcery.common.lib.BlocksAS.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -73,16 +64,17 @@ public class RegistryBlocks {
         FluidRegistry.registerFluid(f);
         fluidLiquidStarlight = FluidRegistry.getFluid(f.getName());
         blockLiquidStarlight = new FluidBlockLiquidStarlight();
-//        GameRegistry.register(blockLiquidStarlight.setUnlocalizedName(blockLiquidStarlight.getClass().getSimpleName()).setRegistryName(blockLiquidStarlight.getClass().getSimpleName()));
+        // GameRegistry.register(blockLiquidStarlight.setUnlocalizedName(blockLiquidStarlight.getClass().getSimpleName()).setRegistryName(blockLiquidStarlight.getClass().getSimpleName()));
         fluidLiquidStarlight.setBlock(blockLiquidStarlight);
 
-//        FluidRegistry.addBucketForFluid(BlocksAS.fluidLiquidStarlight);
-//        ItemsAS.itemBucketLiquidStarlight = UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluidLiquidStarlight);
+        // FluidRegistry.addBucketForFluid(BlocksAS.fluidLiquidStarlight);
+        // ItemsAS.itemBucketLiquidStarlight =
+        // UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluidLiquidStarlight);
     }
 
-    //Blocks
+    // Blocks
     private static void registerBlocks() {
-        //WorldGen&Related
+        // WorldGen&Related
         customOre = registerBlockCustomName(new BlockCustomOre());
 
         customSandOre = registerBlockCustomName(new BlockCustomSandOre());
@@ -97,9 +89,8 @@ public class RegistryBlocks {
 
         blockVolatileLight = registerBlock(new BlockFlareLight());
 
-
-        //Mechanics
-        blockAltar = registerBlock(new BlockAltar(),ItemBlockAltar.class);
+        // Mechanics
+        blockAltar = registerBlock(new BlockAltar(), ItemBlockAltar.class);
 
         attunementAltar = registerBlock(new BlockAttunementAltar());
 
@@ -125,8 +116,8 @@ public class RegistryBlocks {
 
         drawingTable = registerBlockCustomName(new BlockMapDrawingTable());
 
-        //celestialOrrery = registerBlock(new BlockCelestialOrrery());
-        //queueDefaultItemBlock(celestialOrrery);
+        // celestialOrrery = registerBlock(new BlockCelestialOrrery());
+        // queueDefaultItemBlock(celestialOrrery);
 
         celestialGateway = registerBlock(new BlockCelestialGateway());
 
@@ -135,29 +126,29 @@ public class RegistryBlocks {
 
         celestialCrystals = registerBlockCustomName(new BlockCelestialCrystals());
 
-        //Machines&Related
-        //stoneMachine = registerBlock(new BlockStoneMachine());
+        // Machines&Related
+        // stoneMachine = registerBlock(new BlockStoneMachine());
         collectorCrystal = registerBlock(new BlockCollectorCrystal(), ItemCollectorCrystal.class);
-//        celestialCollectorCrystal = registerBlock(new BlockCelestialCollectorCrystal(), ItemCollectorCrystal.class);
+        // celestialCollectorCrystal = registerBlock(new BlockCelestialCollectorCrystal(), ItemCollectorCrystal.class);
 
         blockStructural = registerBlockCustomName(new BlockStructural());
 
     }
 
-    //Called after items are registered.
-    //Necessary for blocks that require different models/renders for different metadata values
+    // Called after items are registered.
+    // Necessary for blocks that require different models/renders for different metadata values
     public static void initRenderRegistry() {
-//        registerBlockRender(blockMarble);
-//        registerBlockRender(blockBlackMarble);
-//        registerBlockRender(blockAltar);
-//        registerBlockRender(customOre);
-//        registerBlockRender(customSandOre);
-//        registerBlockRender(customFlower);
-//        registerBlockRender(blockStructural);
-//        registerBlockRender(blockMachine);
+        // registerBlockRender(blockMarble);
+        // registerBlockRender(blockBlackMarble);
+        // registerBlockRender(blockAltar);
+        // registerBlockRender(customOre);
+        // registerBlockRender(customSandOre);
+        // registerBlockRender(customFlower);
+        // registerBlockRender(blockStructural);
+        // registerBlockRender(blockMachine);
     }
 
-    //Tiles
+    // Tiles
     private static void registerTileEntities() {
         registerTile(TileAltar.class);
         registerTile(TileRitualPedestal.class);
@@ -176,23 +167,27 @@ public class RegistryBlocks {
         registerTile(TileTranslucent.class);
         registerTile(TileAttunementRelay.class);
         registerTile(TileMapDrawingTable.class);
-        //registerTile(TileCelestialOrrery.class);
+        // registerTile(TileCelestialOrrery.class);
         registerTile(TileCelestialGateway.class);
 
         registerTile(TileCrystalLens.class);
         registerTile(TileCrystalPrismLens.class);
     }
 
-    private static <T extends Block> T registerBlock(T block,Class<? extends ItemBlock> itemclass, String name) {
+    private static <T extends Block> T registerBlock(T block, Class<? extends ItemBlock> itemclass, String name) {
         GameRegistry.registerBlock(block, itemclass, name);
-        if(block instanceof BlockDynamicColor) {
+        if (block instanceof BlockDynamicColor) {
             pendingIBlockColorBlocks.add((BlockDynamicColor) block);
         }
         return block;
     }
 
-    private static <T extends Block> T registerBlock(T block,Class<? extends ItemBlock> itemclass) {
-        return registerBlock(block, itemclass, block.getClass().getSimpleName());
+    private static <T extends Block> T registerBlock(T block, Class<? extends ItemBlock> itemclass) {
+        return registerBlock(
+            block,
+            itemclass,
+            block.getClass()
+                .getSimpleName());
     }
 
     private static <T extends Block> T registerBlock(T block) {
@@ -203,21 +198,20 @@ public class RegistryBlocks {
         return registerBlock(block, ItemBlockCustomName.class);
     }
 
-
-//    private static void registerBlockRender(Block block) {
-//        if(block instanceof BlockVariants) {
-//            for (Block state : ((BlockVariants) block).getValidStates()) {
-//                int meta = ((BlockVariants) block).getMeta();
-//                String unlocName = ((BlockVariants) block).getBlockName(state);
-//                String name = unlocName + "_" + ((BlockVariants) block).getMetaName(meta);
-//                AstralSorcery.proxy.registerVariantName(Item.getItemFromBlock(block), name);
-//                AstralSorcery.proxy.registerBlockRender(block, meta, name);
-//            }
-//        } else {
-//            AstralSorcery.proxy.registerVariantName(Item.getItemFromBlock(block), block.getUnlocalizedName());
-//            AstralSorcery.proxy.registerBlockRender(block, 0, block.getUnlocalizedName());
-//        }
-//    }
+    // private static void registerBlockRender(Block block) {
+    // if(block instanceof BlockVariants) {
+    // for (Block state : ((BlockVariants) block).getValidStates()) {
+    // int meta = ((BlockVariants) block).getMeta();
+    // String unlocName = ((BlockVariants) block).getBlockName(state);
+    // String name = unlocName + "_" + ((BlockVariants) block).getMetaName(meta);
+    // AstralSorcery.proxy.registerVariantName(Item.getItemFromBlock(block), name);
+    // AstralSorcery.proxy.registerBlockRender(block, meta, name);
+    // }
+    // } else {
+    // AstralSorcery.proxy.registerVariantName(Item.getItemFromBlock(block), block.getUnlocalizedName());
+    // AstralSorcery.proxy.registerBlockRender(block, 0, block.getUnlocalizedName());
+    // }
+    // }
 
     private static void registerTile(Class<? extends TileEntity> tile, String name) {
         GameRegistry.registerTileEntity(tile, name);

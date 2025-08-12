@@ -8,13 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.registry.multiblock;
 
-import hellfirepvp.astralsorcery.common.block.BlockBlackMarble;
-import hellfirepvp.astralsorcery.common.block.BlockMarble;
-import hellfirepvp.astralsorcery.common.block.network.BlockAltar;
+import net.minecraft.block.Block;
+
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -32,47 +29,49 @@ public class MultiblockAltarAttunement extends PatternBlockArray {
     private void load() {
         Block marble = BlocksAS.blockMarble;
         Block darkMarble = BlocksAS.blockBlackMarble;
-        Block mch = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
-        Block mbr = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.BRICKS);
-        //Block mrw = marble.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW);
-        Block mar = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
-        Block mpl = marble;//.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
-        Block mbl = darkMarble;//.getDefaultState().withProperty(BlockBlackMarble.BLACK_MARBLE_TYPE, BlockBlackMarble.BlackMarbleBlockType.RAW);
+        Block mch = marble;// .getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
+        Block mbr = marble;// .getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.BRICKS);
+        // Block mrw = marble.getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.RAW);
+        Block mar = marble;// .getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
+        Block mpl = marble;// .getDefaultState().withProperty(MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
+        Block mbl = darkMarble;// .getDefaultState().withProperty(BlockBlackMarble.BLACK_MARBLE_TYPE,
+                               // BlockBlackMarble.BlackMarbleBlockType.RAW);
 
-        //addBlockCube(Blocks.AIR.getDefaultState(), -3,  0, -3, 3,  2, 3);
-        addBlockCube(mbl,                          -3, -1, -3, 3, -1, 3);
+        // addBlockCube(Blocks.AIR.getDefaultState(), -3, 0, -3, 3, 2, 3);
+        addBlockCube(mbl, -3, -1, -3, 3, -1, 3);
 
-        addBlock(0, 0, 0, BlocksAS.blockAltar);//.getDefaultState().withProperty(BlockAltar.ALTAR_TYPE, BlockAltar.AltarType.ALTAR_2));
+        addBlock(0, 0, 0, BlocksAS.blockAltar);// .getDefaultState().withProperty(BlockAltar.ALTAR_TYPE,
+                                               // BlockAltar.AltarType.ALTAR_2));
 
         for (int i = -3; i <= 3; i++) {
-            addBlock( 4, -1,  i, mar);
-            addBlock(-4, -1,  i, mar);
-            addBlock( i, -1,  4, mar);
-            addBlock( i, -1, -4, mar);
-            addBlock( 3, -1,  i, mbr);
-            addBlock(-3, -1,  i, mbr);
-            addBlock( i, -1,  3, mbr);
-            addBlock( i, -1, -3, mbr);
+            addBlock(4, -1, i, mar);
+            addBlock(-4, -1, i, mar);
+            addBlock(i, -1, 4, mar);
+            addBlock(i, -1, -4, mar);
+            addBlock(3, -1, i, mbr);
+            addBlock(-3, -1, i, mbr);
+            addBlock(i, -1, 3, mbr);
+            addBlock(i, -1, -3, mbr);
         }
-        addBlock( 3, -1,  3, mch);
-        addBlock( 3, -1, -3, mch);
-        addBlock(-3, -1,  3, mch);
+        addBlock(3, -1, 3, mch);
+        addBlock(3, -1, -3, mch);
+        addBlock(-3, -1, 3, mch);
         addBlock(-3, -1, -3, mch);
 
-        addBlock( 2, -1,  0, mbr);
-        addBlock(-2, -1,  0, mbr);
-        addBlock( 0, -1,  2, mbr);
-        addBlock( 0, -1, -2, mbr);
+        addBlock(2, -1, 0, mbr);
+        addBlock(-2, -1, 0, mbr);
+        addBlock(0, -1, 2, mbr);
+        addBlock(0, -1, -2, mbr);
 
         for (int i = 0; i < 2; i++) {
-            addBlock( 3, i,  3, mpl);
-            addBlock( 3, i, -3, mpl);
-            addBlock(-3, i,  3, mpl);
+            addBlock(3, i, 3, mpl);
+            addBlock(3, i, -3, mpl);
+            addBlock(-3, i, 3, mpl);
             addBlock(-3, i, -3, mpl);
         }
-        addBlock( 3, 2,  3, mch);
-        addBlock( 3, 2, -3, mch);
-        addBlock(-3, 2,  3, mch);
+        addBlock(3, 2, 3, mch);
+        addBlock(3, 2, -3, mch);
+        addBlock(-3, 2, 3, mch);
         addBlock(-3, 2, -3, mch);
     }
 

@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.config.Configuration;
+
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,7 +32,7 @@ public class PerkDamageOnKill extends ConstellationPerk {
 
     @Override
     public float onEntityAttack(EntityPlayer attacker, EntityLivingBase attacked, float dmgIn) {
-        if(isCooldownActiveForPlayer(attacker)) {
+        if (isCooldownActiveForPlayer(attacker)) {
             addAlignmentCharge(attacker, 2);
             dmgIn *= dmgMultiplier;
         }
@@ -50,8 +51,20 @@ public class PerkDamageOnKill extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        dmgMultiplier = cfg.getFloat(getKey() + "DamageIncrease", getConfigurationSection(), 1.05F, 1F, 2F, "Sets the damage multiplier that is applied to entity damaged after knocked back if the player has this perk.");
-        ticksDuration = cfg.getInt(getKey() + "KillDuration", getConfigurationSection(), 60, 1, 1000, "Sets the duration on how long the player gets additional damage on the mob when it was knocked back.");
+        dmgMultiplier = cfg.getFloat(
+            getKey() + "DamageIncrease",
+            getConfigurationSection(),
+            1.05F,
+            1F,
+            2F,
+            "Sets the damage multiplier that is applied to entity damaged after knocked back if the player has this perk.");
+        ticksDuration = cfg.getInt(
+            getKey() + "KillDuration",
+            getConfigurationSection(),
+            60,
+            1,
+            1000,
+            "Sets the duration on how long the player gets additional damage on the mob when it was knocked back.");
     }
 
 }

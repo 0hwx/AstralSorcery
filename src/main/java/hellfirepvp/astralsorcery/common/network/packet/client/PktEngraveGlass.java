@@ -1,5 +1,15 @@
 package hellfirepvp.astralsorcery.common.network.packet.client;
 
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
+
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.constellation.DrawnConstellation;
 import hellfirepvp.astralsorcery.common.constellation.IConstellation;
@@ -8,15 +18,6 @@ import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-
-import java.awt.*;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -49,7 +50,7 @@ public class PktEngraveGlass implements IMessage, IMessageHandler<PktEngraveGlas
             int x = buf.readInt();
             int z = buf.readInt();
             IConstellation c = ConstellationRegistry.getConstellationByName(name);
-            if(c != null) {
+            if (c != null) {
                 this.constellations.add(new DrawnConstellation(new Point(x, z), c));
             }
         }
@@ -70,9 +71,9 @@ public class PktEngraveGlass implements IMessage, IMessageHandler<PktEngraveGlas
     @Override
     public IMessage onMessage(PktEngraveGlass message, MessageContext ctx) {
         World w = DimensionManager.getWorld(message.dimId);
-        if(w != null) {
+        if (w != null) {
             TileMapDrawingTable tmt = MiscUtils.getTileAt(w, message.pos, TileMapDrawingTable.class, true);
-            if(tmt != null) {
+            if (tmt != null) {
                 tmt.tryEngraveGlass(message.constellations);
             }
         }

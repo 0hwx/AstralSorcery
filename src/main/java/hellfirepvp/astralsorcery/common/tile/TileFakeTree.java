@@ -8,17 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
-import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.common.item.tool.ItemChargedCrystalShovel;
-import hellfirepvp.astralsorcery.common.network.PacketChannel;
-import hellfirepvp.astralsorcery.common.network.packet.server.PktDualParticleEvent;
-import hellfirepvp.astralsorcery.common.tile.base.TileEntityTick;
-import hellfirepvp.astralsorcery.common.util.BlockDropCaptureAssist;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.ItemUtils;
-import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
+import java.awt.*;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -29,10 +24,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.ChunkCoordIntPair;
 
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
+
+import hellfirepvp.astralsorcery.common.item.tool.ItemChargedCrystalShovel;
+import hellfirepvp.astralsorcery.common.network.PacketChannel;
+import hellfirepvp.astralsorcery.common.network.packet.server.PktDualParticleEvent;
+import hellfirepvp.astralsorcery.common.tile.base.TileEntityTick;
+import hellfirepvp.astralsorcery.common.util.BlockDropCaptureAssist;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ItemUtils;
+import hellfirepvp.astralsorcery.common.util.MiscUtils;
+import hellfirepvp.astralsorcery.common.util.data.Vector3;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -64,7 +67,7 @@ public class TileFakeTree extends TileEntityTick {
     }
 
     private void cleanUp() {
-        if(fakedState != null) {
+        if (fakedState != null) {
             worldObj.setBlock(xCoord, yCoord, zCoord, fakedState);
         } else {
             worldObj.setBlockToAir(xCoord, yCoord, zCoord);
@@ -100,19 +103,19 @@ public class TileFakeTree extends TileEntityTick {
         super.readCustomNBT(compound);
 
         int index = compound.getInteger("type");
-        if(index == 0) {
+        if (index == 0) {
             this.ta = new TreeBeaconRef(null);
             ta.read(compound);
         } else {
             this.ta = new ClearAction();
         }
 
-        if(compound.hasKey("Block") && compound.hasKey("Data")) {
+        if (compound.hasKey("Block") && compound.hasKey("Data")) {
             metadata = compound.getInteger("Data");
             Block b = Block.getBlockFromName(compound.getString("Block"));
-            if(b != null) {
+            if (b != null) {
                 metadata = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-//                fakedState = b.getStateFromMeta(data);
+                // fakedState = b.getStateFromMeta(data);
             }
         }
     }
@@ -126,11 +129,14 @@ public class TileFakeTree extends TileEntityTick {
         } else if (ta instanceof PlayerHarvestRef) {
             compound.setInteger("type", 1);
         }
-        if(ta != null) {
+        if (ta != null) {
             ta.write(compound);
         }
-        if(fakedState != null) {
-            compound.setString("Block", Block.blockRegistry.getNameForObject(fakedState).toString());
+        if (fakedState != null) {
+            compound.setString(
+                "Block",
+                Block.blockRegistry.getNameForObject(fakedState)
+                    .toString());
             compound.setInteger("Data", metadata);
         }
     }
@@ -177,7 +183,7 @@ public class TileFakeTree extends TileEntityTick {
             if (usedAxe != null) {
                 this.usedTool = usedAxe.copy();
                 Map<Integer, Integer> levels = EnchantmentHelper.getEnchantments(this.usedTool);
-                if(levels.containsKey(Enchantment.fortune.effectId)) {
+                if (levels.containsKey(Enchantment.fortune.effectId)) {
                     levels.put(Enchantment.fortune.effectId, levels.get(Enchantment.fortune.effectId) + 2);
                 } else {
                     levels.put(Enchantment.fortune.effectId, 2);
@@ -190,39 +196,49 @@ public class TileFakeTree extends TileEntityTick {
 
         @Override
         public void update(TileFakeTree tft) {
-            if(tft.ticksExisted <= 10) return;
-                if(player != null && player instanceof EntityPlayerMP && !MiscUtils.isPlayerFakeMP((EntityPlayerMP) player) && tft.fakedState != null) {
-                    List<ItemStack> out = Lists.newArrayList();
+            if (tft.ticksExisted <= 10) return;
+            if (player != null && player instanceof EntityPlayerMP
+                && !MiscUtils.isPlayerFakeMP((EntityPlayerMP) player)
+                && tft.fakedState != null) {
+                List<ItemStack> out = Lists.newArrayList();
+                harvestAndAppend(tft, out);
+                if (rand.nextBoolean()) {
                     harvestAndAppend(tft, out);
-                    if(rand.nextBoolean()) {
-                        harvestAndAppend(tft, out);
-                    }
-                    Vector3 plPos = new Vector3(player);
-                    for (ItemStack stack : out) {
-                        ItemUtils.dropItemNaturally(player.getEntityWorld(),
-                                plPos.getX() + rand.nextFloat() - rand.nextFloat(),
-                                plPos.getY() + rand.nextFloat(),
-                                plPos.getZ() + rand.nextFloat() - rand.nextFloat(),
-                                stack);
-                    }
-                    PktDualParticleEvent ev = new PktDualParticleEvent(PktDualParticleEvent.DualParticleEventType.CHARGE_HARVEST, new Vector3(tft), new Vector3(player));
-                    if(usedTool != null && usedTool.getItem() instanceof ItemChargedCrystalShovel) {
-                        ev.setAdditionalData(Color.GRAY.brighter().getRGB());
-                    } else {
-                        ev.setAdditionalData(Color.GREEN.getRGB());
-                    }
-                    BlockPos pos = new BlockPos(tft.xCoord, tft.yCoord, tft.zCoord);
-                    PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(tft.worldObj, pos, 24));
                 }
-                tft.worldObj.setBlockToAir(tft.xCoord, tft.yCoord, tft.zCoord);
-            //}
+                Vector3 plPos = new Vector3(player);
+                for (ItemStack stack : out) {
+                    ItemUtils.dropItemNaturally(
+                        player.getEntityWorld(),
+                        plPos.getX() + rand.nextFloat() - rand.nextFloat(),
+                        plPos.getY() + rand.nextFloat(),
+                        plPos.getZ() + rand.nextFloat() - rand.nextFloat(),
+                        stack);
+                }
+                PktDualParticleEvent ev = new PktDualParticleEvent(
+                    PktDualParticleEvent.DualParticleEventType.CHARGE_HARVEST,
+                    new Vector3(tft),
+                    new Vector3(player));
+                if (usedTool != null && usedTool.getItem() instanceof ItemChargedCrystalShovel) {
+                    ev.setAdditionalData(
+                        Color.GRAY.brighter()
+                            .getRGB());
+                } else {
+                    ev.setAdditionalData(Color.GREEN.getRGB());
+                }
+                BlockPos pos = new BlockPos(tft.xCoord, tft.yCoord, tft.zCoord);
+                PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(tft.worldObj, pos, 24));
+            }
+            tft.worldObj.setBlockToAir(tft.xCoord, tft.yCoord, tft.zCoord);
+            // }
         }
 
         private void harvestAndAppend(TileFakeTree tft, List<ItemStack> out) {
             BlockDropCaptureAssist.startCapturing(false);
-            tft.getFakedState().harvestBlock(player.getEntityWorld(), player, tft.xCoord, tft.yCoord, tft.zCoord, tft.blockMetadata);
-          //  tft.getFakedState().getBlock().harvestBlock(player.getEntityWorld(), player, tft.getPos(), tft.getFakedState(),
-                out.addAll(BlockDropCaptureAssist.getCapturedStacksAndStop());
+            tft.getFakedState()
+                .harvestBlock(player.getEntityWorld(), player, tft.xCoord, tft.yCoord, tft.zCoord, tft.blockMetadata);
+            // tft.getFakedState().getBlock().harvestBlock(player.getEntityWorld(), player, tft.getPos(),
+            // tft.getFakedState(),
+            out.addAll(BlockDropCaptureAssist.getCapturedStacksAndStop());
         }
 
         @Override
@@ -243,9 +259,9 @@ public class TileFakeTree extends TileEntityTick {
 
         @Override
         public void update(TileFakeTree tft) {
-            if(MiscUtils.isChunkLoaded(tft.worldObj, new ChunkCoordIntPair(ref.chunkX(), ref.chunkZ()))) {
+            if (MiscUtils.isChunkLoaded(tft.worldObj, new ChunkCoordIntPair(ref.chunkX(), ref.chunkZ()))) {
                 TileTreeBeacon beacon = MiscUtils.getTileAt(tft.worldObj, ref, TileTreeBeacon.class, true);
-                if(beacon == null || beacon.isInvalid()) {
+                if (beacon == null || beacon.isInvalid()) {
                     tft.cleanUp();
                 }
             }
@@ -253,7 +269,7 @@ public class TileFakeTree extends TileEntityTick {
 
         @Override
         public void write(NBTTagCompound cmp) {
-            if(ref != null) {
+            if (ref != null) {
                 NBTUtils.writeBlockPosToNBT(ref, cmp);
             }
         }

@@ -8,6 +8,9 @@
 
 package hellfirepvp.astralsorcery.client.gui.container;
 
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.InventoryPlayer;
+
 import hellfirepvp.astralsorcery.client.gui.base.GuiInventoryContainerBase;
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
 import hellfirepvp.astralsorcery.common.container.*;
@@ -15,8 +18,6 @@ import hellfirepvp.astralsorcery.common.crafting.IGatedRecipe;
 import hellfirepvp.astralsorcery.common.crafting.altar.AbstractAltarRecipe;
 import hellfirepvp.astralsorcery.common.crafting.altar.AltarRecipeRegistry;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.InventoryPlayer;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -34,15 +35,16 @@ public abstract class GuiAltarBase extends GuiInventoryContainerBase {
         this.containerAltarBase = (ContainerAltarBase) super.inventorySlots;
     }
 
-    public  AbstractAltarRecipe findCraftableRecipe() {
+    public AbstractAltarRecipe findCraftableRecipe() {
         return findCraftableRecipe(false);
     }
 
     public AbstractAltarRecipe findCraftableRecipe(boolean ignoreStarlightRequirement) {
-        AbstractAltarRecipe rec = AltarRecipeRegistry.findMatchingRecipe(containerAltarBase.tileAltar, ignoreStarlightRequirement);
-        if(rec != null) {
-            if(rec instanceof IGatedRecipe) {
-                if(((IGatedRecipe) rec).hasProgressionClient()) {
+        AbstractAltarRecipe rec = AltarRecipeRegistry
+            .findMatchingRecipe(containerAltarBase.tileAltar, ignoreStarlightRequirement);
+        if (rec != null) {
+            if (rec instanceof IGatedRecipe) {
+                if (((IGatedRecipe) rec).hasProgressionClient()) {
                     return rec;
                 } else {
                     return null;
@@ -82,7 +84,8 @@ public abstract class GuiAltarBase extends GuiInventoryContainerBase {
         return new ContainerAltarDiscovery(playerInv, tileAltar);
     }
 
-    protected void drawRect(int offsetX, int offsetY, int width, int height, double u, double v, double uLength, double vLength) {
+    protected void drawRect(int offsetX, int offsetY, int width, int height, double u, double v, double uLength,
+        double vLength) {
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
         tess.addVertexWithUV(offsetX, offsetY + height, zLevel, u, v + vLength);
@@ -90,13 +93,13 @@ public abstract class GuiAltarBase extends GuiInventoryContainerBase {
         tess.addVertexWithUV(offsetX + width, offsetY, zLevel, u + uLength, v);
         tess.addVertexWithUV(offsetX, offsetY, zLevel, u, v);
         tess.draw();
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(offsetX,         offsetY + height, zLevel).tex(u,           v + vLength).endVertex();
-//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(u + uLength, v + vLength).endVertex();
-//        vb.pos(offsetX + width, offsetY,          zLevel).tex(u + uLength, v          ).endVertex();
-//        vb.pos(offsetX,         offsetY,          zLevel).tex(u,           v          ).endVertex();
-//        tes.draw();
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(offsetX, offsetY + height, zLevel).tex(u, v + vLength).endVertex();
+        // vb.pos(offsetX + width, offsetY + height, zLevel).tex(u + uLength, v + vLength).endVertex();
+        // vb.pos(offsetX + width, offsetY, zLevel).tex(u + uLength, v ).endVertex();
+        // vb.pos(offsetX, offsetY, zLevel).tex(u, v ).endVertex();
+        // tes.draw();
     }
 
     protected void drawRect(int offsetX, int offsetY, int width, int height) {
@@ -107,13 +110,13 @@ public abstract class GuiAltarBase extends GuiInventoryContainerBase {
         tess.addVertexWithUV(offsetX + width, offsetY, zLevel, 1, 0);
         tess.addVertexWithUV(offsetX, offsetY, zLevel, 0, 0);
         tess.draw();
-//        VertexBuffer vb = tes.getBuffer();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(offsetX,         offsetY + height, zLevel).tex(0, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
-//        vb.pos(offsetX + width, offsetY,          zLevel).tex(1, 0).endVertex();
-//        vb.pos(offsetX,         offsetY,          zLevel).tex(0, 0).endVertex();
-//        tes.draw();
+        // VertexBuffer vb = tes.getBuffer();
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(offsetX, offsetY + height, zLevel).tex(0, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY + height, zLevel).tex(1, 1).endVertex();
+        // vb.pos(offsetX + width, offsetY, zLevel).tex(1, 0).endVertex();
+        // vb.pos(offsetX, offsetY, zLevel).tex(0, 0).endVertex();
+        // tes.draw();
     }
 
 }

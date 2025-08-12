@@ -8,20 +8,22 @@
 
 package hellfirepvp.astralsorcery.common.container;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import hellfirepvp.astralsorcery.common.constellation.IConstellation;
-import hellfirepvp.astralsorcery.common.item.ItemConstellationPaper;
-import hellfirepvp.astralsorcery.common.item.ItemJournal;
+import java.util.LinkedList;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import cpw.mods.fml.relauncher.Side;
 
-import javax.annotation.Nullable;
-import java.util.LinkedList;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import hellfirepvp.astralsorcery.common.constellation.IConstellation;
+import hellfirepvp.astralsorcery.common.item.ItemConstellationPaper;
+import hellfirepvp.astralsorcery.common.item.ItemJournal;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -47,18 +49,18 @@ public class ContainerJournal extends Container {
             for (int j = 0; j < 9; j++) {
                 int index = j + i * 9 + 9;
 
-                if(index == journalIndex) {
+                if (index == journalIndex) {
                     addSlotToContainer(new ContainerSlotUnclickable(playerInv, index, 8 + j * 18, 84 + i * 18));
                 } else {
-                    addSlotToContainer(                    new Slot(playerInv, index, 8 + j * 18, 84 + i * 18));
+                    addSlotToContainer(new Slot(playerInv, index, 8 + j * 18, 84 + i * 18));
                 }
             }
         }
         for (int i = 0; i < 9; i++) {
-            if(i == journalIndex) {
+            if (i == journalIndex) {
                 addSlotToContainer(new ContainerSlotUnclickable(playerInv, i, 8 + i * 18, 142));
             } else {
-                addSlotToContainer(                    new Slot(playerInv, i, 8 + i * 18, 142));
+                addSlotToContainer(new Slot(playerInv, i, 8 + i * 18, 142));
             }
         }
     }
@@ -66,7 +68,7 @@ public class ContainerJournal extends Container {
     private void buildSlots(IInventory handle) {
         for (int i = 0; i < 3; i++) {
             for (int xx = 0; xx < 9; xx++) {
-                addSlotToContainer(new ConstellationPaperSlot(handle, this, (i * 9) + xx,8 + xx * 18, 13 + (i * 18)));
+                addSlotToContainer(new ConstellationPaperSlot(handle, this, (i * 9) + xx, 8 + xx * 18, 13 + (i * 18)));
             }
         }
     }
@@ -81,9 +83,11 @@ public class ContainerJournal extends Container {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
 
-            if(itemstack1 != null && itemstack1.getItem() != null && itemstack1.getItem() instanceof ItemConstellationPaper && ItemConstellationPaper.getConstellation(itemstack1) != null) {
-                if(index >= 0 && index < 36) {
-                    if(!this.mergeItemStack(itemstack1, 36, 63, false)) {
+            if (itemstack1 != null && itemstack1.getItem() != null
+                && itemstack1.getItem() instanceof ItemConstellationPaper
+                && ItemConstellationPaper.getConstellation(itemstack1) != null) {
+                if (index >= 0 && index < 36) {
+                    if (!this.mergeItemStack(itemstack1, 36, 63, false)) {
                         return null;
                     }
                 }
@@ -123,13 +127,15 @@ public class ContainerJournal extends Container {
     }
 
     void slotChanged() {
-        if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
+        if (FMLCommonHandler.instance()
+            .getEffectiveSide() == Side.SERVER) {
             LinkedList<IConstellation> saveConstellations = new LinkedList<>();
             for (int i = 36; i < 63; i++) {
-                ItemStack in = inventorySlots.get(i).getStack();
-                if(in == null || in.getItem() == null) continue;
+                ItemStack in = inventorySlots.get(i)
+                    .getStack();
+                if (in == null || in.getItem() == null) continue;
                 IConstellation c = ItemConstellationPaper.getConstellation(in);
-                if(c != null) {
+                if (c != null) {
                     saveConstellations.add(c);
                 }
             }

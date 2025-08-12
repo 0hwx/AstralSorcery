@@ -8,17 +8,18 @@
 
 package hellfirepvp.astralsorcery.common.item.tool;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
-import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import java.util.List;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import java.util.List;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
+import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -32,7 +33,7 @@ public class ItemCrystalAxe extends ItemCrystalToolBase {
     public ItemCrystalAxe() {
         super(3);
         setDamageVsEntity(11F);
-//        setAttackSpeed(-3F);
+        // setAttackSpeed(-3F);
         setUnlocalizedName("ItemCrystalAxe");
         setHarvestLevel("axe", 3);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
@@ -48,8 +49,7 @@ public class ItemCrystalAxe extends ItemCrystalToolBase {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IIconRegister register)
-    {
+    public void registerIcons(IIconRegister register) {
         this.itemIcon = register.registerIcon("astralsorcery:crystal_axe");
     }
 }

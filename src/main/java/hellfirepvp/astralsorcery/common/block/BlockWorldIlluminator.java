@@ -8,21 +8,20 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.tile.TileIlluminator;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.tile.TileIlluminator;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.MiscUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -37,7 +36,7 @@ public class BlockWorldIlluminator extends BlockContainer {
         super(Material.rock);
         setBlockName("BlockWorldIlluminator");
         setHardness(3.0F);
-setStepSound(soundTypeStone);
+        setStepSound(soundTypeStone);
         setResistance(25.0F);
         setLightLevel(0.4F);
         setHarvestLevel("pickaxe", 2);
@@ -81,7 +80,8 @@ setStepSound(soundTypeStone);
 
     @Override
     public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
-        if (!worldIn.isRemote && placer instanceof EntityPlayerMP && !MiscUtils.isPlayerFakeMP((EntityPlayerMP) placer)) {
+        if (!worldIn.isRemote && placer instanceof EntityPlayerMP
+            && !MiscUtils.isPlayerFakeMP((EntityPlayerMP) placer)) {
             TileIlluminator ti = MiscUtils.getTileAt(worldIn, new BlockPos(x, y, z), TileIlluminator.class, true);
             if (ti != null) {
                 ti.setPlayerPlaced();
@@ -89,11 +89,11 @@ setStepSound(soundTypeStone);
         }
     }
 
-//    @Override
-//    public boolean canRenderInLayer(Block state, BlockRenderLayer layer) {
-//        return layer == BlockRenderLayer.SOLID || layer == BlockRenderLayer.TRANSLUCENT;
-//    }
-//
+    // @Override
+    // public boolean canRenderInLayer(Block state, BlockRenderLayer layer) {
+    // return layer == BlockRenderLayer.SOLID || layer == BlockRenderLayer.TRANSLUCENT;
+    // }
+    //
     @Override
     public int getRenderType() {
         return 1;

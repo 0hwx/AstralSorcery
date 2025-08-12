@@ -1,6 +1,5 @@
 package hellfirepvp.astralsorcery.common.enchantment;
 
-
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -14,7 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 public abstract class EnchantmentPlayerWornTick extends EnchantmentBase {
 
     public EnchantmentPlayerWornTick(String name, int Id, int rarityIn, EnumEnchantmentType typeIn) {
-        super(name,Id, rarityIn, typeIn);
+        super(name, Id, rarityIn, typeIn);
     }
 
     public void onWornTick(boolean isClient, EntityPlayer base, int level) {}

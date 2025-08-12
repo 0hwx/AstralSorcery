@@ -24,65 +24,125 @@ public class RegistryPerks {
 
     public static void init() {
         ConstellationPerkMap map = new ConstellationPerkMap();
-        map.addPerk(ConstellationPerks.DMG_INCREASE,  ConstellationPerkMap.PerkOrder.DEFAULT,  1, 13);
+        map.addPerk(ConstellationPerks.DMG_INCREASE, ConstellationPerkMap.PerkOrder.DEFAULT, 1, 13);
 
-        map.addPerk(ConstellationPerks.DMG_DISTANCE,  ConstellationPerkMap.PerkOrder.DEFAULT,  5, 12,
-                ConstellationPerks.DMG_INCREASE);
+        map.addPerk(
+            ConstellationPerks.DMG_DISTANCE,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            5,
+            12,
+            ConstellationPerks.DMG_INCREASE);
 
-        map.addPerk(ConstellationPerks.DMG_KNOCKBACK, ConstellationPerkMap.PerkOrder.DEFAULT,  2,  9,
-                ConstellationPerks.DMG_INCREASE);
+        map.addPerk(
+            ConstellationPerks.DMG_KNOCKBACK,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            2,
+            9,
+            ConstellationPerks.DMG_INCREASE);
 
-        map.addPerk(ConstellationPerks.DMG_AFTERKILL, ConstellationPerkMap.PerkOrder.DEFAULT,  8,  6,
-                ConstellationPerks.DMG_KNOCKBACK,
-                ConstellationPerks.DMG_DISTANCE);
+        map.addPerk(
+            ConstellationPerks.DMG_AFTERKILL,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            8,
+            6,
+            ConstellationPerks.DMG_KNOCKBACK,
+            ConstellationPerks.DMG_DISTANCE);
 
-        map.addPerk(ConstellationPerks.DMG_BLEED,     ConstellationPerkMap.PerkOrder.DEFAULT,  13,  1,
-                ConstellationPerks.DMG_AFTERKILL);
+        map.addPerk(
+            ConstellationPerks.DMG_BLEED,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            13,
+            1,
+            ConstellationPerks.DMG_AFTERKILL);
 
-        map.addPerk(ConstellationPerks.DMG_REFLECT,   ConstellationPerkMap.PerkOrder.DEFAULT,  10, 2,
-                ConstellationPerks.DMG_AFTERKILL);
+        map.addPerk(
+            ConstellationPerks.DMG_REFLECT,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            10,
+            2,
+            ConstellationPerks.DMG_AFTERKILL);
 
         ConstellationPerkMapRegistry.registerPerkMap(Constellations.discidia, map);
 
         map = new ConstellationPerkMap();
 
-        map.addPerk(ConstellationPerks.TRV_MOVESPEED,   ConstellationPerkMap.PerkOrder.DEFAULT,  1, 13);
+        map.addPerk(ConstellationPerks.TRV_MOVESPEED, ConstellationPerkMap.PerkOrder.DEFAULT, 1, 13);
 
-        map.addPerk(ConstellationPerks.TRV_SWIMSPEED,   ConstellationPerkMap.PerkOrder.DEFAULT,  5,  9,
-                ConstellationPerks.TRV_MOVESPEED);
+        map.addPerk(
+            ConstellationPerks.TRV_SWIMSPEED,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            5,
+            9,
+            ConstellationPerks.TRV_MOVESPEED);
 
-        map.addPerk(ConstellationPerks.TRV_PLACELIGHTS, ConstellationPerkMap.PerkOrder.DEFAULT,  13,  6,
-                ConstellationPerks.TRV_SWIMSPEED);
+        map.addPerk(
+            ConstellationPerks.TRV_PLACELIGHTS,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            13,
+            6,
+            ConstellationPerks.TRV_SWIMSPEED);
 
-        map.addPerk(ConstellationPerks.TRV_REDFOODNEED, ConstellationPerkMap.PerkOrder.DEFAULT,  4,  5,
-                ConstellationPerks.TRV_SWIMSPEED);
+        map.addPerk(
+            ConstellationPerks.TRV_REDFOODNEED,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            4,
+            5,
+            ConstellationPerks.TRV_SWIMSPEED);
 
-        map.addPerk(ConstellationPerks.TRV_LAVAPROTECT, ConstellationPerkMap.PerkOrder.DEFAULT,  13,  1,
-                ConstellationPerks.TRV_REDFOODNEED);
+        map.addPerk(
+            ConstellationPerks.TRV_LAVAPROTECT,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            13,
+            1,
+            ConstellationPerks.TRV_REDFOODNEED);
 
-        map.addPerk(ConstellationPerks.TRV_STEPASSIST,  ConstellationPerkMap.PerkOrder.DEFAULT,  10, 10,
-                ConstellationPerks.TRV_SWIMSPEED);
+        map.addPerk(
+            ConstellationPerks.TRV_STEPASSIST,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            10,
+            10,
+            ConstellationPerks.TRV_SWIMSPEED);
 
         ConstellationPerkMapRegistry.registerPerkMap(Constellations.vicio, map);
 
         map = new ConstellationPerkMap();
 
-        map.addPerk(ConstellationPerks.DEF_DMGREDUCTION,  ConstellationPerkMap.PerkOrder.DEFAULT,  7,  13);
+        map.addPerk(ConstellationPerks.DEF_DMGREDUCTION, ConstellationPerkMap.PerkOrder.DEFAULT, 7, 13);
 
-        map.addPerk(ConstellationPerks.DEF_FALLREDUCTION, ConstellationPerkMap.PerkOrder.DEFAULT,  2,  9,
-                ConstellationPerks.DEF_DMGREDUCTION);
+        map.addPerk(
+            ConstellationPerks.DEF_FALLREDUCTION,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            2,
+            9,
+            ConstellationPerks.DEF_DMGREDUCTION);
 
-        map.addPerk(ConstellationPerks.DEF_ELEMENTAL,     ConstellationPerkMap.PerkOrder.DEFAULT,  3,  1,
-                ConstellationPerks.DEF_FALLREDUCTION);
+        map.addPerk(
+            ConstellationPerks.DEF_ELEMENTAL,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            3,
+            1,
+            ConstellationPerks.DEF_FALLREDUCTION);
 
-        map.addPerk(ConstellationPerks.DEF_DODGE,         ConstellationPerkMap.PerkOrder.DEFAULT,  11,  10,
-                ConstellationPerks.DEF_DMGREDUCTION);
+        map.addPerk(
+            ConstellationPerks.DEF_DODGE,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            11,
+            10,
+            ConstellationPerks.DEF_DMGREDUCTION);
 
-        map.addPerk(ConstellationPerks.DEF_NOARMOR,       ConstellationPerkMap.PerkOrder.DEFAULT,  10, 2,
-                ConstellationPerks.DEF_DODGE);
+        map.addPerk(
+            ConstellationPerks.DEF_NOARMOR,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            10,
+            2,
+            ConstellationPerks.DEF_DODGE);
 
-        map.addPerk(ConstellationPerks.DEF_CHEATDEATH,    ConstellationPerkMap.PerkOrder.DEFAULT,  8, 6,
-                ConstellationPerks.DEF_DODGE);
+        map.addPerk(
+            ConstellationPerks.DEF_CHEATDEATH,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            8,
+            6,
+            ConstellationPerks.DEF_DODGE);
 
         ConstellationPerkMapRegistry.registerPerkMap(Constellations.armara, map);
 
@@ -90,20 +150,40 @@ public class RegistryPerks {
 
         map.addPerk(ConstellationPerks.CRE_GROWTH, ConstellationPerkMap.PerkOrder.DEFAULT, 7, 7);
 
-        map.addPerk(ConstellationPerks.CRE_BREEDING, ConstellationPerkMap.PerkOrder.DEFAULT, 14, 6,
-                ConstellationPerks.CRE_GROWTH);
+        map.addPerk(
+            ConstellationPerks.CRE_BREEDING,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            14,
+            6,
+            ConstellationPerks.CRE_GROWTH);
 
-        map.addPerk(ConstellationPerks.CRE_REACH, ConstellationPerkMap.PerkOrder.DEFAULT, 4, 2,
-                ConstellationPerks.CRE_BREEDING);
+        map.addPerk(
+            ConstellationPerks.CRE_REACH,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            4,
+            2,
+            ConstellationPerks.CRE_BREEDING);
 
-        map.addPerk(ConstellationPerks.CRE_MEND, ConstellationPerkMap.PerkOrder.DEFAULT, 0, 8,
-                ConstellationPerks.CRE_GROWTH);
+        map.addPerk(
+            ConstellationPerks.CRE_MEND,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            0,
+            8,
+            ConstellationPerks.CRE_GROWTH);
 
-        map.addPerk(ConstellationPerks.CRE_OREGEN, ConstellationPerkMap.PerkOrder.DEFAULT, 12, 13,
-                ConstellationPerks.CRE_MEND);
+        map.addPerk(
+            ConstellationPerks.CRE_OREGEN,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            12,
+            13,
+            ConstellationPerks.CRE_MEND);
 
-        map.addPerk(ConstellationPerks.CRE_FLARES, ConstellationPerkMap.PerkOrder.DEFAULT,  12, 2,
-                ConstellationPerks.CRE_BREEDING);
+        map.addPerk(
+            ConstellationPerks.CRE_FLARES,
+            ConstellationPerkMap.PerkOrder.DEFAULT,
+            12,
+            2,
+            ConstellationPerks.CRE_BREEDING);
 
         ConstellationPerkMapRegistry.registerPerkMap(Constellations.aevitas, map);
     }

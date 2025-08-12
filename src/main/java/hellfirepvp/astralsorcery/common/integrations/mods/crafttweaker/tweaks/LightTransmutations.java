@@ -8,6 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.tweaks;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+
 import hellfirepvp.astralsorcery.common.integrations.ModIntegrationCrafttweaker;
 import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.BaseTweaker;
 import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network.LightTransmutationAdd;
@@ -15,8 +18,6 @@ import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network.L
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import minetweaker.MineTweakerAPI;
 import minetweaker.api.item.IItemStack;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -36,19 +37,21 @@ public class LightTransmutations extends BaseTweaker {
     public static void addTransmutation(IItemStack stackIn, IItemStack stackOut, double cost) {
         ItemStack in = convertToItemStack(stackIn);
         ItemStack out = convertToItemStack(stackOut);
-        if(in == null || out == null) {
+        if (in == null || out == null) {
             MineTweakerAPI.logError("[" + name + "] Skipping recipe due to invalid input/output.");
             return;
         }
 
         Block state = ItemUtils.createBlockState(in);
-        if(state == null) {
-            MineTweakerAPI.logError("[" + name + "] Skipping recipe - Can't create a valid BlockState from given Input");
+        if (state == null) {
+            MineTweakerAPI
+                .logError("[" + name + "] Skipping recipe - Can't create a valid BlockState from given Input");
             return;
         }
         state = ItemUtils.createBlockState(out);
-        if(state == null) {
-            MineTweakerAPI.logError("[" + name + "] Skipping recipe - Can't create a valid BlockState from given Output");
+        if (state == null) {
+            MineTweakerAPI
+                .logError("[" + name + "] Skipping recipe - Can't create a valid BlockState from given Output");
             return;
         }
 
@@ -58,7 +61,7 @@ public class LightTransmutations extends BaseTweaker {
     @ZenMethod
     public static void removeTransmutation(IItemStack stackToRemove, boolean matchMeta) {
         ItemStack removeMatch = convertToItemStack(stackToRemove);
-        if(removeMatch == null) {
+        if (removeMatch == null) {
             MineTweakerAPI.logError("[" + name + "] Skipping recipe-removal due to invalid output.");
             return;
         }

@@ -8,9 +8,10 @@
 
 package hellfirepvp.astralsorcery.client.gui.base;
 
-import hellfirepvp.astralsorcery.client.gui.GuiWHScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
+
+import hellfirepvp.astralsorcery.client.gui.GuiWHScreen;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -36,8 +37,10 @@ public class GuiTileBase<T extends TileEntity> extends GuiWHScreen {
     public void updateScreen() {
         super.updateScreen();
 
-        if(te.isInvalid() || te.getWorldObj().provider.dimensionId != Minecraft.getMinecraft().theWorld.provider.dimensionId) {
-            Minecraft.getMinecraft().displayGuiScreen(null);
+        if (te.isInvalid()
+            || te.getWorldObj().provider.dimensionId != Minecraft.getMinecraft().theWorld.provider.dimensionId) {
+            Minecraft.getMinecraft()
+                .displayGuiScreen(null);
         }
     }
 

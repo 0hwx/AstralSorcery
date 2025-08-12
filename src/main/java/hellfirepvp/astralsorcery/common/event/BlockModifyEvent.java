@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.event;
 
-import cpw.mods.fml.common.eventhandler.Event;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
-import javax.annotation.Nullable;
+import cpw.mods.fml.common.eventhandler.Event;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -56,13 +57,13 @@ public class BlockModifyEvent extends Event {
         return world.getTileEntity(getPos().getX(), getPos().getY(), getPos().getZ());
     }
 
-//    public Block getOldState() {
-//        return oldState;
-//    }
-//
-//    public Block getNewState() {
-//        return newState;
-//    }
+    // public Block getOldState() {
+    // return oldState;
+    // }
+    //
+    // public Block getNewState() {
+    // return newState;
+    // }
 
     public Block getOldBlock() {
         return oldState;

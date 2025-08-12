@@ -8,12 +8,12 @@
 
 package hellfirepvp.astralsorcery.client.effect;
 
+import java.awt.*;
+
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
-
-import java.awt.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -24,21 +24,29 @@ import java.awt.*;
  */
 public class EffectHelper {
 
-    //private static final BindableResource starFlareTex = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "flareStar");
-    private static final BindableResource staticFlareTex = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "flareStatic");
+    // private static final BindableResource starFlareTex = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT,
+    // "flareStar");
+    private static final BindableResource staticFlareTex = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "flareStatic");
 
     public static EntityFXFacingParticle genericFlareParticle(double x, double y, double z) {
         EntityFXFacingParticle p = new EntityFXFacingParticle(x, y, z);
-        p.enableAlphaFade(EntityComplexFX.AlphaFunction.PYRAMID).setAlphaMultiplier(0.75F).setColor(new Color(60, 0, 255)).gravity(0);
-        EffectHandler.getInstance().registerFX(p);
+        p.enableAlphaFade(EntityComplexFX.AlphaFunction.PYRAMID)
+            .setAlphaMultiplier(0.75F)
+            .setColor(new Color(60, 0, 255))
+            .gravity(0);
+        EffectHandler.getInstance()
+            .registerFX(p);
         return p;
     }
 
-    /*public static EntityFXFacingParticle genericFlareStarParticle(double x, double y, double z) {
-        EntityFXFacingParticle p = new EntityFXFacingParticle(starFlareTex, x, y, z);
-        p.enableAlphaFade().setAlphaMultiplier(0.75F).setColor(new Color(130, 0, 255)).gravity(0);
-        EffectHandler.getInstance().registerFX(p);
-        return p;
-    }*/
+    /*
+     * public static EntityFXFacingParticle genericFlareStarParticle(double x, double y, double z) {
+     * EntityFXFacingParticle p = new EntityFXFacingParticle(starFlareTex, x, y, z);
+     * p.enableAlphaFade().setAlphaMultiplier(0.75F).setColor(new Color(130, 0, 255)).gravity(0);
+     * EffectHandler.getInstance().registerFX(p);
+     * return p;
+     * }
+     */
 
 }

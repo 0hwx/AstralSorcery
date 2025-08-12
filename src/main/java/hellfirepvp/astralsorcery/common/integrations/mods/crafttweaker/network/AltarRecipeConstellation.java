@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network;
 
+import net.minecraft.item.ItemStack;
+
 import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
-import net.minecraft.item.ItemStack;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -26,7 +27,8 @@ public class AltarRecipeConstellation extends BaseAltarRecipe {
         super(null, null, 0, 0);
     }
 
-    public AltarRecipeConstellation(ItemHandle[] inputs, ItemStack output, int starlightRequired, int craftingTickTime) {
+    public AltarRecipeConstellation(ItemHandle[] inputs, ItemStack output, int starlightRequired,
+        int craftingTickTime) {
         super(inputs, output, starlightRequired, craftingTickTime);
     }
 
@@ -38,24 +40,22 @@ public class AltarRecipeConstellation extends BaseAltarRecipe {
     @Override
     public void applyServer() {
         CraftingAccessManager.registerMTAltarRecipe(
-                buildRecipeUnsafe(
-                        TileAltar.AltarLevel.CONSTELLATION_CRAFT,
-                        this.starlightRequired,
-                        this.craftingTickTime,
-                        this.output,
-                        this.inputs)
-        );
+            buildRecipeUnsafe(
+                TileAltar.AltarLevel.CONSTELLATION_CRAFT,
+                this.starlightRequired,
+                this.craftingTickTime,
+                this.output,
+                this.inputs));
     }
 
     @Override
     public void applyClient() {
         CraftingAccessManager.registerMTAltarRecipe(
-                buildRecipeUnsafe(
-                        TileAltar.AltarLevel.CONSTELLATION_CRAFT,
-                        this.starlightRequired,
-                        this.craftingTickTime,
-                        this.output,
-                        this.inputs)
-        );
+            buildRecipeUnsafe(
+                TileAltar.AltarLevel.CONSTELLATION_CRAFT,
+                this.starlightRequired,
+                this.craftingTickTime,
+                this.output,
+                this.inputs));
     }
 }

@@ -8,20 +8,22 @@
 
 package hellfirepvp.astralsorcery.common.tile.base;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
+
 import hellfirepvp.astralsorcery.common.auxiliary.link.ILinkableTile;
 import hellfirepvp.astralsorcery.common.starlight.IStarlightTransmission;
 import hellfirepvp.astralsorcery.common.starlight.transmission.TransmissionNetworkHelper;
 import hellfirepvp.astralsorcery.common.tile.network.TileCrystalLens;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,7 +43,7 @@ public abstract class TileTransmissionBase extends TileNetwork implements IStarl
         super.readCustomNBT(compound);
         positions.clear();
 
-        if(compound.hasKey("linked")) {
+        if (compound.hasKey("linked")) {
             NBTTagList list = compound.getTagList("linked", 10);
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound tag = list.getCompoundTagAt(i);
@@ -76,13 +78,12 @@ public abstract class TileTransmissionBase extends TileNetwork implements IStarl
     @Override
     public void onLinkCreate(EntityPlayer player, BlockPos other) {
         BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
-        if(other.equals(pos)) return;
+        if (other.equals(pos)) return;
 
-        if(TransmissionNetworkHelper.createTransmissionLink(this, other)) {
-            if(singleLink)
-                this.positions.clear();
+        if (TransmissionNetworkHelper.createTransmissionLink(this, other)) {
+            if (singleLink) this.positions.clear();
 
-            if(singleLink || !this.positions.contains(other)) {
+            if (singleLink || !this.positions.contains(other)) {
                 this.positions.add(other);
                 markForUpdate();
             }
@@ -110,9 +111,9 @@ public abstract class TileTransmissionBase extends TileNetwork implements IStarl
     @Override
     public boolean tryUnlink(EntityPlayer player, BlockPos other) {
         BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
-        if(other.equals(pos)) return false;
+        if (other.equals(pos)) return false;
 
-        if(TransmissionNetworkHelper.hasTransmissionLink(this, other)) {
+        if (TransmissionNetworkHelper.hasTransmissionLink(this, other)) {
             TransmissionNetworkHelper.removeTransmissionLink(this, other);
             this.positions.remove(other);
             markForUpdate();

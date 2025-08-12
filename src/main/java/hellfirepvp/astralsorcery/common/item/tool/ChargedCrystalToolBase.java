@@ -1,16 +1,15 @@
 package hellfirepvp.astralsorcery.common.item.tool;
 
-import hellfirepvp.astralsorcery.common.data.config.Config;
-import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
-import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
-import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+import java.util.Random;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-
-import java.util.Random;
+import hellfirepvp.astralsorcery.common.data.config.Config;
+import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -29,8 +28,10 @@ public interface ChargedCrystalToolBase {
         ToolCrystalProperties prop = getToolProperties(stack);
         ItemStack inert = new ItemStack(((ChargedCrystalToolBase) stack.getItem()).getInertVariant());
         applyToolProperties(inert, prop);
-        if(stack.hasTagCompound()) {
-            inert.setTagCompound((NBTTagCompound) stack.getTagCompound().copy());
+        if (stack.hasTagCompound()) {
+            inert.setTagCompound(
+                (NBTTagCompound) stack.getTagCompound()
+                    .copy());
         }
         return inert;
     }
@@ -44,7 +45,7 @@ public interface ChargedCrystalToolBase {
         int c = tag.getInteger("chCount");
         c++;
         tag.setInteger("chCount", c);
-        if(c >= Config.revertStart) {
+        if (c >= Config.revertStart) {
             return chRand.nextInt(Config.revertChance) == 0;
         } else {
             return false;
@@ -52,11 +53,12 @@ public interface ChargedCrystalToolBase {
     }
 
     public static void removeChargeRevertCounter(ItemStack stack) {
-        NBTHelper.getPersistentData(stack).removeTag("chCount");
+        NBTHelper.getPersistentData(stack)
+            .removeTag("chCount");
     }
 
     public static boolean tryRevertMainHand(EntityPlayer player, ItemStack stack) {
-        if(shouldRevert(stack)) {
+        if (shouldRevert(stack)) {
             ItemStack inert = getAsInertVariant(stack);
             removeChargeRevertCounter(inert);
             player.inventory.setInventorySlotContents(player.inventory.currentItem, inert);

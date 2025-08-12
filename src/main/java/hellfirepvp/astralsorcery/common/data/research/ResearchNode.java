@@ -8,16 +8,18 @@
 
 package hellfirepvp.astralsorcery.common.data.research;
 
-import hellfirepvp.astralsorcery.client.gui.journal.page.IJournalPage;
-import hellfirepvp.astralsorcery.client.util.resource.SpriteQuery;
-import hellfirepvp.astralsorcery.client.util.resource.TextureQuery;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.item.ItemStack;
+
+import hellfirepvp.astralsorcery.client.gui.journal.page.IJournalPage;
+import hellfirepvp.astralsorcery.client.util.resource.SpriteQuery;
+import hellfirepvp.astralsorcery.client.util.resource.TextureQuery;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -34,7 +36,7 @@ public class ResearchNode {
     private final RenderType renderType;
     public final int renderPosX, renderPosZ;
     private String unlocName;
-    //private boolean special = false;
+    // private boolean special = false;
 
     private ItemStack[] renderItemStacks;
     private TextureQuery renderTextureQuery;
@@ -99,14 +101,15 @@ public class ResearchNode {
         return true;
     }
 
-    /*public ResearchNode setSpecial() {
-        this.special = true;
-        return this;
-    }
-
-    public boolean isSpecial() {
-        return special;
-    }*/
+    /*
+     * public ResearchNode setSpecial() {
+     * this.special = true;
+     * return this;
+     * }
+     * public boolean isSpecial() {
+     * return special;
+     * }
+     */
 
     public RenderType getRenderType() {
         return renderType;
@@ -152,7 +155,9 @@ public class ResearchNode {
 
     public static enum RenderType {
 
-        ITEMSTACK, TEXTURE, TEXTURE_SPRITE
+        ITEMSTACK,
+        TEXTURE,
+        TEXTURE_SPRITE
 
     }
 

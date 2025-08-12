@@ -8,9 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.util.nbt;
 
-import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.nbt.NBTTagCompound;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -34,20 +34,21 @@ public class NBTUtils {
         return new BlockPos(x, y, z);
     }
 
-    /*public static long packBlockPos(BlockPos pos) {
-        byte[] posArray = new byte[10]; //4 * 2 + 2 (y)
-        System.arraycopy(Ints.toByteArray(pos.getX()), 0, posArray, 0, 4);
-        System.arraycopy(Shorts.toByteArray((short) (pos.getY() & 255)), 0, posArray, 4, 2);
-        System.arraycopy(Ints.toByteArray(pos.getZ()), 0, posArray, 6, 4);
-        return posArray;
-    }
-
-    public static BlockPos unpackBlockPos(byte[] packed) {
-        if(packed.length != 10) throw new IllegalArgumentException("Trying to unpack illegal blockPos byteArray!");
-        return new BlockPos(
-                Ints.fromBytes(packed[0], packed[1], packed[2], packed[3]),
-                Shorts.fromBytes(packed[4], packed[5]),
-                Ints.fromBytes(packed[6], packed[7], packed[8], packed[9]));
-    }*/
+    /*
+     * public static long packBlockPos(BlockPos pos) {
+     * byte[] posArray = new byte[10]; //4 * 2 + 2 (y)
+     * System.arraycopy(Ints.toByteArray(pos.getX()), 0, posArray, 0, 4);
+     * System.arraycopy(Shorts.toByteArray((short) (pos.getY() & 255)), 0, posArray, 4, 2);
+     * System.arraycopy(Ints.toByteArray(pos.getZ()), 0, posArray, 6, 4);
+     * return posArray;
+     * }
+     * public static BlockPos unpackBlockPos(byte[] packed) {
+     * if(packed.length != 10) throw new IllegalArgumentException("Trying to unpack illegal blockPos byteArray!");
+     * return new BlockPos(
+     * Ints.fromBytes(packed[0], packed[1], packed[2], packed[3]),
+     * Shorts.fromBytes(packed[4], packed[5]),
+     * Ints.fromBytes(packed[6], packed[7], packed[8], packed[9]));
+     * }
+     */
 
 }

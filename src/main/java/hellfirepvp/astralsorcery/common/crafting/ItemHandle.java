@@ -8,29 +8,29 @@
 
 package hellfirepvp.astralsorcery.common.crafting;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
+
 import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.base.Mods;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.item.ItemGatedVisibility;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
 import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.ForgeModContainer;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -83,7 +83,7 @@ public final class ItemHandle {
 
     public ItemHandle(List<ItemStack> matchStacks) {
         for (ItemStack stack : matchStacks) {
-            if(stack != null && stack.getItem() != null) {
+            if (stack != null && stack.getItem() != null) {
                 this.applicableItems.add(ItemUtils.copyStackWithSize(stack, stack.stackSize));
             }
         }
@@ -91,8 +91,8 @@ public final class ItemHandle {
     }
 
     public static ItemHandle getCrystalVariant(boolean hasToBeTuned, boolean hasToBeCelestial) {
-        if(hasToBeTuned) {
-            if(hasToBeCelestial) {
+        if (hasToBeTuned) {
+            if (hasToBeCelestial) {
                 return new ItemHandle(new ItemStack(ItemsAS.tunedCelestialCrystal));
             }
 
@@ -100,7 +100,7 @@ public final class ItemHandle {
             handle.applicableItems.add(new ItemStack(ItemsAS.tunedCelestialCrystal));
             return handle;
         } else {
-            if(hasToBeCelestial) {
+            if (hasToBeCelestial) {
                 ItemHandle handle = new ItemHandle(new ItemStack(ItemsAS.celestialCrystal));
                 handle.applicableItems.add(new ItemStack(ItemsAS.tunedCelestialCrystal));
                 return handle;
@@ -115,34 +115,37 @@ public final class ItemHandle {
     }
 
     public List<ItemStack> getApplicableItems() {
-        if(oreDictName != null) {
+        if (oreDictName != null) {
             List<ItemStack> stacks = OreDictionary.getOres(oreDictName);
 
             List<ItemStack> out = new LinkedList<>();
             for (ItemStack oreDictIn : stacks) {
                 if (oreDictIn.getItemDamage() == OreDictionary.WILDCARD_VALUE && !oreDictIn.isItemStackDamageable()) {
-                    oreDictIn.getItem().getSubItems(oreDictIn.getItem(), CreativeTabs.tabDecorations, out);
+                    oreDictIn.getItem()
+                        .getSubItems(oreDictIn.getItem(), CreativeTabs.tabDecorations, out);
                 } else {
                     out.add(oreDictIn);
                 }
             }
             return out;
         }
-//        else if(fluidTypeAndAmount != null) {
-//            return Lists.newArrayList(UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluidTypeAndAmount.getFluid()));
-//        }
+        // else if(fluidTypeAndAmount != null) {
+        // return Lists.newArrayList(UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket,
+        // fluidTypeAndAmount.getFluid()));
+        // }
         else {
             return Lists.newArrayList(applicableItems);
         }
     }
 
     public Object getObjectForRecipe() {
-        if(oreDictName != null) {
+        if (oreDictName != null) {
             return oreDictName;
         }
-//        if(fluidTypeAndAmount != null) {
-//            return UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluidTypeAndAmount.getFluid());
-//        }
+        // if(fluidTypeAndAmount != null) {
+        // return UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket,
+        // fluidTypeAndAmount.getFluid());
+        // }
         return applicableItems;
     }
 
@@ -152,10 +155,10 @@ public final class ItemHandle {
         Iterator<ItemStack> iterator = applicable.iterator();
         while (iterator.hasNext()) {
             ItemStack stack = iterator.next();
-            if(stack == null || stack.getItem() == null) continue;
+            if (stack == null || stack.getItem() == null) continue;
             Item i = stack.getItem();
-            if(!ignoreGatingRequirement && i instanceof ItemGatedVisibility) {
-                if(!((ItemGatedVisibility) i).isSupposedToSeeInRender(stack)) {
+            if (!ignoreGatingRequirement && i instanceof ItemGatedVisibility) {
+                if (!((ItemGatedVisibility) i).isSupposedToSeeInRender(stack)) {
                     iterator.remove();
                 }
             }
@@ -174,7 +177,7 @@ public final class ItemHandle {
     }
 
     public boolean matchCrafting(@Nullable ItemStack stack) {
-        if(stack == null) return false;
+        if (stack == null) return false;
 
         switch (handleType) {
             case OREDICT:
@@ -187,7 +190,7 @@ public final class ItemHandle {
                 return false;
             case STACK:
                 for (ItemStack applicable : applicableItems) {
-                    if(ItemUtils.stackEqualsNonNBT(applicable, stack)) {
+                    if (ItemUtils.stackEqualsNonNBT(applicable, stack)) {
                         return true;
                     }
                 }

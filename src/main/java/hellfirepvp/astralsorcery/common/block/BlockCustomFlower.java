@@ -8,12 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import com.google.common.collect.Lists;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.ItemUtils;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -29,10 +28,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import com.google.common.collect.Lists;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.ItemUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -44,7 +46,8 @@ import java.util.Random;
 public class BlockCustomFlower extends Block implements BlockCustomName, BlockVariants, IShearable {
 
     private IIcon[] icons = new IIcon[FlowerType.values().length];
-    private static final AxisAlignedBB box = AxisAlignedBB.getBoundingBox(1.5D / 16D, 0, 1.5D / 16D, 14.5D / 16D, 13D / 16D, 14.5D / 16D);
+    private static final AxisAlignedBB box = AxisAlignedBB
+        .getBoundingBox(1.5D / 16D, 0, 1.5D / 16D, 14.5D / 16D, 13D / 16D, 14.5D / 16D);
     private static final Random rand = new Random();
 
     public BlockCustomFlower() {
@@ -52,24 +55,26 @@ public class BlockCustomFlower extends Block implements BlockCustomName, BlockVa
         setBlockName("BlockCustomFlower");
         setLightLevel(0.2F);
         setStepSound(soundTypeGrass);
-//        setSoundType(SoundType.PLANT);
+        // setSoundType(SoundType.PLANT);
         setTickRandomly(true);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
     }
 
     @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
         return Lists.newArrayList();
     }
 
     @Override
     public void onBlockHarvested(World worldIn, int x, int y, int z, int meta, EntityPlayer player) {
-        if(!worldIn.isRemote && !player.capabilities.isCreativeMode) {
+        if (!worldIn.isRemote && !player.capabilities.isCreativeMode) {
             switch (meta) {
-                case 0: //GLOW_FLOWER:
-                    int fortune = EnchantmentHelper.getEnchantmentLevel(Enchantment.fortune.effectId, player.getHeldItem());
-                    int looting = EnchantmentHelper.getEnchantmentLevel(Enchantment.looting.effectId, player.getHeldItem());
-                    if(looting > fortune) {
+                case 0: // GLOW_FLOWER:
+                    int fortune = EnchantmentHelper
+                        .getEnchantmentLevel(Enchantment.fortune.effectId, player.getHeldItem());
+                    int looting = EnchantmentHelper
+                        .getEnchantmentLevel(Enchantment.looting.effectId, player.getHeldItem());
+                    if (looting > fortune) {
                         fortune = looting;
                     }
                     int size = 1;
@@ -77,7 +82,8 @@ public class BlockCustomFlower extends Block implements BlockCustomName, BlockVa
                         size += rand.nextInt(3) + 1;
                     }
                     for (int i = 0; i < size; i++) {
-                        ItemUtils.dropItemNaturally(worldIn, x + 0.5, y + 0.1, z + 0.5, new ItemStack(Items.glowstone_dust));
+                        ItemUtils
+                            .dropItemNaturally(worldIn, x + 0.5, y + 0.1, z + 0.5, new ItemStack(Items.glowstone_dust));
                     }
                     break;
             }
@@ -91,7 +97,7 @@ public class BlockCustomFlower extends Block implements BlockCustomName, BlockVa
         return canBlockStay(worldIn, pos);
     }
 
-    protected void checkAndDropBlock(World worldIn, int x, int y, int z){
+    protected void checkAndDropBlock(World worldIn, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
         int meta = worldIn.getBlockMetadata(x, y, z);
         if (!this.canBlockStay(worldIn, pos)) {
@@ -111,7 +117,13 @@ public class BlockCustomFlower extends Block implements BlockCustomName, BlockVa
     }
 
     private boolean canBlockStay(World worldIn, BlockPos pos) {
-        Block downState = worldIn.getBlock(pos.down().getX(), pos.down().getY(), pos.down().getZ());
+        Block downState = worldIn.getBlock(
+            pos.down()
+                .getX(),
+            pos.down()
+                .getY(),
+            pos.down()
+                .getZ());
         return downState.isSideSolid(worldIn, pos.getX(), pos.getY(), pos.getZ(), ForgeDirection.UP);
     }
 
@@ -140,36 +152,36 @@ public class BlockCustomFlower extends Block implements BlockCustomName, BlockVa
         return box;
     }
 
-//    @Nullable
-//    @Override
-//    public AxisAlignedBB getCollisionBoundingBox(Block blockState, World worldIn, BlockPos pos) {
-//        return NULL_AABB;
-//    }
-//
-//    @Override
-//    public BlockRenderLayer getBlockLayer() {
-//        return BlockRenderLayer.CUTOUT;
-//    }
-//
-//    @Override
-//    protected BlockStateContainer createBlockState() {
-//        return new BlockStateContainer(this, FLOWER_TYPE);
-//    }
-//
-//    @Override
-//    public Block getStateFromMeta(int meta) {
-//        return getDefaultState().withProperty(FLOWER_TYPE, FlowerType.values()[meta]);
-//    }
+    // @Nullable
+    // @Override
+    // public AxisAlignedBB getCollisionBoundingBox(Block blockState, World worldIn, BlockPos pos) {
+    // return NULL_AABB;
+    // }
+    //
+    // @Override
+    // public BlockRenderLayer getBlockLayer() {
+    // return BlockRenderLayer.CUTOUT;
+    // }
+    //
+    // @Override
+    // protected BlockStateContainer createBlockState() {
+    // return new BlockStateContainer(this, FLOWER_TYPE);
+    // }
+    //
+    // @Override
+    // public Block getStateFromMeta(int meta) {
+    // return getDefaultState().withProperty(FLOWER_TYPE, FlowerType.values()[meta]);
+    // }
 
     @Override
     public int damageDropped(int meta) {
         return meta;
     }
 
-//    @Override
-//    public int getMeta(Block state) {
-//        return state.getValue(FLOWER_TYPE).getMeta();
-//    }
+    // @Override
+    // public int getMeta(Block state) {
+    // return state.getValue(FLOWER_TYPE).getMeta();
+    // }
 
     @Override
     public String getIdentifierForMeta(int meta) {
@@ -179,9 +191,9 @@ public class BlockCustomFlower extends Block implements BlockCustomName, BlockVa
     @Override
     public List<Block> getValidStates() {
         List<Block> states = new LinkedList<>();
-//        for (FlowerType type : FlowerType.values()) {
-//            states.add(getDefaultState().withProperty(FLOWER_TYPE, type));
-//        }
+        // for (FlowerType type : FlowerType.values()) {
+        // states.add(getDefaultState().withProperty(FLOWER_TYPE, type));
+        // }
         return states;
     }
 
@@ -195,21 +207,19 @@ public class BlockCustomFlower extends Block implements BlockCustomName, BlockVa
         return 0;
     }
 
-    public IIcon getIcon(int side, int meta)
-    {
+    public IIcon getIcon(int side, int meta) {
         return icons[meta];
     }
 
     @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister reg)
-    {
+    public void registerBlockIcons(IIconRegister reg) {
         for (FlowerType type : FlowerType.values()) {
             icons[type.getMeta()] = reg.registerIcon("astralsorcery:" + type.getName());
         }
     }
+
     @Override
-    public int getRenderType()
-    {
+    public int getRenderType() {
         return 1;
     }
 

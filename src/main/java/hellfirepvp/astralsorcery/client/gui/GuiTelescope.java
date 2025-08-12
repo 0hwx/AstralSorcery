@@ -8,6 +8,18 @@
 
 package hellfirepvp.astralsorcery.client.gui;
 
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.gui.base.GuiTileBase;
@@ -21,7 +33,6 @@ import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
 import hellfirepvp.astralsorcery.common.constellation.IConstellation;
-import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
 import hellfirepvp.astralsorcery.common.constellation.distribution.WorldSkyHandler;
@@ -29,29 +40,13 @@ import hellfirepvp.astralsorcery.common.constellation.star.StarConnection;
 import hellfirepvp.astralsorcery.common.constellation.star.StarLocation;
 import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import hellfirepvp.astralsorcery.common.item.ItemConstellationPaper;
-import hellfirepvp.astralsorcery.common.item.ItemJournal;
-import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.client.PktDiscoverConstellation;
 import hellfirepvp.astralsorcery.common.network.packet.client.PktRotateTelescope;
 import hellfirepvp.astralsorcery.common.tile.TileTelescope;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.ItemUtils;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -62,9 +57,12 @@ import java.util.List;
  */
 public class GuiTelescope extends GuiTileBase<TileTelescope> {
 
-    private static final BindableResource texArrow = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiJArrow");
-    private static final BindableResource textureGrid = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "gridTelescope");
-    private static final BindableResource textureConnection = AssetLibrary.loadTexture(AssetLoader.TextureLocation.EFFECT, "connectionPerks");
+    private static final BindableResource texArrow = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiJArrow");
+    private static final BindableResource textureGrid = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "gridTelescope");
+    private static final BindableResource textureConnection = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.EFFECT, "connectionPerks");
 
     private final EntityPlayer owningPlayer;
     private final TileTelescope guiOwner;
@@ -84,20 +82,23 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     private void setupConstellations() {
-        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(guiOwner.getWorldObj());
+        WorldSkyHandler handle = ConstellationSkyHandler.getInstance()
+            .getWorldHandler(guiOwner.getWorldObj());
         int lastTracked = handle == null ? 5 : handle.lastRecordedDay;
-        Random r = new Random(guiOwner.getWorldObj().getSeed() * 31 + lastTracked * 31);
+        Random r = new Random(
+            guiOwner.getWorldObj()
+                .getSeed() * 31 + lastTracked * 31);
 
         currentInformation = new SkyConstellationDistribution();
 
         for (TileTelescope.TelescopeRotation rot : TileTelescope.TelescopeRotation.values()) {
             currentInformation.informationMap.put(rot, new RotationConstellationInformation());
         }
-        if(handle != null) {
+        if (handle != null) {
             List<IConstellation> constellations = handle.getActiveConstellations();
             List<IWeakConstellation> weakConstellations = new LinkedList<>();
             for (IConstellation c : constellations) {
-                if(c instanceof IWeakConstellation && c.canDiscover(ResearchManager.clientProgress)) {
+                if (c instanceof IWeakConstellation && c.canDiscover(ResearchManager.clientProgress)) {
                     weakConstellations.add((IWeakConstellation) c);
                 }
             }
@@ -112,17 +113,18 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     private Tuple<Point, TileTelescope.TelescopeRotation> findEmptyPlace(Random rand) {
-        TileTelescope.TelescopeRotation rot = TileTelescope.TelescopeRotation.values()[rand.nextInt(TileTelescope.TelescopeRotation.values().length)];
+        TileTelescope.TelescopeRotation rot = TileTelescope.TelescopeRotation.values()[rand
+            .nextInt(TileTelescope.TelescopeRotation.values().length)];
         RotationConstellationInformation info = currentInformation.informationMap.get(rot);
         int wh = ((int) SkyConstellationDistribution.constellationWH);
-        int wdh = guiWidth  - 6 - wh;
+        int wdh = guiWidth - 6 - wh;
         int hgt = guiHeight - 6 - wh;
         int rX = 6 + rand.nextInt(wdh);
         int rY = 6 + rand.nextInt(hgt);
         Rectangle constellationRect = new Rectangle(rX, rY, wh, wh);
         for (Point p : info.constellations.keySet()) {
             Rectangle otherRect = new Rectangle(p.x, p.y, wh, wh);
-            if(otherRect.intersects(constellationRect)) {
+            if (otherRect.intersects(constellationRect)) {
                 return null;
             }
         }
@@ -163,7 +165,7 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
         GL11.glPushMatrix();
         GL11.glTranslated(rectArrowCCW.getX() + (width / 2), rectArrowCCW.getY() + (height / 2), 0);
         float uFrom = 0F, vFrom = 0.5F;
-        if(rectArrowCCW.contains(mouse)) {
+        if (rectArrowCCW.contains(mouse)) {
             uFrom = 0.5F;
             GL11.glScaled(1.1, 1.1, 1.1);
         } else {
@@ -182,7 +184,7 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
         GL11.glTranslated(rectArrowCW.getX() + (width / 2), rectArrowCW.getY() + (height / 2), 0);
         uFrom = 0F;
         vFrom = 0F;
-        if(rectArrowCW.contains(mouse)) {
+        if (rectArrowCW.contains(mouse)) {
             uFrom = 0.5F;
             GL11.glScaled(1.1, 1.1, 1.1);
         } else {
@@ -200,36 +202,42 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     private void drawCellsWithEffects(float partialTicks) {
-        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(guiOwner.getWorldObj());
+        WorldSkyHandler handle = ConstellationSkyHandler.getInstance()
+            .getWorldHandler(guiOwner.getWorldObj());
         int lastTracked = handle == null ? 5 : handle.lastRecordedDay;
-        Random r = new Random(guiOwner.getWorldObj().getSeed() * 31 + lastTracked * 31 + rotation.ordinal());
+        Random r = new Random(
+            guiOwner.getWorldObj()
+                .getSeed() * 31 + lastTracked * 31
+                + rotation.ordinal());
         World world = Minecraft.getMinecraft().theWorld;
         boolean canSeeSky = canTelescopeSeeSky(world);
 
-        /*if(handle != null) {
-            LinkedList<IConstellation> active = handle.getSortedActiveConstellations();
-            PlayerProgress prog = ResearchManager.clientProgress;
-            Iterator<IConstellation> iterator = active.iterator();
-            while (iterator.hasNext()) {
-                IConstellation c = iterator.next();
-                if(!(c instanceof IWeakConstellation)) {
-                    iterator.remove();
-                    continue;
-                }
-                if(!c.canDiscover(prog)) {
-                    iterator.remove();
-                    continue;
-                }
-                if(handle.getCurrentDistribution((IWeakConstellation) c, (f) -> f) <= 0.5F) {
-                    iterator.remove();
-                }
-            }
-            if(active.size() <= 8) {
-                active.toArray(constellations);
-            } else {
-                active.subList(0, 8).toArray(constellations);
-            }
-        }*/
+        /*
+         * if(handle != null) {
+         * LinkedList<IConstellation> active = handle.getSortedActiveConstellations();
+         * PlayerProgress prog = ResearchManager.clientProgress;
+         * Iterator<IConstellation> iterator = active.iterator();
+         * while (iterator.hasNext()) {
+         * IConstellation c = iterator.next();
+         * if(!(c instanceof IWeakConstellation)) {
+         * iterator.remove();
+         * continue;
+         * }
+         * if(!c.canDiscover(prog)) {
+         * iterator.remove();
+         * continue;
+         * }
+         * if(handle.getCurrentDistribution((IWeakConstellation) c, (f) -> f) <= 0.5F) {
+         * iterator.remove();
+         * }
+         * }
+         * if(active.size() <= 8) {
+         * active.toArray(constellations);
+         * } else {
+         * active.subList(0, 8).toArray(constellations);
+         * }
+         * }
+         */
 
         GL11.glEnable(GL11.GL_BLEND);
         Blending.DEFAULT.apply();
@@ -245,12 +253,17 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
             RenderAstralSkybox.TEX_STAR_1.bind();
             float starSize = 2.5F;
             for (int i = 0; i < 72 + r.nextInt(144); i++) {
-                float innerOffsetX = starSize + r.nextInt(MathHelper.floor_float(guiWidth  - starSize));
+                float innerOffsetX = starSize + r.nextInt(MathHelper.floor_float(guiWidth - starSize));
                 float innerOffsetY = starSize + r.nextInt(MathHelper.floor_float(guiHeight - starSize));
-                float brightness = 0.3F + (RenderConstellation.stdFlicker(ClientScheduler.getClientTick(), partialTicks, 10 + r.nextInt(20))) * 0.6F;
+                float brightness = 0.3F + (RenderConstellation
+                    .stdFlicker(ClientScheduler.getClientTick(), partialTicks, 10 + r.nextInt(20))) * 0.6F;
                 brightness *= Minecraft.getMinecraft().theWorld.getStarBrightness(1.0F) * 2;
                 GL11.glColor4f(brightness, brightness, brightness, brightness);
-                drawRectDetailed(guiLeft + innerOffsetX - starSize, guiTop + innerOffsetY - starSize, starSize * 2, starSize * 2);
+                drawRectDetailed(
+                    guiLeft + innerOffsetX - starSize,
+                    guiTop + innerOffsetY - starSize,
+                    starSize * 2,
+                    starSize * 2);
                 GL11.glColor4f(1, 1, 1, 1);
             }
             zLevel -= 1;
@@ -265,24 +278,28 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
                     Point offset = entry.getKey();
 
                     Map<StarLocation, Rectangle> rectangles = RenderConstellation.renderConstellationIntoGUI(
-                            entry.getValue(),
-                            offset.x + guiLeft,
-                            offset.y + guiTop,
-                            zLevel,
-                            ((int) widthHeight),
-                            ((int) widthHeight),
-                            2.5,
-                            new RenderConstellation.BrightnessFunction() {
-                                @Override
-                                public float getBrightness() {
-                                    return RenderConstellation.conCFlicker(ClientScheduler.getClientTick(), partialTicks, 5 + r.nextInt(15));
-                                }
-                            },
-                            ResearchManager.clientProgress.hasConstellationDiscovered(entry.getValue().getUnlocalizedName()),
-                            true
-                    );
+                        entry.getValue(),
+                        offset.x + guiLeft,
+                        offset.y + guiTop,
+                        zLevel,
+                        ((int) widthHeight),
+                        ((int) widthHeight),
+                        2.5,
+                        new RenderConstellation.BrightnessFunction() {
 
-                    currentInformation.informationMap.get(rotation).informations.add(new ConstellationInformation(rectangles, entry.getValue()));
+                            @Override
+                            public float getBrightness() {
+                                return RenderConstellation
+                                    .conCFlicker(ClientScheduler.getClientTick(), partialTicks, 5 + r.nextInt(15));
+                            }
+                        },
+                        ResearchManager.clientProgress.hasConstellationDiscovered(
+                            entry.getValue()
+                                .getUnlocalizedName()),
+                        true);
+
+                    currentInformation.informationMap.get(rotation).informations
+                        .add(new ConstellationInformation(rectangles, entry.getValue()));
                 }
             }
 
@@ -314,6 +331,7 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
 
         float linebreadth = 2F;
         RenderConstellation.BrightnessFunction func = new RenderConstellation.BrightnessFunction() {
+
             @Override
             public float getBrightness() {
                 return RenderConstellation.conCFlicker(ClientScheduler.getClientTick(), pTicks, 5 + r.nextInt(15));
@@ -335,9 +353,10 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
         }
     }
 
-    private void drawLine(Point start, Point end, RenderConstellation.BrightnessFunction func, float linebreadth, boolean applyFunc) {
+    private void drawLine(Point start, Point end, RenderConstellation.BrightnessFunction func, float linebreadth,
+        boolean applyFunc) {
         Tessellator tess = Tessellator.instance;
-//        VertexBuffer vb = tes.getBuffer();
+        // VertexBuffer vb = tes.getBuffer();
 
         float brightness;
         if (applyFunc) {
@@ -351,29 +370,42 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
         }
         brightness *= (starBr * 2);
         tess.startDrawingQuads();
-//        vb.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // vb.begin(7, DefaultVertexFormats.POSITION_TEX);
         GL11.glColor4f(brightness, brightness, brightness, brightness < 0 ? 0 : brightness);
 
         Vector3 fromStar = new Vector3(guiLeft + start.getX(), guiTop + start.getY(), zLevel);
         Vector3 toStar = new Vector3(guiLeft + end.getX(), guiTop + end.getY(), zLevel);
 
-        Vector3 dir = toStar.clone().subtract(fromStar);
-        Vector3 degLot = dir.clone().crossProduct(new Vector3(0, 0, 1)).normalize().multiply(linebreadth);//.multiply(j == 0 ? 1 : -1);
+        Vector3 dir = toStar.clone()
+            .subtract(fromStar);
+        Vector3 degLot = dir.clone()
+            .crossProduct(new Vector3(0, 0, 1))
+            .normalize()
+            .multiply(linebreadth);// .multiply(j == 0 ? 1 : -1);
 
-        Vector3 vec00 = fromStar.clone().add(degLot);
-        Vector3 vecV = degLot.clone().multiply(-2);
+        Vector3 vec00 = fromStar.clone()
+            .add(degLot);
+        Vector3 vecV = degLot.clone()
+            .multiply(-2);
 
         for (int i = 0; i < 4; i++) {
             int u = ((i + 1) & 2) >> 1;
             int v = ((i + 2) & 2) >> 1;
 
-            Vector3 pos = vec00.clone().add(dir.clone().multiply(u)).add(vecV.clone().multiply(v));
+            Vector3 pos = vec00.clone()
+                .add(
+                    dir.clone()
+                        .multiply(u))
+                .add(
+                    vecV.clone()
+                        .multiply(v));
             tess.addVertexWithUV(pos.getX(), pos.getY(), pos.getZ(), u, v);
-//            vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
+            // vb.pos(pos.getX(), pos.getY(), pos.getZ()).tex(u, v).endVertex();
         }
 
         tess.draw();
     }
+
     private void drawGridBackground(float partialTicks, boolean canSeeSky) {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         Blending.PREALPHA.apply();
@@ -382,25 +414,37 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
         if (canSeeSky) {
             float starBr = renderWorld.getStarBrightness(partialTicks) * 2;
             float rain = renderWorld.getRainStrength(partialTicks);
-            rgbFrom = RenderingUtils.clampToColorWithMultiplier(calcRGBFromWithRain(starBr, rain), 1F).getRGB();
-            rgbTo   = RenderingUtils.clampToColorWithMultiplier(calcRGBToWithRain  (starBr, rain), 1F).getRGB();
+            rgbFrom = RenderingUtils.clampToColorWithMultiplier(calcRGBFromWithRain(starBr, rain), 1F)
+                .getRGB();
+            rgbTo = RenderingUtils.clampToColorWithMultiplier(calcRGBToWithRain(starBr, rain), 1F)
+                .getRGB();
         } else {
             rgbFrom = 0x000000;
-            rgbTo =   0x000000;
+            rgbTo = 0x000000;
         }
-        int alphaMask = 0xFF000000; //100% opacity.
-        RenderingUtils.drawGradientRect(guiLeft + 4, guiTop + 4, zLevel, guiLeft + guiWidth - 4, guiTop + guiHeight - 4, new Color(alphaMask | rgbFrom), new Color(alphaMask | rgbTo));
+        int alphaMask = 0xFF000000; // 100% opacity.
+        RenderingUtils.drawGradientRect(
+            guiLeft + 4,
+            guiTop + 4,
+            zLevel,
+            guiLeft + guiWidth - 4,
+            guiTop + guiHeight - 4,
+            new Color(alphaMask | rgbFrom),
+            new Color(alphaMask | rgbTo));
         Blending.DEFAULT.apply();
         GL11.glPopAttrib();
     }
 
     private boolean canTelescopeSeeSky(World renderWorld) {
         BlockPos pos = new BlockPos(guiOwner.xCoord, guiOwner.yCoord, guiOwner.zCoord);
-        /*int height = 1;
-        Block up = renderWorld.getBlockState(pos.up());
-        if(up.getBlock().equals(BlocksAS.blockStructural) && up.getValue(BlockStructural.BLOCK_TYPE).equals(BlockStructural.BlockType.TELESCOPE_STRUCT)) {
-            height += 1;
-        }*/
+        /*
+         * int height = 1;
+         * Block up = renderWorld.getBlockState(pos.up());
+         * if(up.getBlock().equals(BlocksAS.blockStructural) &&
+         * up.getValue(BlockStructural.BLOCK_TYPE).equals(BlockStructural.BlockType.TELESCOPE_STRUCT)) {
+         * height += 1;
+         * }
+         */
 
         for (int xx = -1; xx <= 1; xx++) {
             for (int zz = -1; zz <= 1; zz++) {
@@ -410,7 +454,13 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
                 }
             }
         }
-        return renderWorld.canBlockSeeTheSky(pos.up().getX(), pos.up().getY(), pos.up().getZ());
+        return renderWorld.canBlockSeeTheSky(
+            pos.up()
+                .getX(),
+            pos.up()
+                .getY(),
+            pos.up()
+                .getZ());
     }
 
     private static final float THRESHOLD_TO_START = 0.8F;
@@ -419,26 +469,32 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
 
     private int calcRGBToWithRain(float starBr, float rain) {
         int to = calcRGBTo(starBr);
-        if(starBr <= THRESHOLD_TO_START) {
+        if (starBr <= THRESHOLD_TO_START) {
             float starMul = 1F;
-            if(starBr > THRESHOLD_TO_SHIFT_BLUEGRAD) {
-                starMul = 1F - (starBr - THRESHOLD_TO_SHIFT_BLUEGRAD) / (THRESHOLD_TO_START - THRESHOLD_TO_SHIFT_BLUEGRAD);
+            if (starBr > THRESHOLD_TO_SHIFT_BLUEGRAD) {
+                starMul = 1F
+                    - (starBr - THRESHOLD_TO_SHIFT_BLUEGRAD) / (THRESHOLD_TO_START - THRESHOLD_TO_SHIFT_BLUEGRAD);
             }
             float interpDeg = starMul * rain;
             Color safeTo = RenderingUtils.clampToColor(to);
             Vector3 vTo = new Vector3(safeTo.getRed(), safeTo.getGreen(), safeTo.getBlue()).divide(255D);
             Vector3 rainC = new Vector3(102, 114, 137).divide(255D);
             Vector3 interpVec = vTo.copyInterpolateWith(rainC, interpDeg);
-            Color newColor = RenderingUtils.clampToColor((int) (interpVec.getX() * 255), (int) (interpVec.getY() * 255), (int) (interpVec.getZ() * 255));
+            Color newColor = RenderingUtils.clampToColor(
+                (int) (interpVec.getX() * 255),
+                (int) (interpVec.getY() * 255),
+                (int) (interpVec.getZ() * 255));
             to = newColor.getRGB();
         }
-        return RenderingUtils.clampToColor(to).getRGB();
+        return RenderingUtils.clampToColor(to)
+            .getRGB();
     }
 
     private int calcRGBTo(float starBr) {
-        if (starBr >= THRESHOLD_TO_START) { //Blue ranges from 0 (1.0F starBr) to 170 (0.7F starBr)
-            return 0; //Black.
-        } else if (starBr >= THRESHOLD_TO_SHIFT_BLUEGRAD) { //Blue ranges from 170/AA (0.7F) to 255 (0.4F), green from 0 (0.7F) to 85(0.4F)
+        if (starBr >= THRESHOLD_TO_START) { // Blue ranges from 0 (1.0F starBr) to 170 (0.7F starBr)
+            return 0; // Black.
+        } else if (starBr >= THRESHOLD_TO_SHIFT_BLUEGRAD) { // Blue ranges from 170/AA (0.7F) to 255 (0.4F), green from
+                                                            // 0 (0.7F) to 85(0.4F)
             float partSize = (THRESHOLD_TO_START - THRESHOLD_TO_SHIFT_BLUEGRAD);
             float perc = 1F - (starBr - THRESHOLD_TO_SHIFT_BLUEGRAD) / partSize;
             return (int) (perc * 170F);
@@ -446,10 +502,10 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
             float partSize = (THRESHOLD_TO_SHIFT_BLUEGRAD - THRESHOLD_TO_MAX_BLUEGRAD);
             float perc = 1F - (starBr - THRESHOLD_TO_MAX_BLUEGRAD) / partSize;
             int green = (int) (perc * 85F);
-            int blue = green + 0xAA; //LUL
+            int blue = green + 0xAA; // LUL
             return (green << 8) | blue;
         } else {
-            float partSize = (THRESHOLD_TO_MAX_BLUEGRAD - 0.0F); //Blue is 255, green from 85 (0.4F) to 175 (0.0F)
+            float partSize = (THRESHOLD_TO_MAX_BLUEGRAD - 0.0F); // Blue is 255, green from 85 (0.4F) to 175 (0.0F)
             float perc = 1F - (starBr - 0) / partSize;
             int green = 85 + ((int) (perc * 90));
             int red = (int) (perc * 140);
@@ -463,26 +519,32 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
 
     private int calcRGBFromWithRain(float starBr, float rain) {
         int to = calcRGBFrom(starBr);
-        if(starBr <= THRESHOLD_FROM_START) {
+        if (starBr <= THRESHOLD_FROM_START) {
             float starMul = 1F;
-            if(starBr > THRESHOLD_FROM_SHIFT_BLUEGRAD) {
-                starMul = 1F - (starBr - THRESHOLD_FROM_SHIFT_BLUEGRAD) / (THRESHOLD_FROM_START - THRESHOLD_FROM_SHIFT_BLUEGRAD);
+            if (starBr > THRESHOLD_FROM_SHIFT_BLUEGRAD) {
+                starMul = 1F
+                    - (starBr - THRESHOLD_FROM_SHIFT_BLUEGRAD) / (THRESHOLD_FROM_START - THRESHOLD_FROM_SHIFT_BLUEGRAD);
             }
             float interpDeg = starMul * rain;
             Color safeTo = RenderingUtils.clampToColor(to);
             Vector3 vTo = new Vector3(safeTo.getRed(), safeTo.getGreen(), safeTo.getBlue()).divide(255D);
             Vector3 rainC = new Vector3(102, 114, 137).divide(255D);
             Vector3 interpVec = vTo.copyInterpolateWith(rainC, interpDeg);
-            Color newColor = RenderingUtils.clampToColor((int) (interpVec.getX() * 255), (int) (interpVec.getY() * 255), (int) (interpVec.getZ() * 255));
+            Color newColor = RenderingUtils.clampToColor(
+                (int) (interpVec.getX() * 255),
+                (int) (interpVec.getY() * 255),
+                (int) (interpVec.getZ() * 255));
             to = newColor.getRGB();
         }
-        return RenderingUtils.clampToColor(to).getRGB();
+        return RenderingUtils.clampToColor(to)
+            .getRGB();
     }
 
     private int calcRGBFrom(float starBr) {
-        if (starBr >= THRESHOLD_FROM_START) { //Blue ranges from 0 (1.0F starBr) to 170 (0.7F starBr)
-            return 0; //Black.
-        } else if (starBr >= THRESHOLD_FROM_SHIFT_BLUEGRAD) { //Blue ranges from 170/AA (0.7F) to 255 (0.4F), green from 0 (0.7F) to 85(0.4F)
+        if (starBr >= THRESHOLD_FROM_START) { // Blue ranges from 0 (1.0F starBr) to 170 (0.7F starBr)
+            return 0; // Black.
+        } else if (starBr >= THRESHOLD_FROM_SHIFT_BLUEGRAD) { // Blue ranges from 170/AA (0.7F) to 255 (0.4F), green
+                                                              // from 0 (0.7F) to 85(0.4F)
             float partSize = (THRESHOLD_FROM_START - THRESHOLD_FROM_SHIFT_BLUEGRAD);
             float perc = 1F - (starBr - THRESHOLD_FROM_SHIFT_BLUEGRAD) / partSize;
             return (int) (perc * 170F);
@@ -490,10 +552,10 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
             float partSize = (THRESHOLD_FROM_SHIFT_BLUEGRAD - THRESHOLD_FROM_MAX_BLUEGRAD);
             float perc = 1F - (starBr - THRESHOLD_FROM_MAX_BLUEGRAD) / partSize;
             int green = (int) (perc * 85F);
-            int blue = green + 0xAA; //LUL
+            int blue = green + 0xAA; // LUL
             return (green << 8) | blue;
         } else {
-            float partSize = (THRESHOLD_FROM_MAX_BLUEGRAD - 0.0F); //Blue is 255, green from 85 (0.4F) to 175 (0.0F)
+            float partSize = (THRESHOLD_FROM_MAX_BLUEGRAD - 0.0F); // Blue is 255, green from 85 (0.4F) to 175 (0.0F)
             float perc = 1F - (starBr - 0) / partSize;
             int green = 85 + ((int) (perc * 90));
             int red = (int) (perc * 140);
@@ -509,19 +571,18 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
             tryStartDrawing(mouseX, mouseY);
         }
 
-        if(mouseX <= guiLeft || mouseX >= guiLeft + guiWidth ||
-                mouseY <= guiTop || mouseY >= guiTop + guiHeight) {
+        if (mouseX <= guiLeft || mouseX >= guiLeft + guiWidth || mouseY <= guiTop || mouseY >= guiTop + guiHeight) {
             clearLines();
             abortDrawing();
         }
 
         Point p = new Point(mouseX, mouseY);
-        if(rectArrowCW != null && rectArrowCW.contains(p)) {
+        if (rectArrowCW != null && rectArrowCW.contains(p)) {
             PktRotateTelescope pkt = new PktRotateTelescope(true, guiOwner.getWorldObj().provider.dimensionId, pos);
             PacketChannel.CHANNEL.sendToServer(pkt);
             return;
         }
-        if(rectArrowCCW != null && rectArrowCCW.contains(p)) {
+        if (rectArrowCCW != null && rectArrowCCW.contains(p)) {
             PktRotateTelescope pkt = new PktRotateTelescope(false, guiOwner.getWorldObj().provider.dimensionId, pos);
             PacketChannel.CHANNEL.sendToServer(pkt);
         }
@@ -534,8 +595,7 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
             informMovement(mouseX, mouseY);
         }
 
-        if(mouseX <= guiLeft || mouseX >= guiLeft + guiWidth ||
-                mouseY <= guiTop || mouseY >= guiTop + guiHeight) {
+        if (mouseX <= guiLeft || mouseX >= guiLeft + guiWidth || mouseY <= guiTop || mouseY >= guiTop + guiHeight) {
             clearLines();
             abortDrawing();
         }
@@ -547,8 +607,7 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
             informRelease(mouseX, mouseY);
         }
 
-        if(mouseX <= guiLeft || mouseX >= guiLeft + guiWidth ||
-                mouseY <= guiTop || mouseY >= guiTop + guiHeight) {
+        if (mouseX <= guiLeft || mouseX >= guiLeft + guiWidth || mouseY <= guiTop || mouseY >= guiTop + guiHeight) {
             clearLines();
             abortDrawing();
         }
@@ -562,26 +621,27 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
 
         start = new Point(mouseX, mouseY);
         end = new Point(mouseX, mouseY);
-        /*int cell = findCurrentCell(mouseX, mouseY);
-        if (currentLinesCell == -1) {
-            if (cell != -1) {
-                currentDrawCell = cell;
-                currentLinesCell = cell;
-                start = new Point(mouseX, mouseY);
-                end = new Point(mouseX, mouseY); //We want 2 different objects here though.
-            }
-        } else {
-            if (cell != currentLinesCell) {
-                abortDrawing();
-                clearLines();
-
-                start = new Point(mouseX, mouseY);
-                end = new Point(mouseX, mouseY); //We want 2 different objects here though.
-            } else {
-                start = new Point(mouseX, mouseY);
-                end = new Point(mouseX, mouseY); //We want 2 different objects here though.
-            }
-        }*/
+        /*
+         * int cell = findCurrentCell(mouseX, mouseY);
+         * if (currentLinesCell == -1) {
+         * if (cell != -1) {
+         * currentDrawCell = cell;
+         * currentLinesCell = cell;
+         * start = new Point(mouseX, mouseY);
+         * end = new Point(mouseX, mouseY); //We want 2 different objects here though.
+         * }
+         * } else {
+         * if (cell != currentLinesCell) {
+         * abortDrawing();
+         * clearLines();
+         * start = new Point(mouseX, mouseY);
+         * end = new Point(mouseX, mouseY); //We want 2 different objects here though.
+         * } else {
+         * start = new Point(mouseX, mouseY);
+         * end = new Point(mouseX, mouseY); //We want 2 different objects here though.
+         * }
+         * }
+         */
     }
 
     private boolean canStartDrawing() {
@@ -592,15 +652,17 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
         drawnLines.clear();
     }
 
-    /*private int findCurrentCell(int x, int y) {
-        CellRenderInformation current = currentInformation;
-        for (Rectangle r : current.cells.keySet()) {
-            if (r.contains(x, y)) {
-                return current.cells.get(r);
-            }
-        }
-        return -1;
-    }*/
+    /*
+     * private int findCurrentCell(int x, int y) {
+     * CellRenderInformation current = currentInformation;
+     * for (Rectangle r : current.cells.keySet()) {
+     * if (r.contains(x, y)) {
+     * return current.cells.get(r);
+     * }
+     * }
+     * return -1;
+     * }
+     */
 
     private void informMovement(int mouseX, int mouseY) {
         if (!canStartDrawing()) return;
@@ -611,7 +673,7 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     private void informRelease(int mouseX, int mouseY) {
         if (!canStartDrawing()) return;
 
-        if(start == null) return;
+        if (start == null) return;
 
         end = new Point(mouseX, mouseY);
         pushDrawnLine(start, end);
@@ -622,29 +684,30 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
 
     private void checkConstellation(List<Line> drawnLines) {
         RotationConstellationInformation infos = currentInformation.informationMap.get(rotation);
-        if(infos == null) return;
+        if (infos == null) return;
         List<ConstellationInformation> renderInfos = infos.informations;
-        if(renderInfos.isEmpty()) return;
+        if (renderInfos.isEmpty()) return;
 
         lblInfos: for (ConstellationInformation info : renderInfos) {
             IConstellation c = info.constellation;
-            if (c == null || ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName())) continue;
+            if (c == null || ResearchManager.clientProgress.hasConstellationDiscovered(c.getUnlocalizedName()))
+                continue;
             PlayerProgress client = ResearchManager.clientProgress;
             if (client == null) return;
 
             boolean has = false;
             for (String strConstellation : client.getSeenConstellations()) {
                 IConstellation ce = ConstellationRegistry.getConstellationByName(strConstellation);
-                if(ce != null && ce.equals(c)) {
+                if (ce != null && ce.equals(c)) {
                     has = true;
                     break;
                 }
             }
 
-            if(!has) continue;
+            if (!has) continue;
 
             List<StarConnection> sc = c.getStarConnections();
-            if (sc.size() != drawnLines.size()) continue; //Can't match otherwise anyway.
+            if (sc.size() != drawnLines.size()) continue; // Can't match otherwise anyway.
             if (!c.canDiscover(ResearchManager.clientProgress)) continue;
 
             Map<StarLocation, Rectangle> stars = info.starRectangles;
@@ -652,12 +715,14 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
             for (StarConnection connection : sc) {
                 Rectangle fromRect = stars.get(connection.from);
                 if (fromRect == null) {
-                    AstralSorcery.log.info("Could not check constellation of telescope drawing - starLocation is missing?");
+                    AstralSorcery.log
+                        .info("Could not check constellation of telescope drawing - starLocation is missing?");
                     continue lblInfos;
                 }
                 Rectangle toRect = stars.get(connection.to);
                 if (toRect == null) {
-                    AstralSorcery.log.info("Could not check constellation of telescope drawing - starLocation is missing?");
+                    AstralSorcery.log
+                        .info("Could not check constellation of telescope drawing - starLocation is missing?");
                     continue lblInfos;
                 }
                 if (!containsMatch(drawnLines, fromRect, toRect)) {
@@ -665,7 +730,7 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
                 }
             }
 
-            //We found a match. horray.
+            // We found a match. horray.
             PacketChannel.CHANNEL.sendToServer(new PktDiscoverConstellation(c.getUnlocalizedName()));
             clearLines();
             abortDrawing();
@@ -680,8 +745,7 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
             Point end = l.end;
             start = new Point(start.x + guiLeft, start.y + guiTop);
             end = new Point(end.x + guiLeft, end.y + guiTop);
-            if ((r1.contains(start) && r2.contains(end)) ||
-                    (r2.contains(start) && r1.contains(end))) {
+            if ((r1.contains(start) && r2.contains(end)) || (r2.contains(start) && r1.contains(end))) {
                 return true;
             }
         }
@@ -689,9 +753,8 @@ public class GuiTelescope extends GuiTileBase<TileTelescope> {
     }
 
     private void pushDrawnLine(Point start, Point end) {
-        if (Math.abs(start.getX() - end.getX()) <= 2 &&
-                Math.abs(start.getY() - end.getY()) <= 2) {
-            return; //Rather a point than a line. probably not the users intention...
+        if (Math.abs(start.getX() - end.getX()) <= 2 && Math.abs(start.getY() - end.getY()) <= 2) {
+            return; // Rather a point than a line. probably not the users intention...
         }
         Point adjStart = new Point(start.x - guiLeft, start.y - guiTop);
         Point adjEnd = new Point(end.x - guiLeft, end.y - guiTop);

@@ -8,16 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.registry.multiblock;
 
-import hellfirepvp.astralsorcery.common.block.BlockBlackMarble;
-import hellfirepvp.astralsorcery.common.block.BlockMarble;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
+import java.util.Map;
+
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.Map;
+import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,23 +32,26 @@ public class MultiblockAttunementFrame extends PatternBlockArray {
     }
 
     private void load() {
-        Block mar = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.ARCH);
-        Block mbl = BlocksAS.blockBlackMarble;//.getDefaultState().withProperty(BlockBlackMarble.BLACK_MARBLE_TYPE, BlockBlackMarble.BlackMarbleBlockType.RAW);
+        Block mar = BlocksAS.blockMarble;// .getDefaultState().withProperty(BlockMarble.MARBLE_TYPE,
+                                         // BlockMarble.MarbleBlockType.ARCH);
+        Block mbl = BlocksAS.blockBlackMarble;// .getDefaultState().withProperty(BlockBlackMarble.BLACK_MARBLE_TYPE,
+                                              // BlockBlackMarble.BlackMarbleBlockType.RAW);
 
-        addBlock(0, 0, 0, BlocksAS.attunementAltar);//.getDefaultState());
-        //addBlock(0, 1, 0, BlocksAS.blockStructural.getDefaultState().withProperty(BlockStructural.BLOCK_TYPE, BlockStructural.BlockType.ATTUNEMENT_ALTAR_STRUCT));
+        addBlock(0, 0, 0, BlocksAS.attunementAltar);// .getDefaultState());
+        // addBlock(0, 1, 0, BlocksAS.blockStructural.getDefaultState().withProperty(BlockStructural.BLOCK_TYPE,
+        // BlockStructural.BlockType.ATTUNEMENT_ALTAR_STRUCT));
 
-        addBlockCube(mar, -7, -1, -8,  7, -1, -8);
-        addBlockCube(mar, -7, -1,  8,  7, -1,  8);
-        addBlockCube(mar, -8, -1, -7, -8, -1,  7);
-        addBlockCube(mar,  8, -1, -7,  8, -1,  7);
+        addBlockCube(mar, -7, -1, -8, 7, -1, -8);
+        addBlockCube(mar, -7, -1, 8, 7, -1, 8);
+        addBlockCube(mar, -8, -1, -7, -8, -1, 7);
+        addBlockCube(mar, 8, -1, -7, 8, -1, 7);
 
-        addBlockCube(mbl, -7, -1, -7,  7, -1,  7);
+        addBlockCube(mbl, -7, -1, -7, 7, -1, 7);
 
         pillarAt(-8, -0, -8);
-        pillarAt(-8, -0,  8);
-        pillarAt( 8, -0, -8);
-        pillarAt( 8, -0,  8);
+        pillarAt(-8, -0, 8);
+        pillarAt(8, -0, -8);
+        pillarAt(8, -0, 8);
 
         addBlock(-9, -1, -9, mar);
         addBlock(-9, -1, -8, mar);
@@ -57,31 +59,34 @@ public class MultiblockAttunementFrame extends PatternBlockArray {
         addBlock(-8, -1, -9, mar);
         addBlock(-7, -1, -9, mar);
 
-        addBlock(-9, -1,  9, mar);
-        addBlock(-9, -1,  8, mar);
-        addBlock(-9, -1,  7, mar);
-        addBlock(-8, -1,  9, mar);
-        addBlock(-7, -1,  9, mar);
+        addBlock(-9, -1, 9, mar);
+        addBlock(-9, -1, 8, mar);
+        addBlock(-9, -1, 7, mar);
+        addBlock(-8, -1, 9, mar);
+        addBlock(-7, -1, 9, mar);
 
-        addBlock( 9, -1, -9, mar);
-        addBlock( 9, -1, -8, mar);
-        addBlock( 9, -1, -7, mar);
-        addBlock( 8, -1, -9, mar);
-        addBlock( 7, -1, -9, mar);
+        addBlock(9, -1, -9, mar);
+        addBlock(9, -1, -8, mar);
+        addBlock(9, -1, -7, mar);
+        addBlock(8, -1, -9, mar);
+        addBlock(7, -1, -9, mar);
 
-        addBlock( 9, -1,  9, mar);
-        addBlock( 9, -1,  8, mar);
-        addBlock( 9, -1,  7, mar);
-        addBlock( 8, -1,  9, mar);
-        addBlock( 7, -1,  9, mar);
+        addBlock(9, -1, 9, mar);
+        addBlock(9, -1, 8, mar);
+        addBlock(9, -1, 7, mar);
+        addBlock(8, -1, 9, mar);
+        addBlock(7, -1, 9, mar);
     }
 
     private void pillarAt(int x, int y, int z) {
-        Block mru = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.RUNED);
-        Block mpl = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.PILLAR);
-        Block mch = BlocksAS.blockMarble;//.getDefaultState().withProperty(BlockMarble.MARBLE_TYPE, BlockMarble.MarbleBlockType.CHISELED);
+        Block mru = BlocksAS.blockMarble;// .getDefaultState().withProperty(BlockMarble.MARBLE_TYPE,
+                                         // BlockMarble.MarbleBlockType.RUNED);
+        Block mpl = BlocksAS.blockMarble;// .getDefaultState().withProperty(BlockMarble.MARBLE_TYPE,
+                                         // BlockMarble.MarbleBlockType.PILLAR);
+        Block mch = BlocksAS.blockMarble;// .getDefaultState().withProperty(BlockMarble.MARBLE_TYPE,
+                                         // BlockMarble.MarbleBlockType.CHISELED);
 
-        addBlock(x, y,     z, mru);
+        addBlock(x, y, z, mru);
         addBlock(x, y + 1, z, mpl);
         addBlock(x, y + 2, z, mpl);
         addBlock(x, y + 3, z, mpl);

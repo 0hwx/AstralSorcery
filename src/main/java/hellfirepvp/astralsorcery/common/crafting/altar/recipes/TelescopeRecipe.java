@@ -8,20 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes;
 
+import java.util.Random;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import hellfirepvp.astralsorcery.common.block.BlockMachine;
 import hellfirepvp.astralsorcery.common.crafting.helper.ShapedRecipe;
 import hellfirepvp.astralsorcery.common.crafting.helper.ShapedRecipeSlot;
-import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import hellfirepvp.astralsorcery.common.item.ItemCraftingComponent;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.registry.RegistryAchievements;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.util.OreDictAlias;
-import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,25 +30,24 @@ import java.util.Random;
 public class TelescopeRecipe extends AttunementRecipe {
 
     public TelescopeRecipe() {
-        super(new ShapedRecipe(BlockMachine.MachineType.TELESCOPE.asStack())
-                .addPart(ItemsAS.handTelescope,
-                        ShapedRecipeSlot.UPPER_CENTER)
-                .addPart(OreDictAlias.BLOCK_WOOD_PLANKS,
-                        ShapedRecipeSlot.CENTER)
-                .addPart(OreDictAlias.ITEM_GOLD_INGOT,
-                        ShapedRecipeSlot.LEFT,
-                        ShapedRecipeSlot.RIGHT)
-                .addPart(OreDictAlias.ITEM_STICKS,
-                        ShapedRecipeSlot.LOWER_LEFT,
-                        ShapedRecipeSlot.LOWER_CENTER,
-                        ShapedRecipeSlot.LOWER_RIGHT));
+        super(
+            new ShapedRecipe(BlockMachine.MachineType.TELESCOPE.asStack())
+                .addPart(ItemsAS.handTelescope, ShapedRecipeSlot.UPPER_CENTER)
+                .addPart(OreDictAlias.BLOCK_WOOD_PLANKS, ShapedRecipeSlot.CENTER)
+                .addPart(OreDictAlias.ITEM_GOLD_INGOT, ShapedRecipeSlot.LEFT, ShapedRecipeSlot.RIGHT)
+                .addPart(
+                    OreDictAlias.ITEM_STICKS,
+                    ShapedRecipeSlot.LOWER_LEFT,
+                    ShapedRecipeSlot.LOWER_CENTER,
+                    ShapedRecipeSlot.LOWER_RIGHT));
     }
 
     @Override
     public void onCraftServerFinish(TileAltar altar, Random rand) {
-        EntityPlayer crafter = altar.getActiveCraftingTask().tryGetCraftingPlayerServer();
-        if(crafter != null) {
-            crafter.addStat(RegistryAchievements.achvBuildActTelescope,1); //todo check this
+        EntityPlayer crafter = altar.getActiveCraftingTask()
+            .tryGetCraftingPlayerServer();
+        if (crafter != null) {
+            crafter.addStat(RegistryAchievements.achvBuildActTelescope, 1); // todo check this
         }
         super.onCraftServerFinish(altar, rand);
     }

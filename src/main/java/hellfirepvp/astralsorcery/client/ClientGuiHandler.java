@@ -8,6 +8,13 @@
 
 package hellfirepvp.astralsorcery.client;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.gui.*;
 import hellfirepvp.astralsorcery.client.gui.container.*;
@@ -20,12 +27,6 @@ import hellfirepvp.astralsorcery.common.tile.TileMapDrawingTable;
 import hellfirepvp.astralsorcery.common.tile.TileTelescope;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -39,9 +40,9 @@ public class ClientGuiHandler {
     @SideOnly(Side.CLIENT)
     public static Object openGui(CommonProxy.EnumGuiId guiType, EntityPlayer player, World world, int x, int y, int z) {
         TileEntity t = null;
-        if(guiType.getTileClass() != null) {
+        if (guiType.getTileClass() != null) {
             t = MiscUtils.getTileAt(world, new BlockPos(x, y, z), guiType.getTileClass(), true);
-            if(t == null) {
+            if (t == null) {
                 return null;
             }
         }
@@ -51,8 +52,8 @@ public class ClientGuiHandler {
             case HAND_TELESCOPE:
                 return new GuiHandTelescope();
             case CONSTELLATION_PAPER:
-                IConstellation c = ConstellationRegistry.getConstellationById(x); //Suggested Constellation id;
-                if(c == null) {
+                IConstellation c = ConstellationRegistry.getConstellationById(x); // Suggested Constellation id;
+                if (c == null) {
                     AstralSorcery.log.info("Tried opening ConstellationPaper GUI with out-of-range constellation id!");
                     return null;
                 } else {
@@ -72,8 +73,8 @@ public class ClientGuiHandler {
                 return GuiJournalProgression.getOpenJournalInstance();
             case JOURNAL_STORAGE:
                 ItemStack held = player.getHeldItem();
-                if(held != null) {
-                    if(held.getItem() != null && held.getItem() instanceof ItemJournal) {
+                if (held != null) {
+                    if (held.getItem() != null && held.getItem() instanceof ItemJournal) {
                         return new GuiJournalContainer(player.inventory, held, player.inventory.currentItem);
                     }
                 }

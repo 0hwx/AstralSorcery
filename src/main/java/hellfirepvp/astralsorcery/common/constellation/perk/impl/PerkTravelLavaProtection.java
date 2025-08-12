@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.config.Configuration;
+
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -32,13 +33,13 @@ public class PerkTravelLavaProtection extends ConstellationPerk {
     @Override
     public float onEntityHurt(EntityPlayer hurt, DamageSource source, float dmgIn) {
         int cd = getActiveCooldownForPlayer(hurt);
-        if(cd <= 0 && hurt.handleLavaMovement()) {
+        if (cd <= 0 && hurt.handleLavaMovement()) {
             int amt = ticksProtection + ticksUntilProtectionWorksAgain;
             setCooldownActiveForPlayer(hurt, amt);
             cd = amt;
         }
-        if(cd > ticksUntilProtectionWorksAgain) {
-            if(source.isFireDamage() || hurt.handleLavaMovement()) {
+        if (cd > ticksUntilProtectionWorksAgain) {
+            if (source.isFireDamage() || hurt.handleLavaMovement()) {
                 addAlignmentCharge(hurt, 0.7);
                 dmgIn = 0;
             }
@@ -53,8 +54,20 @@ public class PerkTravelLavaProtection extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        ticksProtection = cfg.getInt(getKey() + "TicksProtection", getConfigurationSection(), 200, 1, 6000, "Defines the ticks of protection from fire damage or any damage as long as you are in lava after falling in lava.");
-        ticksUntilProtectionWorksAgain = cfg.getInt(getKey() + "TicksProtectionCooldown", getConfigurationSection(), 2400, 1, 60000, "Defines the ticks of cooldown the protection needs to 'recharge' after it was active.");
+        ticksProtection = cfg.getInt(
+            getKey() + "TicksProtection",
+            getConfigurationSection(),
+            200,
+            1,
+            6000,
+            "Defines the ticks of protection from fire damage or any damage as long as you are in lava after falling in lava.");
+        ticksUntilProtectionWorksAgain = cfg.getInt(
+            getKey() + "TicksProtectionCooldown",
+            getConfigurationSection(),
+            2400,
+            1,
+            60000,
+            "Defines the ticks of cooldown the protection needs to 'recharge' after it was active.");
     }
 
 }

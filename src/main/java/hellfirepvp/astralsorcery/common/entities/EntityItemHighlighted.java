@@ -8,12 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.entities;
 
-import net.minecraft.entity.DataWatcher;
+import java.awt.*;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-
-import java.awt.*;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -24,7 +23,8 @@ import java.awt.*;
  */
 public class EntityItemHighlighted extends EntityItem {
 
-//    private static final DataParameter<Integer> DATA_COLOR = EntityDataManager.createKey(EntityItemHighlighted.class, DataSerializers.VARINT);
+    // private static final DataParameter<Integer> DATA_COLOR = EntityDataManager.createKey(EntityItemHighlighted.class,
+    // DataSerializers.VARINT);
     private static int DATA_COLOR = 31;
 
     public EntityItemHighlighted(World worldIn) {
@@ -45,20 +45,24 @@ public class EntityItemHighlighted extends EntityItem {
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.getDataWatcher().addObject(DATA_COLOR, 0);
-//        this.getDataManager().register(DATA_COLOR, 0);
+        this.getDataWatcher()
+            .addObject(DATA_COLOR, 0);
+        // this.getDataManager().register(DATA_COLOR, 0);
     }
 
     public void applyColor(Color color) {
-        this.getDataWatcher().updateObject(DATA_COLOR, color.getRGB());
-        this.getDataWatcher().setObjectWatched(DATA_COLOR);
-//        this.getDataWatcher().set(DATA_COLOR, color.getRGB());
-//        this.getDataWatcher().setDirty(DATA_COLOR);
+        this.getDataWatcher()
+            .updateObject(DATA_COLOR, color.getRGB());
+        this.getDataWatcher()
+            .setObjectWatched(DATA_COLOR);
+        // this.getDataWatcher().set(DATA_COLOR, color.getRGB());
+        // this.getDataWatcher().setDirty(DATA_COLOR);
     }
 
     public Color getHighlightColor() {
-        int colorInt = this.getDataWatcher().getWatchableObjectInt(DATA_COLOR);
-//        int colorInt = this.getDataManager().get(DATA_COLOR);
+        int colorInt = this.getDataWatcher()
+            .getWatchableObjectInt(DATA_COLOR);
+        // int colorInt = this.getDataManager().get(DATA_COLOR);
         return new Color(colorInt, false);
     }
 

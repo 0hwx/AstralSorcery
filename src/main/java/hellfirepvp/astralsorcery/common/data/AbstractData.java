@@ -8,10 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.data;
 
-import net.minecraft.nbt.NBTTagCompound;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * This class is part of the Astral Sorcery Mod

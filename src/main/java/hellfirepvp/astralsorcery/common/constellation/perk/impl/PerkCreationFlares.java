@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
-import hellfirepvp.astralsorcery.common.entities.EntityFlare;
-import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.config.Configuration;
+
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
+import hellfirepvp.astralsorcery.common.entities.EntityFlare;
+import hellfirepvp.astralsorcery.common.util.data.Vector3;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,13 +36,14 @@ public class PerkCreationFlares extends ConstellationPerk {
 
     @Override
     public float onEntityHurt(EntityPlayer hurt, DamageSource source, float dmgIn) {
-        if(!isCooldownActiveForPlayer(hurt)) {
+        if (!isCooldownActiveForPlayer(hurt)) {
             Entity cause = source.getEntity();
-            if(cause != null && cause instanceof EntityLivingBase && !cause.isDead && cause != hurt) { 
+            if (cause != null && cause instanceof EntityLivingBase && !cause.isDead && cause != hurt) {
                 Vector3 pos = new Vector3(hurt);
                 EntityFlare flare = new EntityFlare(hurt.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
                 flare.setAttackTarget((EntityLivingBase) cause);
-                hurt.getEntityWorld().spawnEntityInWorld(flare);
+                hurt.getEntityWorld()
+                    .spawnEntityInWorld(flare);
                 setCooldownActiveForPlayer(hurt, spawnCooldown);
             }
         }
@@ -55,8 +57,20 @@ public class PerkCreationFlares extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        spawnCooldown = cfg.getInt(getKey() + "SpawnCooldown", getConfigurationSection(), spawnCooldown, 1, Integer.MAX_VALUE, "Defines the minimum cooldown/time between 2 flare spawns caused by this perk.");
-        defensiveFlareChance = cfg.getInt(getKey() + "FlareChance", getConfigurationSection(), defensiveFlareChance, 1, 6000, "Defines the chance (random.nextInt(chance) == 0) that a flare spawns to attack the attacking entity");
+        spawnCooldown = cfg.getInt(
+            getKey() + "SpawnCooldown",
+            getConfigurationSection(),
+            spawnCooldown,
+            1,
+            Integer.MAX_VALUE,
+            "Defines the minimum cooldown/time between 2 flare spawns caused by this perk.");
+        defensiveFlareChance = cfg.getInt(
+            getKey() + "FlareChance",
+            getConfigurationSection(),
+            defensiveFlareChance,
+            1,
+            6000,
+            "Defines the chance (random.nextInt(chance) == 0) that a flare spawns to attack the attacking entity");
 
         spawnCooldown = Math.max(1, spawnCooldown);
         defensiveFlareChance = Math.max(1, defensiveFlareChance);

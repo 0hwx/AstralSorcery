@@ -8,18 +8,18 @@
 
 package hellfirepvp.astralsorcery.common.item.tool;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.auxiliary.link.LinkHandler;
 import hellfirepvp.astralsorcery.common.item.base.ISpecialInteractItem;
 import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -37,17 +37,20 @@ public class ItemLinkingTool extends Item implements LinkHandler.IItemLinkingToo
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
     }
 
-    /*@Override
-    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
-        if(!world.isRemote) {
-            LinkHandler.RightClickResult result = LinkHandler.onRightClick(player, world, pos, player.isSneaking());
-            LinkHandler.propagateClick(result, player, world, pos);
-            return EnumActionResult.SUCCESS;
-        } else {
-            player.swingArm(hand);
-            return EnumActionResult.PASS;
-        }
-    }*/
+    /*
+     * @Override
+     * public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
+     * EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
+     * if(!world.isRemote) {
+     * LinkHandler.RightClickResult result = LinkHandler.onRightClick(player, world, pos, player.isSneaking());
+     * LinkHandler.propagateClick(result, player, world, pos);
+     * return EnumActionResult.SUCCESS;
+     * } else {
+     * player.swingArm(hand);
+     * return EnumActionResult.PASS;
+     * }
+     * }
+     */
 
     @Override
     public boolean needsSpecialHandling(World world, BlockPos at, EntityPlayer player, ItemStack stack) {
@@ -56,8 +59,9 @@ public class ItemLinkingTool extends Item implements LinkHandler.IItemLinkingToo
 
     @Override
     public void onRightClick(World world, BlockPos pos, EntityPlayer entityPlayer, int side, ItemStack stack) {
-        if(!world.isRemote) {
-            LinkHandler.RightClickResult result = LinkHandler.onRightClick(entityPlayer, world, pos, entityPlayer.isSneaking());
+        if (!world.isRemote) {
+            LinkHandler.RightClickResult result = LinkHandler
+                .onRightClick(entityPlayer, world, pos, entityPlayer.isSneaking());
             LinkHandler.propagateClick(result, entityPlayer, world, pos);
         } else {
             entityPlayer.swingItem();
@@ -66,8 +70,7 @@ public class ItemLinkingTool extends Item implements LinkHandler.IItemLinkingToo
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IIconRegister register)
-    {
+    public void registerIcons(IIconRegister register) {
         this.itemIcon = register.registerIcon("astralsorcery:linktool");
     }
 }

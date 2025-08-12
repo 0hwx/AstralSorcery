@@ -8,12 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
-import hellfirepvp.astralsorcery.common.registry.RegistryPotions;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.common.config.Configuration;
+
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
+import hellfirepvp.astralsorcery.common.registry.RegistryPotions;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,7 +34,8 @@ public class PerkDamageBleed extends ConstellationPerk {
 
     @Override
     public float onEntityAttack(EntityPlayer attacker, EntityLivingBase attacked, float dmgIn) {
-        attacked.addPotionEffect(new PotionEffect(RegistryPotions.potionBleed.getId(), durationApplied, amplifierApplied, false));
+        attacked.addPotionEffect(
+            new PotionEffect(RegistryPotions.potionBleed.getId(), durationApplied, amplifierApplied, false));
         addAlignmentCharge(attacker, 0.1 * Math.max(0, dmgIn));
         return dmgIn;
     }
@@ -45,8 +47,20 @@ public class PerkDamageBleed extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        amplifierApplied = cfg.getInt(getKey() + "BleedAmplifier", getConfigurationSection(), 1, 0, 40, "Defines the PotionEffect amplifier of the bleed applied.");
-        durationApplied = cfg.getInt(getKey() + "BleedTickDuration", getConfigurationSection(), 80, 1, 600, "Defines the PotionEffect duration of the bleed applied");
+        amplifierApplied = cfg.getInt(
+            getKey() + "BleedAmplifier",
+            getConfigurationSection(),
+            1,
+            0,
+            40,
+            "Defines the PotionEffect amplifier of the bleed applied.");
+        durationApplied = cfg.getInt(
+            getKey() + "BleedTickDuration",
+            getConfigurationSection(),
+            80,
+            1,
+            600,
+            "Defines the PotionEffect duration of the bleed applied");
     }
 
 }

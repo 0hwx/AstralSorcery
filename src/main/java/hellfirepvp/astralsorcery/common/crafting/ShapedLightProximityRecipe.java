@@ -8,9 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.crafting;
 
-import hellfirepvp.astralsorcery.common.data.DataLightBlockEndpoints;
-import hellfirepvp.astralsorcery.common.data.SyncDataHolder;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -22,12 +23,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import hellfirepvp.astralsorcery.common.data.DataLightBlockEndpoints;
+import hellfirepvp.astralsorcery.common.data.SyncDataHolder;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -112,9 +112,9 @@ public class ShapedLightProximityRecipe implements IRecipe {
                 itemMap.put(chr, new ItemStack((Block) in, 1, OreDictionary.WILDCARD_VALUE));
             } else if (in instanceof String) {
                 itemMap.put(chr, OreDictionary.getOres((String) in));
-            /*
-             * ADDED CLAUSE TO ALLOW FOR MULTIPLE ITEMSTACK DEFINITIONS
-             */
+                /*
+                 * ADDED CLAUSE TO ALLOW FOR MULTIPLE ITEMSTACK DEFINITIONS
+                 */
             } else if (in instanceof List) {
                 itemMap.put(chr, in);
             } else {
@@ -151,7 +151,7 @@ public class ShapedLightProximityRecipe implements IRecipe {
 
     @Override
     public boolean matches(InventoryCrafting inv, World world) {
-        if(!vanillaMatch(inv, world)) return false;
+        if (!vanillaMatch(inv, world)) return false;
 
         Container c = inv.eventHandler;
         if (!(c instanceof ContainerWorkbench)) return false;
@@ -162,12 +162,10 @@ public class ShapedLightProximityRecipe implements IRecipe {
             GuiScreen sc = Minecraft.getMinecraft().currentScreen;
             if (sc == null || !(sc instanceof GuiCrafting) || clientWorkbenchPosition == null) return false;
             if (!((DataLightBlockEndpoints) SyncDataHolder.getDataClient(SyncDataHolder.DATA_LIGHT_BLOCK_ENDPOINTS))
-                    .doesPositionReceiveStarlightClient(world, clientWorkbenchPosition))
-                return false;
+                .doesPositionReceiveStarlightClient(world, clientWorkbenchPosition)) return false;
         } else {
             if (!((DataLightBlockEndpoints) SyncDataHolder.getDataServer(SyncDataHolder.DATA_LIGHT_BLOCK_ENDPOINTS))
-                    .doesPositionReceiveStarlightServer(world, pos))
-                return false;
+                .doesPositionReceiveStarlightServer(world, pos)) return false;
         }
         return true;
     }
@@ -233,9 +231,9 @@ public class ShapedLightProximityRecipe implements IRecipe {
         return this.input;
     }
 
-//    @Override
-//    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-//        return ForgeHooks.defaultRecipeGetRemainingItems(inv);
-//    }
+    // @Override
+    // public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+    // return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+    // }
 
 }

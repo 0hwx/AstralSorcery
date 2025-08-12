@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
-import hellfirepvp.astralsorcery.common.tile.base.TileEntityTick;
+import java.awt.*;
+
 import net.minecraft.util.AxisAlignedBB;
 
-import java.awt.*;
+import hellfirepvp.astralsorcery.common.tile.base.TileEntityTick;
 
 /**
  * This class is part of the Astral Sorcery Mod

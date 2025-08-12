@@ -8,13 +8,8 @@
 
 package hellfirepvp.astralsorcery.client.util.item;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModelCustom;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -25,9 +20,10 @@ import java.util.Collections;
  */
 public class ItemRendererModelDummy implements IModelCustom {
 
-    //Copy-pasta from ModelBakery
-    private static final String EMPTY_MODEL_RAW = "{    \'elements\': [        {   \'from\': [0, 0, 0],            \'to\': [16, 16, 16],            \'faces\': {                \'down\': {\'uv\': [0, 0, 16, 16], \'texture\': \'\' }            }        }    ]}".replaceAll("\'", "\"");
-//    public static final ModelBlock MODEL_GENERATED = ModelBlock.deserialize(EMPTY_MODEL_RAW);
+    // Copy-pasta from ModelBakery
+    private static final String EMPTY_MODEL_RAW = "{    \'elements\': [        {   \'from\': [0, 0, 0],            \'to\': [16, 16, 16],            \'faces\': {                \'down\': {\'uv\': [0, 0, 16, 16], \'texture\': \'\' }            }        }    ]}"
+        .replaceAll("\'", "\"");
+    // public static final ModelBlock MODEL_GENERATED = ModelBlock.deserialize(EMPTY_MODEL_RAW);
 
     private ResourceLocation parent;
 
@@ -35,36 +31,37 @@ public class ItemRendererModelDummy implements IModelCustom {
         this.parent = parent;
     }
 
-//    private static final IModelState NO_STATE = part -> Optional.absent();
-//
-//    @Override
-//    public Collection<ResourceLocation> getDependencies() {
-//        return Collections.emptyList();
-//    }
-//
-//    @Override
-//    public Collection<ResourceLocation> getTextures() {
-//        return Collections.emptyList();
-//    }
-//
-//    @Override
-//    public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
-//        return new DummyVanillaBakedModel(getSupportedTransforms());
-//    }
-//
-//    private ItemCameraTransforms getSupportedTransforms() {
-//        ItemCameraTransforms transforms = ItemRenderRegistry.getAdditionalRenderTransforms(parent);
-//        return transforms != null ? transforms : MODEL_GENERATED.getAllTransforms();
-//    }
-//
-//    @Override
-//    public IModelState getDefaultState() {
-//        return NO_STATE;
-//    }
-//
-//    static {
-//        MODEL_GENERATED.name = "RenderDummyGeneratedBaseModel";
-//    }
+    // private static final IModelState NO_STATE = part -> Optional.absent();
+    //
+    // @Override
+    // public Collection<ResourceLocation> getDependencies() {
+    // return Collections.emptyList();
+    // }
+    //
+    // @Override
+    // public Collection<ResourceLocation> getTextures() {
+    // return Collections.emptyList();
+    // }
+    //
+    // @Override
+    // public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite>
+    // bakedTextureGetter) {
+    // return new DummyVanillaBakedModel(getSupportedTransforms());
+    // }
+    //
+    // private ItemCameraTransforms getSupportedTransforms() {
+    // ItemCameraTransforms transforms = ItemRenderRegistry.getAdditionalRenderTransforms(parent);
+    // return transforms != null ? transforms : MODEL_GENERATED.getAllTransforms();
+    // }
+    //
+    // @Override
+    // public IModelState getDefaultState() {
+    // return NO_STATE;
+    // }
+    //
+    // static {
+    // MODEL_GENERATED.name = "RenderDummyGeneratedBaseModel";
+    // }
 
     @Override
     public String getType() {

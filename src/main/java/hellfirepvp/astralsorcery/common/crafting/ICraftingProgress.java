@@ -1,8 +1,9 @@
 package hellfirepvp.astralsorcery.common.crafting;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import hellfirepvp.astralsorcery.common.crafting.altar.ActiveCraftingTask;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
-import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -13,7 +14,8 @@ import net.minecraft.nbt.NBTTagCompound;
  */
 public interface ICraftingProgress {
 
-    //True if the recipe progressed, false if the recipe should be stuck..
-    public boolean tryProcess(TileAltar altar, ActiveCraftingTask runningTask, NBTTagCompound craftingData, int activeCraftingTick);
+    // True if the recipe progressed, false if the recipe should be stuck..
+    public boolean tryProcess(TileAltar altar, ActiveCraftingTask runningTask, NBTTagCompound craftingData,
+        int activeCraftingTick);
 
 }

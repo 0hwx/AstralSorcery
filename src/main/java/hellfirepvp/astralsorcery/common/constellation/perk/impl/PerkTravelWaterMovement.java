@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.config.Configuration;
+
 import cpw.mods.fml.relauncher.Side;
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -30,14 +31,14 @@ public class PerkTravelWaterMovement extends ConstellationPerk {
 
     @Override
     public void onPlayerTick(EntityPlayer player, Side side) {
-        if(!player.capabilities.isFlying) {
-            if(player.isInWater()) {
+        if (!player.capabilities.isFlying) {
+            if (player.isInWater()) {
                 player.motionX *= swimSpeedMultiplier;
                 player.motionY *= swimSpeedMultiplier;
                 player.motionZ *= swimSpeedMultiplier;
                 addAlignmentCharge(player, 0.01);
             }
-            if(player.handleLavaMovement()) { //isInLava
+            if (player.handleLavaMovement()) { // isInLava
                 player.motionX *= 1.4F * swimSpeedMultiplier;
                 player.motionY *= 1.2F * swimSpeedMultiplier;
                 player.motionZ *= 1.4F * swimSpeedMultiplier;
@@ -53,7 +54,13 @@ public class PerkTravelWaterMovement extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        swimSpeedMultiplier = cfg.getFloat(getKey() + "SwimSpeedMultipler", getConfigurationSection(), 1.2F, 1F, 1.5F, "Sets the swim speed multiplier when a player has this perk, is in water and is not flying.");
+        swimSpeedMultiplier = cfg.getFloat(
+            getKey() + "SwimSpeedMultipler",
+            getConfigurationSection(),
+            1.2F,
+            1F,
+            1.5F,
+            "Sets the swim speed multiplier when a player has this perk, is in water and is not flying.");
     }
 
 }

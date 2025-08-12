@@ -8,11 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.FoodStats;
 import net.minecraftforge.common.config.Configuration;
+
 import cpw.mods.fml.relauncher.Side;
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -31,9 +32,9 @@ public class PerkTravelReduceFoodNeed extends ConstellationPerk {
 
     @Override
     public void onPlayerTick(EntityPlayer player, Side side) {
-        if(side == Side.SERVER) {
+        if (side == Side.SERVER) {
             FoodStats stats = player.getFoodStats();
-            if(stats.foodExhaustionLevel > -50F) {
+            if (stats.foodExhaustionLevel > -50F) {
                 stats.addExhaustion(-tickExhaustionReduction);
             }
         }
@@ -46,7 +47,13 @@ public class PerkTravelReduceFoodNeed extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        tickExhaustionReduction = cfg.getFloat(getKey() + "TickExhaustionReduction", getConfigurationSection(), 0.01F, 0F, 0.1F, "Defines the food-exhaustion reduction applied each tick.");
+        tickExhaustionReduction = cfg.getFloat(
+            getKey() + "TickExhaustionReduction",
+            getConfigurationSection(),
+            0.01F,
+            0F,
+            0.1F,
+            "Defines the food-exhaustion reduction applied each tick.");
     }
 
 }

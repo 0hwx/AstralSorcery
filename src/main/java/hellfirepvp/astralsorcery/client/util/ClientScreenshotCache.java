@@ -1,24 +1,5 @@
 package hellfirepvp.astralsorcery.client.util;
 
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.client.effect.EffectHandler;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.data.Tuple;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.shader.Framebuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.ScreenShotHelper;
-import org.apache.commons.io.IOUtils;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +10,27 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.util.ResourceLocation;
+
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+
+import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.client.effect.EffectHandler;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.data.Tuple;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -52,13 +54,13 @@ public class ClientScreenshotCache {
     @Nullable
     public static ResourceLocation tryQueryTextureFor(int dim, BlockPos pos) {
         List<Tuple<BlockPos, ResourceLocation>> positions = clientScreenshots.get(dim);
-        if(positions == null) {
+        if (positions == null) {
             positions = new LinkedList<>();
             clientScreenshots.put(dim, positions);
         }
         for (Tuple<BlockPos, ResourceLocation> t : positions) {
-            if(t.key.equals(pos)) {
-                if(t.value.equals(nullEntry)) {
+            if (t.key.equals(pos)) {
+                if (t.value.equals(nullEntry)) {
                     return null;
                 } else {
                     return t.value;
@@ -74,7 +76,7 @@ public class ClientScreenshotCache {
             try {
                 File dir = getDirectoryForCurrentContext();
                 File worldDir = new File(dir, String.valueOf(dim));
-                if(!worldDir.exists()) {
+                if (!worldDir.exists()) {
                     worldDir.mkdirs();
                 }
                 File store = new File(worldDir, pos.getX() + ";" + pos.getY() + ";" + pos.getZ() + ".png");
@@ -86,35 +88,39 @@ public class ClientScreenshotCache {
                 AstralSorcery.proxy.scheduleClientside(() -> {
                     try {
                         BufferedImage bufferedimage = createScreenshot(
-                                Minecraft.getMinecraft().displayWidth,
-                                Minecraft.getMinecraft().displayHeight,
-                                Minecraft.getMinecraft().getFramebuffer());
+                            Minecraft.getMinecraft().displayWidth,
+                            Minecraft.getMinecraft().displayHeight,
+                            Minecraft.getMinecraft()
+                                .getFramebuffer());
                         ImageIO.write(bufferedimage, "png", store);
                         Minecraft.getMinecraft().gameSettings.hideGUI = wasUIHidden;
                         EffectHandler.getInstance().renderGateway = true;
                         ResourceLocation address = addScreenshot(dim, pos, store);
 
                         Tuple<BlockPos, ResourceLocation> addr = new Tuple<>(pos, address);
-                        if(!clientScreenshots.containsKey(dim)) {
+                        if (!clientScreenshots.containsKey(dim)) {
                             clientScreenshots.put(dim, new LinkedList<>());
                         }
                         List<Tuple<BlockPos, ResourceLocation>> positions = clientScreenshots.get(dim);
                         positions.removeIf(entry -> entry.key.equals(pos));
                         positions.add(addr);
                     } catch (Exception exc) {
-                        AstralSorcery.log.info("Couldn't save screenshot for position: dimid=" + dim + ", pos=" + pos.toString());
+                        AstralSorcery.log
+                            .info("Couldn't save screenshot for position: dimid=" + dim + ", pos=" + pos.toString());
                         exc.printStackTrace();
                     }
                 });
             } catch (Exception exc) {
-                AstralSorcery.log.info("Couldn't save screenshot for position: dimid=" + dim + ", pos=" + pos.toString());
+                AstralSorcery.log
+                    .info("Couldn't save screenshot for position: dimid=" + dim + ", pos=" + pos.toString());
                 exc.printStackTrace();
             }
         });
     }
 
     public static void cleanUp() {
-        TextureManager tm = Minecraft.getMinecraft().getTextureManager();
+        TextureManager tm = Minecraft.getMinecraft()
+            .getTextureManager();
         for (List<Tuple<BlockPos, ResourceLocation>> rlList : clientScreenshots.values()) {
             for (Tuple<BlockPos, ResourceLocation> rl : rlList) {
                 tm.deleteTexture(rl.value);
@@ -125,7 +131,7 @@ public class ClientScreenshotCache {
     }
 
     public static void loadAndInitScreenshotsFor(String addr) {
-        cleanUp(); //Should've happened already.
+        cleanUp(); // Should've happened already.
         addrContext = addr;
 
         try {
@@ -138,25 +144,26 @@ public class ClientScreenshotCache {
     }
 
     private static void loadScreenshots(File directory) throws Exception {
-        if(directory == null) return; //Uhh...
+        if (directory == null) return; // Uhh...
         for (File dimDir : directory.listFiles()) {
-            if(!dimDir.isDirectory()) continue;
+            if (!dimDir.isDirectory()) continue;
             String fileName = dimDir.getName();
             int dimId;
             try {
                 dimId = Integer.parseInt(fileName);
             } catch (NumberFormatException exc) {
-                AstralSorcery.log.info("Couldn't load screenshots from folder " + fileName + " as its not a dimensionID. Skipping.");
+                AstralSorcery.log
+                    .info("Couldn't load screenshots from folder " + fileName + " as its not a dimensionID. Skipping.");
                 continue;
             }
             List<Tuple<BlockPos, ResourceLocation>> textures = new LinkedList<>();
             for (File imageF : dimDir.listFiles()) {
-                if(imageF.isDirectory()) continue;
+                if (imageF.isDirectory()) continue;
                 String posName = imageF.getName();
-                if(!posName.endsWith(".png")) continue;
+                if (!posName.endsWith(".png")) continue;
                 posName = posName.substring(0, posName.length() - 4);
                 String[] spl = posName.split(";");
-                if(spl.length != 3) continue;
+                if (spl.length != 3) continue;
                 int x, y, z;
                 try {
                     x = Integer.parseInt(spl[0]);
@@ -178,25 +185,29 @@ public class ClientScreenshotCache {
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-        ResourceLocation textureAddress = new ResourceLocation(AstralSorcery.MODID, dimId + ";;" + x + ";" + y + ";" + z);
+        ResourceLocation textureAddress = new ResourceLocation(
+            AstralSorcery.MODID,
+            dimId + ";;" + x + ";" + y + ";" + z);
         FileBasedTexture fbt = new FileBasedTexture(imageFile);
-        Minecraft.getMinecraft().getTextureManager().loadTexture(textureAddress, fbt);
+        Minecraft.getMinecraft()
+            .getTextureManager()
+            .loadTexture(textureAddress, fbt);
         return textureAddress;
     }
 
     @Nullable
     private static File getDirectoryForCurrentContext() {
-        if(addrContext == null) return null; //Uh... unexpected call.
+        if (addrContext == null) return null; // Uh... unexpected call.
         File f = new File(System.getProperty("user.dir"), AstralSorcery.MODID);
-        if(!f.exists()) {
+        if (!f.exists()) {
             f.mkdirs();
         }
         f = new File(f, "gatewayScreenshots");
-        if(!f.exists()) {
+        if (!f.exists()) {
             f.mkdirs();
         }
         f = new File(f, addrContext);
-        if(!f.exists()) {
+        if (!f.exists()) {
             f.mkdirs();
         }
         return f;
@@ -219,38 +230,36 @@ public class ClientScreenshotCache {
             int pxHeight = image.getHeight();
             int nX = pxWidth / 5;
             int nH = pxHeight / 5;
-            TextureUtil.uploadTextureImageAllocate(getGlTextureId(), image.getSubimage(nX, nH, pxWidth - nX, pxHeight - nH), true, false);
+            TextureUtil.uploadTextureImageAllocate(
+                getGlTextureId(),
+                image.getSubimage(nX, nH, pxWidth - nX, pxHeight - nH),
+                true,
+                false);
         }
 
     }
 
-    public static BufferedImage readBufferedImage(InputStream imageStream) throws IOException
-    {
+    public static BufferedImage readBufferedImage(InputStream imageStream) throws IOException {
         BufferedImage bufferedimage;
 
-        try
-        {
+        try {
             bufferedimage = ImageIO.read(imageStream);
-        }
-        finally
-        {
+        } finally {
             IOUtils.closeQuietly(imageStream);
         }
 
         return bufferedimage;
     }
-    public static BufferedImage createScreenshot(int width, int height, Framebuffer framebufferIn)
-    {
-        if (OpenGlHelper.isFramebufferEnabled())
-        {
+
+    public static BufferedImage createScreenshot(int width, int height, Framebuffer framebufferIn) {
+        if (OpenGlHelper.isFramebufferEnabled()) {
             width = framebufferIn.framebufferTextureWidth;
             height = framebufferIn.framebufferTextureHeight;
         }
 
         int i = width * height;
 
-        if (pixelBuffer == null || pixelBuffer.capacity() < i)
-        {
+        if (pixelBuffer == null || pixelBuffer.capacity() < i) {
             pixelBuffer = BufferUtils.createIntBuffer(i);
             pixelValues = new int[i];
         }
@@ -259,13 +268,10 @@ public class ClientScreenshotCache {
         GL11.glPixelStorei(3317, 1);
         pixelBuffer.clear();
 
-        if (OpenGlHelper.isFramebufferEnabled())
-        {
+        if (OpenGlHelper.isFramebufferEnabled()) {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebufferIn.framebufferTexture);
             GL11.glGetTexImage(3553, 0, 32993, 33639, pixelBuffer);
-        }
-        else
-        {
+        } else {
             GL11.glReadPixels(0, 0, width, height, 32993, 33639, pixelBuffer);
         }
 

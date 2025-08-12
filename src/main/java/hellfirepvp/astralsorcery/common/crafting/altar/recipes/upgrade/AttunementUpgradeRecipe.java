@@ -8,6 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes.upgrade;
 
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.item.ItemStack;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.block.BlockMarble;
 import hellfirepvp.astralsorcery.common.block.network.BlockAltar;
 import hellfirepvp.astralsorcery.common.crafting.IAltarUpgradeRecipe;
@@ -21,15 +32,6 @@ import hellfirepvp.astralsorcery.common.crafting.helper.ShapedRecipeSlot;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.item.ItemStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,19 +43,17 @@ import java.util.Random;
 public class AttunementUpgradeRecipe extends DiscoveryRecipe implements IAltarUpgradeRecipe, INighttimeRecipe {
 
     public AttunementUpgradeRecipe() {
-        super(new ShapedRecipe(new ItemStack(BlocksAS.blockAltar, 1, BlockAltar.AltarType.ALTAR_2.ordinal()))
-                .addPart(BlockMarble.MarbleBlockType.PILLAR.asStack(),
-                        ShapedRecipeSlot.LOWER_LEFT,
-                        ShapedRecipeSlot.UPPER_LEFT,
-                        ShapedRecipeSlot.UPPER_RIGHT,
-                        ShapedRecipeSlot.LOWER_RIGHT)
-                .addPart(BlockMarble.MarbleBlockType.CHISELED.asStack(),
-                        ShapedRecipeSlot.RIGHT,
-                        ShapedRecipeSlot.LEFT)
-                .addPart(ItemHandle.getCrystalVariant(false, false),
-                        ShapedRecipeSlot.UPPER_CENTER)
-                .addPart(BlocksAS.fluidLiquidStarlight,
-                        ShapedRecipeSlot.CENTER));
+        super(
+            new ShapedRecipe(new ItemStack(BlocksAS.blockAltar, 1, BlockAltar.AltarType.ALTAR_2.ordinal()))
+                .addPart(
+                    BlockMarble.MarbleBlockType.PILLAR.asStack(),
+                    ShapedRecipeSlot.LOWER_LEFT,
+                    ShapedRecipeSlot.UPPER_LEFT,
+                    ShapedRecipeSlot.UPPER_RIGHT,
+                    ShapedRecipeSlot.LOWER_RIGHT)
+                .addPart(BlockMarble.MarbleBlockType.CHISELED.asStack(), ShapedRecipeSlot.RIGHT, ShapedRecipeSlot.LEFT)
+                .addPart(ItemHandle.getCrystalVariant(false, false), ShapedRecipeSlot.UPPER_CENTER)
+                .addPart(BlocksAS.fluidLiquidStarlight, ShapedRecipeSlot.CENTER));
     }
 
     @Override
@@ -68,8 +68,11 @@ public class AttunementUpgradeRecipe extends DiscoveryRecipe implements IAltarUp
     }
 
     @Override
-    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler, boolean ignoreStarlightRequirement) {
-        return altar.getAltarLevel().ordinal() < getLevelUpgradingTo().ordinal() && super.matches(altar, invHandler, ignoreStarlightRequirement);
+    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler,
+        boolean ignoreStarlightRequirement) {
+        return altar.getAltarLevel()
+            .ordinal() < getLevelUpgradingTo().ordinal()
+            && super.matches(altar, invHandler, ignoreStarlightRequirement);
     }
 
     @Nullable
@@ -95,10 +98,10 @@ public class AttunementUpgradeRecipe extends DiscoveryRecipe implements IAltarUp
     public void onCraftClientTick(TileAltar altar, ActiveCraftingTask.CraftingState state, long tick, Random rand) {
         super.onCraftClientTick(altar, state, tick, rand);
 
-        if(state == ActiveCraftingTask.CraftingState.ACTIVE) {
+        if (state == ActiveCraftingTask.CraftingState.ACTIVE) {
             EffectRenderer pm = Minecraft.getMinecraft().effectRenderer;
-            if(rand.nextInt(6) == 0) {
-                pm.addBlockDestroyEffects(altar.xCoord, altar.yCoord, altar.zCoord, BlocksAS.blockMarble,0);
+            if (rand.nextInt(6) == 0) {
+                pm.addBlockDestroyEffects(altar.xCoord, altar.yCoord, altar.zCoord, BlocksAS.blockMarble, 0);
             }
         }
     }

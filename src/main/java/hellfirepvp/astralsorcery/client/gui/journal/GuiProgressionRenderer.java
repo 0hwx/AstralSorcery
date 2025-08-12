@@ -8,6 +8,22 @@
 
 package hellfirepvp.astralsorcery.client.gui.journal;
 
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.MathHelper;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.gui.GuiJournalProgression;
 import hellfirepvp.astralsorcery.client.util.Blending;
 import hellfirepvp.astralsorcery.client.util.TextureHelper;
@@ -19,19 +35,6 @@ import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.MathHelper;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -42,14 +45,17 @@ import java.util.Map;
  */
 public class GuiProgressionRenderer {
 
-    private static final BindableResource textureResBack = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiResBG");
-    private static final BindableResource textureResOVL = AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "guiJResOverlay");
-    //private static final BindableResource black = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC, "black");
+    private static final BindableResource textureResBack = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiResBG");
+    private static final BindableResource textureResOVL = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.GUI, "guiJResOverlay");
+    // private static final BindableResource black = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC,
+    // "black");
 
     private GalaxySizeHandler sizeHandler;
     private GuiJournalProgression parentGui;
 
-    //Rendering relevant properties. Those coords represent _unscaled_ exact positions.
+    // Rendering relevant properties. Those coords represent _unscaled_ exact positions.
     public GuiRenderBoundingBox realRenderBox;
     private int realCoordLowerX, realCoordLowerY;
     private int realRenderWidth, realRenderHeight;
@@ -68,10 +74,10 @@ public class GuiProgressionRenderer {
         this.sizeHandler = new GalaxySizeHandler(guiHeight, guiWidth);
         refreshSize();
         this.mousePointScaled = ScalingPoint.createPoint(
-                this.sizeHandler.clampX(this.sizeHandler.getMidX()),
-                this.sizeHandler.clampY(this.sizeHandler.getMidY()),
-                this.sizeHandler.getScalingFactor(),
-                false);
+            this.sizeHandler.clampX(this.sizeHandler.getMidX()),
+            this.sizeHandler.clampY(this.sizeHandler.getMidY()),
+            this.sizeHandler.getScalingFactor(),
+            false);
         this.moveMouse(this.sizeHandler.getTotalWidth() / 2, this.sizeHandler.getTotalHeight() / 2);
         applyMovedMouseOffset();
     }
@@ -87,32 +93,32 @@ public class GuiProgressionRenderer {
     }
 
     public void moveMouse(double changedX, double changedY) {
-        if(sizeHandler.getScalingFactor() >= 6.1D && clusterRenderer != null) {
+        if (sizeHandler.getScalingFactor() >= 6.1D && clusterRenderer != null) {
             clusterRenderer.moveMouse(changedX, changedY);
         } else {
             if (hasPrevOffset) {
                 mousePointScaled.updateScaledPos(
-                        sizeHandler.clampX(previousMousePointScaled.getScaledPosX() + changedX),
-                        sizeHandler.clampY(previousMousePointScaled.getScaledPosY() + changedY),
-                        sizeHandler.getScalingFactor());
+                    sizeHandler.clampX(previousMousePointScaled.getScaledPosX() + changedX),
+                    sizeHandler.clampY(previousMousePointScaled.getScaledPosY() + changedY),
+                    sizeHandler.getScalingFactor());
             } else {
                 mousePointScaled.updateScaledPos(
-                        sizeHandler.clampX(changedX),
-                        sizeHandler.clampY(changedY),
-                        sizeHandler.getScalingFactor());
+                    sizeHandler.clampX(changedX),
+                    sizeHandler.clampY(changedY),
+                    sizeHandler.getScalingFactor());
             }
         }
     }
 
     public void applyMovedMouseOffset() {
-        if(sizeHandler.getScalingFactor() >= 6.1D && clusterRenderer != null) {
+        if (sizeHandler.getScalingFactor() >= 6.1D && clusterRenderer != null) {
             clusterRenderer.applyMovedMouseOffset();
         } else {
             this.previousMousePointScaled = ScalingPoint.createPoint(
-                    mousePointScaled.getScaledPosX(),
-                    mousePointScaled.getScaledPosY(),
-                    sizeHandler.getScalingFactor(),
-                    true);
+                mousePointScaled.getScaledPosX(),
+                mousePointScaled.getScaledPosY(),
+                sizeHandler.getScalingFactor(),
+                true);
             this.hasPrevOffset = true;
         }
     }
@@ -123,7 +129,9 @@ public class GuiProgressionRenderer {
     }
 
     public void centerMouse() {
-        this.moveMouse(parentGui.getGuiLeft() + this.sizeHandler.getMidX(), parentGui.getGuiTop() + this.sizeHandler.getMidY());
+        this.moveMouse(
+            parentGui.getGuiLeft() + this.sizeHandler.getMidX(),
+            parentGui.getGuiTop() + this.sizeHandler.getMidY());
     }
 
     public void updateMouseState() {
@@ -136,18 +144,23 @@ public class GuiProgressionRenderer {
 
     public void focus(@Nonnull ResearchProgression researchCluster) {
         this.focusedClusterZoom = researchCluster;
-        this.clusterRenderer = new GuiProgressionClusterRenderer(researchCluster, realRenderHeight, realRenderWidth, realCoordLowerX, realCoordLowerY);
+        this.clusterRenderer = new GuiProgressionClusterRenderer(
+            researchCluster,
+            realRenderHeight,
+            realRenderWidth,
+            realCoordLowerX,
+            realCoordLowerY);
     }
 
-    //Nothing to actually click here, we redirect if we can.
+    // Nothing to actually click here, we redirect if we can.
     public void propagateClick(Point p) {
-        if(clusterRenderer != null && sizeHandler.getScalingFactor() > 6) {
+        if (clusterRenderer != null && sizeHandler.getScalingFactor() > 6) {
             clusterRenderer.propagateClick(parentGui, p);
         }
     }
 
     public void drawMouseHighlight(float zLevel, Point mousePoint) {
-        if(clusterRenderer != null && sizeHandler.getScalingFactor() > 6) {
+        if (clusterRenderer != null && sizeHandler.getScalingFactor() > 6) {
             clusterRenderer.drawMouseHighlight(zLevel, mousePoint);
         }
     }
@@ -161,9 +174,9 @@ public class GuiProgressionRenderer {
         this.sizeHandler.handleZoomOut();
         rescale(sizeHandler.getScalingFactor());
 
-        if(this.sizeHandler.getScalingFactor() <= 4.0) {
+        if (this.sizeHandler.getScalingFactor() <= 4.0) {
             unfocus();
-        } else if(this.sizeHandler.getScalingFactor() >= 6.0 && this.clusterRenderer != null) {
+        } else if (this.sizeHandler.getScalingFactor() >= 6.0 && this.clusterRenderer != null) {
             clusterRenderer.handleZoomOut();
         }
     }
@@ -176,40 +189,40 @@ public class GuiProgressionRenderer {
      */
     public void handleZoomIn() {
         double scale = sizeHandler.getScalingFactor();
-        //double nextScale = Math.min(10.0D, scale + 0.2D);
-        if(scale >= 4.0D) {
-            if(focusedClusterZoom == null) {
+        // double nextScale = Math.min(10.0D, scale + 0.2D);
+        if (scale >= 4.0D) {
+            if (focusedClusterZoom == null) {
                 ResearchProgression prog = tryFocusCluster();
-                if(prog != null) {
+                if (prog != null) {
                     focus(prog);
                 }
             }
-            if(focusedClusterZoom == null) {
+            if (focusedClusterZoom == null) {
                 return;
             }
-            if (scale < 6.1D) { //Floating point shenanigans
+            if (scale < 6.1D) { // Floating point shenanigans
                 double vDiv = (2D - (scale - 4.0D)) * 10D;
                 Rectangle2D rect = calcBoundingRectangle(focusedClusterZoom);
                 Vector3 center = new Vector3(rect.getCenterX(), rect.getCenterY(), 0);
                 Vector3 mousePos = new Vector3(mousePointScaled.getScaledPosX(), mousePointScaled.getScaledPosY(), 0);
                 Vector3 dir = center.subtract(mousePos);
-                if(vDiv > 0.05) {
+                if (vDiv > 0.05) {
                     dir.divide(vDiv);
                 }
-                if(!hasPrevOffset) {
+                if (!hasPrevOffset) {
                     mousePointScaled.updateScaledPos(
-                            sizeHandler.clampX(mousePos.getX() + dir.getX()),
-                            sizeHandler.clampY(mousePos.getY() + dir.getY()),
-                            sizeHandler.getScalingFactor());
+                        sizeHandler.clampX(mousePos.getX() + dir.getX()),
+                        sizeHandler.clampY(mousePos.getY() + dir.getY()),
+                        sizeHandler.getScalingFactor());
                 } else {
                     previousMousePointScaled.updateScaledPos(
-                            sizeHandler.clampX(mousePos.getX() + dir.getX()),
-                            sizeHandler.clampY(mousePos.getY() + dir.getY()),
-                            sizeHandler.getScalingFactor());
+                        sizeHandler.clampX(mousePos.getX() + dir.getX()),
+                        sizeHandler.clampY(mousePos.getY() + dir.getY()),
+                        sizeHandler.getScalingFactor());
                 }
 
                 updateMouseState();
-            } else if(clusterRenderer != null) {
+            } else if (clusterRenderer != null) {
                 clusterRenderer.handleZoomIn();
             }
         }
@@ -219,7 +232,7 @@ public class GuiProgressionRenderer {
 
     private void rescale(double newScale) {
         this.mousePointScaled.rescale(newScale);
-        if(this.previousMousePointScaled != null) {
+        if (this.previousMousePointScaled != null) {
             this.previousMousePointScaled.rescale(newScale);
         }
         updateMouseState();
@@ -235,7 +248,7 @@ public class GuiProgressionRenderer {
         double scaleX = this.mousePointScaled.getPosX();
         double scaleY = this.mousePointScaled.getPosY();
 
-        if(sizeHandler.getScalingFactor() >= 6.1D && focusedClusterZoom != null && clusterRenderer != null) {
+        if (sizeHandler.getScalingFactor() >= 6.1D && focusedClusterZoom != null && clusterRenderer != null) {
             ClientJournalMapping.JournalCluster cluster = ClientJournalMapping.getClusterMapping(focusedClusterZoom);
             drawClusterBackground(cluster.clusterBackgroundTexture, zLevel);
 
@@ -244,15 +257,15 @@ public class GuiProgressionRenderer {
             scaleY = clusterRenderer.getScaleMouseY();
         }
 
-        if(focusedClusterMouse != null) {
+        if (focusedClusterMouse != null) {
             ClientJournalMapping.JournalCluster cluster = ClientJournalMapping.getClusterMapping(focusedClusterMouse);
-            if(cluster != null) {
-                double lX = sizeHandler.evRelativePosX(cluster.leftMost );
+            if (cluster != null) {
+                double lX = sizeHandler.evRelativePosX(cluster.leftMost);
                 double rX = sizeHandler.evRelativePosX(cluster.rightMost);
                 double lY = sizeHandler.evRelativePosY(cluster.upperMost);
                 double rY = sizeHandler.evRelativePosY(cluster.lowerMost);
                 double scaledLeft = this.mousePointScaled.getScaledPosX() - sizeHandler.widthToBorder;
-                double scaledTop =  this.mousePointScaled.getScaledPosY() - sizeHandler.heightToBorder;
+                double scaledTop = this.mousePointScaled.getScaledPosY() - sizeHandler.heightToBorder;
                 double xAdd = lX - scaledLeft;
                 double yAdd = lY - scaledTop;
                 double offsetX = realCoordLowerX + xAdd;
@@ -260,7 +273,7 @@ public class GuiProgressionRenderer {
 
                 double scale = sizeHandler.getScalingFactor();
                 float br = 1F;
-                if(scale > 8.01) {
+                if (scale > 8.01) {
                     br = 0F;
                 } else if (scale >= 6) {
                     br = (float) (1F - ((scale - 6) / 2));
@@ -281,64 +294,69 @@ public class GuiProgressionRenderer {
                 int color = 0x5A28FF | (alpha << 24);
                 fr.drawStringWithShadow(name, 0, 0, color);
                 GL11.glPopMatrix();
-//                GL11.glColor4f(1F, 1F, 1F, 1F); //Resetting.
+                // GL11.glColor4f(1F, 1F, 1F, 1F); //Resetting.
                 GL11.glColor4f(1F, 1F, 1F, 1F);
                 TextureHelper.refreshTextureBindState();
             }
-            /*if(clusterText != null && !clusterText.getText().equalsIgnoreCase(name)) {
-                clusterText = null;
-            }
+            /*
+             * if(clusterText != null && !clusterText.getText().equalsIgnoreCase(name)) {
+             * clusterText = null;
+             * }
+             * if(clusterText == null) {
+             * clusterText = new OverlayText(name, name.length() * 10,
+             * new OverlayText.OverlayTextProperties()
+             * .setPolicy(OverlayTextPolicy.Policies.WRITING)
+             * .setColor(new Color(90, 40, 255))
+             * .setAlpha(1F));
+             * }
+             */
+        } // else {
+        /*
+         * if(clusterText != null && clusterText.canRemove()) {
+         * clusterText = null;
+         * }
+         */
+        // }
 
-            if(clusterText == null) {
-                clusterText = new OverlayText(name, name.length() * 10,
-                        new OverlayText.OverlayTextProperties()
-                                .setPolicy(OverlayTextPolicy.Policies.WRITING)
-                                .setColor(new Color(90, 40, 255))
-                                .setAlpha(1F));
-            }*/
-        }// else {
-            /*if(clusterText != null && clusterText.canRemove()) {
-                clusterText = null;
-            }*/
-        //}
-
-        /*if(clusterText != null) {
-            Point mouse = parentGui.getCurrentMousePoint();
-            GL11.glPushMatrix();
-            GL11.glTranslated(mouse.x, mouse.y - 18, 0);
-            GL11.glScaled(0.8, 0.8, 0.8);
-            clusterText.doRender(null, 0, false);
-            GL11.glPopMatrix();
-        }*/
+        /*
+         * if(clusterText != null) {
+         * Point mouse = parentGui.getCurrentMousePoint();
+         * GL11.glPushMatrix();
+         * GL11.glTranslated(mouse.x, mouse.y - 18, 0);
+         * GL11.glScaled(0.8, 0.8, 0.8);
+         * clusterText.doRender(null, 0, false);
+         * GL11.glPopMatrix();
+         * }
+         */
 
         drawBlendedStarfieldLayers(scaleX, scaleY, zLevel);
     }
 
-    /*public void resetOverlayText() {
-        clusterText = null;
-    }
-
-    public void updateTick() {
-        if(clusterText != null) {
-            clusterText.tick();
-
-            if(clusterText.aboutToBeRemoved() && focusedClusterMouse != null) {
-                String name = focusedClusterMouse.getUnlocalizedName();
-                name = I18n.format(name);
-                int time = (name.length() * 10) - 20;
-                clusterText.forceTicks(time);
-            } else if(focusedClusterMouse == null && !clusterText.aboutToBeRemoved()) {
-                clusterText.scheduleDeath();
-            }
-        }
-    }*/
+    /*
+     * public void resetOverlayText() {
+     * clusterText = null;
+     * }
+     * public void updateTick() {
+     * if(clusterText != null) {
+     * clusterText.tick();
+     * if(clusterText.aboutToBeRemoved() && focusedClusterMouse != null) {
+     * String name = focusedClusterMouse.getUnlocalizedName();
+     * name = I18n.format(name);
+     * int time = (name.length() * 10) - 20;
+     * clusterText.forceTicks(time);
+     * } else if(focusedClusterMouse == null && !clusterText.aboutToBeRemoved()) {
+     * clusterText.scheduleDeath();
+     * }
+     * }
+     * }
+     */
 
     @Nullable
     private ResearchProgression tryFocusCluster() {
         Point mousePoint = parentGui.getCurrentMousePoint();
 
         for (Rectangle r : this.clusterRectMap.keySet()) {
-            if(r.contains(mousePoint)) {
+            if (r.contains(mousePoint)) {
                 return this.clusterRectMap.get(r);
             }
         }
@@ -356,12 +374,12 @@ public class GuiProgressionRenderer {
 
     private void drawClusters(float zLevel) {
         clusterRectMap.clear();
-        if(sizeHandler.getScalingFactor() >= 8.01) return;
+        if (sizeHandler.getScalingFactor() >= 8.01) return;
 
         PlayerProgress thisProgress = ResearchManager.clientProgress;
         for (ResearchProgression progress : thisProgress.getResearchProgression()) {
             ClientJournalMapping.JournalCluster cluster = ClientJournalMapping.getClusterMapping(progress);
-            double lX = sizeHandler.evRelativePosX(cluster.leftMost );
+            double lX = sizeHandler.evRelativePosX(cluster.leftMost);
             double rX = sizeHandler.evRelativePosX(cluster.rightMost);
             double lY = sizeHandler.evRelativePosY(cluster.upperMost);
             double rY = sizeHandler.evRelativePosY(cluster.lowerMost);
@@ -369,9 +387,10 @@ public class GuiProgressionRenderer {
         }
     }
 
-    private void renderCluster(ResearchProgression p, ClientJournalMapping.JournalCluster cluster, double lowerPosX, double lowerPosY, double higherPosX, double higherPosY, float zLevel) {
+    private void renderCluster(ResearchProgression p, ClientJournalMapping.JournalCluster cluster, double lowerPosX,
+        double lowerPosY, double higherPosX, double higherPosY, float zLevel) {
         double scaledLeft = this.mousePointScaled.getScaledPosX() - sizeHandler.widthToBorder;
-        double scaledTop =  this.mousePointScaled.getScaledPosY() - sizeHandler.heightToBorder;
+        double scaledTop = this.mousePointScaled.getScaledPosY() - sizeHandler.heightToBorder;
         double xAdd = lowerPosX - scaledLeft;
         double yAdd = lowerPosY - scaledTop;
         double offsetX = realCoordLowerX + xAdd;
@@ -380,19 +399,23 @@ public class GuiProgressionRenderer {
         GL11.glPushMatrix();
         GL11.glTranslated(offsetX, offsetY, 0);
 
-        double width =  higherPosX - lowerPosX;
+        double width = higherPosX - lowerPosX;
         double height = higherPosY - lowerPosY;
 
-        Rectangle r = new Rectangle(MathHelper.floor_double(offsetX), MathHelper.floor_double(offsetY), MathHelper.floor_double(width), MathHelper.floor_double(height));
+        Rectangle r = new Rectangle(
+            MathHelper.floor_double(offsetX),
+            MathHelper.floor_double(offsetY),
+            MathHelper.floor_double(width),
+            MathHelper.floor_double(height));
         clusterRectMap.put(r, p);
 
         Tessellator tess = Tessellator.instance;
-//        VertexBuffer vb = t.getBuffer();
+        // VertexBuffer vb = t.getBuffer();
         cluster.cloudTexture.bind();
 
         double scale = sizeHandler.getScalingFactor();
         float br = 1F;
-        if(scale > 8.01) {
+        if (scale > 8.01) {
             br = 0F;
         } else if (scale >= 6) {
             br = (float) (1F - ((scale - 6) / 2));
@@ -401,17 +424,17 @@ public class GuiProgressionRenderer {
 
         Blending.ADDITIVEDARK.apply();
         tess.startDrawingQuads();
-        tess.addVertexWithUV(0,     height, zLevel, 0, 1);
+        tess.addVertexWithUV(0, height, zLevel, 0, 1);
         tess.addVertexWithUV(width, height, zLevel, 1, 1);
-        tess.addVertexWithUV(width, 0,      zLevel, 1, 0);
-        tess.addVertexWithUV(0,     0,      zLevel, 0, 0);
+        tess.addVertexWithUV(width, 0, zLevel, 1, 0);
+        tess.addVertexWithUV(0, 0, zLevel, 0, 0);
         tess.draw();
-//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(0,     height, zLevel).tex(0, 1).endVertex();
-//        vb.pos(width, height, zLevel).tex(1, 1).endVertex();
-//        vb.pos(width, 0,      zLevel).tex(1, 0).endVertex();
-//        vb.pos(0,     0,      zLevel).tex(0, 0).endVertex();
-//        t.draw();
+        // vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(0, height, zLevel).tex(0, 1).endVertex();
+        // vb.pos(width, height, zLevel).tex(1, 1).endVertex();
+        // vb.pos(width, 0, zLevel).tex(1, 0).endVertex();
+        // vb.pos(0, 0, zLevel).tex(0, 0).endVertex();
+        // t.draw();
 
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -427,7 +450,7 @@ public class GuiProgressionRenderer {
     private void drawClusterBackground(BindableResource tex, float zLevel) {
         double scale = sizeHandler.getScalingFactor();
         float br = 0F;
-        if(scale > 8.01) {
+        if (scale > 8.01) {
             br = 1F;
         } else if (scale >= 6) {
             br = (float) (((scale - 6) / 2));
@@ -439,18 +462,18 @@ public class GuiProgressionRenderer {
         Blending.ADDITIVEDARK.apply();
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
-        tess.addVertexWithUV(realCoordLowerX,realCoordLowerY + realRenderHeight, zLevel, 0, 1);
-        tess.addVertexWithUV(realCoordLowerX + realRenderWidth,realCoordLowerY + realRenderHeight, zLevel, 1, 1);
-        tess.addVertexWithUV(realCoordLowerX + realRenderWidth,realCoordLowerY, zLevel, 1, 0);
-        tess.addVertexWithUV(realCoordLowerX,realCoordLowerY, zLevel, 0, 0);
+        tess.addVertexWithUV(realCoordLowerX, realCoordLowerY + realRenderHeight, zLevel, 0, 1);
+        tess.addVertexWithUV(realCoordLowerX + realRenderWidth, realCoordLowerY + realRenderHeight, zLevel, 1, 1);
+        tess.addVertexWithUV(realCoordLowerX + realRenderWidth, realCoordLowerY, zLevel, 1, 0);
+        tess.addVertexWithUV(realCoordLowerX, realCoordLowerY, zLevel, 0, 0);
         tess.draw();
-//        VertexBuffer vb = Tessellator.getInstance().getBuffer();
-//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(realCoordLowerX,                   realCoordLowerY + realRenderHeight, zLevel).tex(0, 1).endVertex();
-//        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY + realRenderHeight, zLevel).tex(1, 1).endVertex();
-//        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY,                    zLevel).tex(1, 0).endVertex();
-//        vb.pos(realCoordLowerX,                   realCoordLowerY,                    zLevel).tex(0, 0).endVertex();
-//        Tessellator.getInstance().draw();
+        // VertexBuffer vb = Tessellator.getInstance().getBuffer();
+        // vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(realCoordLowerX, realCoordLowerY + realRenderHeight, zLevel).tex(0, 1).endVertex();
+        // vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY + realRenderHeight, zLevel).tex(1, 1).endVertex();
+        // vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY, zLevel).tex(1, 0).endVertex();
+        // vb.pos(realCoordLowerX, realCoordLowerY, zLevel).tex(0, 0).endVertex();
+        // Tessellator.getInstance().draw();
 
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -463,24 +486,27 @@ public class GuiProgressionRenderer {
         GL11.glDisable(GL11.GL_BLEND);
         textureResBack.bind();
 
-        /*float lowU = (((float) this.leftOffset) - sizeHandler.widthToBorder) / ((float) sizeHandler.getTotalWidth());
-        float highU = lowU + (((float) renderWidth) / ((float) sizeHandler.getTotalWidth()));
-        float lowV = (((float) this.topOffset) - sizeHandler.heightToBorder) / ((float) sizeHandler.getTotalHeight());
-        float highV = lowV + (((float) renderHeight) / ((float) sizeHandler.getTotalHeight()));*/
+        /*
+         * float lowU = (((float) this.leftOffset) - sizeHandler.widthToBorder) / ((float) sizeHandler.getTotalWidth());
+         * float highU = lowU + (((float) renderWidth) / ((float) sizeHandler.getTotalWidth()));
+         * float lowV = (((float) this.topOffset) - sizeHandler.heightToBorder) / ((float)
+         * sizeHandler.getTotalHeight());
+         * float highV = lowV + (((float) renderHeight) / ((float) sizeHandler.getTotalHeight()));
+         */
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
-        tess.addVertexWithUV(realCoordLowerX,realCoordLowerY + realRenderHeight, zLevel, 0, 1);
-        tess.addVertexWithUV(realCoordLowerX + realRenderWidth,realCoordLowerY + realRenderHeight, zLevel, 1, 1);
-        tess.addVertexWithUV(realCoordLowerX + realRenderWidth,realCoordLowerY, zLevel, 1, 0);
-        tess.addVertexWithUV(realCoordLowerX,realCoordLowerY, zLevel, 0, 0);
+        tess.addVertexWithUV(realCoordLowerX, realCoordLowerY + realRenderHeight, zLevel, 0, 1);
+        tess.addVertexWithUV(realCoordLowerX + realRenderWidth, realCoordLowerY + realRenderHeight, zLevel, 1, 1);
+        tess.addVertexWithUV(realCoordLowerX + realRenderWidth, realCoordLowerY, zLevel, 1, 0);
+        tess.addVertexWithUV(realCoordLowerX, realCoordLowerY, zLevel, 0, 0);
         tess.draw();
-//        VertexBuffer vb = Tessellator.getInstance().getBuffer();
-//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(realCoordLowerX,                   realCoordLowerY + realRenderHeight, zLevel).tex(0, 1).endVertex();
-//        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY + realRenderHeight, zLevel).tex(1, 1).endVertex();
-//        vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY,                    zLevel).tex(1, 0).endVertex();
-//        vb.pos(realCoordLowerX,                   realCoordLowerY,                    zLevel).tex(0, 0).endVertex();
-//        Tessellator.getInstance().draw();
+        // VertexBuffer vb = Tessellator.getInstance().getBuffer();
+        // vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(realCoordLowerX, realCoordLowerY + realRenderHeight, zLevel).tex(0, 1).endVertex();
+        // vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY + realRenderHeight, zLevel).tex(1, 1).endVertex();
+        // vb.pos(realCoordLowerX + realRenderWidth, realCoordLowerY, zLevel).tex(1, 0).endVertex();
+        // vb.pos(realCoordLowerX, realCoordLowerY, zLevel).tex(0, 0).endVertex();
+        // Tessellator.getInstance().draw();
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -493,7 +519,7 @@ public class GuiProgressionRenderer {
         textureResOVL.bind();
 
         double th = sizeHandler.getTotalHeight() / sizeHandler.getScalingFactor();
-        double tw = sizeHandler.getTotalWidth()  / sizeHandler.getScalingFactor();
+        double tw = sizeHandler.getTotalWidth() / sizeHandler.getScalingFactor();
 
         double lowU = (scalePosX - sizeHandler.widthToBorder) / tw;
         double highU = lowU + (((float) realRenderWidth) / tw);
@@ -502,18 +528,18 @@ public class GuiProgressionRenderer {
 
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
-        tess.addVertexWithUV(0,realRenderHeight, zLevel, lowU,  highV);
+        tess.addVertexWithUV(0, realRenderHeight, zLevel, lowU, highV);
         tess.addVertexWithUV(realRenderWidth, realRenderHeight, zLevel, highU, highV);
-        tess.addVertexWithUV(realRenderWidth, 0,zLevel, highU, lowV);
+        tess.addVertexWithUV(realRenderWidth, 0, zLevel, highU, lowV);
         tess.addVertexWithUV(0, 0, zLevel, lowU, lowV);
         tess.draw();
-//        VertexBuffer vb = Tessellator.getInstance().getBuffer();
-//        vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-//        vb.pos(0,               realRenderHeight, zLevel).tex(lowU,  highV).endVertex();
-//        vb.pos(realRenderWidth, realRenderHeight, zLevel).tex(highU, highV).endVertex();
-//        vb.pos(realRenderWidth, 0,                zLevel).tex(highU, lowV) .endVertex();
-//        vb.pos(0,               0,                zLevel).tex(lowU, lowV) .endVertex();
-//        Tessellator.getInstance().draw();
+        // VertexBuffer vb = Tessellator.getInstance().getBuffer();
+        // vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        // vb.pos(0, realRenderHeight, zLevel).tex(lowU, highV).endVertex();
+        // vb.pos(realRenderWidth, realRenderHeight, zLevel).tex(highU, highV).endVertex();
+        // vb.pos(realRenderWidth, 0, zLevel).tex(highU, lowV) .endVertex();
+        // vb.pos(0, 0, zLevel).tex(lowU, lowV) .endVertex();
+        // Tessellator.getInstance().draw();
         GL11.glPopMatrix();
         GL11.glColor4f(1F, 1F, 1F, 1F);
     }

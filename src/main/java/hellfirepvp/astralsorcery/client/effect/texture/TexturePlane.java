@@ -8,6 +8,14 @@
 
 package hellfirepvp.astralsorcery.client.effect.texture;
 
+import java.awt.*;
+import java.util.*;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
 import hellfirepvp.astralsorcery.client.effect.IComplexEffect;
 import hellfirepvp.astralsorcery.client.util.Blending;
@@ -15,14 +23,6 @@ import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nonnull;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -173,12 +173,12 @@ public class TexturePlane implements IComplexEffect, IComplexEffect.PreventRemov
     public void tick() {
         counter++;
 
-        if(maxAge >= 0 && counter >= maxAge) {
-            if(refreshFunc != null) {
+        if (maxAge >= 0 && counter >= maxAge) {
+            if (refreshFunc != null) {
                 Entity rView = Minecraft.getMinecraft().renderViewEntity;
-                if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
-                if(rView.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) <= Config.maxEffectRenderDistanceSq) {
-                    if(refreshFunc.shouldRefresh()) {
+                if (rView == null) rView = Minecraft.getMinecraft().thePlayer;
+                if (rView.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) <= Config.maxEffectRenderDistanceSq) {
+                    if (refreshFunc.shouldRefresh()) {
                         counter = 0;
                         return;
                     }
@@ -196,25 +196,29 @@ public class TexturePlane implements IComplexEffect, IComplexEffect.PreventRemov
     @Override
     public void render(float partialTicks) {
         Entity rView = Minecraft.getMinecraft().renderViewEntity;
-        if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
+        if (rView == null) rView = Minecraft.getMinecraft().thePlayer;
         double dst = rView.getDistanceSq(pos.getX(), pos.getY(), pos.getZ());
-        if(dst > Config.maxEffectRenderDistanceSq) return;
+        if (dst > Config.maxEffectRenderDistanceSq) return;
 
         float alphaMul = alphaFunction.getAlpha(counter, maxAge);
         float alphaGrad = (colorOverlay.getAlpha() / 255F) * alphaMul * this.alphaMultiplier;
-        if(alphaGradient) {
+        if (alphaGradient) {
             alphaGrad = getAlphaDistanceMultiplier(dst) * alphaMul * this.alphaMultiplier;
         }
 
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glPushMatrix();
-        //removeOldTranslate(rView, partialTicks);
-        GL11.glColor4f(colorOverlay.getRed() / 255F, colorOverlay.getGreen() / 255F, colorOverlay.getBlue() / 255F, alphaGrad);
+        // removeOldTranslate(rView, partialTicks);
+        GL11.glColor4f(
+            colorOverlay.getRed() / 255F,
+            colorOverlay.getGreen() / 255F,
+            colorOverlay.getBlue() / 255F,
+            alphaGrad);
         GL11.glEnable(GL11.GL_BLEND);
         Blending.DEFAULT.apply();
         Vector3 axis = this.axis.clone();
         float deg;
-        if(ticksPerFullRot >= 0) {
+        if (ticksPerFullRot >= 0) {
             float anglePercent = ((float) (counter)) / ((float) ticksPerFullRot);
             deg = anglePercent * 360F;
             deg = RenderingUtils.interpolateRotation(lastRenderDegree, deg, partialTicks);
@@ -223,14 +227,14 @@ public class TexturePlane implements IComplexEffect, IComplexEffect.PreventRemov
             deg = fixDegree;
         }
 
-//        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        // GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.0001F);
         currRenderAroundAxis(partialTicks, Math.toRadians(deg), axis);
 
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
-//        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        // GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glColor4f(1F, 1F, 1F, 1F);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
@@ -239,7 +243,7 @@ public class TexturePlane implements IComplexEffect, IComplexEffect.PreventRemov
 
     private void currRenderAroundAxis(float parTicks, double angle, Vector3 axis) {
         float scale = this.scale;
-        if(scaleFunc != null) {
+        if (scaleFunc != null) {
             scale = scaleFunc.getScale(this, parTicks, scale);
         }
         texture.bind();

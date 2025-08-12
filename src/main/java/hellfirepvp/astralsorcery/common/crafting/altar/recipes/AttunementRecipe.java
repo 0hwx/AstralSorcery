@@ -8,7 +8,24 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+
 import com.google.common.collect.Lists;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.block.network.BlockCollectorCrystalBase;
@@ -20,20 +37,6 @@ import hellfirepvp.astralsorcery.common.data.research.ResearchProgression;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.tile.base.TileReceiverBaseInventory;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -101,7 +104,7 @@ public class AttunementRecipe extends DiscoveryRecipe {
     @Nonnull
     public List<ItemStack> getAttItems(AttunementAltarSlot slot) {
         ItemHandle handle = additionalSlots.get(slot);
-        if(handle != null) {
+        if (handle != null) {
             return handle.getApplicableItems();
         }
         return Lists.newArrayList();
@@ -113,16 +116,17 @@ public class AttunementRecipe extends DiscoveryRecipe {
     }
 
     @Override
-    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler, boolean ignoreStarlightRequirement) {
+    public boolean matches(TileAltar altar, TileReceiverBaseInventory.ItemHandlerTile invHandler,
+        boolean ignoreStarlightRequirement) {
         for (AttunementAltarSlot slot : AttunementAltarSlot.values()) {
             ItemHandle expected = additionalSlots.get(slot);
-            if(expected != null) {
+            if (expected != null) {
                 ItemStack altarItem = invHandler.getStackInSlot(slot.slotId);
-                if(!expected.matchCrafting(altarItem)) {
+                if (!expected.matchCrafting(altarItem)) {
                     return false;
                 }
             } else {
-                if(invHandler.getStackInSlot(slot.slotId) != null) return false;
+                if (invHandler.getStackInSlot(slot.slotId) != null) return false;
             }
         }
 
@@ -139,14 +143,14 @@ public class AttunementRecipe extends DiscoveryRecipe {
     public void onCraftClientTick(TileAltar altar, ActiveCraftingTask.CraftingState state, long tick, Random rand) {
         super.onCraftClientTick(altar, state, tick, rand);
 
-        if(state == ActiveCraftingTask.CraftingState.ACTIVE) {
+        if (state == ActiveCraftingTask.CraftingState.ACTIVE) {
             Vector3 pos = new Vector3(altar).add(0.5, 0.5, 0.5);
             EntityFXFacingParticle particle = EffectHelper.genericFlareParticle(pos.getX(), pos.getY(), pos.getZ());
             particle.setColor(BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL.displayColor);
             particle.motion(
-                    rand.nextFloat() * 0.05 * (rand.nextBoolean() ? 1 : -1),
-                    rand.nextFloat() * 0.1  * (rand.nextBoolean() ? 1 : -1),
-                    rand.nextFloat() * 0.05 * (rand.nextBoolean() ? 1 : -1));
+                rand.nextFloat() * 0.05 * (rand.nextBoolean() ? 1 : -1),
+                rand.nextFloat() * 0.1 * (rand.nextBoolean() ? 1 : -1),
+                rand.nextFloat() * 0.05 * (rand.nextBoolean() ? 1 : -1));
             particle.scale(0.2F);
         }
     }

@@ -8,6 +8,20 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect.aoe;
 
+import java.awt.*;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
@@ -16,18 +30,6 @@ import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.tile.TileRitualPedestal;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.ILocatable;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.config.Configuration;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -48,26 +50,37 @@ public class CEffectVicio extends ConstellationEffect {
     public CEffectVicio(@Nullable ILocatable origin) {
         super(origin, Constellations.vicio, "vicio");
     }
+
     @Override
     @SideOnly(Side.CLIENT)
-    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility, boolean extendedEffects) {
-        if(rand.nextInt(3) == 0) {
+    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility,
+        boolean extendedEffects) {
+        if (rand.nextInt(3) == 0) {
             EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    pos.getX() + rand.nextFloat() * 3 * (rand.nextBoolean() ? 1 : -1) + 0.5,
-                    pos.getY() + rand.nextFloat() * 2 + 0.5,
-                    pos.getZ() + rand.nextFloat() * 3 * (rand.nextBoolean() ? 1 : -1) + 0.5);
-            p.motion((rand.nextFloat() * 0.07F) * (rand.nextBoolean() ? 1 : -1),
-                    (rand.nextFloat() * 0.07F) * (rand.nextBoolean() ? 1 : -1),
-                    (rand.nextFloat() * 0.07F) * (rand.nextBoolean() ? 1 : -1));
-            p.scale(0.45F).setColor(new Color(200, 200, 255)).gravity(0.008).setMaxAge(25);
+                pos.getX() + rand.nextFloat() * 3 * (rand.nextBoolean() ? 1 : -1) + 0.5,
+                pos.getY() + rand.nextFloat() * 2 + 0.5,
+                pos.getZ() + rand.nextFloat() * 3 * (rand.nextBoolean() ? 1 : -1) + 0.5);
+            p.motion(
+                (rand.nextFloat() * 0.07F) * (rand.nextBoolean() ? 1 : -1),
+                (rand.nextFloat() * 0.07F) * (rand.nextBoolean() ? 1 : -1),
+                (rand.nextFloat() * 0.07F) * (rand.nextBoolean() ? 1 : -1));
+            p.scale(0.45F)
+                .setColor(new Color(200, 200, 255))
+                .gravity(0.008)
+                .setMaxAge(25);
         }
     }
 
     @Override
-    public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect, @Nullable IMinorConstellation possibleTraitEffect) {
-        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).offset(pos.getX(), pos.getY(), pos.getZ()).expand(effectRange,effectRange,effectRange));
+    public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect,
+        @Nullable IMinorConstellation possibleTraitEffect) {
+        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(
+            EntityLivingBase.class,
+            AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1)
+                .offset(pos.getX(), pos.getY(), pos.getZ())
+                .expand(effectRange, effectRange, effectRange));
         for (EntityLivingBase entity : entities) {
-            if(!entity.isDead) {
+            if (!entity.isDead) {
                 entity.addPotionEffect(new PotionEffect(Potion.moveSpeed.getId(), 30, potionAmplifierSpeed));
                 entity.addPotionEffect(new PotionEffect(Potion.jump.getId(), 30, potionAmplifierJump));
             }
@@ -82,11 +95,39 @@ public class CEffectVicio extends ConstellationEffect {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        effectRange = cfg.getInt(getKey() + "Range", getConfigurationSection(), 16, 1, 32, "Defines the radius (in blocks) in which the ritual will stop mob spawning and projectiles.");
-        enabled = cfg.getBoolean(getKey() + "Enabled", getConfigurationSection(), true, "Set to false to disable this ConstellationEffect.");
-        potionAmplifierSpeed = cfg.getInt(getKey() + "SpeedAmplifier", getConfigurationSection(), 1, 0, Short.MAX_VALUE, "Set the amplifier for the speed potion effect.");
-        potionAmplifierJump = cfg.getInt(getKey() + "JumpAmplifier", getConfigurationSection(), 1, 0, Short.MAX_VALUE, "Set the amplifier for the jump potion effect.");
-        potencyMultiplier = cfg.getFloat(getKey() + "PotencyMultiplier", getConfigurationSection(), 1.0F, 0.01F, 100F, "Set the potency multiplier for this ritual effect. Will affect all ritual effects and their efficiency.");
+        effectRange = cfg.getInt(
+            getKey() + "Range",
+            getConfigurationSection(),
+            16,
+            1,
+            32,
+            "Defines the radius (in blocks) in which the ritual will stop mob spawning and projectiles.");
+        enabled = cfg.getBoolean(
+            getKey() + "Enabled",
+            getConfigurationSection(),
+            true,
+            "Set to false to disable this ConstellationEffect.");
+        potionAmplifierSpeed = cfg.getInt(
+            getKey() + "SpeedAmplifier",
+            getConfigurationSection(),
+            1,
+            0,
+            Short.MAX_VALUE,
+            "Set the amplifier for the speed potion effect.");
+        potionAmplifierJump = cfg.getInt(
+            getKey() + "JumpAmplifier",
+            getConfigurationSection(),
+            1,
+            0,
+            Short.MAX_VALUE,
+            "Set the amplifier for the jump potion effect.");
+        potencyMultiplier = cfg.getFloat(
+            getKey() + "PotencyMultiplier",
+            getConfigurationSection(),
+            1.0F,
+            0.01F,
+            100F,
+            "Set the potency multiplier for this ritual effect. Will affect all ritual effects and their efficiency.");
 
     }
 

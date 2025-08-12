@@ -8,20 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import com.google.common.collect.Lists;
-import hellfirepvp.astralsorcery.client.effect.EffectHelper;
-import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
-import hellfirepvp.astralsorcery.client.util.RenderingUtils;
-import hellfirepvp.astralsorcery.common.tile.TileTranslucent;
-import hellfirepvp.astralsorcery.common.util.BlockPos;
-import hellfirepvp.astralsorcery.common.util.MiscUtils;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
-
 import net.minecraft.block.material.Material;
-
 import net.minecraft.client.particle.EffectRenderer;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -29,15 +23,18 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import com.google.common.collect.Lists;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.client.effect.EffectHelper;
+import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
+import hellfirepvp.astralsorcery.client.util.RenderingUtils;
+import hellfirepvp.astralsorcery.common.tile.TileTranslucent;
+import hellfirepvp.astralsorcery.common.util.BlockPos;
+import hellfirepvp.astralsorcery.common.util.MiscUtils;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -49,7 +46,8 @@ import java.util.Random;
 public class BlockTranslucentBlock extends BlockContainer {
 
     public BlockTranslucentBlock() {
-        super(Material.air); //Material.BARRIER -> (new Material(MapColor.airColor).setRequiresTool().setImmovableMobility());
+        super(Material.air); // Material.BARRIER -> (new
+                             // Material(MapColor.airColor).setRequiresTool().setImmovableMobility());
         setBlockName("BlockTranslucentBlock");
         setBlockUnbreakable();
         setResistance(6000001.0F);
@@ -61,7 +59,7 @@ public class BlockTranslucentBlock extends BlockContainer {
     public boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
         BlockPos pos = new BlockPos(x, y, z);
         Block fst = getFakedStateTile(world, pos);
-        if(fst != null) {
+        if (fst != null) {
             RenderingUtils.playBlockBreakParticles(pos, fst);
         }
         return true;
@@ -70,13 +68,13 @@ public class BlockTranslucentBlock extends BlockContainer {
     @Override
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(World worldIn, int x, int y, int z, Random rand) {
-        if(rand.nextInt(30) == 0) {
-            EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    x + rand.nextFloat(),
-                    y + rand.nextFloat(),
-                    z + rand.nextFloat());
+        if (rand.nextInt(30) == 0) {
+            EntityFXFacingParticle p = EffectHelper
+                .genericFlareParticle(x + rand.nextFloat(), y + rand.nextFloat(), z + rand.nextFloat());
             p.motion(0, 0, 0);
-            p.scale(0.45F).setColor(Color.WHITE).setMaxAge(65);
+            p.scale(0.45F)
+                .setColor(Color.WHITE)
+                .setMaxAge(65);
         }
     }
 
@@ -85,35 +83,37 @@ public class BlockTranslucentBlock extends BlockContainer {
         return false;
     }
 
-//    @Override
-//    public SoundType getSoundType(Block state, World world, BlockPos pos, @Nullable Entity entity) {
-//        Block fst = getFakedStateTile(world, pos);
-//        if(fst != null) {
-//            return fst.getBlock().getSoundType(fst, world, pos, entity);
-//        }
-//        return super.getSoundType(state, world, pos, entity);
-//    }
+    // @Override
+    // public SoundType getSoundType(Block state, World world, BlockPos pos, @Nullable Entity entity) {
+    // Block fst = getFakedStateTile(world, pos);
+    // if(fst != null) {
+    // return fst.getBlock().getSoundType(fst, world, pos, entity);
+    // }
+    // return super.getSoundType(state, world, pos, entity);
+    // }
 
     @Override
-    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float hitX,
+        float hitY, float hitZ) {
         BlockPos pos = new BlockPos(x, y, z);
         Block fst = getFakedStateTile(worldIn, pos);
-        if(fst != null) {
+        if (fst != null) {
             try {
-                return fst.onBlockActivated(worldIn, pos.getX(), pos.getY(), pos.getZ(), player, side, hitX, hitY, hitZ);
+                return fst
+                    .onBlockActivated(worldIn, pos.getX(), pos.getY(), pos.getZ(), player, side, hitX, hitY, hitZ);
             } catch (Exception exc) {}
         }
         return super.onBlockActivated(worldIn, pos.getX(), pos.getY(), pos.getZ(), player, side, hitX, hitY, hitZ);
     }
 
     @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune){
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
         return Lists.newArrayList();
     }
 
     private Block getFakedStateTile(World world, BlockPos pos) {
         TileTranslucent tt = MiscUtils.getTileAt(world, pos, TileTranslucent.class, true);
-        if(tt == null) return null;
+        if (tt == null) return null;
         return tt.getFakedState();
     }
 
@@ -122,25 +122,25 @@ public class BlockTranslucentBlock extends BlockContainer {
         return 1;
     }
 
-//    @Override
-//    public BlockRenderLayer getBlockLayer() {
-//        return BlockRenderLayer.TRANSLUCENT;
-//    }
+    // @Override
+    // public BlockRenderLayer getBlockLayer() {
+    // return BlockRenderLayer.TRANSLUCENT;
+    // }
 
     @Override
     public boolean isOpaqueCube() {
         return false;
     }
 
-//    @Override
-//    public boolean isTranslucent() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isBlockSolid(IBlockAccess worldIn, BlockPos pos, ForgeDirection side) {
-//        return false;
-//    }
+    // @Override
+    // public boolean isTranslucent() {
+    // return true;
+    // }
+    //
+    // @Override
+    // public boolean isBlockSolid(IBlockAccess worldIn, BlockPos pos, ForgeDirection side) {
+    // return false;
+    // }
 
     @Override
     public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
@@ -152,17 +152,17 @@ public class BlockTranslucentBlock extends BlockContainer {
         return false;
     }
 
-//    @Override
-//    public boolean isFullyOpaque() {
-//        return false;
-//    }
+    // @Override
+    // public boolean isFullyOpaque() {
+    // return false;
+    // }
 
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
         BlockPos pos = new BlockPos(x, y, z);
         Block fst = getFakedStateTile(world, pos);
         try {
-            if(fst != null) {
+            if (fst != null) {
                 return fst.getPickBlock(target, world, pos.getX(), pos.getY(), pos.getZ(), player);
             }
         } catch (Exception ignored) {}

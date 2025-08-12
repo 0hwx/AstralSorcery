@@ -1,5 +1,18 @@
 package hellfirepvp.astralsorcery.common.base;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.event.world.WorldEvent;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -9,18 +22,6 @@ import hellfirepvp.astralsorcery.common.data.world.data.GatewayCache;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktUpdateGateways;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.event.world.WorldEvent;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,10 +42,12 @@ public class CelestialGatewaySystem {
 
     public void onServerStart() {
         startup = true;
-        Integer[] worlds = DimensionManager.getStaticDimensionIDs(); //Should be loaded during startup = we should grab those.
-        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        Integer[] worlds = DimensionManager.getStaticDimensionIDs(); // Should be loaded during startup = we should grab
+                                                                     // those.
+        MinecraftServer server = FMLCommonHandler.instance()
+            .getMinecraftServerInstance();
         for (Integer id : worlds) {
-            if(id == null) continue;
+            if (id == null) continue;
             WorldServer world = server.worldServerForDimension(id);
             loadWorldCache(world);
         }
@@ -54,10 +57,10 @@ public class CelestialGatewaySystem {
 
     @SubscribeEvent
     public void onWorldInit(WorldEvent.Load event) {
-        if(startup) return; //We're already loading up there.
+        if (startup) return; // We're already loading up there.
 
         World world = event.world;
-        if(world.isRemote) return;
+        if (world.isRemote) return;
 
         loadWorldCache(world);
         syncToAll();
@@ -82,39 +85,41 @@ public class CelestialGatewaySystem {
     }
 
     public void addPosition(World world, BlockPos pos) {
-        if(world.isRemote) return;
+        if (world.isRemote) return;
 
         int dim = world.provider.dimensionId;
-        if(!serverCache.containsKey(dim)) {
+        if (!serverCache.containsKey(dim)) {
             forceLoad(dim);
         }
-        if(!serverCache.containsKey(dim)) {
-            AstralSorcery.log.info("Couldn't add position for world " + dim + "! - Force loading the world resulted in... nothing.");
+        if (!serverCache.containsKey(dim)) {
+            AstralSorcery.log
+                .info("Couldn't add position for world " + dim + "! - Force loading the world resulted in... nothing.");
             return;
         }
 
         List<BlockPos> cache = serverCache.get(dim);
-        if(!cache.contains(pos)) {
+        if (!cache.contains(pos)) {
             cache.add(pos);
             syncToAll();
         }
     }
 
     public void removePosition(World world, BlockPos pos) {
-        if(world.isRemote) return;
+        if (world.isRemote) return;
 
         int dim = world.provider.dimensionId;
-        if(!serverCache.containsKey(dim)) {
+        if (!serverCache.containsKey(dim)) {
             return;
         }
-        if(serverCache.get(dim).remove(pos)) {
+        if (serverCache.get(dim)
+            .remove(pos)) {
             syncToAll();
         }
     }
 
     private void forceLoad(int dim) {
         WorldServer serv = DimensionManager.getWorld(dim);
-        if(serv == null) {
+        if (serv == null) {
             DimensionManager.initDimension(dim);
         }
     }

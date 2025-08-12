@@ -8,13 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.lib;
 
-import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
-import hellfirepvp.astralsorcery.common.util.struct.StructureBlockArray;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
+import hellfirepvp.astralsorcery.common.util.struct.StructureBlockArray;
 
 /**
  * This class is part of the Astral Sorcery Mod

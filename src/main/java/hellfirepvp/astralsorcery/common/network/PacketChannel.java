@@ -8,6 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.network;
 
+import net.minecraft.world.World;
+
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
@@ -15,7 +17,7 @@ import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.network.packet.client.*;
 import hellfirepvp.astralsorcery.common.network.packet.server.*;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.world.World;
+
 /**
  * This class is part of the Astral Sorcery Mod
  * The complete source code for this mod can be found on github.
@@ -30,7 +32,7 @@ public class PacketChannel {
     public static void init() {
         int id = 0;
 
-        //(server -> client)
+        // (server -> client)
         CHANNEL.registerMessage(PktSyncConfig.class, PktSyncConfig.class, id++, Side.CLIENT);
         CHANNEL.registerMessage(PktSyncKnowledge.class, PktSyncKnowledge.class, id++, Side.CLIENT);
         CHANNEL.registerMessage(PktSyncData.class, PktSyncData.class, id++, Side.CLIENT);
@@ -46,7 +48,11 @@ public class PacketChannel {
         CHANNEL.registerMessage(PktRotateTelescope.class, PktRotateTelescope.class, id++, Side.CLIENT);
         CHANNEL.registerMessage(PktLightningEffect.class, PktLightningEffect.class, id++, Side.CLIENT);
         CHANNEL.registerMessage(PktSyncMinetweakerChanges.class, PktSyncMinetweakerChanges.class, id++, Side.CLIENT);
-        CHANNEL.registerMessage(PktSyncMinetweakerChanges.Compound.class, PktSyncMinetweakerChanges.Compound.class, id++, Side.CLIENT);
+        CHANNEL.registerMessage(
+            PktSyncMinetweakerChanges.Compound.class,
+            PktSyncMinetweakerChanges.Compound.class,
+            id++,
+            Side.CLIENT);
         CHANNEL.registerMessage(PktDualParticleEvent.class, PktDualParticleEvent.class, id++, Side.CLIENT);
         CHANNEL.registerMessage(PktOreScan.class, PktOreScan.class, id++, Side.CLIENT);
         CHANNEL.registerMessage(PktSyncCharge.class, PktSyncCharge.class, id++, Side.CLIENT);
@@ -54,7 +60,7 @@ public class PacketChannel {
         CHANNEL.registerMessage(PktUpdateGateways.class, PktUpdateGateways.class, id++, Side.CLIENT);
         CHANNEL.registerMessage(PktBurnParchment.class, PktBurnParchment.class, id++, Side.CLIENT);
 
-        //(client -> server)
+        // (client -> server)
         CHANNEL.registerMessage(PktDiscoverConstellation.class, PktDiscoverConstellation.class, id++, Side.SERVER);
         CHANNEL.registerMessage(PktRequestSeed.class, PktRequestSeed.class, id++, Side.SERVER);
         CHANNEL.registerMessage(PktUnlockPerk.class, PktUnlockPerk.class, id++, Side.SERVER);
@@ -65,16 +71,18 @@ public class PacketChannel {
         CHANNEL.registerMessage(PktBurnParchment.class, PktBurnParchment.class, id++, Side.SERVER);
         CHANNEL.registerMessage(PktEngraveGlass.class, PktEngraveGlass.class, id++, Side.SERVER);
 
-        /*Method registerPacket = ReflectionHelper.findMethod(
-                EnumConnectionState.class,
-                EnumConnectionState.PLAY,
-                new String[] { "registerPacket", "func_179245_a", "a" },
-                EnumPacketDirection.class, Class.class);
-        registerPacket.setAccessible(true);
-
-        try {
-            registerPacket.invoke(EnumConnectionState.HANDSHAKING, EnumPacketDirection.CLIENTBOUND, PktWorldHandlerSyncEarly.class);
-        } catch (Exception e) {}*/
+        /*
+         * Method registerPacket = ReflectionHelper.findMethod(
+         * EnumConnectionState.class,
+         * EnumConnectionState.PLAY,
+         * new String[] { "registerPacket", "func_179245_a", "a" },
+         * EnumPacketDirection.class, Class.class);
+         * registerPacket.setAccessible(true);
+         * try {
+         * registerPacket.invoke(EnumConnectionState.HANDSHAKING, EnumPacketDirection.CLIENTBOUND,
+         * PktWorldHandlerSyncEarly.class);
+         * } catch (Exception e) {}
+         */
     }
 
     public static NetworkRegistry.TargetPoint pointFromPos(World world, BlockPos pos, double range) {

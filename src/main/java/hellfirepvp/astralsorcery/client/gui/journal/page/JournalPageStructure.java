@@ -8,24 +8,26 @@
 
 package hellfirepvp.astralsorcery.client.gui.journal.page;
 
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Vec3;
+
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.util.BlockArrayRenderHelper;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.struct.BlockArray;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.fluids.FluidStack;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -75,12 +77,14 @@ public class JournalPageStructure implements IJournalPage {
             this.shift = shift;
             List<ItemStack> stacksNeeded = structure.getAsDescriptiveStacks();
             for (ItemStack stack : stacksNeeded) {
-//                if(stack.getItem() instanceof UniversalBucket) {
-//                    FluidStack f = ((UniversalBucket) stack.getItem()).getFluid(stack);
-//                    descriptionStacks.add(new Tuple<>(stack, stack.stackSize + "x " + I18n.format(stack.getUnlocalizedName() + ".name", f.getLocalizedName())));
-//                } else {
-                    descriptionStacks.add(new Tuple<>(stack, stack.stackSize + "x " + I18n.format(stack.getUnlocalizedName() + ".name")));
-//                }
+                // if(stack.getItem() instanceof UniversalBucket) {
+                // FluidStack f = ((UniversalBucket) stack.getItem()).getFluid(stack);
+                // descriptionStacks.add(new Tuple<>(stack, stack.stackSize + "x " +
+                // I18n.format(stack.getUnlocalizedName() + ".name", f.getLocalizedName())));
+                // } else {
+                descriptionStacks.add(
+                    new Tuple<>(stack, stack.stackSize + "x " + I18n.format(stack.getUnlocalizedName() + ".name")));
+                // }
             }
         }
 
@@ -94,7 +98,7 @@ public class JournalPageStructure implements IJournalPage {
 
             float shift = renderSizeDescription(offsetX, offsetY + 5);
 
-            if(unlocName != null) {
+            if (unlocName != null) {
                 renderHeadline(offsetX + shift, offsetY + 5, unlocName);
             }
 
@@ -105,13 +109,19 @@ public class JournalPageStructure implements IJournalPage {
         @Override
         public void postRender(float offsetX, float offsetY, float pTicks, float zLevel, float mouseX, float mouseY) {
             Rectangle rect = drawInfoStar(offsetX + 160, offsetY + 10, zLevel, 15, pTicks);
-            if(rect.contains(mouseX, mouseY)) {
-                /*List<Tuple<ItemStack, String>> localized = new LinkedList<>();
-                for (Tuple<ItemStack, String> entry : descriptionStacks) {
-                    localized.add(new Tuple<>(entry.key, entry.key.stackSize + "x " + I18n.format(entry.value)));
-                }*/
-                RenderingUtils.renderBlueStackTooltip((int) offsetX + 160, (int) offsetY + 10, descriptionStacks,
-                        getStandardFontRenderer(), getRenderItem());
+            if (rect.contains(mouseX, mouseY)) {
+                /*
+                 * List<Tuple<ItemStack, String>> localized = new LinkedList<>();
+                 * for (Tuple<ItemStack, String> entry : descriptionStacks) {
+                 * localized.add(new Tuple<>(entry.key, entry.key.stackSize + "x " + I18n.format(entry.value)));
+                 * }
+                 */
+                RenderingUtils.renderBlueStackTooltip(
+                    (int) offsetX + 160,
+                    (int) offsetY + 10,
+                    descriptionStacks,
+                    getStandardFontRenderer(),
+                    getRenderItem());
             }
         }
 
@@ -150,14 +160,16 @@ public class JournalPageStructure implements IJournalPage {
             Point.Double offset = renderOffset(offsetX + 8, offsetY);
 
             if (Mouse.isButtonDown(0) && totalRenderFrame > 30) {
-                structRender.rotate(0.25*Mouse.getDY(), 0.25*Mouse.getDX(), 0);
+                structRender.rotate(0.25 * Mouse.getDY(), 0.25 * Mouse.getDX(), 0);
             }
 
             structRender.render3DGUI(offset.x + shift.getX(), offset.y + shift.getY(), pTicks);
         }
 
         private Point.Double renderOffset(float stdPageOffsetX, float stdPageOffsetY) {
-            return new Point.Double(stdPageOffsetX + ((IJournalPage.DEFAULT_WIDTH * 2D) / 5D), stdPageOffsetY + ((IJournalPage.DEFAULT_HEIGHT * 4D) / 6D));
+            return new Point.Double(
+                stdPageOffsetX + ((IJournalPage.DEFAULT_WIDTH * 2D) / 5D),
+                stdPageOffsetY + ((IJournalPage.DEFAULT_HEIGHT * 4D) / 6D));
         }
 
     }

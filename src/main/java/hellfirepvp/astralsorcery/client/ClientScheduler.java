@@ -8,14 +8,14 @@
 
 package hellfirepvp.astralsorcery.client;
 
-import cpw.mods.fml.common.gameevent.TickEvent;
-import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
-import hellfirepvp.astralsorcery.common.util.Counter;
-
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import cpw.mods.fml.common.gameevent.TickEvent;
+import hellfirepvp.astralsorcery.common.auxiliary.tick.ITickHandler;
+import hellfirepvp.astralsorcery.common.util.Counter;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -40,12 +40,13 @@ public class ClientScheduler implements ITickHandler {
         inTick = true;
         synchronized (lock) {
             inTick = true;
-            Iterator<Runnable> iterator = queuedRunnables.keySet().iterator();
+            Iterator<Runnable> iterator = queuedRunnables.keySet()
+                .iterator();
             while (iterator.hasNext()) {
                 Runnable r = iterator.next();
                 Counter delay = queuedRunnables.get(r);
                 delay.decrement();
-                if(delay.value <= 0) {
+                if (delay.value <= 0) {
                     r.run();
                     iterator.remove();
                 }
@@ -79,7 +80,7 @@ public class ClientScheduler implements ITickHandler {
 
     public void addRunnable(Runnable r, int tickDelay) {
         synchronized (lock) {
-            if(inTick) {
+            if (inTick) {
                 waitingRunnables.put(r, tickDelay);
             } else {
                 queuedRunnables.put(r, new Counter(tickDelay));

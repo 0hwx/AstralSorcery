@@ -8,13 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.item.tool;
 
-import hellfirepvp.astralsorcery.common.entities.EntityCrystalTool;
-import hellfirepvp.astralsorcery.common.item.base.IGrindable;
-import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
-import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
-import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,11 +22,13 @@ import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import hellfirepvp.astralsorcery.common.entities.EntityCrystalTool;
+import hellfirepvp.astralsorcery.common.item.base.IGrindable;
+import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
+import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -52,9 +53,9 @@ public abstract class ItemCrystalToolBase extends ItemTool implements IGrindable
         this.damageVsEntity = damageVsEntity;
     }
 
-//    public void setAttackSpeed(float attackSpeed) {
-//        this.attackSpeed = attackSpeed;
-//    }
+    // public void setAttackSpeed(float attackSpeed) {
+    // this.attackSpeed = attackSpeed;
+    // }
 
     public int getCrystalCount() {
         return crystalCount;
@@ -122,25 +123,25 @@ public abstract class ItemCrystalToolBase extends ItemTool implements IGrindable
 
     private void damageProperties(ItemStack stack, int damage) {
         ToolCrystalProperties prop = getToolProperties(stack);
-        if(prop == null) {
+        if (prop == null) {
             stack.setItemDamage(stack.getMaxDamage());
             return;
         }
-        if(prop.getSize() <= 0) {
+        if (prop.getSize() <= 0) {
             super.setDamage(stack, 11);
             return;
         }
-        if(damage < 0) {
+        if (damage < 0) {
             return;
         }
         for (int i = 0; i < damage; i++) {
             double chance = Math.pow(((double) prop.getCollectiveCapability()) / 100D, 2);
-            if(chance >= rand.nextFloat()) {
-                if(rand.nextInt(40) == 0) prop.damageCutting();
+            if (chance >= rand.nextFloat()) {
+                if (rand.nextInt(40) == 0) prop.damageCutting();
                 double purity = ((double) prop.getPurity()) / 100D;
                 for (int j = 0; j < 3; j++) {
-                    if(purity <= rand.nextFloat()) {
-                        if(rand.nextInt(40) == 0) prop.damageCutting();
+                    if (purity <= rand.nextFloat()) {
+                        if (rand.nextInt(40) == 0) prop.damageCutting();
                     }
                 }
             }
@@ -163,11 +164,11 @@ public abstract class ItemCrystalToolBase extends ItemTool implements IGrindable
     public GrindResult grind(TileGrindstone grindstone, ItemStack stack, Random rand) {
         ToolCrystalProperties prop = getToolProperties(stack);
         ToolCrystalProperties result = prop.grindCopy(rand);
-        if(result == null) {
+        if (result == null) {
             return GrindResult.failBreakItem();
         }
         setToolProperties(stack, result);
-        if(result.getSize() <= 0) {
+        if (result.getSize() <= 0) {
             return GrindResult.failBreakItem();
         }
         return GrindResult.success();

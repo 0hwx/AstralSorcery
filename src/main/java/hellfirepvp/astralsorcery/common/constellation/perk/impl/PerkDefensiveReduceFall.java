@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.config.Configuration;
+
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -30,8 +31,10 @@ public class PerkDefensiveReduceFall extends ConstellationPerk {
 
     @Override
     public float onEntityHurt(EntityPlayer hurt, DamageSource source, float dmgIn) {
-        if(source.getDamageType().toLowerCase().contains("fall")) {
-            addAlignmentCharge(hurt, 0.2 * Math.max(0 ,dmgIn));
+        if (source.getDamageType()
+            .toLowerCase()
+            .contains("fall")) {
+            addAlignmentCharge(hurt, 0.2 * Math.max(0, dmgIn));
             dmgIn *= fallDmgReduction;
         }
         return dmgIn;
@@ -44,7 +47,13 @@ public class PerkDefensiveReduceFall extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        fallDmgReduction = cfg.getFloat(getKey() + "FallReduction", getConfigurationSection(), 0.3F, 0F, 1F, "Defines the multiplier for fall damage if the player has this perk.");
+        fallDmgReduction = cfg.getFloat(
+            getKey() + "FallReduction",
+            getConfigurationSection(),
+            0.3F,
+            0F,
+            1F,
+            "Defines the multiplier for fall damage if the player has this perk.");
     }
 
 }

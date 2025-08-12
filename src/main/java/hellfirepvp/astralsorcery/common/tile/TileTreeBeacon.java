@@ -8,6 +8,27 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
+import java.awt.*;
+import java.util.List;
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.IGrowable;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.BlockSnapshot;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
@@ -32,25 +53,6 @@ import hellfirepvp.astralsorcery.common.util.data.NonDuplicateCappedList;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.data.WorldBlockPos;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.IGrowable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.util.BlockSnapshot;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.List;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -66,106 +68,129 @@ public class TileTreeBeacon extends TileReceiverBase {
     private TreeCaptureHelper.TreeWatcher treeWatcher = null;
     private double starlightCharge = 0D;
 
-    private NonDuplicateCappedList<BlockPos> treePositions = new NonDuplicateCappedList<>(MathHelper.floor_double(ConfigEntryTreeBeacon.maxCount));
+    private NonDuplicateCappedList<BlockPos> treePositions = new NonDuplicateCappedList<>(
+        MathHelper.floor_double(ConfigEntryTreeBeacon.maxCount));
 
     @Override
     public void tick() {
         super.tick();
 
-        if(worldObj.isRemote) {
+        if (worldObj.isRemote) {
             playEffects();
         } else {
-            if(treePositions.getCap() != ConfigEntryTreeBeacon.maxCount) {
-                treePositions.setCap(MathHelper.floor_double(ConfigEntryTreeBeacon.maxCount)); //Post-update
+            if (treePositions.getCap() != ConfigEntryTreeBeacon.maxCount) {
+                treePositions.setCap(MathHelper.floor_double(ConfigEntryTreeBeacon.maxCount)); // Post-update
             }
 
             boolean changed = false;
-            if(treeWatcher != null) {
+            if (treeWatcher != null) {
                 List<WorldBlockPos> possibleTreePositions = TreeCaptureHelper.getAndClearCachedEntries(treeWatcher);
-                if(treePositions.getSize() + 30 <= ConfigEntryTreeBeacon.maxCount) {
-                    if(searchForTrees(possibleTreePositions)) changed = true;
+                if (treePositions.getSize() + 30 <= ConfigEntryTreeBeacon.maxCount) {
+                    if (searchForTrees(possibleTreePositions)) changed = true;
                 }
             }
             int runs = MathHelper.ceiling_double_int(starlightCharge * 1.7D);
             starlightCharge = 0D;
             for (int i = 0; i < Math.max(1, runs); i++) {
                 BlockPos randPos = treePositions.getRandomElementByChance(rand, ConfigEntryTreeBeacon.speedLimiter);
-                if(randPos != null) {
+                if (randPos != null) {
                     TileFakeTree tft = MiscUtils.getTileAt(worldObj, randPos, TileFakeTree.class, false);
-                    if(tft != null && tft.getFakedState() != null) {
+                    if (tft != null && tft.getFakedState() != null) {
                         Block fake = tft.getFakedState();
                         BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
-                        if(tryHarvestBlock(worldObj, pos, randPos, fake)) { //True, if block disappeared.
+                        if (tryHarvestBlock(worldObj, pos, randPos, fake)) { // True, if block disappeared.
                             worldObj.setBlockToAir(randPos.getX(), randPos.getY(), randPos.getZ());
-                            if(treePositions.removeElement(randPos)) {
+                            if (treePositions.removeElement(randPos)) {
                                 changed = true;
                             }
                         }
-                        PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.TREE_VORTEX, randPos);
+                        PktParticleEvent ev = new PktParticleEvent(
+                            PktParticleEvent.ParticleEventType.TREE_VORTEX,
+                            randPos);
                         PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(worldObj, randPos, 32));
                     } else {
-                        if(treePositions.removeElement(randPos)) {
+                        if (treePositions.removeElement(randPos)) {
                             changed = true;
                         }
                     }
                 }
             }
 
-            if(changed) {
+            if (changed) {
                 markForUpdate();
             }
         }
     }
 
     private boolean tryHarvestBlock(World world, BlockPos out, BlockPos treeBlockPos, Block fakedState) {
-        if(rand.nextInt(ConfigEntryTreeBeacon.dropsChance) == 0) {
+        if (rand.nextInt(ConfigEntryTreeBeacon.dropsChance) == 0) {
             int meta = fakedState.getDamageValue(world, treeBlockPos.getX(), treeBlockPos.getY(), treeBlockPos.getZ());
-            List<ItemStack> drops = fakedState.getDrops(world, treeBlockPos.getX(), treeBlockPos.getY(), treeBlockPos.getZ(), meta, 0);
-            if(rand.nextBoolean()) {
-                drops.addAll(fakedState.getDrops(world, treeBlockPos.getX(), treeBlockPos.getY(), treeBlockPos.getZ(), meta, 0));
+            List<ItemStack> drops = fakedState
+                .getDrops(world, treeBlockPos.getX(), treeBlockPos.getY(), treeBlockPos.getZ(), meta, 0);
+            if (rand.nextBoolean()) {
+                drops.addAll(
+                    fakedState.getDrops(world, treeBlockPos.getX(), treeBlockPos.getY(), treeBlockPos.getZ(), meta, 0));
             }
-            if(rand.nextBoolean()) {
-                drops.addAll(fakedState.getDrops(world, treeBlockPos.getX(), treeBlockPos.getY(), treeBlockPos.getZ(), meta, 0));
+            if (rand.nextBoolean()) {
+                drops.addAll(
+                    fakedState.getDrops(world, treeBlockPos.getX(), treeBlockPos.getY(), treeBlockPos.getZ(), meta, 0));
             }
             for (ItemStack i : drops) {
-                if(i == null || i.getItem() == null) continue;
-                ItemUtils.dropItemNaturally(world,
-                        out.getX() + rand.nextFloat() * 3 * (rand.nextBoolean() ? 1 : -1),
-                        out.getY() + rand.nextFloat() * 3,
-                        out.getZ() + rand.nextFloat() * 3 * (rand.nextBoolean() ? 1 : -1), i);
+                if (i == null || i.getItem() == null) continue;
+                ItemUtils.dropItemNaturally(
+                    world,
+                    out.getX() + rand.nextFloat() * 3 * (rand.nextBoolean() ? 1 : -1),
+                    out.getY() + rand.nextFloat() * 3,
+                    out.getZ() + rand.nextFloat() * 3 * (rand.nextBoolean() ? 1 : -1),
+                    i);
             }
         }
         return rand.nextInt(ConfigEntryTreeBeacon.breakChance) == 0;
     }
 
     private boolean searchForTrees(List<WorldBlockPos> possibleTreePositions) {
-        for(WorldBlockPos possibleSapling : possibleTreePositions) {
+        for (WorldBlockPos possibleSapling : possibleTreePositions) {
             Block block = possibleSapling.getStateAt();
             BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
-            int meta = block.getDamageValue(worldObj, possibleSapling.getX(), possibleSapling.getY(), possibleSapling.getZ());
-            if(block instanceof IGrowable) { //If it's an IGrowable, chances are it just grows to a tree when we call .grow on it often enough
-                if(!TreeCaptureHelper.oneTimeCatches.contains(possibleSapling)) TreeCaptureHelper.oneTimeCatches.add(possibleSapling);
+            int meta = block
+                .getDamageValue(worldObj, possibleSapling.getX(), possibleSapling.getY(), possibleSapling.getZ());
+            if (block instanceof IGrowable) { // If it's an IGrowable, chances are it just grows to a tree when we call
+                                              // .grow on it often enough
+                if (!TreeCaptureHelper.oneTimeCatches.contains(possibleSapling))
+                    TreeCaptureHelper.oneTimeCatches.add(possibleSapling);
 
                 int tries = 8;
                 worldObj.captureBlockSnapshots = true;
                 do {
                     tries--;
                     try {
-                        ((IGrowable) block).func_149853_b(worldObj, rand, possibleSapling.getX(), possibleSapling.getY(), possibleSapling.getZ());
+                        ((IGrowable) block).func_149853_b(
+                            worldObj,
+                            rand,
+                            possibleSapling.getX(),
+                            possibleSapling.getY(),
+                            possibleSapling.getZ());
                     } catch (Exception ignored) {}
                 } while (TreeCaptureHelper.oneTimeCatches.contains(possibleSapling) || tries > 0);
                 worldObj.captureBlockSnapshots = false;
 
                 return updatePositionsFromSnapshots(worldObj, possibleSapling, pos);
-            } else if(block.getTickRandomly()) { //If it's not an IGrowable it might just grow into a tree with tons of block updates.
-                if(!TreeCaptureHelper.oneTimeCatches.contains(possibleSapling)) TreeCaptureHelper.oneTimeCatches.add(possibleSapling);
+            } else if (block.getTickRandomly()) { // If it's not an IGrowable it might just grow into a tree with tons
+                                                  // of block updates.
+                if (!TreeCaptureHelper.oneTimeCatches.contains(possibleSapling))
+                    TreeCaptureHelper.oneTimeCatches.add(possibleSapling);
 
                 int ticksToExecute = 250;
                 worldObj.captureBlockSnapshots = true;
                 do {
                     ticksToExecute--;
                     try {
-                        block.updateTick(worldObj, possibleSapling.getX(), possibleSapling.getY(), possibleSapling.getZ(), rand);
+                        block.updateTick(
+                            worldObj,
+                            possibleSapling.getX(),
+                            possibleSapling.getY(),
+                            possibleSapling.getZ(),
+                            rand);
                     } catch (Exception ignored) {}
                 } while (TreeCaptureHelper.oneTimeCatches.contains(possibleSapling) || ticksToExecute > 0);
                 worldObj.captureBlockSnapshots = false;
@@ -178,20 +203,20 @@ public class TileTreeBeacon extends TileReceiverBase {
 
     private boolean updatePositionsFromSnapshots(World world, WorldBlockPos saplingPos, BlockPos origin) {
         boolean ret = false;
-        if(!TreeCaptureHelper.oneTimeCatches.remove(saplingPos) &&
-                !world.capturedBlockSnapshots.isEmpty() &&
-                world.capturedBlockSnapshots.size() > 2) { //I guess then something grew after all?
-            if(treePositions.getSize() + world.capturedBlockSnapshots.size() <= ConfigEntryTreeBeacon.maxCount) {
+        if (!TreeCaptureHelper.oneTimeCatches.remove(saplingPos) && !world.capturedBlockSnapshots.isEmpty()
+            && world.capturedBlockSnapshots.size() > 2) { // I guess then something grew after all?
+            if (treePositions.getSize() + world.capturedBlockSnapshots.size() <= ConfigEntryTreeBeacon.maxCount) {
                 for (BlockSnapshot snapshot : world.capturedBlockSnapshots) {
                     Block setBlock = snapshot.getCurrentBlock();
-                    if(!setBlock.equals(BlocksAS.blockFakeTree) && !setBlock.equals(Blocks.dirt) && !setBlock.equals(Blocks.grass)) {
+                    if (!setBlock.equals(BlocksAS.blockFakeTree) && !setBlock.equals(Blocks.dirt)
+                        && !setBlock.equals(Blocks.grass)) {
                         world.setBlock(snapshot.x, snapshot.y, snapshot.z, BlocksAS.blockFakeTree);
                         BlockPos pos = new BlockPos(snapshot.x, snapshot.y, snapshot.z);
                         TileFakeTree tft = MiscUtils.getTileAt(world, pos, TileFakeTree.class, true);
-                        if(tft != null) {
+                        if (tft != null) {
                             tft.setupTile(origin, setBlock);
                         }
-                        if(treePositions.offerElement(pos)) ret = true;
+                        if (treePositions.offerElement(pos)) ret = true;
                     }
                 }
             } else {
@@ -207,22 +232,32 @@ public class TileTreeBeacon extends TileReceiverBase {
 
     @SideOnly(Side.CLIENT)
     private void playEffects() {
-        if(rand.nextInt(3) == 0) {
+        if (rand.nextInt(3) == 0) {
             EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    xCoord + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5,
-                    yCoord + rand.nextFloat() * 2 + 0.5,
-                    zCoord + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5);
-            p.motion((rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1),
-                    (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1),
-                    (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1));
-            p.scale(0.45F).setColor(new Color(63, 255, 63)).gravity(0.008).setMaxAge(55);
+                xCoord + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5,
+                yCoord + rand.nextFloat() * 2 + 0.5,
+                zCoord + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5);
+            p.motion(
+                (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1),
+                (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1),
+                (rand.nextFloat() * 0.03F) * (rand.nextBoolean() ? 1 : -1));
+            p.scale(0.45F)
+                .setColor(new Color(63, 255, 63))
+                .gravity(0.008)
+                .setMaxAge(55);
         }
-        if((ticksExisted % 32) == 0) {
-            float alphaDaytime = ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(worldObj);
+        if ((ticksExisted % 32) == 0) {
+            float alphaDaytime = ConstellationSkyHandler.getInstance()
+                .getCurrentDaytimeDistribution(worldObj);
             alphaDaytime *= 0.8F;
             Vector3 from = new Vector3(this).add(0.5, 0.05, 0.5);
             MiscUtils.applyRandomOffset(from, EffectHandler.STATIC_EFFECT_RAND, 0.05F);
-            EffectLightbeam lightbeam = EffectHandler.getInstance().lightbeam(from.clone().addY(7), from, 1.5F);
+            EffectLightbeam lightbeam = EffectHandler.getInstance()
+                .lightbeam(
+                    from.clone()
+                        .addY(7),
+                    from,
+                    1.5F);
             lightbeam.setAlphaMultiplier(alphaDaytime);
             lightbeam.setColorOverlay(63F / 255F, 1F, 63F / 255F, 1F);
             lightbeam.setMaxAge(64);
@@ -231,16 +266,23 @@ public class TileTreeBeacon extends TileReceiverBase {
 
     @SideOnly(Side.CLIENT)
     public static void playParticles(PktParticleEvent event) {
-        BlockPos fakeTree = event.getVec().toBlockPos();
+        BlockPos fakeTree = event.getVec()
+            .toBlockPos();
         TileFakeTree tft = MiscUtils.getTileAt(Minecraft.getMinecraft().theWorld, fakeTree, TileFakeTree.class, false);
-        if(tft != null && tft.getReference() != null) {
+        if (tft != null && tft.getReference() != null) {
             Vector3 to = new Vector3(tft.getReference()).add(0.5, 0.5, 0.5);
             for (int i = 0; i < 10; i++) {
                 Vector3 from = new Vector3(fakeTree).add(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
-                Vector3 mov = to.clone().subtract(from).normalize().multiply(0.1 + 0.1 * rand.nextFloat());
+                Vector3 mov = to.clone()
+                    .subtract(from)
+                    .normalize()
+                    .multiply(0.1 + 0.1 * rand.nextFloat());
                 EntityFXFacingParticle p = EffectHelper.genericFlareParticle(from.getX(), from.getY(), from.getZ());
-                p.motion(mov.getX(), mov.getY(), mov.getZ()).setMaxAge(30 + rand.nextInt(25));
-                p.gravity(0.004).scale(0.25F).setColor(Color.GREEN);
+                p.motion(mov.getX(), mov.getY(), mov.getZ())
+                    .setMaxAge(30 + rand.nextInt(25));
+                p.gravity(0.004)
+                    .scale(0.25F)
+                    .setColor(Color.GREEN);
             }
         }
     }
@@ -249,15 +291,18 @@ public class TileTreeBeacon extends TileReceiverBase {
     public void invalidate() {
         super.invalidate();
 
-        TreeCaptureHelper.getAndClearCachedEntries(treeWatcher); //Prevent mem leak
-        treeWatcher = null; //Clears weak ref in the TreeCaptureHelper later on automatically.
+        TreeCaptureHelper.getAndClearCachedEntries(treeWatcher); // Prevent mem leak
+        treeWatcher = null; // Clears weak ref in the TreeCaptureHelper later on automatically.
     }
 
     @Override
     public void validate() {
         super.validate();
         BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
-        treeWatcher = new TreeCaptureHelper.TreeWatcher(worldObj.provider.dimensionId, pos, ConfigEntryTreeBeacon.treeBeaconRange);
+        treeWatcher = new TreeCaptureHelper.TreeWatcher(
+            worldObj.provider.dimensionId,
+            pos,
+            ConfigEntryTreeBeacon.treeBeaconRange);
         TreeCaptureHelper.offerWeakWatcher(treeWatcher);
     }
 
@@ -305,7 +350,7 @@ public class TileTreeBeacon extends TileReceiverBase {
 
     private void receiveStarlight(IWeakConstellation type, double amount) {
         this.starlightCharge += amount;
-        if(type == Constellations.aevitas) {
+        if (type == Constellations.aevitas) {
             this.starlightCharge += amount * 2;
         }
     }
@@ -318,9 +363,9 @@ public class TileTreeBeacon extends TileReceiverBase {
 
         @Override
         public void onStarlightReceive(World world, boolean isChunkLoaded, IWeakConstellation type, double amount) {
-            if(isChunkLoaded) {
+            if (isChunkLoaded) {
                 TileTreeBeacon tw = MiscUtils.getTileAt(world, getPos(), TileTreeBeacon.class, false);
-                if(tw != null) {
+                if (tw != null) {
                     tw.receiveStarlight(type, amount);
                 }
             }
@@ -363,11 +408,41 @@ public class TileTreeBeacon extends TileReceiverBase {
 
         @Override
         public void loadFromConfig(Configuration cfg) {
-            speedLimiter = cfg.getFloat(getKey() + "EfficiencyLimiter", getConfigurationSection(), 1F, 0F, 1F, "Percentage, how hard the speed limiter should slow down production of the tree beacon. 1=max, 0=no limiter");
-            maxCount = cfg.getInt(getKey() + "Count", getConfigurationSection(), 600, 1, 4000, "Defines the amount of blocks the treeBeacon can support at max count");
-            treeBeaconRange = cfg.getFloat(getKey() + "Range", getConfigurationSection(), 16F, 4F, 64F, "Defines the Range where the TreeBeacon will scan for Tree's to grow.");
-            dropsChance = cfg.getInt(getKey() + "DropsChance", getConfigurationSection(), 5, 1, Integer.MAX_VALUE, "Defines the chance that a drop is generated per random-selection tick. The higher the value the lower the chance.");
-            breakChance = cfg.getInt(getKey() + "BreakChance", getConfigurationSection(), 500, 20, Integer.MAX_VALUE, "Defines the chance that the block harvested is going to break per random-selection tick. The higher the value the lower the chance");
+            speedLimiter = cfg.getFloat(
+                getKey() + "EfficiencyLimiter",
+                getConfigurationSection(),
+                1F,
+                0F,
+                1F,
+                "Percentage, how hard the speed limiter should slow down production of the tree beacon. 1=max, 0=no limiter");
+            maxCount = cfg.getInt(
+                getKey() + "Count",
+                getConfigurationSection(),
+                600,
+                1,
+                4000,
+                "Defines the amount of blocks the treeBeacon can support at max count");
+            treeBeaconRange = cfg.getFloat(
+                getKey() + "Range",
+                getConfigurationSection(),
+                16F,
+                4F,
+                64F,
+                "Defines the Range where the TreeBeacon will scan for Tree's to grow.");
+            dropsChance = cfg.getInt(
+                getKey() + "DropsChance",
+                getConfigurationSection(),
+                5,
+                1,
+                Integer.MAX_VALUE,
+                "Defines the chance that a drop is generated per random-selection tick. The higher the value the lower the chance.");
+            breakChance = cfg.getInt(
+                getKey() + "BreakChance",
+                getConfigurationSection(),
+                500,
+                20,
+                Integer.MAX_VALUE,
+                "Defines the chance that the block harvested is going to break per random-selection tick. The higher the value the lower the chance");
         }
 
     }

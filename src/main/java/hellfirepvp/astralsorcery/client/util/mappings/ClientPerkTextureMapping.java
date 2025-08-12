@@ -8,15 +8,16 @@
 
 package hellfirepvp.astralsorcery.client.util.mappings;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -30,10 +31,15 @@ public class ClientPerkTextureMapping {
     private static Map<IMajorConstellation, BindableResource> mapOverlayTextures = new HashMap<>();
 
     public static void init() {
-        mapOverlayTextures.put(Constellations.discidia, AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "overlay_discidia"));
-        mapOverlayTextures.put(Constellations.aevitas,  AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "overlay_aevitas"));
-        mapOverlayTextures.put(Constellations.vicio,    AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "overlay_vicio"));
-        mapOverlayTextures.put(Constellations.armara,   AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "overlay_armara"));
+        mapOverlayTextures.put(
+            Constellations.discidia,
+            AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "overlay_discidia"));
+        mapOverlayTextures
+            .put(Constellations.aevitas, AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "overlay_aevitas"));
+        mapOverlayTextures
+            .put(Constellations.vicio, AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "overlay_vicio"));
+        mapOverlayTextures
+            .put(Constellations.armara, AssetLibrary.loadTexture(AssetLoader.TextureLocation.GUI, "overlay_armara"));
     }
 
     @Nullable

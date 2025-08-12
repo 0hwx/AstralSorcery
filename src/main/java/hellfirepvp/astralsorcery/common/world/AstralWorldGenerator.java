@@ -8,10 +8,17 @@
 
 package hellfirepvp.astralsorcery.common.world;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldType;
+import net.minecraft.world.chunk.IChunkProvider;
+
 import cpw.mods.fml.common.IWorldGenerator;
 import hellfirepvp.astralsorcery.common.data.config.Config;
-import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
-import hellfirepvp.astralsorcery.common.data.world.data.ChunkVersionBuffer;
 import hellfirepvp.astralsorcery.common.world.attributes.GenAttributeAquamarine;
 import hellfirepvp.astralsorcery.common.world.attributes.GenAttributeGlowstoneFlower;
 import hellfirepvp.astralsorcery.common.world.attributes.GenAttributeMarble;
@@ -20,16 +27,6 @@ import hellfirepvp.astralsorcery.common.world.retrogen.ChunkVersionController;
 import hellfirepvp.astralsorcery.common.world.structure.StructureAncientShrine;
 import hellfirepvp.astralsorcery.common.world.structure.StructureDesertShrine;
 import hellfirepvp.astralsorcery.common.world.structure.StructureSmallShrine;
-import hellfirepvp.astralsorcery.common.world.structure.WorldGenAttributeStructure;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.chunk.IChunkProvider;
-
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -56,13 +53,13 @@ public class AstralWorldGenerator implements IWorldGenerator {
     }
 
     public AstralWorldGenerator setupAttributes() {
-        if(Config.spawnRockCrystalOres) {
+        if (Config.spawnRockCrystalOres) {
             decorators.add(new GenAttributeRockCrystals());
         }
-        if(Config.marbleAmount > 0) {
+        if (Config.marbleAmount > 0) {
             decorators.add(new GenAttributeMarble());
         }
-        if(Config.aquamarineAmount > 0) {
+        if (Config.aquamarineAmount > 0) {
             decorators.add(new GenAttributeAquamarine());
         }
 
@@ -78,20 +75,26 @@ public class AstralWorldGenerator implements IWorldGenerator {
     }
 
     @Override
-    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
-        if(world.getWorldInfo().getTerrainType().equals(WorldType.FLAT)) return;
+    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator,
+        IChunkProvider chunkProvider) {
+        if (world.getWorldInfo()
+            .getTerrainType()
+            .equals(WorldType.FLAT)) return;
 
-        ChunkVersionController.instance.setGenerationVersion(new ChunkCoordIntPair(chunkX, chunkZ), CURRENT_WORLD_GENERATOR_VERSION);
+        ChunkVersionController.instance
+            .setGenerationVersion(new ChunkCoordIntPair(chunkX, chunkZ), CURRENT_WORLD_GENERATOR_VERSION);
         generateWithLastKnownVersion(chunkX, chunkZ, world, -1);
 
-        /*for (int xx = 0; xx < 16; xx++) {
-            for (int zz = 0; zz < 16; zz++) {
-                BlockPos pos = new BlockPos((chunkX * 16) + xx, 0, (chunkZ * 16) + zz);
-                float distr = SkyNoiseCalculator.getSkyNoiseDistribution(world, pos);
-                int y = (int) (35 + distr * 40);
-                world.setBlockState(new BlockPos(pos.getX(), y, pos.getZ()), Blocks.GLASS.getDefaultState(), 2);
-            }
-        }*/
+        /*
+         * for (int xx = 0; xx < 16; xx++) {
+         * for (int zz = 0; zz < 16; zz++) {
+         * BlockPos pos = new BlockPos((chunkX * 16) + xx, 0, (chunkZ * 16) + zz);
+         * float distr = SkyNoiseCalculator.getSkyNoiseDistribution(world, pos);
+         * int y = (int) (35 + distr * 40);
+         * world.setBlockState(new BlockPos(pos.getX(), y, pos.getZ()), Blocks.GLASS.getDefaultState(), 2);
+         * }
+         * }
+         */
     }
 
     private void generateWithLastKnownVersion(int chunkX, int chunkZ, World world, int lastKnownChunkVersion) {
@@ -102,7 +105,7 @@ public class AstralWorldGenerator implements IWorldGenerator {
         long chunkSeed = (xSeed * chunkX + zSeed * chunkZ) ^ worldSeed;
 
         for (WorldGenAttribute attribute : worldGenAttributes) {
-            if(attribute.attributeVersion > lastKnownChunkVersion) {
+            if (attribute.attributeVersion > lastKnownChunkVersion) {
                 rand.setSeed(chunkSeed);
                 attribute.generate(rand, chunkX, chunkZ, world);
             }

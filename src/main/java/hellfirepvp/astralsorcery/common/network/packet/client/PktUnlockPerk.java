@@ -8,26 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.network.packet.client;
 
-import hellfirepvp.astralsorcery.client.gui.GuiJournalPerkMap;
-import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
-import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerkMap;
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerks;
-import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
-import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import java.util.Map;
+import hellfirepvp.astralsorcery.client.gui.GuiJournalPerkMap;
+import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
+import hellfirepvp.astralsorcery.common.constellation.IMajorConstellation;
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerks;
+import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
+import io.netty.buffer.ByteBuf;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -59,12 +54,12 @@ public class PktUnlockPerk implements IMessage, IMessageHandler<PktUnlockPerk, P
     public void fromBytes(ByteBuf buf) {
         this.serverAccept = buf.readBoolean();
         ConstellationPerks perk = ConstellationPerks.getById(buf.readInt());
-        if(perk != null) {
+        if (perk != null) {
             this.perk = perk;
         }
-        if(!serverAccept) {
+        if (!serverAccept) {
             IMajorConstellation cst = ConstellationRegistry.getMajorConstellationByName(ByteBufUtils.readString(buf));
-            if(cst != null) {
+            if (cst != null) {
                 this.owningConstellation = cst;
             }
         }
@@ -73,39 +68,41 @@ public class PktUnlockPerk implements IMessage, IMessageHandler<PktUnlockPerk, P
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeBoolean(serverAccept);
-        buf.writeInt(perk.getSingleInstance().getId());
-        if(!serverAccept) {
+        buf.writeInt(
+            perk.getSingleInstance()
+                .getId());
+        if (!serverAccept) {
             ByteBufUtils.writeString(buf, owningConstellation.getUnlocalizedName());
         }
     }
 
     @Override
     public PktUnlockPerk onMessage(PktUnlockPerk message, MessageContext ctx) {
-        if(ctx.side == Side.SERVER) {
+        if (ctx.side == Side.SERVER) {
             EntityPlayer pl = ctx.getServerHandler().playerEntity;
-            if(pl != null) {
-//                if(message.perk != null && message.owningConstellation != null) {
-//                    ConstellationPerkMap map = message.owningConstellation.getPerkMap();
-//                    if(map != null) {
-//                        PlayerProgress prog = ResearchManager.getProgress(pl, ctx.side);
-//                        if(prog != null) {
-//                            Map<ConstellationPerk, Integer> appliedPerks = prog.getAppliedPerks();
-//                            if(!appliedPerks.containsKey(message.perk.getSingleInstance())) {
-//                                boolean canUnlock = prog.hasFreeAlignmentLevel();
-//                                for (ConstellationPerkMap.Dependency d : map.getPerkDependencies()) {
-//                                    if(d.to.equals(message.perk)) {
-//                                        if(!appliedPerks.containsKey(d.from.getSingleInstance())) {
-//                                            canUnlock = false;
-//                                        }
-//                                    }
-//                                }
-//                                if(canUnlock && ResearchManager.applyPerk(pl, message.perk)) {
-//                                    return new PktUnlockPerk(true, message.perk);
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
+            if (pl != null) {
+                // if(message.perk != null && message.owningConstellation != null) {
+                // ConstellationPerkMap map = message.owningConstellation.getPerkMap();
+                // if(map != null) {
+                // PlayerProgress prog = ResearchManager.getProgress(pl, ctx.side);
+                // if(prog != null) {
+                // Map<ConstellationPerk, Integer> appliedPerks = prog.getAppliedPerks();
+                // if(!appliedPerks.containsKey(message.perk.getSingleInstance())) {
+                // boolean canUnlock = prog.hasFreeAlignmentLevel();
+                // for (ConstellationPerkMap.Dependency d : map.getPerkDependencies()) {
+                // if(d.to.equals(message.perk)) {
+                // if(!appliedPerks.containsKey(d.from.getSingleInstance())) {
+                // canUnlock = false;
+                // }
+                // }
+                // }
+                // if(canUnlock && ResearchManager.applyPerk(pl, message.perk)) {
+                // return new PktUnlockPerk(true, message.perk);
+                // }
+                // }
+                // }
+                // }
+                // }
             }
         } else {
             recUnlockResultClient(message);
@@ -115,10 +112,10 @@ public class PktUnlockPerk implements IMessage, IMessageHandler<PktUnlockPerk, P
 
     @SideOnly(Side.CLIENT)
     private void recUnlockResultClient(PktUnlockPerk message) {
-        if(message.serverAccept) {
+        if (message.serverAccept) {
             ConstellationPerks perk = message.perk;
             GuiScreen current = Minecraft.getMinecraft().currentScreen;
-            if(current != null && current instanceof GuiJournalPerkMap) {
+            if (current != null && current instanceof GuiJournalPerkMap) {
                 ((GuiJournalPerkMap) current).playUnlockAnimation(perk);
             }
         }

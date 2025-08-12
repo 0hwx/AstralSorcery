@@ -8,12 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.config.Configuration;
+
 import cpw.mods.fml.relauncher.Side;
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,12 +36,12 @@ public class PerkDefensiveNoArmor extends ConstellationPerk {
     public float onEntityHurt(EntityPlayer hurt, DamageSource source, float dmgIn) {
         int eq = 0;
         for (ItemStack stack : hurt.getLastActiveItems()) {
-            if(stack != null) {
+            if (stack != null) {
                 eq++;
             }
         }
-        if(eq <= 2) {
-            addAlignmentCharge(hurt, 0.3 * Math.max(0 ,dmgIn));
+        if (eq <= 2) {
+            addAlignmentCharge(hurt, 0.3 * Math.max(0, dmgIn));
             dmgIn *= multiplierDamageReduction;
         }
         return dmgIn;
@@ -48,15 +49,15 @@ public class PerkDefensiveNoArmor extends ConstellationPerk {
 
     @Override
     public void onPlayerTick(EntityPlayer player, Side side) {
-        if(side == Side.SERVER) {
-            if(player.ticksExisted % 20 != 0) return;
+        if (side == Side.SERVER) {
+            if (player.ticksExisted % 20 != 0) return;
             int eq = 0;
             for (ItemStack stack : player.getLastActiveItems()) {
-                if(stack != null) {
+                if (stack != null) {
                     eq++;
                 }
             }
-            if(eq <= 2) {
+            if (eq <= 2) {
                 player.heal(healPerSec);
             }
         }
@@ -69,8 +70,20 @@ public class PerkDefensiveNoArmor extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        multiplierDamageReduction = cfg.getFloat(getKey() + "NoArmorDmgReductionMultiplier", getConfigurationSection(), 0.3F, 0.001F, 1F, "Defines the damage reduction multiplier if the player has less than 2 or 2 armor pieces equipped");
-        healPerSec = cfg.getFloat(getKey() + "NoArmorHealPerSecond", getConfigurationSection(), 0.15F, 0.001F, 50F, "Defines the amount that the player is healed for each second if he has less than 2 or 2 armor pieces equipped");
+        multiplierDamageReduction = cfg.getFloat(
+            getKey() + "NoArmorDmgReductionMultiplier",
+            getConfigurationSection(),
+            0.3F,
+            0.001F,
+            1F,
+            "Defines the damage reduction multiplier if the player has less than 2 or 2 armor pieces equipped");
+        healPerSec = cfg.getFloat(
+            getKey() + "NoArmorHealPerSecond",
+            getConfigurationSection(),
+            0.15F,
+            0.001F,
+            50F,
+            "Defines the amount that the player is healed for each second if he has less than 2 or 2 armor pieces equipped");
     }
 
 }

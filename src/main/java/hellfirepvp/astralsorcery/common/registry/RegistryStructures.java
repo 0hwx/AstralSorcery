@@ -8,13 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.registry;
 
+import static hellfirepvp.astralsorcery.common.lib.MultiBlockArrays.*;
+
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.registry.multiblock.*;
 import hellfirepvp.astralsorcery.common.registry.structures.StructureAncientShrine;
 import hellfirepvp.astralsorcery.common.registry.structures.StructureDesertShrine;
 import hellfirepvp.astralsorcery.common.registry.structures.StructureSmallShrine;
-
-import static hellfirepvp.astralsorcery.common.lib.MultiBlockArrays.*;
 
 /**
  * This class is part of the Astral Sorcery Mod

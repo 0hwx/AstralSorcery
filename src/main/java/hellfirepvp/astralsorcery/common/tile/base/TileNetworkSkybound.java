@@ -23,7 +23,7 @@ public abstract class TileNetworkSkybound extends TileNetwork {
     public void tick() {
         super.tick();
 
-        if((ticksExisted & 15) == 0) {
+        if ((ticksExisted & 15) == 0) {
             updateSkyState(worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord));
         }
     }

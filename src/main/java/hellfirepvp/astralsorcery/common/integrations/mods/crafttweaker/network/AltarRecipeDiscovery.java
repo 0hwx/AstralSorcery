@@ -8,12 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network;
 
+import net.minecraft.item.ItemStack;
+
 import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
-import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.item.ItemStack;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -40,25 +39,23 @@ public class AltarRecipeDiscovery extends BaseAltarRecipe {
     @Override
     public void applyServer() {
         CraftingAccessManager.registerMTAltarRecipe(
-                buildRecipeUnsafe(
-                        TileAltar.AltarLevel.DISCOVERY,
-                        this.starlightRequired,
-                        this.craftingTickTime,
-                        this.output,
-                        this.inputs)
-        );
+            buildRecipeUnsafe(
+                TileAltar.AltarLevel.DISCOVERY,
+                this.starlightRequired,
+                this.craftingTickTime,
+                this.output,
+                this.inputs));
     }
 
     @Override
     public void applyClient() {
         CraftingAccessManager.registerMTAltarRecipe(
-                buildRecipeUnsafe(
-                        TileAltar.AltarLevel.DISCOVERY,
-                        this.starlightRequired,
-                        this.craftingTickTime,
-                        this.output,
-                        this.inputs)
-        );
+            buildRecipeUnsafe(
+                TileAltar.AltarLevel.DISCOVERY,
+                this.starlightRequired,
+                this.craftingTickTime,
+                this.output,
+                this.inputs));
     }
 
 }

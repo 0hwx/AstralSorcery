@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.config.Configuration;
+
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,7 +42,13 @@ public class PerkDamageIncrease extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        dmgMultiplier = cfg.getFloat(getKey() + "DamageIncrease", getConfigurationSection(), 1.05F, 1F, 2F, "Sets the damage multiplier that is applied to entity damage if the player has this perk.");
+        dmgMultiplier = cfg.getFloat(
+            getKey() + "DamageIncrease",
+            getConfigurationSection(),
+            1.05F,
+            1F,
+            2F,
+            "Sets the damage multiplier that is applied to entity damage if the player has this perk.");
     }
 
 }

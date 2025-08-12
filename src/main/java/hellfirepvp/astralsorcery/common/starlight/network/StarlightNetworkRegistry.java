@@ -8,17 +8,19 @@
 
 package hellfirepvp.astralsorcery.common.starlight.network;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
+
 import hellfirepvp.astralsorcery.common.block.network.IBlockStarlightRecipient;
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.starlight.network.handlers.BlockTransmutationHandler;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
-import net.minecraft.block.Block;
-import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -29,15 +31,15 @@ import java.util.Random;
  */
 public class StarlightNetworkRegistry {
 
-    //private static Map<Block, Map<Integer, IStarlightBlockHandler>> validEndpoints = new HashMap<>();
+    // private static Map<Block, Map<Integer, IStarlightBlockHandler>> validEndpoints = new HashMap<>();
     private static List<IStarlightBlockHandler> dynamicBlockHandlers = new LinkedList<>();
 
     @Nullable
     public static IStarlightBlockHandler getStarlightHandler(World world, BlockPos pos, int meta) {
         Block b = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
-        if(b instanceof IBlockStarlightRecipient) return null;
+        if (b instanceof IBlockStarlightRecipient) return null;
         for (IStarlightBlockHandler handler : dynamicBlockHandlers) {
-            if(handler.isApplicable(world, pos, b)) return handler;
+            if (handler.isApplicable(world, pos, b)) return handler;
         }
         return null;
     }
@@ -50,13 +52,14 @@ public class StarlightNetworkRegistry {
         registerEndpoint(new BlockTransmutationHandler());
     }
 
-    //1 instance is/should be created for 1 type of block+meta pair
-    //This is NOT suggested as "first choice" - please implement IBlockStarlightRecipient instead if possible.
+    // 1 instance is/should be created for 1 type of block+meta pair
+    // This is NOT suggested as "first choice" - please implement IBlockStarlightRecipient instead if possible.
     public static interface IStarlightBlockHandler {
 
         public boolean isApplicable(World world, BlockPos pos, Block block);
 
-        public void receiveStarlight(World world, Random rand, BlockPos pos, @Nullable IWeakConstellation starlightType, double amount);
+        public void receiveStarlight(World world, Random rand, BlockPos pos, @Nullable IWeakConstellation starlightType,
+            double amount);
 
     }
 

@@ -22,18 +22,18 @@ import net.minecraftforge.client.model.ModelFormatException;
  */
 public class DummyModelLoader implements IModelCustomLoader {
 
-//    @Override
-//    public boolean accepts(ResourceLocation modelLocation) {
-//        return ItemRenderRegistry.isRegistered(modelLocation);
-//    }
-//
-//    @Override
-//    public IModel loadModel(ResourceLocation modelLocation) throws Exception {
-//        return new ItemRendererModelDummy(modelLocation);
-//    }
-//
-//    @Override
-//    public void onResourceManagerReload(IResourceManager resourceManager) {}
+    // @Override
+    // public boolean accepts(ResourceLocation modelLocation) {
+    // return ItemRenderRegistry.isRegistered(modelLocation);
+    // }
+    //
+    // @Override
+    // public IModel loadModel(ResourceLocation modelLocation) throws Exception {
+    // return new ItemRendererModelDummy(modelLocation);
+    // }
+    //
+    // @Override
+    // public void onResourceManagerReload(IResourceManager resourceManager) {}
 
     @Override
     public String toString() {

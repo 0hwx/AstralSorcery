@@ -8,6 +8,28 @@
 
 package hellfirepvp.astralsorcery.common.item;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.WeightedRandom;
+import net.minecraft.world.World;
+
+import com.mojang.realmsclient.gui.ChatFormatting;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.CommonProxy;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
@@ -22,28 +44,6 @@ import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 import hellfirepvp.astralsorcery.common.util.SoundHelper;
 import hellfirepvp.astralsorcery.common.util.WRItemObject;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.WeightedRandom;
-import com.mojang.realmsclient.gui.ChatFormatting;
-import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -103,9 +103,15 @@ public class ItemConstellationPaper extends Item implements ItemHighlighted {
 
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer playerIn) {
-        if(world.isRemote && getConstellation(stack) != null) {
+        if (world.isRemote && getConstellation(stack) != null) {
             SoundHelper.playSoundClient(Sounds.bookFlip, 1F, 1F);
-            AstralSorcery.proxy.openGui(CommonProxy.EnumGuiId.CONSTELLATION_PAPER, playerIn, world, ConstellationRegistry.getConstellationId(getConstellation(stack)), 0, 0);
+            AstralSorcery.proxy.openGui(
+                CommonProxy.EnumGuiId.CONSTELLATION_PAPER,
+                playerIn,
+                world,
+                ConstellationRegistry.getConstellationId(getConstellation(stack)),
+                0,
+                0);
         }
         return stack;
     }
@@ -116,28 +122,30 @@ public class ItemConstellationPaper extends Item implements ItemHighlighted {
 
         IConstellation cst = getConstellation(stack);
 
-        if(cst != null) {
+        if (cst != null) {
             PlayerProgress progress = ResearchManager.getProgress((EntityPlayer) entityIn);
-            if(progress != null) {
+            if (progress != null) {
                 boolean has = false;
                 for (String strConstellation : progress.getSeenConstellations()) {
                     IConstellation c = ConstellationRegistry.getConstellationByName(strConstellation);
-                    if(c != null && c.equals(cst)) {
+                    if (c != null && c.equals(cst)) {
                         has = true;
                         break;
                     }
                 }
-                if(!has) {
-                    if(ResearchManager.memorizeConstellation(cst, (EntityPlayer) entityIn)) {
+                if (!has) {
+                    if (ResearchManager.memorizeConstellation(cst, (EntityPlayer) entityIn)) {
                         ((EntityPlayer) entityIn).addChatMessage(
-                                new ChatComponentTranslation("progress.seen.constellation.chat",
-                                        new ChatComponentTranslation(cst.getUnlocalizedName())
-                                                .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GRAY)))
+                            new ChatComponentTranslation(
+                                "progress.seen.constellation.chat",
+                                new ChatComponentTranslation(cst.getUnlocalizedName())
+                                    .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GRAY)))
                                         .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.BLUE)));
-                        if(ResearchManager.clientProgress.getSeenConstellations().size() == 1) {
+                        if (ResearchManager.clientProgress.getSeenConstellations()
+                            .size() == 1) {
                             ((EntityPlayer) entityIn).addChatMessage(
-                                    new ChatComponentTranslation("progress.seen.constellation.first.chat")
-                                            .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.BLUE)));
+                                new ChatComponentTranslation("progress.seen.constellation.first.chat")
+                                    .setChatStyle(new ChatStyle().setColor(EnumChatFormatting.BLUE)));
                         }
                     }
                 }
@@ -145,25 +153,25 @@ public class ItemConstellationPaper extends Item implements ItemHighlighted {
             return;
         }
 
-        if ((worldIn.getTotalWorldTime() & 7)  == 0) {
+        if ((worldIn.getTotalWorldTime() & 7) == 0) {
             PlayerProgress progress = ResearchManager.getProgress((EntityPlayer) entityIn);
             if (progress != null) {
                 List<IConstellation> constellations = new ArrayList<>();
                 for (IConstellation c : ConstellationRegistry.getAllConstellations()) {
-                    if(c.canDiscover(progress)) {
+                    if (c.canDiscover(progress)) {
                         constellations.add(c);
                     }
                 }
 
                 for (String strConstellation : progress.getKnownConstellations()) {
                     IConstellation c = ConstellationRegistry.getConstellationByName(strConstellation);
-                    if(c != null) {
+                    if (c != null) {
                         constellations.remove(c);
                     }
                 }
                 for (String strConstellation : progress.getSeenConstellations()) {
                     IConstellation c = ConstellationRegistry.getConstellationByName(strConstellation);
-                    if(c != null) {
+                    if (c != null) {
                         constellations.remove(c);
                     }
                 }
@@ -173,17 +181,18 @@ public class ItemConstellationPaper extends Item implements ItemHighlighted {
                 }
 
                 List<WRItemObject<IConstellation>> wrp = buildWeightedRandomList(constellations);
-                WRItemObject<IConstellation> result = (WRItemObject<IConstellation>) WeightedRandom.getRandomItem(worldIn.rand, wrp); //todo if this doesn't work use the one below
+                WRItemObject<IConstellation> result = (WRItemObject<IConstellation>) WeightedRandom
+                    .getRandomItem(worldIn.rand, wrp); // todo if this doesn't work use the one below
                 setConstellation(stack, result.getValue());
-//                WeightedRandom.Item item = WeightedRandom.getRandomItem(worldIn.rand, wrp);
-//
-//                if (item instanceof WRItemObject) {
-//                    WRItemObject<IConstellation> result = (WRItemObject<IConstellation>) item;
-//                    // Now you can use `result` safely
-//                } else {
-//                    // Handle the case where the item is not of the expected type
-//                    // For example, log a warning or throw an exception
-//                }
+                // WeightedRandom.Item item = WeightedRandom.getRandomItem(worldIn.rand, wrp);
+                //
+                // if (item instanceof WRItemObject) {
+                // WRItemObject<IConstellation> result = (WRItemObject<IConstellation>) item;
+                // // Now you can use `result` safely
+                // } else {
+                // // Handle the case where the item is not of the expected type
+                // // For example, log a warning or throw an exception
+                // }
             }
         }
     }
@@ -191,7 +200,7 @@ public class ItemConstellationPaper extends Item implements ItemHighlighted {
     private List<WRItemObject<IConstellation>> buildWeightedRandomList(List<IConstellation> constellations) {
         List<WRItemObject<IConstellation>> wrc = new ArrayList<>();
         for (IConstellation c : constellations) {
-            WRItemObject<IConstellation> i = new WRItemObject<>(1, c);//(int) (tier.getShowupChance() * 100), c);
+            WRItemObject<IConstellation> i = new WRItemObject<>(1, c);// (int) (tier.getShowupChance() * 100), c);
             wrc.add(i);
         }
         return wrc;
@@ -216,12 +225,9 @@ public class ItemConstellationPaper extends Item implements ItemHighlighted {
         constellation.writeToNBT(tag);
     }
 
-
-
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IIconRegister register)
-    {
+    public void registerIcons(IIconRegister register) {
         this.itemIcon = register.registerIcon("astralsorcery:scroll");
     }
 }

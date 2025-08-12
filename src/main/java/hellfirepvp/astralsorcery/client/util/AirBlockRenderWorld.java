@@ -8,18 +8,14 @@
 
 package hellfirepvp.astralsorcery.client.util;
 
+import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
-
-
-import javax.annotation.Nullable;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -54,18 +50,18 @@ public class AirBlockRenderWorld implements IBlockAccess {
         return 0;
     }
 
-//    @Override
-//    public int getCombinedLight(BlockPos pos, int lightValue) {
-//        return 0;
-//    }
+    // @Override
+    // public int getCombinedLight(BlockPos pos, int lightValue) {
+    // return 0;
+    // }
 
     @Override
     public int getBlockMetadata(int x, int y, int z) {
         return 0;
     }
-//    public  Block getBlockState(BlockPos pos) {
-//        return Blocks.AIR.getDefaultState();
-//    }
+    // public Block getBlockState(BlockPos pos) {
+    // return Blocks.AIR.getDefaultState();
+    // }
 
     @Override
     public boolean isAirBlock(int x, int y, int z) {
@@ -92,10 +88,10 @@ public class AirBlockRenderWorld implements IBlockAccess {
         return 0;
     }
 
-//    @Override
-//    public WorldType getWorldType() {
-//        return globalType;
-//    }
+    // @Override
+    // public WorldType getWorldType() {
+    // return globalType;
+    // }
 
     @Override
     public boolean isSideSolid(int x, int y, int z, ForgeDirection side, boolean _default) {

@@ -1,16 +1,17 @@
 package hellfirepvp.astralsorcery.common.crafting;
 
-import hellfirepvp.astralsorcery.common.util.EnumDyeColor;
-import hellfirepvp.astralsorcery.common.item.wand.ItemIlluminationWand;
-import hellfirepvp.astralsorcery.common.lib.ItemsAS;
-import hellfirepvp.astralsorcery.common.util.ItemUtils;
-import hellfirepvp.astralsorcery.common.util.OreDictAlias;
+import javax.annotation.Nullable;
+
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
+import hellfirepvp.astralsorcery.common.item.wand.ItemIlluminationWand;
+import hellfirepvp.astralsorcery.common.lib.ItemsAS;
+import hellfirepvp.astralsorcery.common.util.EnumDyeColor;
+import hellfirepvp.astralsorcery.common.util.ItemUtils;
+import hellfirepvp.astralsorcery.common.util.OreDictAlias;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -30,8 +31,8 @@ public class RecipeChangeWandColor implements IRecipe {
     @Nullable
     public ItemStack getCraftingResult(InventoryCrafting inv) {
         EnumDyeColor color = tryFindValidRecipeAndDye(inv);
-        if(color == null) {
-            return null; //Uhh.. wtf went wrong here. no valid check?
+        if (color == null) {
+            return null; // Uhh.. wtf went wrong here. no valid check?
         }
         ItemStack wand = new ItemStack(ItemsAS.illuminationWand);
         ItemIlluminationWand.setConfiguredColor(wand, color);
@@ -47,14 +48,14 @@ public class RecipeChangeWandColor implements IRecipe {
         for (int x = 0; x < 3; x++) {
             for (int z = 0; z < 3; z++) {
                 ItemStack in = inv.getStackInRowAndColumn(x, z);
-                if(in != null && in.getItem() != null) {
+                if (in != null && in.getItem() != null) {
                     nonEmptyItemsFound++;
 
-                    if(in.getItem() instanceof ItemIlluminationWand) {
+                    if (in.getItem() instanceof ItemIlluminationWand) {
                         foundWand = true;
                     } else {
                         for (EnumDyeColor color : EnumDyeColor.values()) {
-                            if(ItemUtils.hasOreName(in, OreDictAlias.getDyeOreDict(color))) {
+                            if (ItemUtils.hasOreName(in, OreDictAlias.getDyeOreDict(color))) {
                                 dyeColorFound = color;
                                 break;
                             }
@@ -64,7 +65,7 @@ public class RecipeChangeWandColor implements IRecipe {
             }
         }
 
-        if(!foundWand || dyeColorFound == null || nonEmptyItemsFound != 2) {
+        if (!foundWand || dyeColorFound == null || nonEmptyItemsFound != 2) {
             return null;
         } else {
             return dyeColorFound;
@@ -81,8 +82,8 @@ public class RecipeChangeWandColor implements IRecipe {
         return new ItemStack(ItemsAS.illuminationWand);
     }
 
-//    @Override
-//    public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-//        return ForgeHooks.defaultRecipeGetRemainingItems(inv);
-//    }
+    // @Override
+    // public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+    // return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+    // }
 }

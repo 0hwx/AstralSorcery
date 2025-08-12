@@ -8,6 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect.aoe;
 
+import java.awt.*;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.fx.EntityFXFacingParticle;
 import hellfirepvp.astralsorcery.common.constellation.IMinorConstellation;
@@ -21,19 +36,6 @@ import hellfirepvp.astralsorcery.common.util.CropHelper;
 import hellfirepvp.astralsorcery.common.util.ILocatable;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import net.minecraftforge.common.config.Configuration;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.List;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -52,40 +54,60 @@ public class CEffectAevitas extends CEffectPositionListGen<CropHelper.GrowablePl
     public static int potionAmplifier = 1;
 
     public CEffectAevitas(@Nullable ILocatable origin) {
-        super(origin, Constellations.aevitas, "aevitas", searchRange, maxCropCount, (world, pos) -> CropHelper.wrapPlant(world, pos) != null, CropHelper.GrowableWrapper::new);
+        super(
+            origin,
+            Constellations.aevitas,
+            "aevitas",
+            searchRange,
+            maxCropCount,
+            (world, pos) -> CropHelper.wrapPlant(world, pos) != null,
+            CropHelper.GrowableWrapper::new);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility, boolean extendedEffects) {
-        if(rand.nextBoolean()) {
+    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility,
+        boolean extendedEffects) {
+        if (rand.nextBoolean()) {
             EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    pos.getX() + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5,
-                    pos.getY() + rand.nextFloat() * 2 + 0.5,
-                    pos.getZ() + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5);
-            p.motion(0, 0, 0).gravity(0.05);
-            p.scale(0.45F).setColor(new Color(63, 255, 63)).setMaxAge(35);
+                pos.getX() + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5,
+                pos.getY() + rand.nextFloat() * 2 + 0.5,
+                pos.getZ() + rand.nextFloat() * 5 * (rand.nextBoolean() ? 1 : -1) + 0.5);
+            p.motion(0, 0, 0)
+                .gravity(0.05);
+            p.scale(0.45F)
+                .setColor(new Color(63, 255, 63))
+                .setMaxAge(35);
         }
     }
 
     @Override
-    public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect, @Nullable IMinorConstellation possibleTraitEffect) {
-        if(!enabled) return false;
+    public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect,
+        @Nullable IMinorConstellation possibleTraitEffect) {
+        if (!enabled) return false;
         percStrength *= potencyMultiplier;
-        if(percStrength < 1) {
-            if(world.rand.nextFloat() > percStrength) return false;
+        if (percStrength < 1) {
+            if (world.rand.nextFloat() > percStrength) return false;
         }
 
         boolean changed = false;
         CropHelper.GrowablePlant plant = getRandomElementByChance(rand);
-        if(plant != null) {
-            if(MiscUtils.isChunkLoaded(world, new ChunkCoordIntPair(plant.getPos().chunkX(), plant.getPos().chunkZ()))) {
-                if(!plant.isValid(world, true)) {
+        if (plant != null) {
+            if (MiscUtils.isChunkLoaded(
+                world,
+                new ChunkCoordIntPair(
+                    plant.getPos()
+                        .chunkX(),
+                    plant.getPos()
+                        .chunkZ()))) {
+                if (!plant.isValid(world, true)) {
                     removeElement(plant);
                     changed = true;
                 } else {
-                    if(plant.tryGrow(world, rand)) {
-                        PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.CE_CROP_INTERACT, plant.getPos());
+                    if (plant.tryGrow(world, rand)) {
+                        PktParticleEvent ev = new PktParticleEvent(
+                            PktParticleEvent.ParticleEventType.CE_CROP_INTERACT,
+                            plant.getPos());
                         PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(world, plant.getPos(), 8));
                         changed = true;
                     }
@@ -93,12 +115,16 @@ public class CEffectAevitas extends CEffectPositionListGen<CropHelper.GrowablePl
             }
         }
 
-        if(findNewPosition(world, pos)) changed = true;
-        if(findNewPosition(world, pos)) changed = true;
+        if (findNewPosition(world, pos)) changed = true;
+        if (findNewPosition(world, pos)) changed = true;
 
-        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).offset(pos.getX(), pos.getY(), pos.getZ()).expand(searchRange,searchRange,searchRange));
+        List<EntityLivingBase> entities = world.getEntitiesWithinAABB(
+            EntityLivingBase.class,
+            AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1)
+                .offset(pos.getX(), pos.getY(), pos.getZ())
+                .expand(searchRange, searchRange, searchRange));
         for (EntityLivingBase entity : entities) {
-            if(!entity.isDead) {
+            if (!entity.isDead) {
                 entity.addPotionEffect(new PotionEffect(Potion.regeneration.getId(), 200, potionAmplifier));
             }
         }
@@ -120,22 +146,49 @@ public class CEffectAevitas extends CEffectPositionListGen<CropHelper.GrowablePl
     public static void playParticles(PktParticleEvent event) {
         Vector3 at = event.getVec();
         for (int i = 0; i < 8; i++) {
-            EntityFXFacingParticle p = EffectHelper.genericFlareParticle(
-                    at.getX() + rand.nextFloat(),
-                    at.getY() + 0.2,
-                    at.getZ() + rand.nextFloat());
+            EntityFXFacingParticle p = EffectHelper
+                .genericFlareParticle(at.getX() + rand.nextFloat(), at.getY() + 0.2, at.getZ() + rand.nextFloat());
             p.motion(0, 0.005 + rand.nextFloat() * 0.01, 0);
-            p.scale(0.2F).setColor(Color.GREEN);
+            p.scale(0.2F)
+                .setColor(Color.GREEN);
         }
     }
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        searchRange = cfg.getInt(getKey() + "Range", getConfigurationSection(), 16, 1, 32, "Defines the radius (in blocks) in which the ritual will search for valid crops.");
-        maxCropCount = cfg.getInt(getKey() + "Count", getConfigurationSection(), 200, 1, 4000, "Defines the amount of crops the ritual can cache at max. count");
-        enabled = cfg.getBoolean(getKey() + "Enabled", getConfigurationSection(), true, "Set to false to disable this ConstellationEffect.");
-        potionAmplifier = cfg.getInt(getKey() + "RegenerationAmplifier", getConfigurationSection(), 1, 0, Short.MAX_VALUE, "Set the amplifier for the regeneration potion effect.");
-        potencyMultiplier = cfg.getFloat(getKey() + "PotencyMultiplier", getConfigurationSection(), 1.0F, 0.01F, 100F, "Set the potency multiplier for this ritual effect. Will affect all ritual effects and their efficiency.");
+        searchRange = cfg.getInt(
+            getKey() + "Range",
+            getConfigurationSection(),
+            16,
+            1,
+            32,
+            "Defines the radius (in blocks) in which the ritual will search for valid crops.");
+        maxCropCount = cfg.getInt(
+            getKey() + "Count",
+            getConfigurationSection(),
+            200,
+            1,
+            4000,
+            "Defines the amount of crops the ritual can cache at max. count");
+        enabled = cfg.getBoolean(
+            getKey() + "Enabled",
+            getConfigurationSection(),
+            true,
+            "Set to false to disable this ConstellationEffect.");
+        potionAmplifier = cfg.getInt(
+            getKey() + "RegenerationAmplifier",
+            getConfigurationSection(),
+            1,
+            0,
+            Short.MAX_VALUE,
+            "Set the amplifier for the regeneration potion effect.");
+        potencyMultiplier = cfg.getFloat(
+            getKey() + "PotencyMultiplier",
+            getConfigurationSection(),
+            1.0F,
+            0.01F,
+            100F,
+            "Set the potency multiplier for this ritual effect. Will affect all ritual effects and their efficiency.");
     }
 
 }

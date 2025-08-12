@@ -8,11 +8,12 @@
 
 package hellfirepvp.astralsorcery.client.util.resource;
 
-import hellfirepvp.astralsorcery.AstralSorcery;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.obj.WavefrontObject;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraftforge.client.model.obj.WavefrontObject;
+import hellfirepvp.astralsorcery.AstralSorcery;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -26,22 +27,29 @@ public class AssetLoader {
     private AssetLoader() {}
 
     @SideOnly(Side.CLIENT)
-    protected static BindableResource load(AssetLocation location, SubLocation subLocation, String name, String suffix) {
+    protected static BindableResource load(AssetLocation location, SubLocation subLocation, String name,
+        String suffix) {
         return new BindableResource(buildResourceString(location, subLocation, name, suffix));
     }
 
     @SideOnly(Side.CLIENT)
-    private static String buildResourceString(AssetLocation location, SubLocation subLocation, String name, String suffix) {
-        if(name.endsWith(suffix)) { //In case of derp.
+    private static String buildResourceString(AssetLocation location, SubLocation subLocation, String name,
+        String suffix) {
+        if (name.endsWith(suffix)) { // In case of derp.
             name = name.substring(0, name.length() - suffix.length());
         }
 
         StringBuilder builder = new StringBuilder();
-        builder.append(AstralSorcery.MODID).append(':').append(location.location).append("/");
+        builder.append(AstralSorcery.MODID)
+            .append(':')
+            .append(location.location)
+            .append("/");
         if (subLocation != null) {
-            builder.append(subLocation.getLocation()).append("/");
+            builder.append(subLocation.getLocation())
+                .append("/");
         }
-        builder.append(name).append(suffix);
+        builder.append(name)
+            .append(suffix);
         return builder.toString();
     }
 
@@ -52,7 +60,8 @@ public class AssetLoader {
 
     @SideOnly(Side.CLIENT)
     public static WavefrontObject loadObjModel(ModelLocation location, String name) {
-        return new WavefrontObject(new ResourceLocation(buildResourceString(AssetLocation.MODELS, location, name, ".obj")));
+        return new WavefrontObject(
+            new ResourceLocation(buildResourceString(AssetLocation.MODELS, location, name, ".obj")));
     }
 
     public static interface SubLocation {

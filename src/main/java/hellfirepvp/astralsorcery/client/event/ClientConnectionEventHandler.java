@@ -8,6 +8,14 @@
 
 package hellfirepvp.astralsorcery.client.event;
 
+import java.util.HashMap;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.util.ChatAllowedCharacters;
+import net.minecraft.util.MathHelper;
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 import hellfirepvp.astralsorcery.AstralSorcery;
@@ -28,13 +36,6 @@ import hellfirepvp.astralsorcery.common.data.SyncDataHolder;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.data.research.PlayerProgress;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.util.ChatAllowedCharacters;
-import net.minecraft.util.MathHelper;
-
-import java.util.HashMap;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -45,15 +46,17 @@ import java.util.HashMap;
  */
 public class ClientConnectionEventHandler {
 
-    //Used to cleanup stuff on clientside to make the client functional to switch servers at any time.
+    // Used to cleanup stuff on clientside to make the client functional to switch servers at any time.
     @SubscribeEvent
     public void onDc(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         AstralSorcery.log.info("[AstralSorcery] Disconnected from server. Cleaning client cache.");
         EffectHandler.cleanUp();
-        ClientCameraManager.getInstance().removeAllAndCleanup();
+        ClientCameraManager.getInstance()
+            .removeAllAndCleanup();
         Config.rebuildClientConfig();
-        ConstellationSkyHandler.getInstance().clientClearCache();
-        GuiJournalProgression.resetJournal(); //Refresh journal gui
+        ConstellationSkyHandler.getInstance()
+            .clientClearCache();
+        GuiJournalProgression.resetJournal(); // Refresh journal gui
         ResearchManager.clientProgress = new PlayerProgress();
         AstralSorcery.proxy.scheduleClientside(ClientScreenshotCache::cleanUp);
         ConstellationPerkLevelManager.levelsRequired = ConstellationPerkLevelManager.levelsRequiredClientCache;
@@ -64,7 +67,8 @@ public class ClientConnectionEventHandler {
         CraftingAccessManager.clearModifications();
         CelestialGatewaySystem.instance.updateClientCache(new HashMap<>());
         ((DataLightConnections) SyncDataHolder.getDataClient(SyncDataHolder.DATA_LIGHT_CONNECTIONS)).clientClean();
-        ((DataLightBlockEndpoints) SyncDataHolder.getDataClient(SyncDataHolder.DATA_LIGHT_BLOCK_ENDPOINTS)).clientClean();
+        ((DataLightBlockEndpoints) SyncDataHolder.getDataClient(SyncDataHolder.DATA_LIGHT_BLOCK_ENDPOINTS))
+            .clientClean();
         ((DataWorldSkyHandlers) SyncDataHolder.getDataClient(SyncDataHolder.DATA_SKY_HANDLERS)).clientClean();
     }
 
@@ -72,15 +76,17 @@ public class ClientConnectionEventHandler {
     public void onJoin(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         AstralSorcery.proxy.scheduleClientside(() -> {
             NetworkManager nm = event.manager;
-            String addr = nm.getSocketAddress().toString();
+            String addr = nm.getSocketAddress()
+                .toString();
             if (nm.isLocalChannel()) {
-                IntegratedServer is = Minecraft.getMinecraft().getIntegratedServer();
-                if(is != null) {
+                IntegratedServer is = Minecraft.getMinecraft()
+                    .getIntegratedServer();
+                if (is != null) {
                     addr = is.getWorldName();
                 }
             } else {
                 int id = addr.indexOf('\\');
-                if(id != -1) {
+                if (id != -1) {
                     addr = addr.substring(0, MathHelper.clamp_int(id, 1, addr.length()));
                 }
             }
@@ -96,8 +102,7 @@ public class ClientConnectionEventHandler {
         char[] achar = ChatAllowedCharacters.allowedCharacters;
         int i = achar.length;
 
-        for (int j = 0; j < i; ++j)
-        {
+        for (int j = 0; j < i; ++j) {
             char c0 = achar[j];
             addr = addr.replace(c0, '_');
         }

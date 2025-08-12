@@ -8,17 +8,18 @@
 
 package hellfirepvp.astralsorcery.common.data;
 
-import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -75,7 +76,7 @@ public class DataWorldSkyHandlers extends AbstractData {
 
     @Override
     public void handleIncomingData(AbstractData serverData) {
-        if(!(serverData instanceof DataWorldSkyHandlers)) return;
+        if (!(serverData instanceof DataWorldSkyHandlers)) return;
 
         this.activeWorldSkyHandlers = ((DataWorldSkyHandlers) serverData).activeWorldSkyHandlers;
     }

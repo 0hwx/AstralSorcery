@@ -8,10 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import hellfirepvp.astralsorcery.common.lib.BlocksAS;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import java.util.LinkedList;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -20,8 +19,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
-import java.util.LinkedList;
-import java.util.List;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.lib.BlocksAS;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -32,7 +33,8 @@ import java.util.List;
  */
 public class BlockBlackMarble extends Block implements BlockCustomName, BlockVariants {
 
-//    public static PropertyEnum<BlackMarbleBlockType> BLACK_MARBLE_TYPE = PropertyEnum.create("marbletype", BlackMarbleBlockType.class);
+    // public static PropertyEnum<BlackMarbleBlockType> BLACK_MARBLE_TYPE = PropertyEnum.create("marbletype",
+    // BlackMarbleBlockType.class);
     private IIcon[] icons = new IIcon[BlackMarbleBlockType.values().length];
 
     public BlockBlackMarble() {
@@ -41,9 +43,9 @@ public class BlockBlackMarble extends Block implements BlockCustomName, BlockVar
         setHardness(1.0F);
         setHarvestLevel("pickaxe", 1);
         setResistance(3.0F);
-setStepSound(soundTypeStone);
+        setStepSound(soundTypeStone);
         setCreativeTab(RegistryItems.creativeTabAstralSorcery);
-//        setDefaultState(this.blockState.getBaseState().withProperty(BLACK_MARBLE_TYPE, BlackMarbleBlockType.RAW));
+        // setDefaultState(this.blockState.getBaseState().withProperty(BLACK_MARBLE_TYPE, BlackMarbleBlockType.RAW));
     }
 
     @Override
@@ -73,38 +75,39 @@ setStepSound(soundTypeStone);
         return true;
     }
 
-//    @Override
-//    public boolean isFullyOpaque() {
-//        return true;
-//    }
+    // @Override
+    // public boolean isFullyOpaque() {
+    // return true;
+    // }
 
     @Override
     public String getIdentifierForMeta(int meta) {
         return BlackMarbleBlockType.values()[meta].getName();
     }
 
-//    @Override
-//    public int getMeta(Block state) {
-//        BlackMarbleBlockType type = state.getValue(BLACK_MARBLE_TYPE);
-//        return type == null ? 0 : type.getMeta();
-//    }
-//
-//    @Override
-//    public Block getStateFromMeta(int meta) {
-//        return meta < BlackMarbleBlockType.values().length ? getDefaultState().withProperty(BLACK_MARBLE_TYPE, BlackMarbleBlockType.values()[meta]) : getDefaultState();
-//    }
-//
-//    @Override
-//    protected BlockStateContainer createBlockState() {
-//        return new BlockStateContainer(this, BLACK_MARBLE_TYPE);
-//    }
+    // @Override
+    // public int getMeta(Block state) {
+    // BlackMarbleBlockType type = state.getValue(BLACK_MARBLE_TYPE);
+    // return type == null ? 0 : type.getMeta();
+    // }
+    //
+    // @Override
+    // public Block getStateFromMeta(int meta) {
+    // return meta < BlackMarbleBlockType.values().length ? getDefaultState().withProperty(BLACK_MARBLE_TYPE,
+    // BlackMarbleBlockType.values()[meta]) : getDefaultState();
+    // }
+    //
+    // @Override
+    // protected BlockStateContainer createBlockState() {
+    // return new BlockStateContainer(this, BLACK_MARBLE_TYPE);
+    // }
 
     @Override
     public List<Block> getValidStates() {
         List<Block> ret = new LinkedList<>();
-//        for (BlackMarbleBlockType type : BlackMarbleBlockType.values()) {
-//            ret.add(getDefaultState().withProperty(BLACK_MARBLE_TYPE, type));
-//        }
+        // for (BlackMarbleBlockType type : BlackMarbleBlockType.values()) {
+        // ret.add(getDefaultState().withProperty(BLACK_MARBLE_TYPE, type));
+        // }
         return ret;
     }
 
@@ -118,15 +121,12 @@ setStepSound(soundTypeStone);
         return 0;
     }
 
-
-    public IIcon getIcon(int side, int meta)
-    {
+    public IIcon getIcon(int side, int meta) {
         return icons[meta];
     }
 
     @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister reg)
-    {
+    public void registerBlockIcons(IIconRegister reg) {
         for (BlackMarbleBlockType type : BlackMarbleBlockType.values()) {
             icons[type.getMeta()] = reg.registerIcon("astralsorcery:black_marble_" + type.getName());
         }
@@ -147,7 +147,7 @@ setStepSound(soundTypeStone);
         }
 
         public Block asBlock() {
-            return BlocksAS.blockBlackMarble;//.getStateFromMeta(meta);
+            return BlocksAS.blockBlackMarble;// .getStateFromMeta(meta);
         }
 
         public int getMeta() {

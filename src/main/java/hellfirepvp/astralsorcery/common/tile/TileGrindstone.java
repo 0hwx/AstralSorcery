@@ -8,19 +8,20 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.ITickable;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktPlayEffect;
 import hellfirepvp.astralsorcery.common.tile.base.TileEntitySynchronized;
 import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.ITickable;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,15 +36,15 @@ public class TileGrindstone extends TileEntitySynchronized implements ITickable 
 
     private ItemStack grindingItem = null;
     public int tickWheelAnimation = 0, prevTickWheelAnimation = 0;
-    private boolean repeat = false; //Used for repeat after effect went off..~
+    private boolean repeat = false; // Used for repeat after effect went off..~
 
     @Override
     public void tick() {
-        if(worldObj.isRemote) {
-            if(tickWheelAnimation > 0) {
+        if (worldObj.isRemote) {
+            if (tickWheelAnimation > 0) {
                 prevTickWheelAnimation = tickWheelAnimation;
                 tickWheelAnimation--;
-                if(tickWheelAnimation <= 0 && repeat) {
+                if (tickWheelAnimation <= 0 && repeat) {
                     tickWheelAnimation = TICKS_WHEEL_ROTATION;
                     prevTickWheelAnimation = TICKS_WHEEL_ROTATION + 1;
                     repeat = false;
@@ -58,7 +59,7 @@ public class TileGrindstone extends TileEntitySynchronized implements ITickable 
     public void playWheelEffect() {
         BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
         PktPlayEffect effect = new PktPlayEffect(PktPlayEffect.EffectType.GRINDSTONE_WHEEL, pos);
-        if(worldObj.isRemote) {
+        if (worldObj.isRemote) {
             playWheelAnimation(effect);
         } else {
             PacketChannel.CHANNEL.sendToAllAround(effect, PacketChannel.pointFromPos(worldObj, pos, 32));
@@ -67,11 +68,12 @@ public class TileGrindstone extends TileEntitySynchronized implements ITickable 
 
     @SideOnly(Side.CLIENT)
     public static void playWheelAnimation(PktPlayEffect pktPlayEffect) {
-        TileGrindstone tgr = MiscUtils.getTileAt(Minecraft.getMinecraft().theWorld, pktPlayEffect.pos, TileGrindstone.class, false);
-        if(tgr != null) {
-            if(tgr.tickWheelAnimation == 0) {
+        TileGrindstone tgr = MiscUtils
+            .getTileAt(Minecraft.getMinecraft().theWorld, pktPlayEffect.pos, TileGrindstone.class, false);
+        if (tgr != null) {
+            if (tgr.tickWheelAnimation == 0) {
                 tgr.tickWheelAnimation = TICKS_WHEEL_ROTATION;
-            } else if(tgr.tickWheelAnimation * 2 <= TICKS_WHEEL_ROTATION) {
+            } else if (tgr.tickWheelAnimation * 2 <= TICKS_WHEEL_ROTATION) {
                 tgr.repeat = true;
             }
         }
@@ -98,7 +100,7 @@ public class TileGrindstone extends TileEntitySynchronized implements ITickable 
     public void writeCustomNBT(NBTTagCompound compound) {
         super.writeCustomNBT(compound);
 
-        if(grindingItem != null) {
+        if (grindingItem != null) {
             grindingItem.writeToNBT(compound);
         }
     }

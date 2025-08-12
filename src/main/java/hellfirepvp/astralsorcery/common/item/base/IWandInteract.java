@@ -8,10 +8,10 @@
 
 package hellfirepvp.astralsorcery.common.item.base;
 
-import hellfirepvp.astralsorcery.common.util.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
+import hellfirepvp.astralsorcery.common.util.BlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod

@@ -1,8 +1,6 @@
 package hellfirepvp.astralsorcery.common.enchantment;
 
-
 import net.minecraft.enchantment.EnumEnchantmentType;
-
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -14,7 +12,7 @@ import net.minecraft.enchantment.EnumEnchantmentType;
 public class EnchantmentScorchingHeat extends EnchantmentBase {
 
     public EnchantmentScorchingHeat() {
-        super("as.smelting", 101,1, EnumEnchantmentType.digger);
+        super("as.smelting", 101, 1, EnumEnchantmentType.digger);
     }
 
 }

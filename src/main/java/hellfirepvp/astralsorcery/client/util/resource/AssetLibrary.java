@@ -8,15 +8,17 @@
 
 package hellfirepvp.astralsorcery.client.util.resource;
 
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.client.sky.RenderSkybox;
-import hellfirepvp.astralsorcery.client.util.TexturePreloader;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
+import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.client.sky.RenderSkybox;
+import hellfirepvp.astralsorcery.client.util.TexturePreloader;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,14 +37,14 @@ public class AssetLibrary implements IResourceManagerReloadListener {
     private AssetLibrary() {}
 
     public static BindableResource loadTexture(AssetLoader.TextureLocation location, String name) {
-        if(name.endsWith(".png")) {
+        if (name.endsWith(".png")) {
             throw new IllegalArgumentException("Tried to loadTexture with appended .png from the AssetLibrary!");
         }
-        if(!loadedTextures.containsKey(location)) {
+        if (!loadedTextures.containsKey(location)) {
             loadedTextures.put(location, new HashMap<>());
         }
         Map<String, BindableResource> resources = loadedTextures.get(location);
-        if(resources.containsKey(name)) {
+        if (resources.containsKey(name)) {
             return resources.get(name);
         }
         BindableResource res = AssetLoader.load(AssetLoader.AssetLocation.TEXTURES, location, name, ".png");
@@ -52,12 +54,12 @@ public class AssetLibrary implements IResourceManagerReloadListener {
 
     @Override
     public void onResourceManagerReload(@Nullable IResourceManager resourceManager) {
-        if(reloading) return;
+        if (reloading) return;
         reloading = true;
         AstralSorcery.log.info("[AssetLibrary] Refreshing and Invalidating Resources");
         for (Map<String, BindableResource> map : loadedTextures.values()) {
             for (BindableResource res : map.values()) {
-                res.invalidateAndReload(); //Massively unloading all textures.
+                res.invalidateAndReload(); // Massively unloading all textures.
             }
         }
         reloading = false;

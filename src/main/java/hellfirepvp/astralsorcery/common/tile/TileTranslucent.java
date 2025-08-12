@@ -8,10 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
-import hellfirepvp.astralsorcery.common.tile.base.TileEntitySynchronized;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+
+import hellfirepvp.astralsorcery.common.tile.base.TileEntitySynchronized;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -38,22 +39,24 @@ public class TileTranslucent extends TileEntitySynchronized {
     public void readCustomNBT(NBTTagCompound compound) {
         super.readCustomNBT(compound);
 
-        if(compound.hasKey("Block") && compound.hasKey("Data")) {
+        if (compound.hasKey("Block") && compound.hasKey("Data")) {
             int data = compound.getInteger("Data");
             Block b = Block.getBlockFromName(compound.getString("Block"));
-            if(b != null) {
+            if (b != null) {
                 metadata = b.damageDropped(data);
             }
         }
     }
 
-
     @Override
     public void writeCustomNBT(NBTTagCompound compound) {
         super.writeCustomNBT(compound);
 
-        if(fakedState != null) {
-            compound.setString("Block", Block.blockRegistry.getNameForObject(fakedState).toString());
+        if (fakedState != null) {
+            compound.setString(
+                "Block",
+                Block.blockRegistry.getNameForObject(fakedState)
+                    .toString());
             compound.setInteger("Data", metadata);
         }
     }

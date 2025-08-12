@@ -9,7 +9,6 @@
 package hellfirepvp.astralsorcery.client.util;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.Item;
 
@@ -23,8 +22,8 @@ import net.minecraft.item.Item;
 public class MeshRegisterHelper {
 
     public static void registerItem(Item item, int metadata, String itemName) {
-//        item.getIconFromDamage(metadata);
-//        getIMM().renderIcon(item, metadata, new ModelResourceLocation(itemName, "inventory"));
+        // item.getIconFromDamage(metadata);
+        // getIMM().renderIcon(item, metadata, new ModelResourceLocation(itemName, "inventory"));
     }
 
     public static void registerBlock(Block block, int metadata, String blockName) {
@@ -43,8 +42,8 @@ public class MeshRegisterHelper {
         return RenderItem.getInstance();
     }
 
-//    public static BlockModelShapes getBMShapes() {
-//        return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes();
-//    }
+    // public static BlockModelShapes getBMShapes() {
+    // return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes();
+    // }
 
 }

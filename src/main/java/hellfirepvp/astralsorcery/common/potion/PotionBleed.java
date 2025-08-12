@@ -8,13 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.potion;
 
+import net.minecraft.entity.EntityLivingBase;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
 import hellfirepvp.astralsorcery.common.CommonProxy;
-import net.minecraft.entity.EntityLivingBase;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -47,7 +48,7 @@ public class PotionBleed extends PotionCustomTexture {
     @Override
     @SideOnly(Side.CLIENT)
     public BindableResource getResource() {
-        if(texBuffer == null) {
+        if (texBuffer == null) {
             texBuffer = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC, "potion_bleed");
         }
         return (BindableResource) texBuffer;

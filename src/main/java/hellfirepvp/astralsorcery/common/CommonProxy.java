@@ -8,7 +8,24 @@
 
 package hellfirepvp.astralsorcery.common;
 
+import java.awt.*;
+import java.util.UUID;
+
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.oredict.OreDictionary;
+
 import com.mojang.authlib.GameProfile;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -55,21 +72,6 @@ import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.world.AstralWorldGenerator;
 import hellfirepvp.astralsorcery.common.world.retrogen.ChunkVersionController;
 import hellfirepvp.astralsorcery.common.world.retrogen.RetroGenController;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.oredict.OreDictionary;
-
-import java.awt.*;
-import java.util.UUID;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -80,8 +82,9 @@ import java.util.UUID;
  */
 public class CommonProxy implements IGuiHandler {
 
-    public static DamageSource dmgSourceBleed   = new DamageSource("as.bleed").setDamageBypassesArmor();
-    public static DamageSource dmgSourceStellar = new DamageSource("as.stellar").setDamageBypassesArmor().setMagicDamage();
+    public static DamageSource dmgSourceBleed = new DamageSource("as.bleed").setDamageBypassesArmor();
+    public static DamageSource dmgSourceStellar = new DamageSource("as.stellar").setDamageBypassesArmor()
+        .setMagicDamage();
     private static UUID fakePlayerUUID = UUID.fromString("BD4F59E2-4E26-4388-B903-B533D482C205");
 
     public static AstralWorldGenerator worldGenerator = new AstralWorldGenerator();
@@ -91,10 +94,10 @@ public class CommonProxy implements IGuiHandler {
         worldGenerator.pushConfigEntries();
         ConstellationEffectRegistry.addDynamicConfigEntries();
         ConstellationPerks.addDynamicConfigEntries();
-//        CapeEffectRegistry.addDynamicConfigEntries();
+        // CapeEffectRegistry.addDynamicConfigEntries();
         Config.addDynamicEntry(TileTreeBeacon.ConfigEntryTreeBeacon.instance);
-//        Config.addDynamicEntry(TileOreGenerator.ConfigEntryMultiOre.instance);
-//        Config.addDynamicEntry(TileChalice.ConfigEntryChalice.instance);
+        // Config.addDynamicEntry(TileOreGenerator.ConfigEntryMultiOre.instance);
+        // Config.addDynamicEntry(TileChalice.ConfigEntryChalice.instance);
         Config.addDynamicEntry(ConstellationPerkLevelManager.getLevelConfigurations());
     }
 
@@ -102,7 +105,7 @@ public class CommonProxy implements IGuiHandler {
         Config.addDataRegistry(OreTypes.RITUAL_MINERALIS);
         Config.addDataRegistry(OreTypes.AEVITAS_ORE_PERK);
         Config.addDataRegistry(OreTypes.TREASURE_SHRINE_GEN);
-//        Config.addDataRegistry(FluidRarityRegistry.INSTANCE);
+        // Config.addDataRegistry(FluidRarityRegistry.INSTANCE);
     }
 
     public void preInit() {
@@ -116,10 +119,10 @@ public class CommonProxy implements IGuiHandler {
         RegistryBlocks.init();
         RegistryItems.init();
         RegistryEntities.init();
-//        RegistryStructures.init();
+        // RegistryStructures.init();
         RegistryPotions.init();
 
-        //Transmission registry
+        // Transmission registry
         SourceClassRegistry.setupRegistry();
         TransmissionClassRegistry.setupRegistry();
 
@@ -129,7 +132,7 @@ public class CommonProxy implements IGuiHandler {
         RegistryRecipes.init();
         RegistryResearch.init();
 
-//        LootTableUtil.initLootTable();
+        // LootTableUtil.initLootTable();
         ConstellationEffectRegistry.init();
 
         registerOreDictEntries();
@@ -140,11 +143,12 @@ public class CommonProxy implements IGuiHandler {
     }
 
     private void registerCapabilities() {
-        //CapabilityManager.INSTANCE.register(IPlayerCapabilityPerks.class, new IPlayerCapabilityPerks.Storage(), IPlayerCapabilityPerks.Impl.class);
+        // CapabilityManager.INSTANCE.register(IPlayerCapabilityPerks.class, new IPlayerCapabilityPerks.Storage(),
+        // IPlayerCapabilityPerks.Impl.class);
     }
 
     private void registerOreDictEntries() {
-        //*sigh*
+        // *sigh*
         OreDictionary.registerOre(OreDictAlias.BLOCK_MARBLE, new ItemStack(BlocksAS.blockMarble, 1, 0));
         OreDictionary.registerOre("blockMarble", new ItemStack(BlocksAS.blockMarble, 1, 0));
     }
@@ -162,7 +166,9 @@ public class CommonProxy implements IGuiHandler {
         MinecraftForge.EVENT_BUS.register(new EventHandlerNetwork());
         EventHandlerServer eventHandlerServer = new EventHandlerServer();
         MinecraftForge.EVENT_BUS.register(eventHandlerServer);
-        FMLCommonHandler.instance().bus().register(eventHandlerServer);
+        FMLCommonHandler.instance()
+            .bus()
+            .register(eventHandlerServer);
         MinecraftForge.EVENT_BUS.register(new EventHandlerAchievements());
         MinecraftForge.EVENT_BUS.register(new EventHandlerMisc());
         MinecraftForge.EVENT_BUS.register(TransmissionChunkTracker.getInstance());
@@ -174,7 +180,7 @@ public class CommonProxy implements IGuiHandler {
         MinecraftForge.EVENT_BUS.register(CelestialGatewaySystem.instance);
 
         GameRegistry.registerWorldGenerator(worldGenerator.setupAttributes(), 50);
-        if(Config.enableRetroGen) {
+        if (Config.enableRetroGen) {
             MinecraftForge.EVENT_BUS.register(new RetroGenController());
         }
         RegistrySounds.init();
@@ -184,7 +190,7 @@ public class CommonProxy implements IGuiHandler {
 
         SyncDataHolder.initialize();
         TileAccelerationBlacklist.init();
-//        OreTypes.init();
+        // OreTypes.init();
         LightOreTransmutations.init();
         HerdableAnimal.init();
         WellLiquefaction.init();
@@ -196,13 +202,13 @@ public class CommonProxy implements IGuiHandler {
         manager.register(StarlightTransmissionHandler.getInstance());
         manager.register(StarlightUpdateHandler.getInstance());
         manager.register(WorldCacheManager.getInstance());
-        manager.register(new LinkHandler()); //Only used as instance for tick handling
+        manager.register(new LinkHandler()); // Only used as instance for tick handling
         manager.register(SyncDataHolder.getTickInstance());
         manager.register(new PlayerPerkHandler());
         manager.register(commonScheduler);
         manager.register(PlayerChargeHandler.instance);
 
-        //TickTokenizedMaps
+        // TickTokenizedMaps
         manager.register(EventHandlerServer.spawnDenyRegions);
         manager.register(EventHandlerServer.perkCooldowns);
         manager.register(EventHandlerServer.invulnerabilityCooldown);
@@ -254,7 +260,7 @@ public class CommonProxy implements IGuiHandler {
 
     public void fireLightning(World world, Vector3 from, Vector3 to, Color overlay) {
         PktLightningEffect effect = new PktLightningEffect(from, to);
-        if(overlay != null) {
+        if (overlay != null) {
             effect.setColorOverlay(overlay);
         }
         PacketChannel.CHANNEL.sendToAllAround(effect, PacketChannel.pointFromPos(world, from.toBlockPos(), 40));
@@ -262,13 +268,13 @@ public class CommonProxy implements IGuiHandler {
 
     @Override
     public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-        if(id < 0 || id >= EnumGuiId.values().length) return null; //Out of range.
+        if (id < 0 || id >= EnumGuiId.values().length) return null; // Out of range.
         EnumGuiId guiType = EnumGuiId.values()[id];
 
         TileEntity t = null;
-        if(guiType.getTileClass() != null) {
+        if (guiType.getTileClass() != null) {
             t = MiscUtils.getTileAt(world, new BlockPos(x, y, z), guiType.getTileClass(), true);
-            if(t == null) {
+            if (t == null) {
                 return null;
             }
         }
@@ -284,8 +290,8 @@ public class CommonProxy implements IGuiHandler {
                 return new ContainerAltarTrait(player.inventory, (TileAltar) t);
             case JOURNAL_STORAGE: {
                 ItemStack held = player.getHeldItem();
-                if(held != null) {
-                    if(held.getItem() != null && held.getItem() instanceof ItemJournal) {
+                if (held != null) {
+                    if (held.getItem() != null && held.getItem() instanceof ItemJournal) {
                         return new ContainerJournal(player.inventory, held, player.inventory.currentItem);
                     }
                 }

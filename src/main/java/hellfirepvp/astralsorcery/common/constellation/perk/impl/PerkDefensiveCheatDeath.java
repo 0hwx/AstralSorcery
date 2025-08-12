@@ -8,12 +8,13 @@
 
 package hellfirepvp.astralsorcery.common.constellation.perk.impl;
 
-import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
-import hellfirepvp.astralsorcery.common.registry.RegistryPotions;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.config.Configuration;
+
+import hellfirepvp.astralsorcery.common.constellation.perk.ConstellationPerk;
+import hellfirepvp.astralsorcery.common.registry.RegistryPotions;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -37,11 +38,11 @@ public class PerkDefensiveCheatDeath extends ConstellationPerk {
 
     @Override
     public float onEntityHurt(EntityPlayer hurt, DamageSource source, float dmgIn) {
-        if(hurt.getHealth() <= thresholdApplyPerkHealth ||
-                dmgIn >= thresholdApplyPerkDamage) {
-            if(!isCooldownActiveForPlayer(hurt)) {
+        if (hurt.getHealth() <= thresholdApplyPerkHealth || dmgIn >= thresholdApplyPerkDamage) {
+            if (!isCooldownActiveForPlayer(hurt)) {
                 setCooldownActiveForPlayer(hurt, cooldownPotionApplication);
-                hurt.addPotionEffect(new PotionEffect(RegistryPotions.potionCheatDeath.getId(), potionDuration, potionAmplifier, true));
+                hurt.addPotionEffect(
+                    new PotionEffect(RegistryPotions.potionCheatDeath.getId(), potionDuration, potionAmplifier, true));
             }
         }
         return dmgIn;
@@ -54,12 +55,42 @@ public class PerkDefensiveCheatDeath extends ConstellationPerk {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        thresholdApplyPerkHealth = cfg.getFloat(getKey() + "ThresholdHealth", getConfigurationSection(), thresholdApplyPerkHealth, 0F, 20F, "If the player drops below this value of health, the potion effect will apply in case it isn't on cooldown.");
-        thresholdApplyPerkDamage = cfg.getFloat(getKey() + "ThresholdDamage", getConfigurationSection(), thresholdApplyPerkDamage, 1F, 100F, "If the player takes damage equals/higher to the amount of damage configured here, the potion effect will apply in case it isn't on cooldown.");
-        cooldownPotionApplication = cfg.getInt(getKey() + "CooldownPotion", getConfigurationSection(), cooldownPotionApplication, 1, Integer.MAX_VALUE, "Once the potion effect gets applied, it'll take at least this amount of ticks or a server restart until it can be re-applied by this perk");
+        thresholdApplyPerkHealth = cfg.getFloat(
+            getKey() + "ThresholdHealth",
+            getConfigurationSection(),
+            thresholdApplyPerkHealth,
+            0F,
+            20F,
+            "If the player drops below this value of health, the potion effect will apply in case it isn't on cooldown.");
+        thresholdApplyPerkDamage = cfg.getFloat(
+            getKey() + "ThresholdDamage",
+            getConfigurationSection(),
+            thresholdApplyPerkDamage,
+            1F,
+            100F,
+            "If the player takes damage equals/higher to the amount of damage configured here, the potion effect will apply in case it isn't on cooldown.");
+        cooldownPotionApplication = cfg.getInt(
+            getKey() + "CooldownPotion",
+            getConfigurationSection(),
+            cooldownPotionApplication,
+            1,
+            Integer.MAX_VALUE,
+            "Once the potion effect gets applied, it'll take at least this amount of ticks or a server restart until it can be re-applied by this perk");
 
-        potionDuration = cfg.getInt(getKey() + "PotionDuration", getConfigurationSection(), potionDuration, 1, Integer.MAX_VALUE, "Once the potion effect gets applied by any of the triggers, this will be used as tick-duration of the potion effect.");
-        potionAmplifier = cfg.getInt(getKey() + "PotionAmplifier", getConfigurationSection(), potionAmplifier, 0, 32, "Once the potion effect gets applied by any of the triggers, this will be used as amplifier of the potion effect.");
+        potionDuration = cfg.getInt(
+            getKey() + "PotionDuration",
+            getConfigurationSection(),
+            potionDuration,
+            1,
+            Integer.MAX_VALUE,
+            "Once the potion effect gets applied by any of the triggers, this will be used as tick-duration of the potion effect.");
+        potionAmplifier = cfg.getInt(
+            getKey() + "PotionAmplifier",
+            getConfigurationSection(),
+            potionAmplifier,
+            0,
+            32,
+            "Once the potion effect gets applied by any of the triggers, this will be used as amplifier of the potion effect.");
     }
 
 }

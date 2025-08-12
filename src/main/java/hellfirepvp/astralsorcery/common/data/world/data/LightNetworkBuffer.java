@@ -8,6 +8,24 @@
 
 package hellfirepvp.astralsorcery.common.data.world.data;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.data.world.CachedWorldData;
@@ -27,22 +45,6 @@ import hellfirepvp.astralsorcery.common.util.BlockPos;
 import hellfirepvp.astralsorcery.common.util.MiscUtils;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTUtils;
-import net.minecraft.block.Block;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -71,9 +73,11 @@ public class LightNetworkBuffer extends CachedWorldData {
     public void updateTick(World world) {
         cleanupQueuedChunks();
 
-        TransmissionWorldHandler handle = StarlightTransmissionHandler.getInstance().getWorldHandler(world);
+        TransmissionWorldHandler handle = StarlightTransmissionHandler.getInstance()
+            .getWorldHandler(world);
 
-        Iterator<Map.Entry<BlockPos, IIndependentStarlightSource>> iterator = starlightSources.entrySet().iterator();
+        Iterator<Map.Entry<BlockPos, IIndependentStarlightSource>> iterator = starlightSources.entrySet()
+            .iterator();
         while (iterator.hasNext()) {
             Map.Entry<BlockPos, IIndependentStarlightSource> entry = iterator.next();
             BlockPos pos = entry.getKey();
@@ -81,13 +85,13 @@ public class LightNetworkBuffer extends CachedWorldData {
             IIndependentStarlightSource source = entry.getValue();
 
             if (MiscUtils.isChunkLoaded(world, chPos)) {
-                TileEntity te = world.getTileEntity(pos.getX(), pos.getY(), pos.getZ()); //Safe to do now.
+                TileEntity te = world.getTileEntity(pos.getX(), pos.getY(), pos.getZ()); // Safe to do now.
                 if (te != null) {
                     if (te instanceof IStarlightSource) {
-                        if(((IStarlightSource) te).needToUpdateStarlightSource()) {
+                        if (((IStarlightSource) te).needToUpdateStarlightSource()) {
                             source.informTileStateChange((IStarlightSource) te);
                             ((IStarlightSource) te).markUpdated();
-                            if(handle != null) {
+                            if (handle != null) {
                                 handle.breakSourceNetwork(source);
                             }
                         }
@@ -96,11 +100,12 @@ public class LightNetworkBuffer extends CachedWorldData {
                         AstralSorcery.log.warn("Purging cache entry and removing erroneous block!");
                         Block there = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
                         int meta = world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
-                        AstralSorcery.log.warn("Block that gets purged: " + there.getUnlocalizedName() + " with meta " + meta);
+                        AstralSorcery.log
+                            .warn("Block that gets purged: " + there.getUnlocalizedName() + " with meta " + meta);
                         iterator.remove();
                         world.setBlockToAir(pos.getX(), pos.getY(), pos.getZ());
                         ChunkNetworkData data = getChunkData(chPos);
-                        if(data != null) {
+                        if (data != null) {
                             data.removeSourceTile(pos);
                         }
                         continue;
@@ -108,41 +113,54 @@ public class LightNetworkBuffer extends CachedWorldData {
                 }
             }
 
-            //source.onUpdate(world, pos);
+            // source.onUpdate(world, pos);
         }
     }
 
     @Override
     public void onLoad(World world) {
 
-        if(Config.performNetworkIntegrityCheck) {
-            AstralSorcery.log.info("[LightNetworkIntegrityCheck] Performing StarlightNetwork integrity check for world " + world.provider.dimensionId);
+        if (Config.performNetworkIntegrityCheck) {
+            AstralSorcery.log.info(
+                "[LightNetworkIntegrityCheck] Performing StarlightNetwork integrity check for world "
+                    + world.provider.dimensionId);
             List<IPrismTransmissionNode> invalidRemoval = new LinkedList<>();
 
             for (ChunkNetworkData data : chunkSortedData.values()) {
                 for (ChunkSectionNetworkData secData : data.sections.values()) {
                     for (IPrismTransmissionNode node : secData.getAllTransmissionNodes()) {
-                        TileEntity te = world.getTileEntity(node.getPos().getX(), node.getPos().getY(), node.getPos().getZ());
-                        if(te == null || !(te instanceof IStarlightTransmission)) {
+                        TileEntity te = world.getTileEntity(
+                            node.getPos()
+                                .getX(),
+                            node.getPos()
+                                .getY(),
+                            node.getPos()
+                                .getZ());
+                        if (te == null || !(te instanceof IStarlightTransmission)) {
                             invalidRemoval.add(node);
                             continue;
                         }
                         IStarlightTransmission ism = (IStarlightTransmission) te;
                         IPrismTransmissionNode newNode = ism.provideTransmissionNode(node.getPos());
-                        if(!node.getClass().isAssignableFrom(newNode.getClass())) {
+                        if (!node.getClass()
+                            .isAssignableFrom(newNode.getClass())) {
                             invalidRemoval.add(node);
                             continue;
                         }
 
-                        if(node.needsUpdate()) {
-                            StarlightUpdateHandler.getInstance().addNode(world, node);
+                        if (node.needsUpdate()) {
+                            StarlightUpdateHandler.getInstance()
+                                .addNode(world, node);
                         }
                         node.postLoad(world);
                     }
                 }
             }
 
-            AstralSorcery.log.info("[LightNetworkIntegrityCheck] Performed StarlightNetwork integrity check. Found " + invalidRemoval.size() + " invalid transmission nodes.");
+            AstralSorcery.log.info(
+                "[LightNetworkIntegrityCheck] Performed StarlightNetwork integrity check. Found "
+                    + invalidRemoval.size()
+                    + " invalid transmission nodes.");
             for (IPrismTransmissionNode node : invalidRemoval) {
                 removeTransmission(node.getPos());
             }
@@ -152,8 +170,9 @@ public class LightNetworkBuffer extends CachedWorldData {
             for (ChunkNetworkData data : chunkSortedData.values()) {
                 for (ChunkSectionNetworkData secData : data.sections.values()) {
                     for (IPrismTransmissionNode node : secData.getAllTransmissionNodes()) {
-                        if(node.needsUpdate()) {
-                            StarlightUpdateHandler.getInstance().addNode(world, node);
+                        if (node.needsUpdate()) {
+                            StarlightUpdateHandler.getInstance()
+                                .addNode(world, node);
                         }
                         node.postLoad(world);
                     }
@@ -165,7 +184,7 @@ public class LightNetworkBuffer extends CachedWorldData {
     private void cleanupQueuedChunks() {
         for (ChunkCoordIntPair pos : queueRemoval) {
             ChunkNetworkData data = getChunkData(pos);
-            if(data != null && data.isEmpty()) {
+            if (data != null && data.isEmpty()) {
                 chunkSortedData.remove(pos);
             }
         }
@@ -185,7 +204,7 @@ public class LightNetworkBuffer extends CachedWorldData {
     @Nullable
     public ChunkSectionNetworkData getSectionData(ChunkCoordIntPair chPos, int yLevel) {
         ChunkNetworkData data = chunkSortedData.get(chPos);
-        if(data == null) return null;
+        if (data == null) return null;
         return data.getSection(yLevel);
     }
 
@@ -195,7 +214,7 @@ public class LightNetworkBuffer extends CachedWorldData {
     }
 
     public Collection<Tuple<BlockPos, IIndependentStarlightSource>> getAllSources() {
-        if(cachedSourceTuples == null) {
+        if (cachedSourceTuples == null) {
             Collection<Tuple<BlockPos, IIndependentStarlightSource>> cache = new LinkedList<>();
             for (Map.Entry<BlockPos, IIndependentStarlightSource> entry : starlightSources.entrySet()) {
                 cache.add(new Tuple<>(entry.getKey(), entry.getValue()));
@@ -215,7 +234,7 @@ public class LightNetworkBuffer extends CachedWorldData {
         chunkSortedData.clear();
         cachedSourceTuples = null;
 
-        if(nbt.hasKey("chunkSortedData")) {
+        if (nbt.hasKey("chunkSortedData")) {
             NBTTagList list = nbt.getTagList("chunkSortedData", 10);
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound posTag = list.getCompoundTagAt(i);
@@ -227,29 +246,32 @@ public class LightNetworkBuffer extends CachedWorldData {
             }
         }
 
-        if(nbt.hasKey("sources")) {
+        if (nbt.hasKey("sources")) {
             NBTTagList list = nbt.getTagList("sources", 10);
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound sourcePos = list.getCompoundTagAt(i);
                 BlockPos at = NBTUtils.readBlockPosFromNBT(sourcePos);
                 ChunkSectionNetworkData section = getSectionData(at);
-                if(section == null) {
+                if (section == null) {
                     AstralSorcery.log.warn("Expected source tile at " + at + " but didn't even find chunk section!");
                 } else {
                     IPrismTransmissionNode node = section.getTransmissionNode(at);
-                    if(node == null) {
-                        AstralSorcery.log.warn("Expected source tile at " + at + " but didn't find a transmission node!");
+                    if (node == null) {
+                        AstralSorcery.log
+                            .warn("Expected source tile at " + at + " but didn't find a transmission node!");
                         continue;
                     }
-                    if(!(node instanceof ITransmissionSource)) {
-                        AstralSorcery.log.warn("Expected source tile at " + at + " but transmission node isn't a source!");
+                    if (!(node instanceof ITransmissionSource)) {
+                        AstralSorcery.log
+                            .warn("Expected source tile at " + at + " but transmission node isn't a source!");
                         continue;
                     }
                     NBTTagCompound comp = sourcePos.getCompoundTag("source");
                     String identifier = comp.getString("sTypeId");
                     SourceClassRegistry.SourceProvider provider = SourceClassRegistry.getProvider(identifier);
-                    if(provider == null) {
-                        AstralSorcery.log.warn("Couldn't load source tile at " + at + " - invalid identifier: " + identifier);
+                    if (provider == null) {
+                        AstralSorcery.log
+                            .warn("Couldn't load source tile at " + at + " - invalid identifier: " + identifier);
                         continue;
                     }
                     IIndependentStarlightSource source = provider.provideEmptySource();
@@ -287,29 +309,34 @@ public class LightNetworkBuffer extends CachedWorldData {
                 sourceNode.writeToNBT(source);
             } catch (Exception exc) {
                 AstralSorcery.log.warn("Couldn't write source-node data for network node at " + pos.toString() + "!");
-                AstralSorcery.log.warn("This is a major problem. To be perfectly save, consider making a backup, then break or mcedit the tileentity out and place a proper/new one...");
+                AstralSorcery.log.warn(
+                    "This is a major problem. To be perfectly save, consider making a backup, then break or mcedit the tileentity out and place a proper/new one...");
                 continue;
             }
-            source.setString("sTypeId", sourceNode.getProvider().getIdentifier());
+            source.setString(
+                "sTypeId",
+                sourceNode.getProvider()
+                    .getIdentifier());
             sourceTag.setTag("source", source);
             sourceList.appendTag(sourceTag);
         }
         nbt.setTag("sources", sourceList);
     }
 
-    //Network changing
+    // Network changing
     public void addSource(IStarlightSource source, BlockPos pos) {
         ChunkCoordIntPair chPos = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         ChunkNetworkData data = getChunkData(chPos);
-        if(data == null) {
+        if (data == null) {
             createNewChunkData(chPos);
             data = getChunkData(chPos);
         }
         data.addSourceTile(pos, source);
 
         IIndependentStarlightSource newSource = addIndependentSource(pos, source);
-        if(newSource != null) {
-            Map<BlockPos, IIndependentStarlightSource> copyTr = Collections.unmodifiableMap(new HashMap<>(starlightSources));
+        if (newSource != null) {
+            Map<BlockPos, IIndependentStarlightSource> copyTr = Collections
+                .unmodifiableMap(new HashMap<>(starlightSources));
             Thread tr = new Thread(() -> threadedUpdateSourceProximity(copyTr));
             tr.setName("StarlightNetwork-UpdateThread");
             tr.start();
@@ -321,7 +348,8 @@ public class LightNetworkBuffer extends CachedWorldData {
     private void threadedUpdateSourceProximity(Map<BlockPos, IIndependentStarlightSource> copyTr) {
         try {
             for (Map.Entry<BlockPos, IIndependentStarlightSource> sourceTuple : copyTr.entrySet()) {
-                sourceTuple.getValue().threadedUpdateProximity(sourceTuple.getKey(), copyTr);
+                sourceTuple.getValue()
+                    .threadedUpdateProximity(sourceTuple.getKey(), copyTr);
             }
         } catch (Exception exc) {
             AstralSorcery.log.warn("Failed to update proximity status for source nodes.");
@@ -332,7 +360,7 @@ public class LightNetworkBuffer extends CachedWorldData {
     public void addTransmission(IStarlightTransmission transmission, BlockPos pos) {
         ChunkCoordIntPair chPos = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         ChunkNetworkData data = getChunkData(chPos);
-        if(data == null) {
+        if (data == null) {
             createNewChunkData(chPos);
             data = getChunkData(chPos);
         }
@@ -344,12 +372,13 @@ public class LightNetworkBuffer extends CachedWorldData {
     public void removeSource(BlockPos pos) {
         ChunkCoordIntPair chPos = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         ChunkNetworkData data = getChunkData(chPos);
-        if(data == null) return; //Uuuuhm. what happened here.
+        if (data == null) return; // Uuuuhm. what happened here.
         data.removeSourceTile(pos);
 
         removeIndependentSource(pos);
 
-        Map<BlockPos, IIndependentStarlightSource> copyTr = Collections.unmodifiableMap(new HashMap<>(starlightSources));
+        Map<BlockPos, IIndependentStarlightSource> copyTr = Collections
+            .unmodifiableMap(new HashMap<>(starlightSources));
         Thread tr = new Thread(() -> threadedUpdateSourceProximity(copyTr));
         tr.setName("StarlightNetwork-UpdateThread");
         tr.start();
@@ -361,7 +390,7 @@ public class LightNetworkBuffer extends CachedWorldData {
     public void removeTransmission(BlockPos pos) {
         ChunkCoordIntPair chPos = new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ());
         ChunkNetworkData data = getChunkData(chPos);
-        if(data == null) return; //Not that i'm sad, it's just... uhm..
+        if (data == null) return; // Not that i'm sad, it's just... uhm..
         data.removeTransmissionTile(pos);
 
         checkIntegrity(chPos);
@@ -370,11 +399,11 @@ public class LightNetworkBuffer extends CachedWorldData {
 
     private void checkIntegrity(ChunkCoordIntPair chPos) {
         ChunkNetworkData data = getChunkData(chPos);
-        if(data == null) return;
+        if (data == null) return;
 
-        data.checkIntegrity(); //Integrity of sections
+        data.checkIntegrity(); // Integrity of sections
 
-        if(data.isEmpty()) {
+        if (data.isEmpty()) {
             queueRemoval.add(chPos);
         }
     }
@@ -384,7 +413,7 @@ public class LightNetworkBuffer extends CachedWorldData {
         this.cachedSourceTuples = null;
 
         IPrismTransmissionNode node = source.getNode();
-        if(node instanceof ITransmissionSource) {
+        if (node instanceof ITransmissionSource) {
             IIndependentStarlightSource sourceNode = ((ITransmissionSource) node).provideNewIndependentSource(source);
             this.starlightSources.put(pos, sourceNode);
             return sourceNode;
@@ -401,21 +430,23 @@ public class LightNetworkBuffer extends CachedWorldData {
 
         private Map<Integer, ChunkSectionNetworkData> sections = new HashMap<>();
 
-        //private Map<BlockPos, IStarlightTransmission> transmissionTiles = new HashMap<>();
-        //private Map<BlockPos, IStarlightSource> sourceTiles = new HashMap<>();
+        // private Map<BlockPos, IStarlightTransmission> transmissionTiles = new HashMap<>();
+        // private Map<BlockPos, IStarlightSource> sourceTiles = new HashMap<>();
 
         private static ChunkNetworkData loadFromNBT(NBTTagList netData) {
             ChunkNetworkData data = new ChunkNetworkData();
-            /*if(tag.hasKey("sectionList")) {
-                NBTTagList list = tag.getTagList("sectionList", 10);
-                for (int i = 0; i < list.tagCount(); i++) {
-                    NBTTagCompound section = list.getCompoundTagAt(i);
-                    int yLevel = section.getInteger("yLevel");
-                    NBTTagCompound sectionData = section.getCompoundTag("sectionData");
-                    ChunkSectionNetworkData networkData = ChunkSectionNetworkData.loadFromNBT(sectionData);
-                    data.sections.put(yLevel, networkData);
-                }
-            }*/
+            /*
+             * if(tag.hasKey("sectionList")) {
+             * NBTTagList list = tag.getTagList("sectionList", 10);
+             * for (int i = 0; i < list.tagCount(); i++) {
+             * NBTTagCompound section = list.getCompoundTagAt(i);
+             * int yLevel = section.getInteger("yLevel");
+             * NBTTagCompound sectionData = section.getCompoundTag("sectionData");
+             * ChunkSectionNetworkData networkData = ChunkSectionNetworkData.loadFromNBT(sectionData);
+             * data.sections.put(yLevel, networkData);
+             * }
+             * }
+             */
             for (int i = 0; i < netData.tagCount(); i++) {
                 NBTTagCompound section = netData.getCompoundTagAt(i);
                 int yLevel = section.getInteger("yLevel");
@@ -439,28 +470,29 @@ public class LightNetworkBuffer extends CachedWorldData {
             }
         }
 
-        //Also allows for passing invalid yLevels outside of 0 to 15
+        // Also allows for passing invalid yLevels outside of 0 to 15
         @Nullable
         public ChunkSectionNetworkData getSection(int yLevel) {
             return sections.get(yLevel);
         }
 
         public void checkIntegrity() {
-            Iterator<Integer> iterator = sections.keySet().iterator();
+            Iterator<Integer> iterator = sections.keySet()
+                .iterator();
             while (iterator.hasNext()) {
                 Integer yLevel = iterator.next();
                 ChunkSectionNetworkData data = sections.get(yLevel);
-                if(data.isEmpty()) iterator.remove();
+                if (data.isEmpty()) iterator.remove();
             }
         }
 
         public boolean isEmpty() {
-            return sections.isEmpty(); //No section -> no data
+            return sections.isEmpty(); // No section -> no data
         }
 
         private ChunkSectionNetworkData getOrCreateSection(int yLevel) {
             ChunkSectionNetworkData section = getSection(yLevel);
-            if(section == null) {
+            if (section == null) {
                 section = new ChunkSectionNetworkData();
                 sections.put(yLevel, section);
             }
@@ -470,14 +502,14 @@ public class LightNetworkBuffer extends CachedWorldData {
         private void removeSourceTile(BlockPos pos) {
             int yLevel = (pos.getY() & 255) >> 4;
             ChunkSectionNetworkData section = getSection(yLevel);
-            if(section == null) return; //Uhm
+            if (section == null) return; // Uhm
             section.removeSourceTile(pos);
         }
 
         private void removeTransmissionTile(BlockPos pos) {
             int yLevel = (pos.getY() & 255) >> 4;
             ChunkSectionNetworkData section = getSection(yLevel);
-            if(section == null) return; //Guess we don't remove anything then?
+            if (section == null) return; // Guess we don't remove anything then?
             section.removeTransmissionTile(pos);
         }
 
@@ -501,33 +533,37 @@ public class LightNetworkBuffer extends CachedWorldData {
 
         private static ChunkSectionNetworkData loadFromNBT(NBTTagList sectionData) {
             ChunkSectionNetworkData netData = new ChunkSectionNetworkData();
-            /*if(tag.hasKey("nodeList")) {
-                NBTTagList listNodes = tag.getTagList("nodeList", 10);
-                for (int i = 0; i < listNodes.tagCount(); i++) {
-                    NBTTagCompound nodeComp = listNodes.getCompoundTagAt(i);
-                    BlockPos pos = NBTUtils.readBlockPosFromNBT(nodeComp);
-
-                    NBTTagCompound prismComp = nodeComp.getCompoundTag("nodeTag");
-                    String nodeIdentifier = prismComp.getString("trNodeId");
-                    TransmissionClassRegistry.TransmissionProvider provider = TransmissionClassRegistry.getProvider(nodeIdentifier);
-                    if(provider == null) {
-                        AstralSorcery.log.warn("Couldn't load node tile at " + pos + " - invalid identifier: " + nodeIdentifier);
-                        continue;
-                    }
-                    IPrismTransmissionNode node = provider.provideEmptyNode();
-                    node.readFromNBT(prismComp);
-                    netData.nodes.put(pos, node);
-                }
-            }*/
+            /*
+             * if(tag.hasKey("nodeList")) {
+             * NBTTagList listNodes = tag.getTagList("nodeList", 10);
+             * for (int i = 0; i < listNodes.tagCount(); i++) {
+             * NBTTagCompound nodeComp = listNodes.getCompoundTagAt(i);
+             * BlockPos pos = NBTUtils.readBlockPosFromNBT(nodeComp);
+             * NBTTagCompound prismComp = nodeComp.getCompoundTag("nodeTag");
+             * String nodeIdentifier = prismComp.getString("trNodeId");
+             * TransmissionClassRegistry.TransmissionProvider provider =
+             * TransmissionClassRegistry.getProvider(nodeIdentifier);
+             * if(provider == null) {
+             * AstralSorcery.log.warn("Couldn't load node tile at " + pos + " - invalid identifier: " + nodeIdentifier);
+             * continue;
+             * }
+             * IPrismTransmissionNode node = provider.provideEmptyNode();
+             * node.readFromNBT(prismComp);
+             * netData.nodes.put(pos, node);
+             * }
+             * }
+             */
             for (int i = 0; i < sectionData.tagCount(); i++) {
                 NBTTagCompound nodeComp = sectionData.getCompoundTagAt(i);
                 BlockPos pos = NBTUtils.readBlockPosFromNBT(nodeComp);
 
                 NBTTagCompound prismComp = nodeComp.getCompoundTag("nodeTag");
                 String nodeIdentifier = prismComp.getString("trNodeId");
-                TransmissionClassRegistry.TransmissionProvider provider = TransmissionClassRegistry.getProvider(nodeIdentifier);
-                if(provider == null) {
-                    AstralSorcery.log.warn("Couldn't load node tile at " + pos + " - invalid identifier: " + nodeIdentifier);
+                TransmissionClassRegistry.TransmissionProvider provider = TransmissionClassRegistry
+                    .getProvider(nodeIdentifier);
+                if (provider == null) {
+                    AstralSorcery.log
+                        .warn("Couldn't load node tile at " + pos + " - invalid identifier: " + nodeIdentifier);
                     continue;
                 }
                 IPrismTransmissionNode node = provider.provideEmptyNode();
@@ -546,7 +582,10 @@ public class LightNetworkBuffer extends CachedWorldData {
                     NBTTagCompound prismComp = new NBTTagCompound();
                     IPrismTransmissionNode prismNode = node.getValue();
                     prismNode.writeToNBT(prismComp);
-                    prismComp.setString("trNodeId", prismNode.getProvider().getIdentifier());
+                    prismComp.setString(
+                        "trNodeId",
+                        prismNode.getProvider()
+                            .getIdentifier());
 
                     nodeComp.setTag("nodeTag", prismComp);
                     sectionData.appendTag(nodeComp);
@@ -554,14 +593,18 @@ public class LightNetworkBuffer extends CachedWorldData {
                     try {
                         BlockPos at = node.getKey();
                         AstralSorcery.log.warn("Couldn't write node data for network node at " + at.toString() + "!");
-                        AstralSorcery.log.warn("This is a major problem. To be perfectly save, consider making a backup, then break or mcedit the tileentity out and place a proper/new one...");
+                        AstralSorcery.log.warn(
+                            "This is a major problem. To be perfectly save, consider making a backup, then break or mcedit the tileentity out and place a proper/new one...");
                     } catch (Exception exc2) {
                         try {
-                            BlockPos at = node.getValue().getPos();
-                            AstralSorcery.log.warn("Couldn't write node data for network node at " + at.toString() + "!");
-                            AstralSorcery.log.warn("This is a major problem. To be perfectly save, consider making a backup, then break or mcedit the tileentity out and place a proper/new one...");
+                            BlockPos at = node.getValue()
+                                .getPos();
+                            AstralSorcery.log
+                                .warn("Couldn't write node data for network node at " + at.toString() + "!");
+                            AstralSorcery.log.warn(
+                                "This is a major problem. To be perfectly save, consider making a backup, then break or mcedit the tileentity out and place a proper/new one...");
                         } catch (Exception exc3) {
-                            //Duh. we don't have much information if everything's inaccessible
+                            // Duh. we don't have much information if everything's inaccessible
                             AstralSorcery.log.warn("Couldn't write node data for a network node! Skipping...");
                         }
                     }
@@ -583,12 +626,12 @@ public class LightNetworkBuffer extends CachedWorldData {
         }
 
         private void removeSourceTile(BlockPos pos) {
-            //sourceTiles.remove(pos);
+            // sourceTiles.remove(pos);
             removeNode(pos);
         }
 
         private void removeTransmissionTile(BlockPos pos) {
-            //transmissionTiles.remove(pos);
+            // transmissionTiles.remove(pos);
             removeNode(pos);
         }
 
@@ -597,12 +640,12 @@ public class LightNetworkBuffer extends CachedWorldData {
         }
 
         private void addSourceTile(BlockPos pos, IStarlightSource source) {
-            //sourceTiles.put(pos, source);
+            // sourceTiles.put(pos, source);
             addNode(pos, source);
         }
 
         private void addTransmissionTile(BlockPos pos, IStarlightTransmission transmission) {
-            //transmissionTiles.put(pos, transmission);
+            // transmissionTiles.put(pos, transmission);
             addNode(pos, transmission);
         }
 

@@ -8,18 +8,20 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+import javax.annotation.Nullable;
+
+import net.minecraftforge.common.MinecraftForge;
+
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.constellation.effect.aoe.*;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.event.APIRegistryEvent;
 import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.util.ILocatable;
-import net.minecraftforge.common.MinecraftForge;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -34,19 +36,19 @@ public class ConstellationEffectRegistry {
     private static Map<IWeakConstellation, ConstellationEffect> singleRenderInstances = new HashMap<>();
 
     public static void init() {
-        register(Constellations.aevitas,    CEffectAevitas::new);
-        register(Constellations.discidia,   CEffectDiscidia::new);
-        register(Constellations.armara,     CEffectArmara::new);
-        register(Constellations.vicio,      CEffectVicio::new);
-//        register(Constellations.evorsio,    CEffectEvorsio::new);
+        register(Constellations.aevitas, CEffectAevitas::new);
+        register(Constellations.discidia, CEffectDiscidia::new);
+        register(Constellations.armara, CEffectArmara::new);
+        register(Constellations.vicio, CEffectVicio::new);
+        // register(Constellations.evorsio, CEffectEvorsio::new);
 
-        register(Constellations.mineralis,  CEffectMineralis::new);
-        register(Constellations.lucerna,    CEffectLucerna::new);
-        register(Constellations.bootes,     CEffectBootes::new);
+        register(Constellations.mineralis, CEffectMineralis::new);
+        register(Constellations.lucerna, CEffectLucerna::new);
+        register(Constellations.bootes, CEffectBootes::new);
         register(Constellations.horologium, CEffectHorologium::new);
-        register(Constellations.octans,     CEffectOctans::new);
-        register(Constellations.fornax,     CEffectFornax::new);
-//        register(Constellations.pelotrio,   CEffectPelotrio::new);
+        register(Constellations.octans, CEffectOctans::new);
+        register(Constellations.fornax, CEffectFornax::new);
+        // register(Constellations.pelotrio, CEffectPelotrio::new);
 
         MinecraftForge.EVENT_BUS.post(new APIRegistryEvent.ConstellationEffectRegister());
     }
@@ -56,7 +58,7 @@ public class ConstellationEffectRegistry {
         Config.addDynamicEntry(new CEffectDiscidia(null));
         Config.addDynamicEntry(new CEffectArmara(null));
         Config.addDynamicEntry(new CEffectVicio(null));
-//        Config.addDynamicEntry(new CEffectEvorsio(null));
+        // Config.addDynamicEntry(new CEffectEvorsio(null));
 
         Config.addDynamicEntry(new CEffectHorologium(null));
         Config.addDynamicEntry(new CEffectMineralis(null));
@@ -64,7 +66,7 @@ public class ConstellationEffectRegistry {
         Config.addDynamicEntry(new CEffectBootes(null));
         Config.addDynamicEntry(new CEffectOctans(null));
         Config.addDynamicEntry(new CEffectFornax(null));
-//        Config.addDynamicEntry(new CEffectPelotrio(null));
+        // Config.addDynamicEntry(new CEffectPelotrio(null));
     }
 
     private static void register(IWeakConstellation c, ConstellationEffectProvider provider) {
@@ -85,7 +87,7 @@ public class ConstellationEffectRegistry {
     @Nullable
     public static ConstellationEffect getEffect(IWeakConstellation c, ILocatable origin) {
         ConstellationEffectProvider p = providerMap.get(c);
-        if(p != null) {
+        if (p != null) {
             return p.provideEffectInstance(origin);
         }
         return null;

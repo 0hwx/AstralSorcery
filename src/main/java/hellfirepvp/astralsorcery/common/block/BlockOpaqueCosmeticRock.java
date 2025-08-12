@@ -8,7 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import java.util.List;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -28,7 +29,8 @@ import java.util.List;
  */
 public class BlockOpaqueCosmeticRock extends Block implements BlockCustomName {
 
-    public static final AxisAlignedBB FULL_BLOCK_AABB = AxisAlignedBB.getBoundingBox(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
+    public static final AxisAlignedBB FULL_BLOCK_AABB = AxisAlignedBB
+        .getBoundingBox(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
 
     public BlockOpaqueCosmeticRock() {
         super(Material.rock);
@@ -50,32 +52,34 @@ public class BlockOpaqueCosmeticRock extends Block implements BlockCustomName {
         }
     }
 
-//    @Override
-//    public Block getStateFromMeta(int meta) {
-//        return meta < BlockType.values().length ? getDefaultState().withProperty(BLOCK_TYPE, BlockType.values()[meta]) : getDefaultState();
-//    }
-//
-//    @Override
-//    public int getMeta(Block state) {
-//        BlockType type = state.getValue(BLOCK_TYPE);
-//        return type == null ? 0 : type.ordinal();
-//    }
-//
-//    @Override
-//    protected BlockStateContainer createBlockState() {
-//        return new BlockStateContainer(this, BLOCK_TYPE);
-//    }
+    // @Override
+    // public Block getStateFromMeta(int meta) {
+    // return meta < BlockType.values().length ? getDefaultState().withProperty(BLOCK_TYPE, BlockType.values()[meta]) :
+    // getDefaultState();
+    // }
+    //
+    // @Override
+    // public int getMeta(Block state) {
+    // BlockType type = state.getValue(BLOCK_TYPE);
+    // return type == null ? 0 : type.ordinal();
+    // }
+    //
+    // @Override
+    // protected BlockStateContainer createBlockState() {
+    // return new BlockStateContainer(this, BLOCK_TYPE);
+    // }
 
     @Override
     public String getIdentifierForMeta(int meta) {
-        BlockType mt = meta < BlockOpaqueCosmeticRock.BlockType.values().length ? BlockOpaqueCosmeticRock.BlockType.values()[meta] : null;
+        BlockType mt = meta < BlockOpaqueCosmeticRock.BlockType.values().length
+            ? BlockOpaqueCosmeticRock.BlockType.values()[meta]
+            : null;
         return mt == null ? "null" : mt.getName();
     }
 
     public static enum BlockType {
 
         NONE;
-
 
         public String getName() {
             return name().toLowerCase();

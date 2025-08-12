@@ -8,13 +8,11 @@
 
 package hellfirepvp.astralsorcery.client.render.entity;
 
-import hellfirepvp.astralsorcery.common.entities.EntityFlare;
-import hellfirepvp.astralsorcery.common.entities.EntityIlluminationSpark;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
+import hellfirepvp.astralsorcery.common.entities.EntityIlluminationSpark;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -27,13 +25,12 @@ public class RenderEntityIlluminationSpark extends Render {
 
     @Override
     public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        this.doRender((EntityIlluminationSpark)entity, x, y, z, entityYaw, partialTicks);
+        this.doRender((EntityIlluminationSpark) entity, x, y, z, entityYaw, partialTicks);
     }
 
     @Override
     protected ResourceLocation getEntityTexture(Entity entity) {
-        return this.getEntityTexture((EntityIlluminationSpark)entity);
+        return this.getEntityTexture((EntityIlluminationSpark) entity);
     }
-
 
 }

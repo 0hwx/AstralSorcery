@@ -8,7 +8,25 @@
 
 package hellfirepvp.astralsorcery.common.constellation.distribution;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
 import com.google.common.collect.Maps;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.util.mappings.ClientConstellationPositionMapping;
 import hellfirepvp.astralsorcery.common.constellation.CelestialEvent;
 import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
@@ -19,21 +37,6 @@ import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.constellation.MoonPhase;
 import hellfirepvp.astralsorcery.common.data.DataActiveCelestials;
 import hellfirepvp.astralsorcery.common.data.SyncDataHolder;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -76,13 +79,13 @@ public class WorldSkyHandler {
         this.seededRand = new Random(savedSeed);
     }
 
-    //Fired on client and serverside - client only if it's the world the client is in obviously.
+    // Fired on client and serverside - client only if it's the world the client is in obviously.
     public void tick(World w) {
-        if(initialValueMappings.isEmpty()) {
+        if (initialValueMappings.isEmpty()) {
             setupInitialFunctions();
         }
 
-        if(w.isRemote && clientConstellationPositionMapping == null) {
+        if (w.isRemote && clientConstellationPositionMapping == null) {
             clientConstellationPositionMapping = new ClientConstellationPositionMapping();
         }
 
@@ -93,13 +96,13 @@ public class WorldSkyHandler {
         int trackingDifference = currentDay - lastRecordedDay;
         lastRecordedDay = currentDay;
         if (trackingDifference > 0) {
-            //Calculating until that day is reached.
+            // Calculating until that day is reached.
             scheduleDayProgression(w, trackingDifference);
         } else if (trackingDifference < 0) {
-            //Resetting and recalculating until specified day is reached!
+            // Resetting and recalculating until specified day is reached!
 
-            //Iterate back to current day.
-            //+1 because we start from 'day -1'
+            // Iterate back to current day.
+            // +1 because we start from 'day -1'
             scheduleDayProgression(w, currentDay + 1);
         }
     }
@@ -123,14 +126,16 @@ public class WorldSkyHandler {
         weakAndMajor.forEach(constellations::addFirst);
 
         for (IConstellation c : constellations) {
-            if(c instanceof IConstellationSpecialShowup) continue;
+            if (c instanceof IConstellationSpecialShowup) continue;
 
-            if(c instanceof IMinorConstellation) {
+            if (c instanceof IMinorConstellation) {
                 for (MoonPhase ph : ((IMinorConstellation) c).getShowupMoonPhases()) {
-                    initialValueMappings.get(ph.ordinal()).add(c);
+                    initialValueMappings.get(ph.ordinal())
+                        .add(c);
                 }
                 for (int i = 0; i < 8; i++) {
-                    dayDistributionMap.get(i).put(c, 0F);
+                    dayDistributionMap.get(i)
+                        .put(c, 0F);
                 }
             } else {
                 int start;
@@ -142,35 +147,38 @@ public class WorldSkyHandler {
 
                     int needed = Math.min(3, getFreeSlots(occupied));
                     int count = collect(start, occupied);
-                    if(count >= needed) {
+                    if (count >= needed) {
                         foundFree = true;
                     }
                 } while (!foundFree && tries > 0);
                 occupySlots(start, occupied);
-                if(getFreeSlots(occupied) <= 0) {
+                if (getFreeSlots(occupied) <= 0) {
                     Arrays.fill(occupied, false);
                 }
                 for (int i = 0; i < 5; i++) {
                     int index = (start + i) % 8;
-                    initialValueMappings.get(index).addLast(c);
+                    initialValueMappings.get(index)
+                        .addLast(c);
                 }
 
-                if(c instanceof IWeakConstellation) {
+                if (c instanceof IWeakConstellation) {
                     for (int i = 0; i < 8; i++) {
                         int index = (start + i) % 8;
                         float distr = spSine(start, index);
-                        dayDistributionMap.get(index).put(c, distr);
+                        dayDistributionMap.get(index)
+                            .put(c, distr);
                     }
                 } else {
                     for (int i = 0; i < 8; i++) {
-                        dayDistributionMap.get(i).put(c, 0F);
+                        dayDistributionMap.get(i)
+                            .put(c, 0F);
                     }
                 }
             }
         }
     }
 
-    //1F to 0F
+    // 1F to 0F
     private float spSine(int dayStart, int dayIn) {
         int v = dayStart > dayIn ? (dayIn + 8) - dayStart : dayIn;
         float part = ((float) v) / 4F;
@@ -182,12 +190,12 @@ public class WorldSkyHandler {
             doConstellationIteration(w);
         }
 
-        if(!w.isRemote) {
+        if (!w.isRemote) {
             DataActiveCelestials celestials = SyncDataHolder.getDataServer(SyncDataHolder.DATA_CONSTELLATIONS);
             celestials.setNewConstellations(w.provider.dimensionId, activeConstellations);
         } else {
             ((ClientConstellationPositionMapping) clientConstellationPositionMapping)
-                    .updatePositions(activeConstellations);
+                .updatePositions(activeConstellations);
         }
     }
 
@@ -204,11 +212,15 @@ public class WorldSkyHandler {
         activeDistributions = Maps.newHashMap(dayDistributionMap.get(activeDay));
 
         for (IConstellationSpecialShowup special : ConstellationRegistry.getSpecialShowupConstellations()) {
-            if(special.doesShowUp(this, w, lastRecordedDay)) {
+            if (special.doesShowUp(this, w, lastRecordedDay)) {
                 activeConstellations.addLast(special);
-                activeDistributions.put(special, MathHelper.clamp_float(special.getDistribution(this, w, lastRecordedDay, true), 0F, 1F));
+                activeDistributions.put(
+                    special,
+                    MathHelper.clamp_float(special.getDistribution(this, w, lastRecordedDay, true), 0F, 1F));
             } else {
-                activeDistributions.put(special, MathHelper.clamp_float(special.getDistribution(this, w, lastRecordedDay, false), 0F, 1F));
+                activeDistributions.put(
+                    special,
+                    MathHelper.clamp_float(special.getDistribution(this, w, lastRecordedDay, false), 0F, 1F));
             }
         }
     }
@@ -216,7 +228,7 @@ public class WorldSkyHandler {
     private void occupySlots(int start, boolean[] occupied) {
         for (int i = start; i < start + 8; i++) {
             int index = start % 8;
-            if(!occupied[index]) occupied[index] = true;
+            if (!occupied[index]) occupied[index] = true;
         }
     }
 
@@ -224,7 +236,7 @@ public class WorldSkyHandler {
         int found = 0;
         for (int i = start; i < start + 8; i++) {
             int index = start % 8;
-            if(!occupied[index]) found++;
+            if (!occupied[index]) found++;
         }
         return found;
     }
@@ -232,7 +244,7 @@ public class WorldSkyHandler {
     private int getFreeSlots(boolean[] array) {
         int it = 0;
         for (boolean b : array) {
-            if(!b) it++;
+            if (!b) it++;
         }
         return it;
     }
@@ -248,8 +260,11 @@ public class WorldSkyHandler {
     public LinkedList<IConstellation> getSortedActiveConstellations() {
         LinkedList<IConstellation> out = new LinkedList<>();
         LinkedList<Map.Entry<IConstellation, Float>> entries = new LinkedList<>();
-        activeDistributions.entrySet().forEach(entries::add);
-        Collections.sort(entries, (e1, e2) -> MathHelper.floor_double(e2.getValue() * 1000) - MathHelper.floor_double(e1.getValue() * 1000));
+        activeDistributions.entrySet()
+            .forEach(entries::add);
+        Collections.sort(
+            entries,
+            (e1, e2) -> MathHelper.floor_double(e2.getValue() * 1000) - MathHelper.floor_double(e1.getValue() * 1000));
         entries.forEach((e) -> out.addLast(e.getKey()));
         return out;
     }
@@ -264,26 +279,26 @@ public class WorldSkyHandler {
         float highest = -1F;
         List<IConstellation> highestVal = new LinkedList<>();
         for (Map.Entry<IConstellation, Float> entry : activeDistributions.entrySet()) {
-            if(entry.getValue() > highest) {
-                if(acceptorFunc.test(entry.getKey())) {
+            if (entry.getValue() > highest) {
+                if (acceptorFunc.test(entry.getKey())) {
                     highest = entry.getValue();
                     highestVal.clear();
                     highestVal.add(entry.getKey());
                 }
-            } else if(entry.getValue() == highest) {
-                if(acceptorFunc.test(entry.getKey())) {
+            } else if (entry.getValue() == highest) {
+                if (acceptorFunc.test(entry.getKey())) {
                     highestVal.add(entry.getKey());
                 }
             }
         }
-        if(highestVal.isEmpty()) return null;
+        if (highestVal.isEmpty()) return null;
         return highestVal.get(random.nextInt(highestVal.size()));
     }
 
     @SideOnly(Side.CLIENT)
     @Nullable
     public ClientConstellationPositionMapping getConstellationPositionMapping() {
-        if(clientConstellationPositionMapping == null) return null;
+        if (clientConstellationPositionMapping == null) return null;
         return (ClientConstellationPositionMapping) clientConstellationPositionMapping;
     }
 
@@ -296,8 +311,8 @@ public class WorldSkyHandler {
      */
     public List<CelestialEvent> getCurrentDayCelestialEvents() {
         List<CelestialEvent> list = new LinkedList<>();
-        if(dayOfSolarEclipse) list.add(CelestialEvent.SOLAR_ECLIPSE);
-        if(dayOfLunarEclipse) list.add(CelestialEvent.LUNAR_ECLIPSE);
+        if (dayOfSolarEclipse) list.add(CelestialEvent.SOLAR_ECLIPSE);
+        if (dayOfLunarEclipse) list.add(CelestialEvent.LUNAR_ECLIPSE);
         return list;
     }
 
@@ -306,10 +321,10 @@ public class WorldSkyHandler {
      * Solar and lunar eclipse are mutually exclusive in your case.
      */
     public CelestialEvent getCurrentlyActiveEvent() {
-        if(solarEclipse) {
+        if (solarEclipse) {
             return CelestialEvent.SOLAR_ECLIPSE;
         }
-        if(lunarEclipse) {
+        if (lunarEclipse) {
             return CelestialEvent.LUNAR_ECLIPSE;
         }
         return null;
@@ -342,7 +357,7 @@ public class WorldSkyHandler {
     }
 
     public Float getCurrentDistribution(IWeakConstellation c, Function<Float, Float> func) {
-        if(!activeDistributions.containsKey(c)) return func.apply(0F);
+        if (!activeDistributions.containsKey(c)) return func.apply(0F);
         return func.apply(activeDistributions.get(c));
     }
 

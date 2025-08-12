@@ -8,17 +8,12 @@
 
 package hellfirepvp.astralsorcery.common.item.tool;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import hellfirepvp.astralsorcery.common.entities.EntityCrystalTool;
-import hellfirepvp.astralsorcery.common.item.base.IGrindable;
-import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
-import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
-import hellfirepvp.astralsorcery.common.registry.RegistryItems;
-import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
-import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
+import java.util.List;
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -31,10 +26,18 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Random;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import hellfirepvp.astralsorcery.common.entities.EntityCrystalTool;
+import hellfirepvp.astralsorcery.common.item.base.IGrindable;
+import hellfirepvp.astralsorcery.common.item.crystal.CrystalProperties;
+import hellfirepvp.astralsorcery.common.item.crystal.ToolCrystalProperties;
+import hellfirepvp.astralsorcery.common.registry.RegistryItems;
+import hellfirepvp.astralsorcery.common.tile.TileGrindstone;
+import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -113,25 +116,25 @@ public class ItemCrystalSword extends ItemSword implements IGrindable {
 
     private void damageProperties(ItemStack stack, int damage) {
         ToolCrystalProperties prop = getToolProperties(stack);
-        if(prop == null) {
+        if (prop == null) {
             stack.setItemDamage(stack.getMaxDamage());
             return;
         }
-        if(prop.getSize() <= 0) {
+        if (prop.getSize() <= 0) {
             super.setDamage(stack, 11);
             return;
         }
-        if(damage < 0) {
+        if (damage < 0) {
             return;
         }
         for (int i = 0; i < damage; i++) {
             double chance = Math.pow(((double) prop.getCollectiveCapability()) / 100D, 2);
-            if(chance >= rand.nextFloat()) {
-                if(rand.nextInt(40) == 0) prop.damageCutting();
+            if (chance >= rand.nextFloat()) {
+                if (rand.nextInt(40) == 0) prop.damageCutting();
                 double purity = ((double) prop.getPurity()) / 100D;
                 for (int j = 0; j < 3; j++) {
-                    if(purity <= rand.nextFloat()) {
-                        if(rand.nextInt(40) == 0) prop.damageCutting();
+                    if (purity <= rand.nextFloat()) {
+                        if (rand.nextInt(40) == 0) prop.damageCutting();
                     }
                 }
             }
@@ -150,15 +153,21 @@ public class ItemCrystalSword extends ItemSword implements IGrindable {
     }
 
     @Override
-    public Multimap<String, net.minecraft.entity.ai.attributes.AttributeModifier> getAttributeModifiers(ItemStack stack) {
+    public Multimap<String, net.minecraft.entity.ai.attributes.AttributeModifier> getAttributeModifiers(
+        ItemStack stack) {
         Multimap<String, AttributeModifier> modifiers = HashMultimap.create();
-            ToolCrystalProperties prop = getToolProperties(stack);
-            if(prop != null) {
-                modifiers.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(),
-                        new AttributeModifier(field_111210_e, "Weapon modifier", 1F + (12F * prop.getEfficiencyMultiplier()), 0));
-//                modifiers.put(SharedMonsterAttributes.ATTACK_SPEED.getAttributeUnlocalizedName(),
-//                        new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -1D, 0));
-            }
+        ToolCrystalProperties prop = getToolProperties(stack);
+        if (prop != null) {
+            modifiers.put(
+                SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(),
+                new AttributeModifier(
+                    field_111210_e,
+                    "Weapon modifier",
+                    1F + (12F * prop.getEfficiencyMultiplier()),
+                    0));
+            // modifiers.put(SharedMonsterAttributes.ATTACK_SPEED.getAttributeUnlocalizedName(),
+            // new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -1D, 0));
+        }
         return modifiers;
     }
 
@@ -172,11 +181,11 @@ public class ItemCrystalSword extends ItemSword implements IGrindable {
     public GrindResult grind(TileGrindstone grindstone, ItemStack stack, Random rand) {
         ToolCrystalProperties prop = getToolProperties(stack);
         ToolCrystalProperties result = prop.grindCopy(rand);
-        if(result == null) {
+        if (result == null) {
             return GrindResult.failBreakItem();
         }
         setToolProperties(stack, result);
-        if(stack.getItemDamage() >= stack.getMaxDamage()) {
+        if (stack.getItemDamage() >= stack.getMaxDamage()) {
             return GrindResult.failBreakItem();
         }
         return GrindResult.success();
@@ -184,8 +193,7 @@ public class ItemCrystalSword extends ItemSword implements IGrindable {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IIconRegister register)
-    {
+    public void registerIcons(IIconRegister register) {
         this.itemIcon = register.registerIcon("astralsorcery:crystal_sword");
     }
 

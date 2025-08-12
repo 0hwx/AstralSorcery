@@ -8,18 +8,19 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import java.util.UUID;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.common.crafting.ICraftingProgress;
 import hellfirepvp.astralsorcery.common.crafting.altar.recipes.TraitRecipe;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import hellfirepvp.astralsorcery.common.util.nbt.NBTHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.UUID;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -52,7 +53,7 @@ public class ActiveCraftingTask {
     }
 
     public boolean shouldPersist() {
-        return recipeToCraft instanceof TraitRecipe; //Everything Tier4 or higher~
+        return recipeToCraft instanceof TraitRecipe; // Everything Tier4 or higher~
     }
 
     public UUID getPlayerCraftingUUID() {
@@ -65,13 +66,14 @@ public class ActiveCraftingTask {
 
     @Nullable
     public EntityPlayer tryGetCraftingPlayerServer() {
-//        return FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getPlayerByUUID(playerCraftingUUID);
+        // return
+        // FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getPlayerByUUID(playerCraftingUUID);
         return null;
     }
 
-    //True if the recipe progressed, false if it's stuck
+    // True if the recipe progressed, false if it's stuck
     public boolean tick(TileAltar altar) {
-        if(recipeToCraft instanceof ICraftingProgress) {
+        if (recipeToCraft instanceof ICraftingProgress) {
             if (!((ICraftingProgress) recipeToCraft).tryProcess(altar, this, craftingData, ticksCrafting)) {
                 return false;
             }
@@ -96,11 +98,11 @@ public class ActiveCraftingTask {
     public static ActiveCraftingTask deserialize(NBTTagCompound compound) {
         int recipeId = compound.getInteger("recipeId");
         AbstractAltarRecipe recipe = AltarRecipeRegistry.getRecipe(recipeId);
-        if(recipe == null) {
+        if (recipe == null) {
             AstralSorcery.log.info("Recipe with unknown/invalid ID found: " + recipeId);
             return null;
         } else {
-            UUID uuidCraft = NBTHelper.getUUID(compound, "crafterUUID"); //compound.getUniqueId("crafterUUID");
+            UUID uuidCraft = NBTHelper.getUUID(compound, "crafterUUID"); // compound.getUniqueId("crafterUUID");
             int tick = compound.getInteger("recipeTick");
             CraftingState state = CraftingState.values()[compound.getInteger("craftingState")];
             ActiveCraftingTask task = new ActiveCraftingTask(recipe, uuidCraft);
@@ -117,7 +119,7 @@ public class ActiveCraftingTask {
         compound.setInteger("recipeId", getRecipeToCraft().getUniqueRecipeId());
         compound.setInteger("recipeTick", getTicksCrafting());
         NBTHelper.setUUID(compound, "crafterUUID", getPlayerCraftingUUID());
-//        compound.setUniqueId("crafterUUID", getPlayerCraftingUUID());
+        // compound.setUniqueId("crafterUUID", getPlayerCraftingUUID());
         compound.setInteger("craftingState", getState().ordinal());
         compound.setTag("craftingData", craftingData);
         return compound;
@@ -125,11 +127,11 @@ public class ActiveCraftingTask {
 
     public static enum CraftingState {
 
-        ACTIVE, //All valid, continuing to craft.
+        ACTIVE, // All valid, continuing to craft.
 
-        WAITING, //Potentially waiting for user interaction. Recipe itself is fully valid.
+        WAITING, // Potentially waiting for user interaction. Recipe itself is fully valid.
 
-        PAUSED //Something of the recipe is not valid, waiting with continuation; nothing user-related.
+        PAUSED // Something of the recipe is not valid, waiting with continuation; nothing user-related.
 
     }
 

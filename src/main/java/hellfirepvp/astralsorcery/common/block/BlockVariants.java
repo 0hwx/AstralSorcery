@@ -8,9 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.block;
 
-import net.minecraft.block.Block;
-
 import java.util.List;
+
+import net.minecraft.block.Block;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -28,7 +28,8 @@ public interface BlockVariants {
     int getMeta();
 
     default public String getBlockName(Block state) {
-        return state.getClass().getSimpleName();
+        return state.getClass()
+            .getSimpleName();
     }
 
 }

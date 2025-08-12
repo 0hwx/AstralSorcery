@@ -8,10 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.auxiliary.tick;
 
+import java.util.EnumSet;
 
 import cpw.mods.fml.common.gameevent.TickEvent;
-
-import java.util.EnumSet;
 
 /**
  * This class is part of the Astral Sorcery Mod

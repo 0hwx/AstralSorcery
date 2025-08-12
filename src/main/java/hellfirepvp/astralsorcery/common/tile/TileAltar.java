@@ -8,6 +8,23 @@
 
 package hellfirepvp.astralsorcery.common.tile;
 
+import java.util.Random;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.AstralSorcery;
 import hellfirepvp.astralsorcery.client.ClientScheduler;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
@@ -47,21 +64,6 @@ import hellfirepvp.astralsorcery.common.util.SkyCollectionHelper;
 import hellfirepvp.astralsorcery.common.util.SoundHelper;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.struct.PatternBlockArray;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraftforge.common.util.ForgeDirection;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -96,7 +98,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     }
 
     public void receiveStarlight(@Nullable IWeakConstellation type, double amount) {
-        if(amount <= 0.001) return;
+        if (amount <= 0.001) return;
 
         starlightStored = Math.min(getMaxStarlightStorage(), (int) (starlightStored + (amount * 100D)));
         markForUpdate();
@@ -106,25 +108,25 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     public void tick() {
         super.tick();
 
-        if((ticksExisted & 15) == 0) {
+        if ((ticksExisted & 15) == 0) {
             updateSkyState(worldObj.canBlockSeeTheSky(xCoord, yCoord, zCoord));
         }
 
-        if((ticksExisted & 15) == 0) {
-            if(matchLevel(false)) markForUpdate();
+        if ((ticksExisted & 15) == 0) {
+            if (matchLevel(false)) markForUpdate();
         }
 
-        if(!worldObj.isRemote) {
+        if (!worldObj.isRemote) {
             boolean needUpdate = false;
 
             needUpdate = starlightPassive(needUpdate);
             needUpdate = doTryCraft(needUpdate);
 
-            if(needUpdate) {
+            if (needUpdate) {
                 markForUpdate();
             }
         } else {
-            if(getActiveCraftingTask() != null) {
+            if (getActiveCraftingTask() != null) {
                 doCraftEffects();
                 doCraftSound();
             }
@@ -133,12 +135,15 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
     @SideOnly(Side.CLIENT)
     private void doCraftSound() {
-        if(Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER) > 0) {
-            if(clientCraftSound == null || ((PositionedLoopSound) clientCraftSound).hasStoppedPlaying()) {
-                clientCraftSound = SoundHelper.playSoundLoopClient(Sounds.attunement, new Vector3(this), 0.3F, 1F,
-                        () -> isInvalid() ||
-                                Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER) <= 0 ||
-                                craftingTask == null);
+        if (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER) > 0) {
+            if (clientCraftSound == null || ((PositionedLoopSound) clientCraftSound).hasStoppedPlaying()) {
+                clientCraftSound = SoundHelper.playSoundLoopClient(
+                    Sounds.attunement,
+                    new Vector3(this),
+                    0.3F,
+                    1F,
+                    () -> isInvalid() || Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER) <= 0
+                        || craftingTask == null);
             }
         } else {
             clientCraftSound = null;
@@ -147,7 +152,8 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
     @Nullable
     public IConstellation getFocusedConstellation() {
-        WorldSkyHandler wh = ConstellationSkyHandler.getInstance().getWorldHandler(worldObj);
+        WorldSkyHandler wh = ConstellationSkyHandler.getInstance()
+            .getWorldHandler(worldObj);
         if (focusItem != null && focusItem.getItem() instanceof ItemConstellationFocus && wh != null) {
             return ((ItemConstellationFocus) focusItem.getItem()).getFocusConstellation(focusItem);
         }
@@ -181,65 +187,66 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
     @SideOnly(Side.CLIENT)
     private void doCraftEffects() {
-        craftingTask.getRecipeToCraft().onCraftClientTick(this, craftingTask.getState(), ClientScheduler.getClientTick(), rand);
+        craftingTask.getRecipeToCraft()
+            .onCraftClientTick(this, craftingTask.getState(), ClientScheduler.getClientTick(), rand);
     }
 
     private boolean matchLevel(boolean needUpdate) {
         AltarLevel al = getAltarLevel();
-        boolean matches = al.getMatcher().mbAllowsForCrafting(this);
-        if(matches != mbState) {
+        boolean matches = al.getMatcher()
+            .mbAllowsForCrafting(this);
+        if (matches != mbState) {
             mbState = matches;
             needUpdate = true;
         }
         return needUpdate;
     }
 
-
     private boolean doTryCraft(boolean needUpdate) {
-        if(craftingTask == null) return needUpdate;
+        if (craftingTask == null) return needUpdate;
         AbstractAltarRecipe altarRecipe = craftingTask.getRecipeToCraft();
-        if(!altarRecipe.matches(this, getInventoryHandler(), true)) {
+        if (!altarRecipe.matches(this, getInventoryHandler(), true)) {
             abortCrafting();
             return true;
         }
-        if(!altarRecipe.fulfillesStarlightRequirement(this) &&
-                craftingTask.shouldPersist()) {
+        if (!altarRecipe.fulfillesStarlightRequirement(this) && craftingTask.shouldPersist()) {
             craftingTask.setState(ActiveCraftingTask.CraftingState.PAUSED);
             return true;
         }
-        if((ticksExisted % 5) == 0) {
-            if(!matchDownMultiblocks(altarRecipe.getNeededLevel())) {
+        if ((ticksExisted % 5) == 0) {
+            if (!matchDownMultiblocks(altarRecipe.getNeededLevel())) {
                 abortCrafting();
                 return true;
             }
         }
-        if(craftingTask.isFinished()) {
+        if (craftingTask.isFinished()) {
             finishCrafting();
             return true;
         }
-        if(!craftingTask.tick(this)) {
+        if (!craftingTask.tick(this)) {
             craftingTask.setState(ActiveCraftingTask.CraftingState.WAITING);
             return true;
         }
         ActiveCraftingTask.CraftingState prev = craftingTask.getState();
         craftingTask.setState(ActiveCraftingTask.CraftingState.ACTIVE);
-        craftingTask.getRecipeToCraft().onCraftServerTick(this, ActiveCraftingTask.CraftingState.ACTIVE, craftingTask.getTicksCrafting(), rand);
+        craftingTask.getRecipeToCraft()
+            .onCraftServerTick(this, ActiveCraftingTask.CraftingState.ACTIVE, craftingTask.getTicksCrafting(), rand);
         return (prev != craftingTask.getState()) || needUpdate;
     }
 
     private void finishCrafting() {
-        if(craftingTask == null) return; //Wtf
+        if (craftingTask == null) return; // Wtf
 
         AbstractAltarRecipe recipe = craftingTask.getRecipeToCraft();
         ShapeMap current = copyGetCurrentCraftingGrid();
-        ItemStack out = recipe.getOutput(current, this); //Central item helps defining output - probably, eventually.
-        if(out != null) {
+        ItemStack out = recipe.getOutput(current, this); // Central item helps defining output - probably, eventually.
+        if (out != null) {
             out = ItemUtils.copyStackWithSize(out, out.stackSize);
         }
 
         for (int i = 0; i < 9; i++) {
             ShapedRecipeSlot slot = ShapedRecipeSlot.getByRowColumnIndex(i / 3, i % 3);
-            if(recipe.mayDecrement(this, slot)) {
+            if (recipe.mayDecrement(this, slot)) {
                 ItemUtils.decrStackInInventory(getInventoryHandler(), i);
             } else {
                 recipe.handleItemConsumption(this, slot);
@@ -248,7 +255,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
         for (AttunementRecipe.AttunementAltarSlot slot : AttunementRecipe.AttunementAltarSlot.values()) {
             int slotId = slot.getSlotId();
-            if(recipe.mayDecrement(this, slot)) {
+            if (recipe.mayDecrement(this, slot)) {
                 ItemUtils.decrStackInInventory(getInventoryHandler(), slotId);
             } else {
                 recipe.handleItemConsumption(this, slot);
@@ -257,29 +264,30 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
         for (ConstellationRecipe.ConstellationAtlarSlot slot : ConstellationRecipe.ConstellationAtlarSlot.values()) {
             int slotId = slot.getSlotId();
-            if(recipe.mayDecrement(this, slot)) {
+            if (recipe.mayDecrement(this, slot)) {
                 ItemUtils.decrStackInInventory(getInventoryHandler(), slotId);
             } else {
                 recipe.handleItemConsumption(this, slot);
             }
         }
 
-        if(out != null) {
-            /*for (EnumFacing dir : EnumFacing.VALUES) { FIXME Item capability system break here :|
-                if(dir == EnumFacing.UP) continue;
-
-                TileEntity te = MiscUtils.getTileAt(worldObj, pos.offset(dir), TileEntity.class, true);
-                if(te != null) {
-                    IItemHandler handle = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
-                    if(handle != null) {
-                        ItemUtils.tryPlaceItemInInventory(out, handle);
-                        if(out.stackSize <= 0) {
-                            break;
-                        }
-                    }
-                }
-            }*/
-            if(out.stackSize > 0) {
+        if (out != null) {
+            /*
+             * for (EnumFacing dir : EnumFacing.VALUES) { FIXME Item capability system break here :|
+             * if(dir == EnumFacing.UP) continue;
+             * TileEntity te = MiscUtils.getTileAt(worldObj, pos.offset(dir), TileEntity.class, true);
+             * if(te != null) {
+             * IItemHandler handle = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
+             * if(handle != null) {
+             * ItemUtils.tryPlaceItemInInventory(out, handle);
+             * if(out.stackSize <= 0) {
+             * break;
+             * }
+             * }
+             * }
+             * }
+             */
+            if (out.stackSize > 0) {
                 ItemUtils.dropItem(worldObj, xCoord + 0.5, yCoord + 1.3, zCoord + 0.5, out).age = -6000;
             }
         }
@@ -287,17 +295,25 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         addExpAndTryLevel((int) (recipe.getCraftExperience() * recipe.getCraftExperienceMultiplier()));
         starlightStored = Math.max(0, starlightStored - recipe.getPassiveStarlightRequired());
 
-        if (!recipe.allowsForChaining() || !recipe.matches(this, getInventoryHandler(), false) || !matchDownMultiblocks(recipe.getNeededLevel())) {
-            if(getAltarLevel().ordinal() >= AltarLevel.CONSTELLATION_CRAFT.ordinal()) {
+        if (!recipe.allowsForChaining() || !recipe.matches(this, getInventoryHandler(), false)
+            || !matchDownMultiblocks(recipe.getNeededLevel())) {
+            if (getAltarLevel().ordinal() >= AltarLevel.CONSTELLATION_CRAFT.ordinal()) {
                 Vector3 pos = new Vector3(xCoord, yCoord, zCoord).add(0.5, 0, 0.5);
                 BlockPos pointFromPos = new BlockPos(xCoord, yCoord, zCoord);
-                PktParticleEvent ev = new PktParticleEvent(PktParticleEvent.ParticleEventType.CRAFT_FINISH_BURST, pos.getX(), pos.getY() + 0.05, pos.getZ());
+                PktParticleEvent ev = new PktParticleEvent(
+                    PktParticleEvent.ParticleEventType.CRAFT_FINISH_BURST,
+                    pos.getX(),
+                    pos.getY() + 0.05,
+                    pos.getZ());
                 PacketChannel.CHANNEL.sendToAllAround(ev, PacketChannel.pointFromPos(worldObj, pointFromPos, 32));
             }
-            craftingTask.getRecipeToCraft().onCraftServerFinish(this, rand);
+            craftingTask.getRecipeToCraft()
+                .onCraftServerFinish(this, rand);
             ResearchManager.informCraftingAltarCompletion(this, craftingTask);
             SoundHelper.playSoundAround(Sounds.craftFinish, worldObj, xCoord, yCoord, zCoord, 1F, 1.7F);
-            EntityFlare.spawnAmbient(worldObj, new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
+            EntityFlare.spawnAmbient(
+                worldObj,
+                new Vector3(this).add(-3 + rand.nextFloat() * 7, 0.6, -3 + rand.nextFloat() * 7));
             craftingTask = null;
         }
         markForUpdate();
@@ -308,7 +324,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         for (int i = 0; i < 9; i++) {
             ShapedRecipeSlot slot = ShapedRecipeSlot.values()[i];
             ItemStack stack = getInventoryHandler().getStackInSlot(i);
-            if(stack != null) {
+            if (stack != null) {
                 current.put(slot, new ItemHandle(ItemUtils.copyStackWithSize(stack, 1)));
             }
         }
@@ -316,10 +332,10 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     }
 
     private void addExpAndTryLevel(int exp) {
-        if(level != AltarLevel.ENDGAME) {
+        if (level != AltarLevel.ENDGAME) {
             experience += exp;
             AltarLevel next = level.tryLevelUp(this);
-            if(next.ordinal() > level.ordinal()) {
+            if (next.ordinal() > level.ordinal()) {
                 levelUnsafe(next);
             }
         } else {
@@ -330,10 +346,10 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
     public boolean tryForceLevelUp(AltarLevel to, boolean doLevelUp) {
         int curr = getAltarLevel().ordinal();
-        if(curr >= to.ordinal()) return false;
-        if(getAltarLevel().next() != to) return false;
+        if (curr >= to.ordinal()) return false;
+        if (getAltarLevel().next() != to) return false;
 
-        if(!doLevelUp) return true;
+        if (!doLevelUp) return true;
         levelUnsafe(getAltarLevel().next());
         return true;
     }
@@ -343,11 +359,20 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         level = to;
         experience = 0;
         mbState = false;
-        worldObj.setBlock(xCoord, yCoord, zCoord,BlocksAS.blockAltar, BlocksAS.blockAltar.damageDropped(level.getCorrespondingAltarType().ordinal()),3);//.getDefaultState().withProperty(BlockAltar.ALTAR_TYPE, level.getCorrespondingAltarType()));
+        worldObj.setBlock(
+            xCoord,
+            yCoord,
+            zCoord,
+            BlocksAS.blockAltar,
+            BlocksAS.blockAltar.damageDropped(
+                level.getCorrespondingAltarType()
+                    .ordinal()),
+            3);// .getDefaultState().withProperty(BlockAltar.ALTAR_TYPE, level.getCorrespondingAltarType()));
     }
 
     @Override
-    public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta, World world, int x, int y, int z) {
+    public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta, World world, int x, int y,
+        int z) {
         return oldBlock != newBlock;
     }
 
@@ -359,35 +384,38 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     }
 
     private boolean starlightPassive(boolean needUpdate) {
-        if(starlightStored > 0) needUpdate = true;
+        if (starlightStored > 0) needUpdate = true;
         starlightStored *= 0.95;
 
-        WorldSkyHandler handle = ConstellationSkyHandler.getInstance().getWorldHandler(getWorldObj());
-        if(doesSeeSky() && handle != null) {
+        WorldSkyHandler handle = ConstellationSkyHandler.getInstance()
+            .getWorldHandler(getWorldObj());
+        if (doesSeeSky() && handle != null) {
             int yLevel = yCoord;
-            if(yLevel > 40) {
+            if (yLevel > 40) {
                 float collect = 200;
-                if(getAltarLevel().ordinal() >= AltarLevel.ATTUNEMENT.ordinal()) {
+                if (getAltarLevel().ordinal() >= AltarLevel.ATTUNEMENT.ordinal()) {
                     collect = 230;
                 }
-                if(getAltarLevel().ordinal() >= AltarLevel.CONSTELLATION_CRAFT.ordinal()) {
+                if (getAltarLevel().ordinal() >= AltarLevel.CONSTELLATION_CRAFT.ordinal()) {
                     collect = 260;
                 }
 
                 float dstr;
-                if(yLevel > 120) {
+                if (yLevel > 120) {
                     dstr = 1F;
                 } else {
                     dstr = (yLevel - 20) / 100F;
                 }
 
-                if(posDistribution == -1) {
-                    posDistribution = SkyCollectionHelper.getSkyNoiseDistribution(worldObj, new BlockPos(xCoord, yCoord, zCoord));
+                if (posDistribution == -1) {
+                    posDistribution = SkyCollectionHelper
+                        .getSkyNoiseDistribution(worldObj, new BlockPos(xCoord, yCoord, zCoord));
                 }
 
                 collect *= dstr;
                 collect *= posDistribution;
-                collect *= 0.2 + (0.8 * ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(getWorldObj()));
+                collect *= 0.2 + (0.8 * ConstellationSkyHandler.getInstance()
+                    .getCurrentDaytimeDistribution(getWorldObj()));
 
                 starlightStored = Math.min(getMaxStarlightStorage(), (int) (starlightStored + collect));
                 return true;
@@ -423,10 +451,11 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
     @Override
     public void onInteract(World world, BlockPos pos, EntityPlayer player, int side, boolean sneaking) {
-        if(!world.isRemote) {
-            if(getActiveCraftingTask() != null) {
+        if (!world.isRemote) {
+            if (getActiveCraftingTask() != null) {
                 AbstractAltarRecipe altarRecipe = craftingTask.getRecipeToCraft();
-                if(!matchDownMultiblocks(altarRecipe.getNeededLevel()) || !altarRecipe.matches(this, getInventoryHandler(), false)) {
+                if (!matchDownMultiblocks(altarRecipe.getNeededLevel())
+                    || !altarRecipe.matches(this, getInventoryHandler(), false)) {
                     abortCrafting();
                     return;
                 }
@@ -439,19 +468,20 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     private boolean matchDownMultiblocks(AltarLevel levelDownTo) {
         for (int i = getAltarLevel().ordinal(); i >= levelDownTo.ordinal(); i--) {
             AltarLevel al = AltarLevel.values()[i];
-            if(al.getMatcher().mbAllowsForCrafting(this)) return true;
+            if (al.getMatcher()
+                .mbAllowsForCrafting(this)) return true;
         }
         return false;
     }
 
     private void findRecipe(EntityPlayer crafter) {
-        if(craftingTask != null) return;
+        if (craftingTask != null) return;
 
         AbstractAltarRecipe recipe = AltarRecipeRegistry.findMatchingRecipe(this, false);
-        if(recipe instanceof IGatedRecipe) {
-            if(!((IGatedRecipe) recipe).hasProgressionServer(crafter)) return;
+        if (recipe instanceof IGatedRecipe) {
+            if (!((IGatedRecipe) recipe).hasProgressionServer(crafter)) return;
         }
-        if(recipe != null) {
+        if (recipe != null) {
             this.craftingTask = new ActiveCraftingTask(recipe, crafter.getUniqueID());
             markForUpdate();
         }
@@ -460,7 +490,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
     protected void updateSkyState(boolean seesSky) {
         boolean update = doesSeeSky != seesSky;
         this.doesSeeSky = seesSky;
-        if(update) {
+        if (update) {
             markForUpdate();
         }
     }
@@ -491,12 +521,12 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         this.mbState = compound.getBoolean("mbState");
 
         this.craftingTask = null;
-        if(compound.hasKey("craftingTask")) {
+        if (compound.hasKey("craftingTask")) {
             this.craftingTask = ActiveCraftingTask.deserialize(compound.getCompoundTag("craftingTask"));
         }
 
         this.focusItem = null;
-        if(compound.hasKey("focusItem")) {
+        if (compound.hasKey("focusItem")) {
             this.focusItem = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("focusItem"));
         }
     }
@@ -510,13 +540,13 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         compound.setInteger("starlight", starlightStored);
         compound.setBoolean("mbState", mbState);
 
-        if(focusItem != null) {
+        if (focusItem != null) {
             NBTTagCompound focusTag = new NBTTagCompound();
             focusItem.writeToNBT(focusTag);
             compound.setTag("focusItem", focusTag);
         }
 
-        if(craftingTask != null) {
+        if (craftingTask != null) {
             compound.setTag("craftingTask", craftingTask.serialize());
         }
     }
@@ -541,16 +571,20 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
     @SideOnly(Side.CLIENT)
     public static void finishBurst(PktParticleEvent event) {
-        EffectHandler.getInstance().textureSpritePlane(SpriteLibrary.spriteCraftBurst, Vector3.RotAxis.Y_AXIS.clone()).setPosition(event.getVec()).setScale(5 + rand.nextInt(2)).setNoRotation(rand.nextInt(360));
+        EffectHandler.getInstance()
+            .textureSpritePlane(SpriteLibrary.spriteCraftBurst, Vector3.RotAxis.Y_AXIS.clone())
+            .setPosition(event.getVec())
+            .setScale(5 + rand.nextInt(2))
+            .setNoRotation(rand.nextInt(360));
     }
 
     public static enum AltarLevel {
 
-        DISCOVERY          (100,   (ta) -> true       ),
-        ATTUNEMENT         (1000,  new PatternAltarMatcher(MultiBlockArrays.patternAltarAttunement), false),
-        CONSTELLATION_CRAFT(4000,  new PatternAltarMatcher(MultiBlockArrays.patternAltarConstellation), false),
-        TRAIT_CRAFT        (12000, new PatternAltarMatcher(MultiBlockArrays.patternAltarTrait), false),
-        ENDGAME            (-1,    (ta) -> true       );
+        DISCOVERY(100, (ta) -> true),
+        ATTUNEMENT(1000, new PatternAltarMatcher(MultiBlockArrays.patternAltarAttunement), false),
+        CONSTELLATION_CRAFT(4000, new PatternAltarMatcher(MultiBlockArrays.patternAltarConstellation), false),
+        TRAIT_CRAFT(12000, new PatternAltarMatcher(MultiBlockArrays.patternAltarTrait), false),
+        ENDGAME(-1, (ta) -> true);
 
         private final int totalExpNeededToLevelUp;
         private final int maxStarlightStorage;
@@ -587,12 +621,12 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         }
 
         public AltarLevel tryLevelUp(TileAltar ta) {
-            if(!hasNextLevel()) return this;
+            if (!hasNextLevel()) return this;
             int current = ta.experience;
-            if(ordinal() + 1 >= values().length) return this;
+            if (ordinal() + 1 >= values().length) return this;
             AltarLevel next = values()[ordinal() + 1];
-            if(!next.canLevelToByExpGain) return this;
-            if(current >= totalExpNeededToLevelUp) {
+            if (!next.canLevelToByExpGain) return this;
+            if (current >= totalExpNeededToLevelUp) {
                 return next;
             }
             return this;
@@ -607,7 +641,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
         }
 
         public AltarLevel next() {
-            if(this == ENDGAME) return this;
+            if (this == ENDGAME) return this;
             return AltarLevel.values()[ordinal() + 1];
         }
 
@@ -621,9 +655,9 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
         @Override
         public void onStarlightReceive(World world, boolean isChunkLoaded, IWeakConstellation type, double amount) {
-            if(isChunkLoaded) {
+            if (isChunkLoaded) {
                 TileAltar ta = MiscUtils.getTileAt(world, getPos(), TileAltar.class, false);
-                if(ta != null) {
+                if (ta != null) {
                     ta.receiveStarlight(type, amount);
                 }
             }
@@ -660,7 +694,7 @@ public class TileAltar extends TileReceiverBaseInventory implements IWandInterac
 
         @Override
         public boolean mbAllowsForCrafting(TileAltar ta) {
-            if(pba == null) return false;
+            if (pba == null) return false;
             return pba.matches(ta.getWorldObj(), new BlockPos(ta.xCoord, ta.yCoord, ta.zCoord));
         }
     }

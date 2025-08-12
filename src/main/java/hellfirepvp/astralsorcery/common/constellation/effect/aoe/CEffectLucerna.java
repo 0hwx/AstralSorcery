@@ -8,6 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.constellation.effect.aoe;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.controller.orbital.OrbitalEffectController;
 import hellfirepvp.astralsorcery.client.effect.controller.orbital.OrbitalEffectLucerna;
@@ -21,13 +29,6 @@ import hellfirepvp.astralsorcery.common.util.ILocatable;
 import hellfirepvp.astralsorcery.common.util.data.TickTokenizedMap;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
 import hellfirepvp.astralsorcery.common.util.data.WorldBlockPos;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraftforge.common.config.Configuration;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -50,10 +51,12 @@ public class CEffectLucerna extends ConstellationEffect {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility, boolean extendedEffects) {
-        if(pedestal.getTicksExisted() % 20 == 0) {
+    public void playClientEffect(World world, BlockPos pos, TileRitualPedestal pedestal, float percEffectVisibility,
+        boolean extendedEffects) {
+        if (pedestal.getTicksExisted() % 20 == 0) {
             OrbitalEffectLucerna luc = new OrbitalEffectLucerna();
-            OrbitalEffectController ctrl = EffectHandler.getInstance().orbital(luc, luc, luc);
+            OrbitalEffectController ctrl = EffectHandler.getInstance()
+                .orbital(luc, luc, luc);
             ctrl.setOffset(new Vector3(pos).add(0.5, 0.5, 0.5));
             ctrl.setOrbitRadius(0.8 + rand.nextFloat() * 0.7);
             ctrl.setOrbitAxis(Vector3.RotAxis.Y_AXIS);
@@ -62,24 +65,26 @@ public class CEffectLucerna extends ConstellationEffect {
     }
 
     @Override
-    public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect, @Nullable IMinorConstellation possibleTraitEffect) {
-        if(!enabled) return false;
+    public boolean playMainEffect(World world, BlockPos pos, float percStrength, boolean mayDoTraitEffect,
+        @Nullable IMinorConstellation possibleTraitEffect) {
+        if (!enabled) return false;
         percStrength *= potencyMultiplier;
-        if(percStrength < 1) {
-            if(world.rand.nextFloat() > percStrength) return false;
+        if (percStrength < 1) {
+            if (world.rand.nextFloat() > percStrength) return false;
         }
 
         int toAdd = 1 + rand.nextInt(3);
         WorldBlockPos at = new WorldBlockPos(world, pos);
         TickTokenizedMap.SimpleTickToken<Double> token = EventHandlerServer.spawnDenyRegions.get(at);
-        if(token != null) {
+        if (token != null) {
             int next = token.getRemainingTimeout() + toAdd;
-            if(next > 400) next = 400;
+            if (next > 400) next = 400;
             token.setTimeout(next);
             rememberedTimeout = next;
         } else {
             rememberedTimeout = Math.min(400, rememberedTimeout + toAdd);
-            EventHandlerServer.spawnDenyRegions.put(at, new TickTokenizedMap.SimpleTickToken<>(range, rememberedTimeout));
+            EventHandlerServer.spawnDenyRegions
+                .put(at, new TickTokenizedMap.SimpleTickToken<>(range, rememberedTimeout));
         }
 
         return true;
@@ -106,8 +111,24 @@ public class CEffectLucerna extends ConstellationEffect {
 
     @Override
     public void loadFromConfig(Configuration cfg) {
-        enabled = cfg.getBoolean(getKey() + "Enabled", getConfigurationSection(), true, "Set to false to disable this ConstellationEffect.");
-        range = cfg.getFloat(getKey() + "DenyRange", getConfigurationSection(), 256, 2, 2048, "Defines the range in which the ritual will prevent mobspawning.");
-        potencyMultiplier = cfg.getFloat(getKey() + "PotencyMultiplier", getConfigurationSection(), 1.0F, 0.01F, 100F, "Set the potency multiplier for this ritual effect. Will affect all ritual effects and their efficiency.");
+        enabled = cfg.getBoolean(
+            getKey() + "Enabled",
+            getConfigurationSection(),
+            true,
+            "Set to false to disable this ConstellationEffect.");
+        range = cfg.getFloat(
+            getKey() + "DenyRange",
+            getConfigurationSection(),
+            256,
+            2,
+            2048,
+            "Defines the range in which the ritual will prevent mobspawning.");
+        potencyMultiplier = cfg.getFloat(
+            getKey() + "PotencyMultiplier",
+            getConfigurationSection(),
+            1.0F,
+            0.01F,
+            100F,
+            "Set the potency multiplier for this ritual effect. Will affect all ritual effects and their efficiency.");
     }
 }

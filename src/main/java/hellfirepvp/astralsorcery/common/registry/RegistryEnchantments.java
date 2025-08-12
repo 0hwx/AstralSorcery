@@ -1,16 +1,17 @@
 package hellfirepvp.astralsorcery.common.registry;
 
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.enchantment.EnchantmentNightVision;
-import hellfirepvp.astralsorcery.common.enchantment.EnchantmentPlayerWornTick;
-import hellfirepvp.astralsorcery.common.enchantment.EnchantmentScorchingHeat;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraftforge.common.MinecraftForge;
+import static hellfirepvp.astralsorcery.common.lib.EnchantmentsAS.*;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static hellfirepvp.astralsorcery.common.lib.EnchantmentsAS.*;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraftforge.common.MinecraftForge;
+
+import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.common.enchantment.EnchantmentNightVision;
+import hellfirepvp.astralsorcery.common.enchantment.EnchantmentPlayerWornTick;
+import hellfirepvp.astralsorcery.common.enchantment.EnchantmentScorchingHeat;
 
 /**
  * This class is part of the Astral Sorcery Mod

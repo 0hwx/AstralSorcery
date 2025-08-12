@@ -1,5 +1,19 @@
 package hellfirepvp.astralsorcery.common.util.effect;
 
+import java.awt.*;
+import java.util.List;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import hellfirepvp.astralsorcery.client.effect.EffectHandler;
 import hellfirepvp.astralsorcery.client.effect.EffectHelper;
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
@@ -11,24 +25,10 @@ import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
 import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
 import hellfirepvp.astralsorcery.common.CommonProxy;
 import hellfirepvp.astralsorcery.common.constellation.distribution.ConstellationSkyHandler;
-import hellfirepvp.astralsorcery.common.lib.Constellations;
 import hellfirepvp.astralsorcery.common.network.PacketChannel;
 import hellfirepvp.astralsorcery.common.network.packet.server.PktParticleEvent;
 import hellfirepvp.astralsorcery.common.util.SkyCollectionHelper;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.List;
-import java.util.Random;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,20 +41,36 @@ public class CelestialStrike {
 
     public static void play(@Nullable EntityLivingBase except, World world, Vector3 position, Vector3 displayPosition) {
         double radius = 16D;
-        List<EntityLivingBase> livingEntities = world.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0).expand(radius, radius / 2, radius).offset(position.toBlockPos().getX(), position.toBlockPos().getY(), position.toBlockPos().getZ()));
-        if(except != null) {
+        List<EntityLivingBase> livingEntities = world.getEntitiesWithinAABB(
+            EntityLivingBase.class,
+            AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0)
+                .expand(radius, radius / 2, radius)
+                .offset(
+                    position.toBlockPos()
+                        .getX(),
+                    position.toBlockPos()
+                        .getY(),
+                    position.toBlockPos()
+                        .getZ()));
+        if (except != null) {
             livingEntities.remove(except);
         }
 
         float dmg = 10;
-        dmg += ConstellationSkyHandler.getInstance().getCurrentDaytimeDistribution(world) * 20F;
+        dmg += ConstellationSkyHandler.getInstance()
+            .getCurrentDaytimeDistribution(world) * 20F;
         dmg += SkyCollectionHelper.getSkyNoiseDistribution(world, position.toBlockPos()) * 40F;
         for (EntityLivingBase living : livingEntities) {
-            if(!(living instanceof EntityPlayer) || !((EntityPlayer) living).capabilities.isCreativeMode) { //(!((EntityPlayer) living).isSpectator() && !((EntityPlayer) living).isCreative())) {
+            if (!(living instanceof EntityPlayer) || !((EntityPlayer) living).capabilities.isCreativeMode) { // (!((EntityPlayer)
+                                                                                                             // living).isSpectator()
+                                                                                                             // &&
+                                                                                                             // !((EntityPlayer)
+                                                                                                             // living).isCreative()))
+                                                                                                             // {
                 float dstPerc = (float) (new Vector3(living).distance(position) / radius);
                 dstPerc = 1F - MathHelper.clamp_float(dstPerc, 0F, 1F);
                 float dmgDealt = dstPerc * dmg;
-                if(dmgDealt > 0.5) {
+                if (dmgDealt > 0.5) {
                     living.attackEntityFrom(CommonProxy.dmgSourceStellar, dmgDealt);
                 }
             }
@@ -67,21 +83,59 @@ public class CelestialStrike {
     @SideOnly(Side.CLIENT)
     public static void playEffects(PktParticleEvent pktParticleEvent) {
         Random r = new Random();
-        Vector3 origin = pktParticleEvent.getVec().clone();
-        EffectLightbeam beam = EffectHandler.getInstance().lightbeam(origin.clone().add(0, 16, 0), origin.clone().add(0, -4, 0), 6, 9);
-        beam.setAlphaFunction(EntityComplexFX.AlphaFunction.FADE_OUT).setAlphaMultiplier(1F).setMaxAge(25);
+        Vector3 origin = pktParticleEvent.getVec()
+            .clone();
+        EffectLightbeam beam = EffectHandler.getInstance()
+            .lightbeam(
+                origin.clone()
+                    .add(0, 16, 0),
+                origin.clone()
+                    .add(0, -4, 0),
+                6,
+                9);
+        beam.setAlphaFunction(EntityComplexFX.AlphaFunction.FADE_OUT)
+            .setAlphaMultiplier(1F)
+            .setMaxAge(25);
         origin.add(r.nextFloat() - r.nextFloat(), 0, r.nextFloat() - r.nextFloat());
-        beam = EffectHandler.getInstance().lightbeam(origin.clone().add(0, 16 + r.nextFloat() * 2, 0), origin.clone().add(0, -4, 0), 6, 9);
-        beam.setAlphaFunction(EntityComplexFX.AlphaFunction.FADE_OUT).setAlphaMultiplier(1F).setColorOverlay(new Color(0x5D98D8)).setMaxAge(24 + r.nextInt( 6));
+        beam = EffectHandler.getInstance()
+            .lightbeam(
+                origin.clone()
+                    .add(0, 16 + r.nextFloat() * 2, 0),
+                origin.clone()
+                    .add(0, -4, 0),
+                6,
+                9);
+        beam.setAlphaFunction(EntityComplexFX.AlphaFunction.FADE_OUT)
+            .setAlphaMultiplier(1F)
+            .setColorOverlay(new Color(0x5D98D8))
+            .setMaxAge(24 + r.nextInt(6));
         origin.add(r.nextFloat() - r.nextFloat(), 0, r.nextFloat() - r.nextFloat());
-        beam = EffectHandler.getInstance().lightbeam(origin.clone().add(0, 16, 0), origin.clone().add(0, -4, 0), 6, 9);
-        beam.setAlphaFunction(EntityComplexFX.AlphaFunction.FADE_OUT).setAlphaMultiplier(1F).setColorOverlay(new Color(0x005ABE)).setMaxAge(24 + r.nextInt( 6));
+        beam = EffectHandler.getInstance()
+            .lightbeam(
+                origin.clone()
+                    .add(0, 16, 0),
+                origin.clone()
+                    .add(0, -4, 0),
+                6,
+                9);
+        beam.setAlphaFunction(EntityComplexFX.AlphaFunction.FADE_OUT)
+            .setAlphaMultiplier(1F)
+            .setColorOverlay(new Color(0x005ABE))
+            .setMaxAge(24 + r.nextInt(6));
 
-        origin = pktParticleEvent.getVec().clone();
+        origin = pktParticleEvent.getVec()
+            .clone();
 
         for (int i = 0; i < 43; i++) {
-            Vector3 randTo = new Vector3((r.nextDouble() * 9) - (r.nextDouble() * 9), r.nextDouble() * 2, (r.nextDouble() * 9) - (r.nextDouble() * 9));
-            EffectLightning lightning = EffectHandler.getInstance().lightning(origin, origin.clone().add(randTo));
+            Vector3 randTo = new Vector3(
+                (r.nextDouble() * 9) - (r.nextDouble() * 9),
+                r.nextDouble() * 2,
+                (r.nextDouble() * 9) - (r.nextDouble() * 9));
+            EffectLightning lightning = EffectHandler.getInstance()
+                .lightning(
+                    origin,
+                    origin.clone()
+                        .add(randTo));
             switch (r.nextInt(3)) {
                 case 0:
                     lightning.setOverlayColor(Color.WHITE);
@@ -95,9 +149,14 @@ public class CelestialStrike {
             }
         }
 
-        origin = pktParticleEvent.getVec().clone();
+        origin = pktParticleEvent.getVec()
+            .clone();
 
-        TexturePlane tex = EffectHandler.getInstance().texturePlane(AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC, "smoke"), Vector3.RotAxis.Y_AXIS.clone().negate());
+        TexturePlane tex = EffectHandler.getInstance()
+            .texturePlane(
+                AssetLibrary.loadTexture(AssetLoader.TextureLocation.MISC, "smoke"),
+                Vector3.RotAxis.Y_AXIS.clone()
+                    .negate());
         tex.setAlphaOverDistance(false);
         tex.setAlphaMultiplier(0.6F);
         tex.setAlphaFunction(EntityComplexFX.AlphaFunction.FADE_OUT);
@@ -111,10 +170,12 @@ public class CelestialStrike {
 
         for (int i = 0; i < 40; i++) {
             EntityFXFacingParticle particle = EffectHelper.genericFlareParticle(
-                    origin.getX() + r.nextDouble() * 4 - r.nextDouble() * 4,
-                    origin.getY() + r.nextDouble() * 9,
-                    origin.getZ() + r.nextDouble() * 4 - r.nextDouble() * 4);
-            particle.gravity(0.08).scale(0.85F).setMaxAge(15);
+                origin.getX() + r.nextDouble() * 4 - r.nextDouble() * 4,
+                origin.getY() + r.nextDouble() * 9,
+                origin.getZ() + r.nextDouble() * 4 - r.nextDouble() * 4);
+            particle.gravity(0.08)
+                .scale(0.85F)
+                .setMaxAge(15);
             switch (r.nextInt(3)) {
                 case 0:
                     particle.setColor(Color.WHITE);
@@ -128,21 +189,47 @@ public class CelestialStrike {
             }
         }
 
-        Vector3 perp = Vector3.RotAxis.Y_AXIS.clone().perpendicular().normalize();
+        Vector3 perp = Vector3.RotAxis.Y_AXIS.clone()
+            .perpendicular()
+            .normalize();
         for (double i = 0; i <= 360; i += 1.7) {
-            Vector3 dir = perp.clone().rotate(Math.toRadians(i), Vector3.RotAxis.Y_AXIS).normalize();
-            Vector3 pos = dir.clone().multiply(7 + r.nextDouble() * 2).add(origin);
+            Vector3 dir = perp.clone()
+                .rotate(Math.toRadians(i), Vector3.RotAxis.Y_AXIS)
+                .normalize();
+            Vector3 pos = dir.clone()
+                .multiply(7 + r.nextDouble() * 2)
+                .add(origin);
             EntityFXFacingParticle particle = EffectHelper.genericFlareParticle(pos.getX(), pos.getY(), pos.getZ());
             dir.multiply(0.1);
-            particle.motion(dir.getX() + r.nextDouble() * 0.01, dir.getY() + 0.001 + r.nextDouble() * 0.01, dir.getZ() + r.nextDouble() * 0.01).setColor(Color.BLUE).scale(1.2F).setMaxAge(15);
+            particle
+                .motion(
+                    dir.getX() + r.nextDouble() * 0.01,
+                    dir.getY() + 0.001 + r.nextDouble() * 0.01,
+                    dir.getZ() + r.nextDouble() * 0.01)
+                .setColor(Color.BLUE)
+                .scale(1.2F)
+                .setMaxAge(15);
             particle.setAlphaMultiplier(0.4F);
         }
         for (double i = 0; i <= 360; i += 3.7) {
-            Vector3 dir = perp.clone().rotate(Math.toRadians(i), Vector3.RotAxis.Y_AXIS).normalize();
-            Vector3 pos = dir.clone().multiply(3 + r.nextDouble() * 2).add(origin);
+            Vector3 dir = perp.clone()
+                .rotate(Math.toRadians(i), Vector3.RotAxis.Y_AXIS)
+                .normalize();
+            Vector3 pos = dir.clone()
+                .multiply(3 + r.nextDouble() * 2)
+                .add(origin);
             EntityFXFacingParticle particle = EffectHelper.genericFlareParticle(pos.getX(), pos.getY(), pos.getZ());
             dir.multiply(0.1);
-            particle.motion(dir.getX() + r.nextDouble() * 0.01, dir.getY() + 0.001 + r.nextDouble() * 0.01, dir.getZ() + r.nextDouble() * 0.01).setColor(Color.BLUE.brighter().brighter()).scale(1.5F).setMaxAge(15);
+            particle
+                .motion(
+                    dir.getX() + r.nextDouble() * 0.01,
+                    dir.getY() + 0.001 + r.nextDouble() * 0.01,
+                    dir.getZ() + r.nextDouble() * 0.01)
+                .setColor(
+                    Color.BLUE.brighter()
+                        .brighter())
+                .scale(1.5F)
+                .setMaxAge(15);
             particle.setAlphaMultiplier(0.4F);
         }
 

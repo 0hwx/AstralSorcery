@@ -8,11 +8,14 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
-import cpw.mods.fml.common.FMLCommonHandler;
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.base.Mods;
-import hellfirepvp.astralsorcery.common.util.data.Vector3;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.function.Function;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -28,12 +31,12 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.world.BlockEvent;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.function.Function;
+import com.mojang.realmsclient.gui.ChatFormatting;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.common.base.Mods;
+import hellfirepvp.astralsorcery.common.util.data.Vector3;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -48,19 +51,19 @@ public class MiscUtils {
 
     @Nullable
     public static <T> T getTileAt(IBlockAccess world, BlockPos pos, Class<T> tileClass, boolean forceChunkLoad) {
-        if(world == null || pos == null) return null; //Duh.
-        if(world instanceof World) {
-            if(!((World) world).blockExists(pos.getX(), pos.getY(), pos.getZ()) && !forceChunkLoad) return null;
+        if (world == null || pos == null) return null; // Duh.
+        if (world instanceof World) {
+            if (!((World) world).blockExists(pos.getX(), pos.getY(), pos.getZ()) && !forceChunkLoad) return null;
         }
         TileEntity te = world.getTileEntity(pos.getX(), pos.getY(), pos.getZ());
-        if(te == null) return null;
-        if(tileClass.isInstance(te)) return (T) te;
+        if (te == null) return null;
+        if (tileClass.isInstance(te)) return (T) te;
         return null;
     }
 
     @Nullable
     public static <T> T getRandomEntry(List<T> list, Random rand) {
-        if(list == null || list.isEmpty()) return null;
+        if (list == null || list.isEmpty()) return null;
         return list.get(rand.nextInt(list.size()));
     }
 
@@ -68,7 +71,7 @@ public class MiscUtils {
         V max = null;
         for (T element : elements) {
             V val = valueFunction.apply(element);
-            if(max == null || max.compareTo(val) < 0) {
+            if (max == null || max.compareTo(val) < 0) {
                 max = val;
             }
         }
@@ -78,7 +81,7 @@ public class MiscUtils {
     @Nonnull
     public static Color flareColorFromDye(EnumDyeColor color) {
         Color c = prettierColorMapping.get(color);
-        if(c == null) c = Color.WHITE;
+        if (c == null) c = Color.WHITE;
         return c;
     }
 
@@ -116,7 +119,7 @@ public class MiscUtils {
             case RED:
                 return ChatFormatting.DARK_RED;
             case BLACK:
-                return ChatFormatting.DARK_GRAY; //Black is unreadable. fck that.
+                return ChatFormatting.DARK_GRAY; // Black is unreadable. fck that.
             default:
                 return ChatFormatting.WHITE;
         }
@@ -133,22 +136,29 @@ public class MiscUtils {
         return playerMP.theItemInWorldManager.tryHarvestBlock(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    //Copied from ForgeHooks.onBlockBreak & PlayerInteractionManager.tryHarvestBlock
-    //Duplicate break functionality without a active player.
-    //Emulates a FakePlayer - attempts without a player as harvester in case a fakeplayer leads to issues.
+    // Copied from ForgeHooks.onBlockBreak & PlayerInteractionManager.tryHarvestBlock
+    // Duplicate break functionality without a active player.
+    // Emulates a FakePlayer - attempts without a player as harvester in case a fakeplayer leads to issues.
     public static boolean breakBlockWithoutPlayer(WorldServer world, BlockPos pos) {
         try {
             FakePlayer fp = AstralSorcery.proxy.getASFakePlayerServer(world);
             Block block = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
             int meta = world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ()); // todo fix
-            BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(pos.getX(), pos.getY(), pos.getZ() ,world, block, meta, fp);
+            BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
+                world,
+                block,
+                meta,
+                fp);
             MinecraftForge.EVENT_BUS.post(event);
             int exp = event.getExpToDrop();
-            if(event.isCanceled()) return false;
+            if (event.isCanceled()) return false;
 
-//            Block Block = world.getBlockState(pos);
-//            TileEntity tileentity = world.getTileEntity(x, y, z);
-            world.playAuxSFX( 2001, pos.getX(), pos.getY(), pos.getZ(), Block.getIdFromBlock(block));
+            // Block Block = world.getBlockState(pos);
+            // TileEntity tileentity = world.getTileEntity(x, y, z);
+            world.playAuxSFX(2001, pos.getX(), pos.getY(), pos.getZ(), Block.getIdFromBlock(block));
             boolean flag = block.canHarvestBlock(fp, meta);
             boolean flag1 = block.removedByPlayer(world, fp, pos.getX(), pos.getY(), pos.getZ(), flag);
             if (flag1) {
@@ -161,38 +171,57 @@ public class MiscUtils {
                 block.dropXpOnBlockBreak(world, pos.getX(), pos.getY(), pos.getZ(), exp);
             }
             return flag1;
-        } catch (Exception ignored) {} //Silently fail and propagate it as "can't break this block"
+        } catch (Exception ignored) {} // Silently fail and propagate it as "can't break this block"
         return false;
     }
 
     public static void transferEntityTo(Entity entity, int targetDimId, BlockPos targetPos) {
-        if(entity.worldObj.isRemote) return; //No transfers on clientside.
-        if(entity.worldObj.provider.dimensionId != targetDimId) {
-            if(entity instanceof EntityPlayerMP) {
-                FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) entity, targetDimId, new NoOpTeleporter(((EntityPlayerMP) entity).getServerForPlayer()));
+        if (entity.worldObj.isRemote) return; // No transfers on clientside.
+        if (entity.worldObj.provider.dimensionId != targetDimId) {
+            if (entity instanceof EntityPlayerMP) {
+                FMLCommonHandler.instance()
+                    .getMinecraftServerInstance()
+                    .getConfigurationManager()
+                    .transferPlayerToDimension(
+                        (EntityPlayerMP) entity,
+                        targetDimId,
+                        new NoOpTeleporter(((EntityPlayerMP) entity).getServerForPlayer()));
             } else {
                 entity.travelToDimension(targetDimId);
             }
         }
-        entity.setLocationAndAngles(targetPos.getX() + 0.5, targetPos.getY(), targetPos.getZ() + 0.5, entity.rotationYaw, entity.rotationPitch);
+        entity.setLocationAndAngles(
+            targetPos.getX() + 0.5,
+            targetPos.getY(),
+            targetPos.getZ() + 0.5,
+            entity.rotationYaw,
+            entity.rotationPitch);
         entity.worldObj.updateEntityWithOptionalForce(entity, false);
-//        entity.setPositionAndUpdate(targetPos.getX() + 0.5, targetPos.getY(), targetPos.getZ() + 0.5);// todo check this
+        // entity.setPositionAndUpdate(targetPos.getX() + 0.5, targetPos.getY(), targetPos.getZ() + 0.5);// todo check
+        // this
     }
 
-    public static List<Vector3> getCirclePositions(Vector3 centerOffset, Vector3 axis, double radius, int amountOfPointsOnCircle) {
+    public static List<Vector3> getCirclePositions(Vector3 centerOffset, Vector3 axis, double radius,
+        int amountOfPointsOnCircle) {
         List<Vector3> out = new LinkedList<>();
-        Vector3 circleVec = axis.clone().perpendicular().normalize().multiply(radius);
+        Vector3 circleVec = axis.clone()
+            .perpendicular()
+            .normalize()
+            .multiply(radius);
         double degPerPoint = 360D / ((double) amountOfPointsOnCircle);
         for (int i = 0; i < amountOfPointsOnCircle; i++) {
             double deg = i * degPerPoint;
-            out.add(circleVec.clone().rotate(Math.toRadians(deg), axis.clone()).add(centerOffset));
+            out.add(
+                circleVec.clone()
+                    .rotate(Math.toRadians(deg), axis.clone())
+                    .add(centerOffset));
         }
         return out;
     }
 
     @Nullable
     public static MovingObjectPosition rayTraceLook(EntityLivingBase entity, double reachDst) {
-        Vec3 pos =  Vec3.createVectorHelper(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
+        Vec3 pos = Vec3.createVectorHelper(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
         Vec3 lookVec = entity.getLookVec();
         Vec3 end = pos.addVector(lookVec.xCoord * reachDst, lookVec.yCoord * reachDst, lookVec.zCoord * reachDst);
         return entity.worldObj.rayTraceBlocks(pos, end);
@@ -213,44 +242,54 @@ public class MiscUtils {
     }
 
     public static boolean isChunkLoaded(World world, ChunkCoordIntPair pos) {
-        return world.getChunkProvider().loadChunk(pos.chunkXPos, pos.chunkZPos) != null;
+        return world.getChunkProvider()
+            .loadChunk(pos.chunkXPos, pos.chunkZPos) != null;
     }
 
     public static boolean isPlayerFakeMP(EntityPlayerMP player) {
-        if(player instanceof FakePlayer) return true;
+        if (player instanceof FakePlayer) return true;
 
-        if(Mods.GALACTICRAFT_CORE.isPresent()) {
+        if (Mods.GALACTICRAFT_CORE.isPresent()) {
             Class<?> plClass = Mods.getGCPlayerClass();
-            if(plClass != null) {
-                if(player.getClass() != EntityPlayerMP.class && player.getClass() != plClass) return true;
+            if (plClass != null) {
+                if (player.getClass() != EntityPlayerMP.class && player.getClass() != plClass) return true;
             } else {
-                if(player.getClass() != EntityPlayerMP.class) return true;
+                if (player.getClass() != EntityPlayerMP.class) return true;
             }
         } else {
-            if(player.getClass() != EntityPlayerMP.class) return true;
+            if (player.getClass() != EntityPlayerMP.class) return true;
         }
 
-        if(player.playerNetServerHandler == null) return true;
+        if (player.playerNetServerHandler == null) return true;
         try {
-            player.getPlayerIP().length();
-            player.playerNetServerHandler.netManager.getSocketAddress().toString();
+            player.getPlayerIP()
+                .length();
+            player.playerNetServerHandler.netManager.getSocketAddress()
+                .toString();
         } catch (Exception exc) {
             return true;
         }
-        if(FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager() == null) return true;
-        return !FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getPlayerList(player.getPlayerIP()).contains(player); //todo check this
+        if (FMLCommonHandler.instance()
+            .getMinecraftServerInstance()
+            .getConfigurationManager() == null) return true;
+        return !FMLCommonHandler.instance()
+            .getMinecraftServerInstance()
+            .getConfigurationManager()
+            .getPlayerList(player.getPlayerIP())
+            .contains(player); // todo check this
     }
 
-    public static List<BlockPos> searchAreaFor(World world, BlockPos center, Block blockToSearch, int metaToSearch, int radius) {
+    public static List<BlockPos> searchAreaFor(World world, BlockPos center, Block blockToSearch, int metaToSearch,
+        int radius) {
         List<BlockPos> found = new LinkedList<>();
         for (int xx = -radius; xx <= radius; xx++) {
             for (int yy = -radius; yy <= radius; yy++) {
                 for (int zz = -radius; zz <= radius; zz++) {
                     BlockPos pos = center.add(xx, yy, zz);
-                    if(isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ()))) {
-                        Block block = world.getBlock(pos.getX(), pos.getY(),pos.getZ());
-                        int metadata = world.getBlockMetadata(pos.getX(), pos.getY(),pos.getZ());
-                        if(block.equals(blockToSearch) && metadata == metaToSearch) {
+                    if (isChunkLoaded(world, new ChunkCoordIntPair(pos.chunkX(), pos.chunkZ()))) {
+                        Block block = world.getBlock(pos.getX(), pos.getY(), pos.getZ());
+                        int metadata = world.getBlockMetadata(pos.getX(), pos.getY(), pos.getZ());
+                        if (block.equals(blockToSearch) && metadata == metaToSearch) {
                             found.add(pos);
                         }
                     }

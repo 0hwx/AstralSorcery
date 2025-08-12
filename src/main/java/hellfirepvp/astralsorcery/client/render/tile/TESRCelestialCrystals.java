@@ -8,11 +8,6 @@
 
 package hellfirepvp.astralsorcery.client.render.tile;
 
-import hellfirepvp.astralsorcery.client.models.obj.OBJModelLibrary;
-import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
-import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
-import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
-import hellfirepvp.astralsorcery.common.tile.TileCelestialCrystals;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -21,7 +16,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.obj.WavefrontObject;
+
 import org.lwjgl.opengl.GL11;
+
+import hellfirepvp.astralsorcery.client.models.obj.OBJModelLibrary;
+import hellfirepvp.astralsorcery.client.util.resource.AssetLibrary;
+import hellfirepvp.astralsorcery.client.util.resource.AssetLoader;
+import hellfirepvp.astralsorcery.client.util.resource.BindableResource;
+import hellfirepvp.astralsorcery.common.tile.TileCelestialCrystals;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -33,7 +35,8 @@ import org.lwjgl.opengl.GL11;
 public class TESRCelestialCrystals extends TileEntitySpecialRenderer implements IItemRenderer {
 
     private static int dlC0 = -1, dlC1 = -1, dlC2 = -1, dlC3 = -1, dlC4 = -1;
-    private static final BindableResource texCelestialCrystals = AssetLibrary.loadTexture(AssetLoader.TextureLocation.MODELS, "c_crystal_tex");
+    private static final BindableResource texCelestialCrystals = AssetLibrary
+        .loadTexture(AssetLoader.TextureLocation.MODELS, "c_crystal_tex");
 
     private static int[] rotMapping = new int[] { 45, 135, 270, 90, 315, 0, 180, 225 };
 
@@ -48,7 +51,7 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer implements 
         GL11.glScalef(size, size, size);
 
         int r = 0x59A51481;
-//        BlockPos at = te.getPos();
+        // BlockPos at = te.getPos();
         r ^= te.xCoord;
         r ^= te.yCoord;
         r ^= te.zCoord;
@@ -93,7 +96,7 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer implements 
                 obj = OBJModelLibrary.crystalsStage0;
                 break;
         }
-        if(dlSelected == -1) {
+        if (dlSelected == -1) {
             dlSelected = GLAllocation.generateDisplayLists(1);
             switch (stage) {
                 case 0:
@@ -124,21 +127,21 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer implements 
         GL11.glPopMatrix();
     }
 
-//    @Override
-//    public void render(ItemStack stack) {
-//        GL11.glPushMatrix();
-//        GL11.glTranslated(0.5, 0.25, 0.5);
-//        GL11.glScalef(0.2F, 0.2F, 0.2F);
-//        GL11.glRotated(-10, 0, 0, 1);
-//        GL11.glRotated( 20, 1, 0, 0);
-//        GL11.glRotated(-70, 0, 1, 0);
-//        GL11.glDisable(GL11.GL_CULL_FACE);
-//        RenderHelper.disableStandardItemLighting();
-//        renderCelestialCrystals(MathHelper.clamp_int(stack.getItemDamage(), 0, 4));
-//        RenderHelper.enableStandardItemLighting();
-//        GL11.glEnable(GL11.GL_CULL_FACE);
-//        GL11.glPopMatrix();
-//    }
+    // @Override
+    // public void render(ItemStack stack) {
+    // GL11.glPushMatrix();
+    // GL11.glTranslated(0.5, 0.25, 0.5);
+    // GL11.glScalef(0.2F, 0.2F, 0.2F);
+    // GL11.glRotated(-10, 0, 0, 1);
+    // GL11.glRotated( 20, 1, 0, 0);
+    // GL11.glRotated(-70, 0, 1, 0);
+    // GL11.glDisable(GL11.GL_CULL_FACE);
+    // RenderHelper.disableStandardItemLighting();
+    // renderCelestialCrystals(MathHelper.clamp_int(stack.getItemDamage(), 0, 4));
+    // RenderHelper.enableStandardItemLighting();
+    // GL11.glEnable(GL11.GL_CULL_FACE);
+    // GL11.glPopMatrix();
+    // }
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -156,7 +159,7 @@ public class TESRCelestialCrystals extends TileEntitySpecialRenderer implements 
         GL11.glTranslated(0.5, 0.25, 0.5);
         GL11.glScalef(0.2F, 0.2F, 0.2F);
         GL11.glRotated(-10, 0, 0, 1);
-        GL11.glRotated( 20, 1, 0, 0);
+        GL11.glRotated(20, 1, 0, 0);
         GL11.glRotated(-70, 0, 1, 0);
         GL11.glDisable(GL11.GL_CULL_FACE);
         RenderHelper.disableStandardItemLighting();

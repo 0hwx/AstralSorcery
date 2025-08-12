@@ -8,6 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.tweaks;
 
+import net.minecraft.item.ItemStack;
+
 import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import hellfirepvp.astralsorcery.common.integrations.ModIntegrationCrafttweaker;
 import hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.BaseTweaker;
@@ -19,7 +21,6 @@ import hellfirepvp.astralsorcery.common.tile.TileAltar;
 import minetweaker.MineTweakerAPI;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
-import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -42,12 +43,12 @@ public class AltarRecipe extends BaseTweaker {
     @ZenMethod
     public static void removeAltarRecipe(IItemStack output, int altarLevel) {
         ItemStack out = convertToItemStack(output);
-        if(out == null) {
+        if (out == null) {
             MineTweakerAPI.logError("[" + name + "] Skipping recipe-removal due to invalid output.");
             return;
         }
 
-        if(altarLevel < 0 || altarLevel >= TileAltar.AltarLevel.values().length) {
+        if (altarLevel < 0 || altarLevel >= TileAltar.AltarLevel.values().length) {
             MineTweakerAPI.logError("[" + name + "] Skipping recipe-removal - No altar level with index " + altarLevel);
             return;
         }
@@ -57,11 +58,12 @@ public class AltarRecipe extends BaseTweaker {
     }
 
     @ZenMethod
-    public static void addDiscoveryAltarRecipe(IItemStack output, int starlightRequired, int craftingTickTime, IIngredient[] inputs) {
-        if(!matchNeededSlots(inputs, TileAltar.AltarLevel.DISCOVERY)) return;
+    public static void addDiscoveryAltarRecipe(IItemStack output, int starlightRequired, int craftingTickTime,
+        IIngredient[] inputs) {
+        if (!matchNeededSlots(inputs, TileAltar.AltarLevel.DISCOVERY)) return;
 
         ItemStack out = convertToItemStack(output);
-        if(out == null) {
+        if (out == null) {
             MineTweakerAPI.logError("[" + name + "] Skipping recipe-addition due to invalid output itemstack.");
             return;
         }
@@ -71,17 +73,17 @@ public class AltarRecipe extends BaseTweaker {
             handles[i] = convertToHandle(inputs[i]);
         }
 
-
-
-        ModIntegrationCrafttweaker.recipeModifications.add(new AltarRecipeDiscovery(handles, out, starlightRequired, craftingTickTime));
+        ModIntegrationCrafttweaker.recipeModifications
+            .add(new AltarRecipeDiscovery(handles, out, starlightRequired, craftingTickTime));
     }
 
     @ZenMethod
-    public static void addAttunmentAltarRecipe(IItemStack output, int starlightRequired, int craftingTickTime, IIngredient[] inputs) {
-        if(!matchNeededSlots(inputs, TileAltar.AltarLevel.ATTUNEMENT)) return;
+    public static void addAttunmentAltarRecipe(IItemStack output, int starlightRequired, int craftingTickTime,
+        IIngredient[] inputs) {
+        if (!matchNeededSlots(inputs, TileAltar.AltarLevel.ATTUNEMENT)) return;
 
         ItemStack out = convertToItemStack(output);
-        if(out == null) {
+        if (out == null) {
             MineTweakerAPI.logError("[" + name + "] Skipping recipe-addition due to invalid output itemstack.");
             return;
         }
@@ -91,15 +93,17 @@ public class AltarRecipe extends BaseTweaker {
             handles[i] = convertToHandle(inputs[i]);
         }
 
-        ModIntegrationCrafttweaker.recipeModifications.add(new AltarRecipeAttunement(handles, out, starlightRequired, craftingTickTime));
+        ModIntegrationCrafttweaker.recipeModifications
+            .add(new AltarRecipeAttunement(handles, out, starlightRequired, craftingTickTime));
     }
 
     @ZenMethod
-    public static void addConstellationAltarRecipe(IItemStack output, int starlightRequired, int craftingTickTime, IIngredient[] inputs) {
-        if(!matchNeededSlots(inputs, TileAltar.AltarLevel.CONSTELLATION_CRAFT)) return;
+    public static void addConstellationAltarRecipe(IItemStack output, int starlightRequired, int craftingTickTime,
+        IIngredient[] inputs) {
+        if (!matchNeededSlots(inputs, TileAltar.AltarLevel.CONSTELLATION_CRAFT)) return;
 
         ItemStack out = convertToItemStack(output);
-        if(out == null) {
+        if (out == null) {
             MineTweakerAPI.logError("[" + name + "] Skipping recipe-addition due to invalid output itemstack.");
             return;
         }
@@ -109,12 +113,13 @@ public class AltarRecipe extends BaseTweaker {
             handles[i] = convertToHandle(inputs[i]);
         }
 
-        ModIntegrationCrafttweaker.recipeModifications.add(new AltarRecipeConstellation(handles, out, starlightRequired, craftingTickTime));
+        ModIntegrationCrafttweaker.recipeModifications
+            .add(new AltarRecipeConstellation(handles, out, starlightRequired, craftingTickTime));
     }
 
     private static boolean isEmpty(IIngredient[] inputs) {
         for (IIngredient i : inputs) {
-            if(i != null) return false;
+            if (i != null) return false;
         }
         return true;
     }
@@ -133,7 +138,7 @@ public class AltarRecipe extends BaseTweaker {
                 reqSlots = SLOT_COUNT_T3;
                 break;
         }
-        if(inputs == null || inputs.length != reqSlots) {
+        if (inputs == null || inputs.length != reqSlots) {
             MineTweakerAPI.logError("[" + name + "] Not enough slots defined for altar level " + altarLevel.name());
             return false;
         }

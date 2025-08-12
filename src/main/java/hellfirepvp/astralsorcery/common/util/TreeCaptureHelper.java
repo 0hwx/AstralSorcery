@@ -8,22 +8,24 @@
 
 package hellfirepvp.astralsorcery.common.util;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import cpw.mods.fml.common.eventhandler.Event;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import hellfirepvp.astralsorcery.common.util.data.WorldBlockPos;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.event.terraingen.SaplingGrowTreeEvent;
-
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.event.terraingen.SaplingGrowTreeEvent;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import cpw.mods.fml.common.eventhandler.Event;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import hellfirepvp.astralsorcery.common.util.data.WorldBlockPos;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -46,12 +48,12 @@ public class TreeCaptureHelper {
     @SubscribeEvent
     public void onTreeGrowth(SaplingGrowTreeEvent event) {
         WorldBlockPos pos = new WorldBlockPos(event.world, new BlockPos(event.x, event.y, event.z));
-        if(oneTimeCatches.contains(pos)) {
+        if (oneTimeCatches.contains(pos)) {
             oneTimeCatches.remove(pos);
             return;
         }
 
-        if(watchers.isEmpty()) return;
+        if (watchers.isEmpty()) return;
         Iterator<WeakReference<TreeWatcher>> iterator = watchers.iterator();
         while (iterator.hasNext()) {
             WeakReference<TreeWatcher> watch = iterator.next();
@@ -76,15 +78,15 @@ public class TreeCaptureHelper {
                 iterator.remove();
                 continue;
             }
-            if(other.equals(watcher)) return;
+            if (other.equals(watcher)) return;
         }
         watchers.add(new WeakReference<>(watcher));
     }
 
     @Nonnull
     public static List<WorldBlockPos> getAndClearCachedEntries(@Nullable TreeWatcher watcher) {
-        if(watcher == null) return Lists.newArrayList();
-        if(watchers.isEmpty()) return Lists.newArrayList();
+        if (watcher == null) return Lists.newArrayList();
+        if (watchers.isEmpty()) return Lists.newArrayList();
         Iterator<WeakReference<TreeWatcher>> iterator = watchers.iterator();
         while (iterator.hasNext()) {
             WeakReference<TreeWatcher> itW = iterator.next();
@@ -93,7 +95,7 @@ public class TreeCaptureHelper {
                 iterator.remove();
                 continue;
             }
-            if(watcher.equals(watch)) {
+            if (watcher.equals(watch)) {
                 List<WorldBlockPos> pos = cachedEntries.get(itW);
                 cachedEntries.remove(itW);
                 return pos == null ? Lists.newArrayList() : pos;
@@ -104,15 +106,16 @@ public class TreeCaptureHelper {
 
     private void addWatch(WeakReference<TreeWatcher> watch, WorldBlockPos pos) {
         List<WorldBlockPos> entries = cachedEntries.get(watch);
-        if(entries == null) {
+        if (entries == null) {
             entries = Lists.newLinkedList();
             cachedEntries.put(watch, entries);
         }
         entries.add(pos);
-        Iterator<WeakReference<TreeWatcher>> iterator = cachedEntries.keySet().iterator();
+        Iterator<WeakReference<TreeWatcher>> iterator = cachedEntries.keySet()
+            .iterator();
         while (iterator.hasNext()) {
             WeakReference<TreeWatcher> wrT = iterator.next();
-            if(wrT.get() == null) {
+            if (wrT.get() == null) {
                 iterator.remove();
             }
         }

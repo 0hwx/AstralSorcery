@@ -8,19 +8,21 @@
 
 package hellfirepvp.astralsorcery.common.data;
 
-import hellfirepvp.astralsorcery.AstralSorcery;
-import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
-import hellfirepvp.astralsorcery.common.constellation.IConstellation;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+
+import hellfirepvp.astralsorcery.AstralSorcery;
+import hellfirepvp.astralsorcery.common.constellation.ConstellationRegistry;
+import hellfirepvp.astralsorcery.common.constellation.IConstellation;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -47,7 +49,7 @@ public class DataActiveCelestials extends AbstractData {
     }
 
     private void requestUpdate(int dimId) {
-        if(!updateRequested.contains(dimId)) updateRequested.add(dimId);
+        if (!updateRequested.contains(dimId)) updateRequested.add(dimId);
         markDirty();
     }
 
@@ -68,7 +70,7 @@ public class DataActiveCelestials extends AbstractData {
     private void addDimensionConstellations(int dimId, NBTTagCompound mainCompound) {
         NBTTagList list = new NBTTagList();
         Collection<IConstellation> csts = getActiveConstellations(dimId);
-        if(csts != null) {
+        if (csts != null) {
             for (IConstellation c : csts) {
                 list.appendTag(new NBTTagString(c.getUnlocalizedName()));
             }
@@ -83,7 +85,8 @@ public class DataActiveCelestials extends AbstractData {
             try {
                 dimId = Integer.parseInt(dimIdStr);
             } catch (Exception exc) {
-                AstralSorcery.log.warn("[AstralSorcery] Received ConstellationUpdate packet with a non-integer dimensionId: " + dimIdStr);
+                AstralSorcery.log.warn(
+                    "[AstralSorcery] Received ConstellationUpdate packet with a non-integer dimensionId: " + dimIdStr);
                 AstralSorcery.log.warn("[AstralSorcery] Skipping...");
                 continue;
             }

@@ -8,6 +8,11 @@
 
 package hellfirepvp.astralsorcery.common.crafting.altar.recipes;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.item.ItemStack;
+
 import hellfirepvp.astralsorcery.common.block.network.BlockCollectorCrystalBase;
 import hellfirepvp.astralsorcery.common.constellation.IWeakConstellation;
 import hellfirepvp.astralsorcery.common.crafting.helper.ShapeMap;
@@ -20,11 +25,6 @@ import hellfirepvp.astralsorcery.common.item.crystal.base.ItemTunedCrystalBase;
 import hellfirepvp.astralsorcery.common.lib.BlocksAS;
 import hellfirepvp.astralsorcery.common.lib.ItemsAS;
 import hellfirepvp.astralsorcery.common.tile.TileAltar;
-import hellfirepvp.astralsorcery.common.util.OreDictAlias;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -39,25 +39,29 @@ public class CollectorCrystalRecipe extends ConstellationRecipe {
     private final ItemStack renderOutput;
 
     public CollectorCrystalRecipe(boolean celestial) {
-        super(new ShapedRecipe(celestial ? BlocksAS.celestialCollectorCrystal : BlocksAS.collectorCrystal)
-                .addPart((celestial ? ItemsAS.tunedCelestialCrystal : ItemsAS.tunedRockCrystal),
-                        ShapedRecipeSlot.CENTER));
+        super(
+            new ShapedRecipe(celestial ? BlocksAS.celestialCollectorCrystal : BlocksAS.collectorCrystal).addPart(
+                (celestial ? ItemsAS.tunedCelestialCrystal : ItemsAS.tunedRockCrystal),
+                ShapedRecipeSlot.CENTER));
         setAttItem(ItemCraftingComponent.MetaType.RESO_GEM.asStack(), AttunementAltarSlot.values());
-        setCstItem(ItemCraftingComponent.MetaType.STARDUST.asStack(),
-                ConstellationAtlarSlot.UP_UP_LEFT,
-                ConstellationAtlarSlot.UP_UP_RIGHT,
-                ConstellationAtlarSlot.DOWN_DOWN_LEFT,
-                ConstellationAtlarSlot.DOWN_DOWN_RIGHT);
-        setCstItem(ItemsAS.illuminationPowder,
-                ConstellationAtlarSlot.UP_LEFT_LEFT,
-                ConstellationAtlarSlot.UP_RIGHT_RIGHT,
-                ConstellationAtlarSlot.DOWN_LEFT_LEFT,
-                ConstellationAtlarSlot.DOWN_RIGHT_RIGHT);
+        setCstItem(
+            ItemCraftingComponent.MetaType.STARDUST.asStack(),
+            ConstellationAtlarSlot.UP_UP_LEFT,
+            ConstellationAtlarSlot.UP_UP_RIGHT,
+            ConstellationAtlarSlot.DOWN_DOWN_LEFT,
+            ConstellationAtlarSlot.DOWN_DOWN_RIGHT);
+        setCstItem(
+            ItemsAS.illuminationPowder,
+            ConstellationAtlarSlot.UP_LEFT_LEFT,
+            ConstellationAtlarSlot.UP_RIGHT_RIGHT,
+            ConstellationAtlarSlot.DOWN_LEFT_LEFT,
+            ConstellationAtlarSlot.DOWN_RIGHT_RIGHT);
         this.celestial = celestial;
         ItemStack stack = new ItemStack(celestial ? BlocksAS.celestialCollectorCrystal : BlocksAS.collectorCrystal);
-        ItemCollectorCrystal.setType(stack, celestial ?
-                BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL :
-                BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL);
+        ItemCollectorCrystal.setType(
+            stack,
+            celestial ? BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL
+                : BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL);
         this.renderOutput = stack;
         setPassiveStarlightRequirement(2600);
     }
@@ -65,17 +69,21 @@ public class CollectorCrystalRecipe extends ConstellationRecipe {
     @Nullable
     @Override
     public ItemStack getOutput(ShapeMap centralGridMap, TileAltar altar) {
-        ItemStack center = centralGridMap.get(ShapedRecipeSlot.CENTER).getApplicableItems().get(0);
-        if(center == null || center.getItem() == null || !(center.getItem() instanceof ItemTunedCrystalBase)) return null;
+        ItemStack center = centralGridMap.get(ShapedRecipeSlot.CENTER)
+            .getApplicableItems()
+            .get(0);
+        if (center == null || center.getItem() == null || !(center.getItem() instanceof ItemTunedCrystalBase))
+            return null;
         ItemStack out = super.getOutput(centralGridMap, altar);
         IWeakConstellation attuned = ItemTunedCrystalBase.getMainConstellation(center);
         CrystalProperties prop = CrystalProperties.getCrystalProperties(center);
-        if(attuned == null || prop == null) return null;
+        if (attuned == null || prop == null) return null;
         ItemCollectorCrystal.setConstellation(out, attuned);
         CrystalProperties.applyCrystalProperties(out, prop);
-        ItemCollectorCrystal.setType(out, celestial ?
-                BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL :
-                BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL);
+        ItemCollectorCrystal.setType(
+            out,
+            celestial ? BlockCollectorCrystalBase.CollectorCrystalType.CELESTIAL_CRYSTAL
+                : BlockCollectorCrystalBase.CollectorCrystalType.ROCK_CRYSTAL);
         return out;
     }
 

@@ -8,6 +8,12 @@
 
 package hellfirepvp.astralsorcery.client.effect.fx;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.MathHelper;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
 import hellfirepvp.astralsorcery.client.effect.IComplexEffect;
 import hellfirepvp.astralsorcery.client.util.RenderingUtils;
@@ -15,10 +21,6 @@ import hellfirepvp.astralsorcery.client.util.resource.SpriteSheetResource;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.util.data.Tuple;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
-import org.lwjgl.opengl.GL11;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -60,7 +62,8 @@ public abstract class EntityFXFacingSprite extends EntityComplexFX implements IC
         return this;
     }
 
-    public static EntityFXFacingSprite fromSpriteSheet(SpriteSheetResource res, double x, double y, double z, float scale, int rLayer) {
+    public static EntityFXFacingSprite fromSpriteSheet(SpriteSheetResource res, double x, double y, double z,
+        float scale, int rLayer) {
         return new EntityFXFacingSprite(res, x, y, z, scale) {
 
             @Override
@@ -98,18 +101,18 @@ public abstract class EntityFXFacingSprite extends EntityComplexFX implements IC
     public void tick() {
         super.tick();
 
-        if(maxAge >= 0 && age >= maxAge) {
-            if(refreshFunction != null) {
+        if (maxAge >= 0 && age >= maxAge) {
+            if (refreshFunction != null) {
                 Entity rView = Minecraft.getMinecraft().renderViewEntity;
-                if(rView == null) rView = Minecraft.getMinecraft().thePlayer;
-                if(rView.getDistanceSq(x, y, z) <= Config.maxEffectRenderDistanceSq) {
-                    if(refreshFunction.shouldRefresh()) {
+                if (rView == null) rView = Minecraft.getMinecraft().thePlayer;
+                if (rView.getDistanceSq(x, y, z) <= Config.maxEffectRenderDistanceSq) {
+                    if (refreshFunction.shouldRefresh()) {
                         age = 0;
                     }
                 }
             }
         }
-        if(positionUpdateFunction != null) {
+        if (positionUpdateFunction != null) {
             this.prevX = this.x;
             this.prevY = this.y;
             this.prevZ = this.z;
@@ -130,11 +133,22 @@ public abstract class EntityFXFacingSprite extends EntityComplexFX implements IC
         GL11.glColor4f(1F, 1F, 1F, 1F);
         int frame = getAgeBasedFrame();
         Tuple<Double, Double> uv = spriteSheet.getUVOffset(frame);
-        spriteSheet.getResource().bind();
+        spriteSheet.getResource()
+            .bind();
         double iX = RenderingUtils.interpolate(prevX, x, pTicks);
         double iY = RenderingUtils.interpolate(prevY, y, pTicks);
         double iZ = RenderingUtils.interpolate(prevZ, z, pTicks);
-        RenderingUtils.renderFacingQuad(iX, iY, iZ, pTicks, scale, 0, uv.key, uv.value, spriteSheet.getULength() * getULengthMultiplier(), spriteSheet.getVLength() * getVLengthMultiplier());
+        RenderingUtils.renderFacingQuad(
+            iX,
+            iY,
+            iZ,
+            pTicks,
+            scale,
+            0,
+            uv.key,
+            uv.value,
+            spriteSheet.getULength() * getULengthMultiplier(),
+            spriteSheet.getVLength() * getVLengthMultiplier());
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glDepthMask(true);

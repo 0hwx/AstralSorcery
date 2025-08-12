@@ -8,6 +8,12 @@
 
 package hellfirepvp.astralsorcery;
 
+import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.common.MinecraftForge;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -21,18 +27,10 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import hellfirepvp.astralsorcery.common.CommonProxy;
 import hellfirepvp.astralsorcery.common.base.CelestialGatewaySystem;
 import hellfirepvp.astralsorcery.common.cmd.CommandAstralSorcery;
-import hellfirepvp.astralsorcery.common.crafting.ItemHandle;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.data.research.ResearchManager;
 import hellfirepvp.astralsorcery.common.data.world.WorldCacheManager;
 import hellfirepvp.astralsorcery.common.event.ClientInitializedEvent;
-import hellfirepvp.astralsorcery.common.event.listener.EventHandlerServer;
-import hellfirepvp.astralsorcery.common.item.ItemGatedVisibility;
-import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.FluidRegistry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -41,7 +39,11 @@ import org.apache.logging.log4j.Logger;
  * Created by HellFirePvP
  * Date: 07.05.2016 / 00:20
  */
-@Mod(modid = AstralSorcery.MODID, name = AstralSorcery.NAME, version = AstralSorcery.VERSION, acceptedMinecraftVersions="[1.7.10]")
+@Mod(
+    modid = AstralSorcery.MODID,
+    name = AstralSorcery.NAME,
+    version = AstralSorcery.VERSION,
+    acceptedMinecraftVersions = "[1.7.10]")
 public class AstralSorcery {
 
     public static final String MODID = "astralsorcery";
@@ -116,8 +118,8 @@ public class AstralSorcery {
         return devEnvChache;
     }
 
-//    static {
-//        FluidRegistry.enableUniversalBucket();
-//    }
+    // static {
+    // FluidRegistry.enableUniversalBucket();
+    // }
 
 }

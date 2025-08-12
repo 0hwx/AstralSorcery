@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.container;
 
-import hellfirepvp.astralsorcery.common.item.ItemConstellationFocus;
-import hellfirepvp.astralsorcery.common.tile.TileAltar;
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nullable;
+import hellfirepvp.astralsorcery.common.item.ItemConstellationFocus;
+import hellfirepvp.astralsorcery.common.tile.TileAltar;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -35,7 +36,8 @@ public class ConstellationFocusSlot extends Slot {
 
     @Override
     public boolean isItemValid(ItemStack stack) {
-        return stack != null && stack.getItem() instanceof ItemConstellationFocus && ((ItemConstellationFocus) stack.getItem()).getFocusConstellation(stack) != null;
+        return stack != null && stack.getItem() instanceof ItemConstellationFocus
+            && ((ItemConstellationFocus) stack.getItem()).getFocusConstellation(stack) != null;
     }
 
     @Override
@@ -66,15 +68,15 @@ public class ConstellationFocusSlot extends Slot {
         return focus;
     }
 
-//    @Override
-//    public boolean isHere(IInventory inv, int slotIn) {
-//        return false;
-//    }
-//
-//    @Override
-//    public int getItemStackLimit(ItemStack stack) {
-//        return 1;
-//    }
+    // @Override
+    // public boolean isHere(IInventory inv, int slotIn) {
+    // return false;
+    // }
+    //
+    // @Override
+    // public int getItemStackLimit(ItemStack stack) {
+    // return 1;
+    // }
 
     @Override
     public int getSlotStackLimit() {

@@ -8,7 +8,8 @@
 
 package hellfirepvp.astralsorcery.common.util.nbt;
 
-import hellfirepvp.astralsorcery.AstralSorcery;
+import java.util.UUID;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -16,7 +17,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 
-import java.util.UUID;
+import hellfirepvp.astralsorcery.AstralSorcery;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -59,7 +60,6 @@ public class NBTHelper {
         return modData != null && modData instanceof NBTTagCompound;
     }
 
-
     public static void removePersistentData(Entity entity) {
         removePersistentData(entity.getEntityData());
     }
@@ -72,7 +72,6 @@ public class NBTHelper {
         base.removeTag(AstralSorcery.MODID);
     }
 
-
     public static NBTTagCompound getData(ItemStack stack) {
         NBTTagCompound compound = stack.getTagCompound();
         if (compound == null) {
@@ -81,7 +80,6 @@ public class NBTHelper {
         }
         return compound;
     }
-
 
     public static void setStack(NBTTagCompound compound, String tag, ItemStack stack) {
         NBTTagCompound stackCompound = new NBTTagCompound();
@@ -104,7 +102,7 @@ public class NBTHelper {
         return getUUID(compound, tag, null);
     }
 
-    //Get tags with default value
+    // Get tags with default value
     public static ItemStack getStack(NBTTagCompound compound, String tag, ItemStack defaultValue) {
         if (compound.hasKey(tag)) {
             return ItemStack.loadItemStackFromNBT(compound.getCompoundTag(tag));
@@ -152,15 +150,12 @@ public class NBTHelper {
         return compound.hasKey(tag) ? compound.getLong(tag) : defaultValue;
     }
 
-    public static int getIntAt(NBTTagList List, int i)
-    {
-        if (i >= 0 && i < List.tagList.size())
-        {
+    public static int getIntAt(NBTTagList List, int i) {
+        if (i >= 0 && i < List.tagList.size()) {
             NBTBase nbtbase = (NBTBase) List.tagList.get(i);
 
-            if (nbtbase.getId() == 3)
-            {
-                return ((NBTTagInt)nbtbase).func_150287_d();
+            if (nbtbase.getId() == 3) {
+                return ((NBTTagInt) nbtbase).func_150287_d();
             }
         }
 

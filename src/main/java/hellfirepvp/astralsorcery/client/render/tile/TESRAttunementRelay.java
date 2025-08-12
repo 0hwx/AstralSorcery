@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.client.render.tile;
 
-import hellfirepvp.astralsorcery.common.tile.TileAttunementRelay;
-import hellfirepvp.astralsorcery.common.tile.base.TileInventoryBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+
+import hellfirepvp.astralsorcery.common.tile.TileAttunementRelay;
+import hellfirepvp.astralsorcery.common.tile.base.TileInventoryBase;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -36,7 +37,8 @@ public class TESRAttunementRelay extends TileEntitySpecialRenderer {
         EntityItem ei = new EntityItem(Minecraft.getMinecraft().theWorld, 0, 0, 0, in);
         ei.age = te.getTicksExisted();
         ei.hoverStart = 0;
-        RenderItem.getInstance().doRender(ei, x + 0.5, y, z + 0.5, 0, partialTicks);
+        RenderItem.getInstance()
+            .doRender(ei, x + 0.5, y, z + 0.5, 0, partialTicks);
     }
 
 }

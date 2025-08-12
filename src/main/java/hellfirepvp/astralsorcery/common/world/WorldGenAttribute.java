@@ -8,9 +8,9 @@
 
 package hellfirepvp.astralsorcery.common.world;
 
-import net.minecraft.world.World;
-
 import java.util.Random;
+
+import net.minecraft.world.World;
 
 /**
  * This class is part of the Astral Sorcery Mod

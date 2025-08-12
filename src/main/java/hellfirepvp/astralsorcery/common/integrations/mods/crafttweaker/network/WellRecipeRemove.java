@@ -8,14 +8,15 @@
 
 package hellfirepvp.astralsorcery.common.integrations.mods.crafttweaker.network;
 
-import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
-import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
-import io.netty.buffer.ByteBuf;
+import javax.annotation.Nullable;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import javax.annotation.Nullable;
+import hellfirepvp.astralsorcery.common.crafting.helper.CraftingAccessManager;
+import hellfirepvp.astralsorcery.common.util.ByteBufUtils;
+import io.netty.buffer.ByteBuf;
 
 /**
  * This class is part of the Astral Sorcery Mod

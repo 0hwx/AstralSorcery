@@ -1,9 +1,9 @@
 package hellfirepvp.astralsorcery.common.item;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  * Created by HellFirePvP
  * Date: 23.04.2017 / 21:42
  */
-//Intended to be implemented by blocks to give a more appropiate itemstack as descriptor
+// Intended to be implemented by blocks to give a more appropiate itemstack as descriptor
 public interface ISpecialStackDescriptor {
 
     @Nonnull

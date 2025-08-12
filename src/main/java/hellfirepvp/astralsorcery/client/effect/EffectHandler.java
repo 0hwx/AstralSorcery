@@ -8,6 +8,29 @@
 
 package hellfirepvp.astralsorcery.client.effect;
 
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+
+import org.lwjgl.opengl.GL11;
+
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -34,26 +57,6 @@ import hellfirepvp.astralsorcery.client.util.resource.SpriteSheetResource;
 import hellfirepvp.astralsorcery.common.data.config.Config;
 import hellfirepvp.astralsorcery.common.util.Counter;
 import hellfirepvp.astralsorcery.common.util.data.Vector3;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import static org.lwjgl.opengl.GL11.GL_BLEND;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -86,7 +89,8 @@ public final class EffectHandler {
     }
 
     public void requestGatewayUIFor(World world, Vector3 pos, double sphereRadius) {
-        if(uiGateway == null || !uiGateway.getPos().equals(pos)) {
+        if (uiGateway == null || !uiGateway.getPos()
+            .equals(pos)) {
             uiGateway = UIGateway.initialize(world, pos, sphereRadius);
         }
         gatewayUITicks = 20;
@@ -106,7 +110,9 @@ public final class EffectHandler {
         }
         c.value += fastRenderParticles.size();
         c.value += fastRenderLightnings.size();
-        objects.values().stream().forEach((l) -> c.value += l.size());
+        objects.values()
+            .stream()
+            .forEach((l) -> c.value += l.size());
         return c.value;
     }
 
@@ -114,7 +120,8 @@ public final class EffectHandler {
     public void onOverlay(RenderGameOverlayEvent.Post event) {
         if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
             acceptsNewParticles = false;
-            Map<Integer, List<IComplexEffect>> layeredEffects = complexEffects.get(IComplexEffect.RenderTarget.OVERLAY_TEXT);
+            Map<Integer, List<IComplexEffect>> layeredEffects = complexEffects
+                .get(IComplexEffect.RenderTarget.OVERLAY_TEXT);
             for (int i = 0; i <= 2; i++) {
                 for (IComplexEffect effect : layeredEffects.get(i)) {
                     GL11.glPushMatrix();
@@ -130,7 +137,7 @@ public final class EffectHandler {
 
     @SubscribeEvent
     public void onDebugText(RenderGameOverlayEvent.Text event) {
-        if(Minecraft.getMinecraft().gameSettings.showDebugInfo) {
+        if (Minecraft.getMinecraft().gameSettings.showDebugInfo) {
             event.left.add("");
             event.left.add("§9[AstralSorcery]§r EffectHandler:");
             event.left.add("§9[AstralSorcery]§r > Complex effects: " + getDebugEffectCount());
@@ -149,11 +156,11 @@ public final class EffectHandler {
             }
             og.revertGLContext();
         }
-        if(uiGateway != null) {
-            if(renderGateway) {
+        if (uiGateway != null) {
+            if (renderGateway) {
                 uiGateway.renderIntoWorld(pTicks);
             }
-            if(ClientGatewayHandler.focusingEntry != null) {
+            if (ClientGatewayHandler.focusingEntry != null) {
                 renderGatewayTarget(pTicks);
             }
         }
@@ -179,25 +186,29 @@ public final class EffectHandler {
         int focusTicks = ClientGatewayHandler.focusTicks;
         UIGateway.GatewayEntry focusingEntry = ClientGatewayHandler.focusingEntry;
         float perc = (Math.min(40F, focusTicks) / 40F) * 0.3F;
-        if(focusTicks > 70) {
+        if (focusTicks > 70) {
             perc = ((float) (focusTicks - 70)) / 25F;
             perc = MathHelper.clamp_float(perc, 0.3F, 1F);
         }
-        ResourceLocation screenshot = ClientScreenshotCache.tryQueryTextureFor(focusingEntry.originalDimId, focusingEntry.originalBlockPos);
-        if(screenshot != null) {
+        ResourceLocation screenshot = ClientScreenshotCache
+            .tryQueryTextureFor(focusingEntry.originalDimId, focusingEntry.originalBlockPos);
+        if (screenshot != null) {
             GL11.glPushMatrix();
-            Minecraft.getMinecraft().getTextureManager().bindTexture(screenshot);
+            Minecraft.getMinecraft()
+                .getTextureManager()
+                .bindTexture(screenshot);
             GL11.glEnable(GL_BLEND);
             Blending.DEFAULT.apply();
             GL11.glDisable(GL11.GL_ALPHA_TEST);
             Tessellator tess = Tessellator.instance;
-//            VertexBuffer vb = tes.getBuffer();
-//            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+            // VertexBuffer vb = tes.getBuffer();
+            // vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
             tess.startDrawingQuads();
-            Vector3 pos = focusingEntry.relativePos.clone().multiply(0.85).add(uiGateway.getPos());
-            RenderingUtils.renderFacingFullQuadVB(tess, pos.getX(), pos.getY(), pos.getZ(),
-                    pTicks, 0.4F, 0,
-                    1F, 1F, 1F, perc);
+            Vector3 pos = focusingEntry.relativePos.clone()
+                .multiply(0.85)
+                .add(uiGateway.getPos());
+            RenderingUtils
+                .renderFacingFullQuadVB(tess, pos.getX(), pos.getY(), pos.getZ(), pTicks, 0.4F, 0, 1F, 1F, 1F, perc);
             tess.draw();
             GL11.glEnable(GL11.GL_ALPHA_TEST);
             GL11.glPopMatrix();
@@ -210,15 +221,18 @@ public final class EffectHandler {
 
         tick();
 
-        /*if(Minecraft.getMinecraft().thePlayer == null) return;
-        if(ClientScheduler.getClientTick() % 10 != 0) return;
-        ItemStack main = Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.MAIN_HAND);
-        if(main != null && main.getItem() instanceof ItemIlluminationWand) {
-            RayTraceResult res = MiscUtils.rayTraceLook(Minecraft.getMinecraft().thePlayer, 60);
-            if(res != null && res.typeOfHit == RayTraceResult.Type.BLOCK) {
-                EffectLightning.buildAndRegisterLightning(new Vector3(res.getBlockPos()).addY(7), new Vector3(res.getBlockPos()));
-            }
-        }*/
+        /*
+         * if(Minecraft.getMinecraft().thePlayer == null) return;
+         * if(ClientScheduler.getClientTick() % 10 != 0) return;
+         * ItemStack main = Minecraft.getMinecraft().thePlayer.getHeldItem(EnumHand.MAIN_HAND);
+         * if(main != null && main.getItem() instanceof ItemIlluminationWand) {
+         * RayTraceResult res = MiscUtils.rayTraceLook(Minecraft.getMinecraft().thePlayer, 60);
+         * if(res != null && res.typeOfHit == RayTraceResult.Type.BLOCK) {
+         * EffectLightning.buildAndRegisterLightning(new Vector3(res.getBlockPos()).addY(7), new
+         * Vector3(res.getBlockPos()));
+         * }
+         * }
+         */
     }
 
     public EntityComplexFX registerFX(EntityComplexFX entityComplexFX) {
@@ -228,7 +242,9 @@ public final class EffectHandler {
 
     public EffectTranslucentFallingBlock translucentFallingBlock(Vector3 position, Block block) {
         EffectTranslucentFallingBlock blockFalling = new EffectTranslucentFallingBlock(block);
-        blockFalling.setPosition(position.clone().add(-0.5, -0.5, -0.5));
+        blockFalling.setPosition(
+            position.clone()
+                .add(-0.5, -0.5, -0.5));
         register(blockFalling);
         return blockFalling;
     }
@@ -237,7 +253,9 @@ public final class EffectHandler {
         return EffectLightning.buildAndRegisterLightning(from, to);
     }
 
-    public OrbitalEffectController orbital(OrbitalEffectController.OrbitPointEffect pointEffect, @Nullable OrbitalEffectController.OrbitPersistence persistence, @Nullable OrbitalEffectController.OrbitTickModifier tickModifier) {
+    public OrbitalEffectController orbital(OrbitalEffectController.OrbitPointEffect pointEffect,
+        @Nullable OrbitalEffectController.OrbitPersistence persistence,
+        @Nullable OrbitalEffectController.OrbitTickModifier tickModifier) {
         OrbitalEffectController ctrl = new OrbitalEffectController(pointEffect, persistence, tickModifier);
         register(ctrl);
         return ctrl;
@@ -268,16 +286,20 @@ public final class EffectHandler {
     }
 
     private void register(final IComplexEffect effect) {
-        if(AssetLibrary.reloading || effect == null || Minecraft.getMinecraft().isGamePaused()) return;
+        if (AssetLibrary.reloading || effect == null
+            || Minecraft.getMinecraft()
+                .isGamePaused())
+            return;
 
-        //instead of getEffeciveSide - neither is pretty, but this at least prevents async editing.
-        if (!Thread.currentThread().getName().contains("Client thread")) {
+        // instead of getEffeciveSide - neither is pretty, but this at least prevents async editing.
+        if (!Thread.currentThread()
+            .getName()
+            .contains("Client thread")) {
             AstralSorcery.proxy.scheduleClientside(() -> register(effect));
             return;
         }
 
-
-        if(acceptsNewParticles) {
+        if (acceptsNewParticles) {
             registerUnsafe(effect);
         } else {
             toAddBuffer.add(effect);
@@ -285,27 +307,32 @@ public final class EffectHandler {
     }
 
     private void registerUnsafe(IComplexEffect effect) {
-        if(!mayAcceptParticle(effect)) return;
+        if (!mayAcceptParticle(effect)) return;
 
-        if(effect instanceof EffectLightning) {
+        if (effect instanceof EffectLightning) {
             fastRenderLightnings.add((EffectLightning) effect);
-        } else if(effect instanceof EntityFXFacingParticle) {
+        } else if (effect instanceof EntityFXFacingParticle) {
             fastRenderParticles.add((EntityFXFacingParticle) effect);
-        } else if(effect instanceof CompoundObjectEffect) {
+        } else if (effect instanceof CompoundObjectEffect) {
             CompoundObjectEffect.ObjectGroup group = ((CompoundObjectEffect) effect).getGroup();
-            if(!objects.containsKey(group)) objects.put(group, new LinkedList<>());
-            objects.get(group).add((CompoundObjectEffect) effect);
+            if (!objects.containsKey(group)) objects.put(group, new LinkedList<>());
+            objects.get(group)
+                .add((CompoundObjectEffect) effect);
         } else {
-            complexEffects.get(effect.getRenderTarget()).get(effect.getLayer()).add(effect);
+            complexEffects.get(effect.getRenderTarget())
+                .get(effect.getLayer())
+                .add(effect);
         }
         effect.clearRemoveFlag();
     }
 
     public void tick() {
-        if(cleanRequested) {
+        if (cleanRequested) {
             for (IComplexEffect.RenderTarget t : IComplexEffect.RenderTarget.values()) {
                 for (int i = 0; i <= 2; i++) {
-                    complexEffects.get(t).get(i).clear();
+                    complexEffects.get(t)
+                        .get(i)
+                        .clear();
                 }
             }
             fastRenderParticles.clear();
@@ -314,12 +341,12 @@ public final class EffectHandler {
             toAddBuffer.clear();
             cleanRequested = false;
         }
-        if(Minecraft.getMinecraft().thePlayer == null) {
+        if (Minecraft.getMinecraft().thePlayer == null) {
             return;
         }
-        if(gatewayUITicks > 0) {
+        if (gatewayUITicks > 0) {
             gatewayUITicks--;
-            if(gatewayUITicks <= 0) {
+            if (gatewayUITicks <= 0) {
                 uiGateway = null;
             }
         }
@@ -328,11 +355,12 @@ public final class EffectHandler {
         for (IComplexEffect.RenderTarget target : complexEffects.keySet()) {
             Map<Integer, List<IComplexEffect>> layeredEffects = complexEffects.get(target);
             for (int i = 0; i <= 2; i++) {
-                Iterator<IComplexEffect> iterator = layeredEffects.get(i).iterator();
+                Iterator<IComplexEffect> iterator = layeredEffects.get(i)
+                    .iterator();
                 while (iterator.hasNext()) {
                     IComplexEffect effect = iterator.next();
                     effect.tick();
-                    if(effect.canRemove()) {
+                    if (effect.canRemove()) {
                         effect.flagAsRemoved();
                         iterator.remove();
                     }
@@ -347,7 +375,8 @@ public final class EffectHandler {
                 continue;
             }
             effect.tick();
-            if (effect.canRemove() || effect.getPosition().distanceSquared(playerPos) >= Config.maxEffectRenderDistanceSq) {
+            if (effect.canRemove() || effect.getPosition()
+                .distanceSquared(playerPos) >= Config.maxEffectRenderDistanceSq) {
                 effect.flagAsRemoved();
                 fastRenderParticles.remove(effect);
             }
@@ -363,11 +392,12 @@ public final class EffectHandler {
                 fastRenderLightnings.remove(effect);
             }
         }
-        Iterator<CompoundObjectEffect.ObjectGroup> itGroups = objects.keySet().iterator();
+        Iterator<CompoundObjectEffect.ObjectGroup> itGroups = objects.keySet()
+            .iterator();
         while (itGroups.hasNext()) {
             CompoundObjectEffect.ObjectGroup group = itGroups.next();
             List<CompoundObjectEffect> effects = objects.get(group);
-            if(effects == null || effects.isEmpty()) {
+            if (effects == null || effects.isEmpty()) {
                 itGroups.remove();
                 continue;
             }
@@ -395,10 +425,10 @@ public final class EffectHandler {
 
     public static boolean mayAcceptParticle(IComplexEffect effect) {
         int cfg = Config.particleAmount;
-        if(cfg > 1 && !Minecraft.isFancyGraphicsEnabled()) {
+        if (cfg > 1 && !Minecraft.isFancyGraphicsEnabled()) {
             cfg = 1;
         }
-        if(effect instanceof IComplexEffect.PreventRemoval || cfg == 2) return true;
+        if (effect instanceof IComplexEffect.PreventRemoval || cfg == 2) return true;
         return cfg == 1 && STATIC_EFFECT_RAND.nextInt(3) == 0;
     }
 

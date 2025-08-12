@@ -8,10 +8,12 @@
 
 package hellfirepvp.astralsorcery.client.effect.compound;
 
+import net.minecraft.client.renderer.Tessellator;
+
+import org.lwjgl.opengl.GL11;
+
 import hellfirepvp.astralsorcery.client.effect.EntityComplexFX;
 import hellfirepvp.astralsorcery.client.util.Blending;
-import net.minecraft.client.renderer.Tessellator;
-import org.lwjgl.opengl.GL11;
 
 /**
  * This class is part of the Astral Sorcery Mod
@@ -75,4 +77,3 @@ public abstract class CompoundObjectEffect extends EntityComplexFX {
     }
 
 }
-
