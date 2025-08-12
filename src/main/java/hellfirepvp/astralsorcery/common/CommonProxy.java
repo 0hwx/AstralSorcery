@@ -9,6 +9,7 @@
 package hellfirepvp.astralsorcery.common;
 
 import com.mojang.authlib.GameProfile;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -159,7 +160,9 @@ public class CommonProxy implements IGuiHandler {
         MinecraftForge.TERRAIN_GEN_BUS.register(TreeCaptureHelper.eventInstance);
 
         MinecraftForge.EVENT_BUS.register(new EventHandlerNetwork());
-        MinecraftForge.EVENT_BUS.register(new EventHandlerServer());
+        EventHandlerServer eventHandlerServer = new EventHandlerServer();
+        MinecraftForge.EVENT_BUS.register(eventHandlerServer);
+        FMLCommonHandler.instance().bus().register(eventHandlerServer);
         MinecraftForge.EVENT_BUS.register(new EventHandlerAchievements());
         MinecraftForge.EVENT_BUS.register(new EventHandlerMisc());
         MinecraftForge.EVENT_BUS.register(TransmissionChunkTracker.getInstance());
