@@ -1,33 +1,28 @@
 package hellfirepvp.astralsorcery.core;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.gtnewhorizon.gtnhmixins.IEarlyMixinLoader;
+import com.gtnewhorizon.gtnhmixins.builders.IMixins;
 
-import cpw.mods.fml.relauncher.FMLLaunchHandler;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import hellfirepvp.astralsorcery.mixins.Mixins;
 
+@IFMLLoadingPlugin.Name("AstralSorcery-Core")
 @IFMLLoadingPlugin.MCVersion("1.7.10")
 public class EarlyMixinLoader implements IEarlyMixinLoader, IFMLLoadingPlugin {
 
     @Override
     public String getMixinConfig() {
-        return "mixins.tabfaces.early.json";
+        return "mixins.astralsorcery.early.json";
     }
 
     @Override
     public List<String> getMixins(Set<String> loadedCoreMods) {
-        final List<String> mixins = new ArrayList<>();
-        if (FMLLaunchHandler.side()
-            .isClient()) {
-            // mixins.add("minecraft.MixinGuiMultiplayer");
-            // Lorem ipsum
-        }
+        return IMixins.getEarlyMixins(Mixins.class, loadedCoreMods);
 
-        return mixins;
     }
 
     @Override

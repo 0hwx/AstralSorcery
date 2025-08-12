@@ -1,11 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8.7-GTNH",
-  "package": "hellfirepvp.astralsorcery.mixins.mid",
   "refmap": "mixins.astralsorcery.refmap.json",
   "target": "@env(DEFAULT)",
-  "compatibilityLevel": "JAVA_8",
-  "client" : [
-    //"minecraftforge.MixinGuiInGameForge"
-  ]
+  "compatibilityLevel": "JAVA_8"
 }
